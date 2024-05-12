@@ -11,8 +11,8 @@ const ChatSessionPage = () => {
 
   return (
     <div className="w-full h-screen flex flex-row relative overflow-hidden">
-      <div className="absolute flex justify-between items-center px-2 py-1 flex-row top-0 left-0 right-0 h-16 bg-gradient-to-b dark:from-zinc-800 dark:to-transparent from-70% to-white/10 z-10">
-        <p>AIChat</p>
+      <div className="absolute flex justify-between items-center p-2 flex-row top-0 left-0 right-0 bg-gradient-to-b dark:from-zinc-800 dark:to-transparent from-70% to-white/10 z-10">
+        <p className="p-2 text-sm text-zinc-500">AIChat</p>
         <div className="flex flex-row gap-2 items-center">
           <Avatar name="Deep" />
           <Button variant="secondary" size="icon" onClick={open}>
