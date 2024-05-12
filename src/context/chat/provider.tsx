@@ -15,7 +15,6 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   const { runModel } = useLLM({
     onStreamStart: () => {
       setLastStream(undefined);
-      refetchSessions();
     },
     onStream: async (props) => {
       setLastStream(props);
@@ -27,15 +26,9 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     },
   });
 
-  useEffect(() => {
-    console.log("last stream", lastStream);
-  }, [lastStream]);
-
   const fetchSessions = async () => {
     const sessions = await getSessions();
     setSessions(sessions);
-
-    console.log("sessionssss", sessions);
     setIsSessionLoading(false);
   };
 
