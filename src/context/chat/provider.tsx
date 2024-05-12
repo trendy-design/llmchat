@@ -1,6 +1,7 @@
 "use client";
 import { TChatSession, useChatSession } from "@/hooks/use-chat-session";
 import { TStreamProps, useLLM } from "@/hooks/use-llm";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChatContext } from "./context";
 export type TChatProvider = {
@@ -8,9 +9,13 @@ export type TChatProvider = {
 };
 
 export const ChatProvider = ({ children }: TChatProvider) => {
-  const { getSessions, createNewSession } = useChatSession();
+  const { sessionId } = useParams();
+  const { getSessions, createNewSession, getSessionById } = useChatSession();
   const [sessions, setSessions] = useState<TChatSession[]>([]);
   const [isSessionLoading, setIsSessionLoading] = useState<boolean>(true);
+  const [currentSession, setCurrentSession] = useState<
+    TChatSession | undefined
+  >();
   const [lastStream, setLastStream] = useState<TStreamProps>();
   const { runModel } = useLLM({
     onStreamStart: () => {
@@ -26,6 +31,19 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     },
   });
 
+  const fetchSession = async () => {
+    getSessionById(sessionId.toString()).then((session) => {
+      setCurrentSession(session);
+    });
+  };
+
+  useEffect(() => {
+    if (!sessionId) {
+      return;
+    }
+    fetchSession();
+  }, [sessionId]);
+
   const fetchSessions = async () => {
     const sessions = await getSessions();
     setSessions(sessions);
@@ -33,9 +51,16 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   };
 
   const createSession = async () => {
-    await createNewSession();
+    const newSession = await createNewSession();
     fetchSessions();
+    return newSession;
   };
+
+  useEffect(() => {
+    if (!lastStream) {
+      fetchSession();
+    }
+  }, [lastStream]);
 
   useEffect(() => {
     setIsSessionLoading(true);
@@ -55,6 +80,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         createSession,
         runModel,
         lastStream,
+        currentSession,
       }}
     >
       {children}

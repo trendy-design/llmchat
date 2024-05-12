@@ -42,14 +42,14 @@ export const useMarkdown = () => {
           ),
           code: (code, lang) => {
             return (
-              <div className="my-8">
+              <div className="my-4">
                 <CodeBlock lang={lang} code={code?.toString()} />
               </div>
             );
           },
           codespan(code, lang) {
             return (
-              <span className="px-2 py-1 text-xs rounded text-[#41e696] bg-[#41e696]/10">
+              <span className="px-2 py-1 text-xs rounded-md text-purple-300 bg-purple-600/30">
                 {code}
               </span>
             );

@@ -3,6 +3,15 @@
 @tailwind utilities;
 
 
+@keyframes fade458 {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0.25;
+  }
+}
 
 
 @layer base {
@@ -89,6 +98,66 @@ p {
 
 
 
+
+
+
+.hljs-copy {
+  color: white;
+  background: transparent;
+  border: none;
+  padding: "0.5rem 1rem";
+  border-radius: 4px;
+  cursor: pointer;
+
+}
+
+.hljs-copy:hover {
+  background: rgba(255, 255, 255, 0.1);
+
+
+}
+
+.hljs-lang {
+  padding: 0.5rem 1rem;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  width: 100%;
+  background-color: #333135;
+}
+
+.hljs-lang p {
+  margin: 0 !important;
+}
+
+
+
+
+code.hljs {
+  padding: 3px 5px
+}
+
+/*
+  
+  Atom One Dark by Daniel Gamage
+  Original One Dark Syntax theme from https://github.com/atom/one-dark-syntax
+  
+  base:    #282c34
+  mono-1:  #abb2bf
+  mono-2:  #818896
+  mono-3:  #5c6370
+  hue-1:   #56b6c2
+  hue-2:   #61aeee
+  hue-3:   #c678dd
+  hue-4:   #98c379
+  hue-5:   #e06c75
+  hue-5-2: #be5046
+  hue-6:   #d19a66
+  hue-6-2: #e6c07b
+  
+  */
 
 .hljs-comment,
 .hljs-quote {

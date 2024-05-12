@@ -1,5 +1,5 @@
-import { Sidebar } from "@/components/sidebar";
 import { ChatProvider } from "@/context/chat/provider";
+import { FiltersProvider } from "@/context/filters/provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -17,13 +17,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body className={inter.className}>
         <ChatProvider>
-          <div className="w-full h-screen flex flex-row">
-            <Sidebar />
-            {children}
-          </div>
+          <FiltersProvider>
+            <div className="w-full h-screen flex flex-row dark:bg-zinc-800">
+              {children}
+            </div>
+          </FiltersProvider>
         </ChatProvider>
       </body>
     </html>
