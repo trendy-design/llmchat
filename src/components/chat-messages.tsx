@@ -1,11 +1,11 @@
 import { useChatContext } from "@/context/chat/context";
 import { useMarkdown } from "@/hooks/use-mdx";
-import Avatar from "boring-avatars";
 import { useEffect, useRef } from "react";
+import { Avatar } from "./ui/avatar";
 
 export const ChatMessages = () => {
   const { renderMarkdown } = useMarkdown();
-  const { lastStream, currentSession } = useChatContext();
+  const { lastStream, currentSession, error } = useChatContext();
   const chatContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,18 +35,8 @@ export const ChatMessages = () => {
     return (
       <div className="flex flex-col gap-1 items-start w-full" key={key}>
         <div className="bg-black/30 rounded-2xl p-2 text-sm flex flex-row gap-2 pr-4 border border-white/5">
-          <div className="w-8 h-8 rounded-full relative">
-            <Avatar
-              size={32}
-              name={humanMessgae}
-              variant="marble"
-              colors={["#FFFFFF"]}
-            />
-            <p className="text-zinc-900/70 font-bold absolute inset-0 flex items-center justify-center">
-              D
-            </p>
-          </div>
-          <span className="pt-1.5">{humanMessgae}</span>
+          <Avatar name="Deep" />
+          <span className="pt-1 leading-5">{humanMessgae}</span>
         </div>
         <div className="bg-white/5 rounded-2xl p-4 w-full border border-white/5">
           {renderMarkdown(aiMessage)}
@@ -67,6 +57,11 @@ export const ChatMessages = () => {
         {isLastStreamBelongsToCurrentSession &&
           lastStream?.props?.query &&
           renderMessage("last", lastStream?.props?.query, lastStream?.messgae)}
+        {error && (
+          <div className="text-red-500">
+            {renderMessage("error", "Ahh!", error)}
+          </div>
+        )}
       </div>
     </div>
   );

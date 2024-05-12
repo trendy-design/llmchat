@@ -83,6 +83,7 @@ export const ChatInput = () => {
           placeholder="Ask AI anything.."
           value={inputValue}
           ref={inputRef}
+          variant="ghost"
           onChange={(e) => {
             setInputValue(e.currentTarget.value);
           }}

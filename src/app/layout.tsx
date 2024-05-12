@@ -1,5 +1,6 @@
 import { ChatProvider } from "@/context/chat/provider";
 import { FiltersProvider } from "@/context/filters/provider";
+import { SettingsProvider } from "@/context/settings/provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -20,11 +21,13 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={inter.className}>
         <ChatProvider>
-          <FiltersProvider>
-            <div className="w-full h-screen flex flex-row dark:bg-zinc-800">
-              {children}
-            </div>
-          </FiltersProvider>
+          <SettingsProvider>
+            <FiltersProvider>
+              <div className="w-full h-screen flex flex-row dark:bg-zinc-800">
+                {children}
+              </div>
+            </FiltersProvider>
+          </SettingsProvider>
         </ChatProvider>
       </body>
     </html>

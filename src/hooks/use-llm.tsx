@@ -1,17 +1,18 @@
 import { getInstruction, getRole } from "@/lib/prompts";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import {
-        ChatPromptTemplate,
-        MessagesPlaceholder,
+  ChatPromptTemplate,
+  MessagesPlaceholder,
 } from "@langchain/core/prompts";
 import { ChatOpenAI } from "@langchain/openai";
 import { v4 } from "uuid";
 import {
-        ModelType,
-        PromptProps,
-        TChatMessage,
-        useChatSession,
+  ModelType,
+  PromptProps,
+  TChatMessage,
+  useChatSession,
 } from "./use-chat-session";
+import { usePreferences } from "./use-preferences";
 
 export type TStreamProps = {
   props: PromptProps;
@@ -23,10 +24,17 @@ export type TUseLLM = {
   onStreamStart: () => void;
   onStream: (props: TStreamProps) => Promise<void>;
   onStreamEnd: () => void;
+  onError: (error: any) => void;
 };
 
-export const useLLM = ({ onStream, onStreamStart, onStreamEnd }: TUseLLM) => {
+export const useLLM = ({
+  onStream,
+  onStreamStart,
+  onStreamEnd,
+  onError,
+}: TUseLLM) => {
   const { getSessionById, addMessageToSession } = useChatSession();
+  const { getApiKey } = usePreferences();
 
   const preparePrompt = async (props: PromptProps, history: TChatMessage[]) => {
     const messageHistory = history;
@@ -84,44 +92,50 @@ export const useLLM = ({ onStream, onStreamStart, onStreamEnd }: TUseLLM) => {
       return;
     }
 
-    const apiKey = "";
+    const apiKey = await getApiKey("openai");
 
-    const model = new ChatOpenAI({
-      modelName: "gpt-3.5-turbo",
-      openAIApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || apiKey,
-    });
+    try {
+      const model = new ChatOpenAI({
+        modelName: "gpt-3.5-turbo",
+        openAIApiKey: apiKey,
+      });
 
-    const newMessageId = v4();
+      const newMessageId = v4();
 
-    const formattedChatPrompt = await preparePrompt(
-      props,
-      currentSession?.messages || []
-    );
-    const stream = await model.stream(formattedChatPrompt);
+      const formattedChatPrompt = await preparePrompt(
+        props,
+        currentSession?.messages || []
+      );
+      const stream = await model.stream(formattedChatPrompt);
 
-    let streamedMessage = "";
+      let streamedMessage = "";
 
-    onStreamStart();
-    for await (const chunk of stream) {
-      streamedMessage += chunk.content;
-      console.log(streamedMessage);
-      onStream({ props, sessionId, messgae: streamedMessage });
+      onStreamStart();
+      for await (const chunk of stream) {
+        streamedMessage += chunk.content;
+        console.log(streamedMessage);
+        onStream({ props, sessionId, messgae: streamedMessage });
+      }
+
+      const chatMessage = {
+        id: newMessageId,
+        model: ModelType.GPT3,
+        human: new HumanMessage(props.query),
+        ai: new AIMessage(streamedMessage),
+        rawHuman: props.query,
+        rawAI: streamedMessage,
+        props,
+      };
+
+      addMessageToSession(sessionId, chatMessage).then(() => {
+        onStreamEnd();
+      });
+    } catch (e) {
+      onError(e);
+      console.log(e);
     }
-
-    const chatMessage = {
-      id: newMessageId,
-      model: ModelType.GPT3,
-      human: new HumanMessage(props.query),
-      ai: new AIMessage(streamedMessage),
-      rawHuman: props.query,
-      rawAI: streamedMessage,
-      props,
-    };
-
-    addMessageToSession(sessionId, chatMessage).then(() => {
-      onStreamEnd();
-    });
   };
+
   return {
     runModel,
   };
