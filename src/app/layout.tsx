@@ -1,3 +1,5 @@
+import { Sidebar } from "@/components/sidebar";
+import { ChatProvider } from "@/context/chat/provider";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -16,7 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <ChatProvider>
+          <div className="w-full h-screen flex flex-row">
+            <Sidebar />
+            {children}
+          </div>
+        </ChatProvider>
+      </body>
     </html>
   );
 }

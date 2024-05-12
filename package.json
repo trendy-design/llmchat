@@ -17,6 +17,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "idb-keyval": "^6.2.1",
+    "marked-react": "^2.0.0",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",

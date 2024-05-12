@@ -1,28 +1,13 @@
+import { PromptType, RoleType } from "@/lib/prompts";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { get, set } from "idb-keyval";
+import { v4 } from "uuid";
 
 export enum ModelType {
   GPT3 = "gpt-3",
   GPT4 = "gpt-4",
   CLAUDE2 = "claude-2",
   CLAUDE3 = "claude-3",
-}
-
-export enum PromptType {
-  ask = "ask",
-  answer = "answer",
-  explain = "explain",
-  summarize = "summarize",
-  improve = "improve",
-  fix_grammer = "fix_grammer",
-  reply = "reply",
-  short_reply = "short_reply",
-}
-
-export enum RoleType {
-  assistant = "assistant",
-  writing_expert = "writing_expert",
-  social_media_expert = "social_media_expert",
 }
 
 export type PromptProps = {
@@ -103,6 +88,26 @@ export const useChatSession = () => {
     await set("chat-sessions", newSessions);
   };
 
+  const createNewSession = async () => {
+    const sessions = await getSessions();
+
+    const latestSession = sessions?.[0];
+    if (latestSession?.messages?.length === 0) {
+      return latestSession;
+    }
+
+    const newSession: TChatSession = {
+      id: v4(),
+      messages: [],
+      title: "Untitled",
+      createdAt: new Date().toISOString(),
+    };
+
+    const newSessions = [...sessions, newSession];
+    await set("chat-sessions", newSessions);
+    return newSession;
+  };
+
   return {
     getSessions,
     setSession,
@@ -110,5 +115,6 @@ export const useChatSession = () => {
     removeSessionById,
     updateSession,
     addMessageToSession,
+    createNewSession,
   };
 };

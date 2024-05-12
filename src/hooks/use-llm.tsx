@@ -1,19 +1,31 @@
 import { getInstruction, getRole } from "@/lib/prompts";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import {
-  ChatPromptTemplate,
-  MessagesPlaceholder,
+        ChatPromptTemplate,
+        MessagesPlaceholder,
 } from "@langchain/core/prompts";
 import { ChatOpenAI } from "@langchain/openai";
 import { v4 } from "uuid";
 import {
-  ModelType,
-  PromptProps,
-  TChatMessage,
-  useChatSession,
+        ModelType,
+        PromptProps,
+        TChatMessage,
+        useChatSession,
 } from "./use-chat-session";
 
-export const useLLM = () => {
+export type TStreamProps = {
+  props: PromptProps;
+  sessionId: string;
+  messgae: string;
+};
+
+export type TUseLLM = {
+  onStreamStart: () => void;
+  onStream: (props: TStreamProps) => Promise<void>;
+  onStreamEnd: () => void;
+};
+
+export const useLLM = ({ onStream, onStreamStart, onStreamEnd }: TUseLLM) => {
   const { getSessionById, addMessageToSession } = useChatSession();
 
   const preparePrompt = async (props: PromptProps, history: TChatMessage[]) => {
@@ -76,7 +88,7 @@ export const useLLM = () => {
 
     const model = new ChatOpenAI({
       modelName: "gpt-3.5-turbo",
-      openAIApiKey: apiKey,
+      openAIApiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY || apiKey,
     });
 
     const newMessageId = v4();
@@ -89,8 +101,11 @@ export const useLLM = () => {
 
     let streamedMessage = "";
 
+    onStreamStart();
     for await (const chunk of stream) {
       streamedMessage += chunk.content;
+      console.log(streamedMessage);
+      onStream({ props, sessionId, messgae: streamedMessage });
     }
 
     const chatMessage = {
@@ -103,7 +118,9 @@ export const useLLM = () => {
       props,
     };
 
-    addMessageToSession(sessionId, chatMessage);
+    addMessageToSession(sessionId, chatMessage).then(() => {
+      onStreamEnd();
+    });
   };
   return {
     runModel,
