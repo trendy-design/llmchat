@@ -1,7 +1,10 @@
 "use client";
+import { ModelIcon } from "@/components/icons/model-icon";
+import { AnthropicSettings } from "@/components/settings/anthropic";
 import { OpenAISettings } from "@/components/settings/openai";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { GearSix } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useChatContext } from "../chat/context";
@@ -14,6 +17,7 @@ export type TSettingsProvider = {
 export type TSettingMenuItem = {
   name: string;
   key: string;
+  icon: () => React.ReactNode;
   component: React.ReactNode;
 };
 export const SettingsProvider = ({ children }: TSettingsProvider) => {
@@ -29,17 +33,22 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
   const settingMenu: TSettingMenuItem[] = [
     {
       name: "Profile",
+      icon: () => <GearSix size={16} weight="bold" />,
       key: "profile",
       component: <div>Profile</div>,
     },
     {
       name: "Prompts",
       key: "prompts",
+      icon: () => <GearSix size={16} weight="bold" />,
+
       component: <div>Prompts</div>,
     },
     {
       name: "Roles",
       key: "roles",
+      icon: () => <GearSix size={16} weight="bold" />,
+
       component: <div>Roles</div>,
     },
   ];
@@ -48,16 +57,21 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
     {
       name: "OpenAI",
       key: "open-ai",
+      icon: () => <ModelIcon size="md" type="openai" />,
+
       component: <OpenAISettings />,
     },
     {
       name: "Anthropic",
       key: "anthropic",
-      component: <div>Anthropic</div>,
+      icon: () => <ModelIcon size="md" type="anthropic" />,
+      component: <AnthropicSettings />,
     },
     {
       name: "Gemini",
       key: "gemini",
+      icon: () => <ModelIcon size="md" type="gemini" />,
+
       component: <div>Gemini</div>,
     },
   ];
@@ -81,10 +95,10 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
                 variant={selectedMenu === menu.key ? "secondary" : "ghost"}
                 key={menu.key}
                 onClick={() => setSelectedMenu(menu.key)}
-                className="justify-start"
+                className="justify-start gap-3 px-3"
                 size="default"
               >
-                {menu.name}
+                {menu.icon()} {menu.name}
               </Button>
             ))}
             <p className="px-4 py-2 text-xs font-semibold text-white/30">
@@ -95,9 +109,10 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
                 variant={selectedMenu === menu.key ? "secondary" : "ghost"}
                 key={menu.key}
                 onClick={() => setSelectedMenu(menu.key)}
-                className="justify-start"
+                className="justify-start gap-3 px-3"
                 size="default"
               >
+                {menu.icon()}
                 {menu.name}
               </Button>
             ))}
