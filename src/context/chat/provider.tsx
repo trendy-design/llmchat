@@ -12,27 +12,28 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   const { sessionId } = useParams();
   const { getSessions, createNewSession, getSessionById } = useChatSession();
   const [sessions, setSessions] = useState<TChatSession[]>([]);
-  const [error, setError] = useState<string | undefined>();
   const [isSessionLoading, setIsSessionLoading] = useState<boolean>(true);
   const [currentSession, setCurrentSession] = useState<
     TChatSession | undefined
   >();
-  const [lastStream, setLastStream] = useState<TStreamProps>();
+  const [streamingMessage, setStreamingMessage] = useState<TStreamProps>();
   const { runModel } = useLLM({
-    onStreamStart: () => {
-      setError(undefined);
-      setLastStream(undefined);
+    onInit: async (props) => {
+      setStreamingMessage(props);
+    },
+    onStreamStart: async (props) => {
+      setStreamingMessage(props);
     },
     onStream: async (props) => {
-      setLastStream(props);
+      setStreamingMessage(props);
     },
-    onStreamEnd: () => {
+    onStreamEnd: async () => {
       fetchSessions().then(() => {
-        setLastStream(undefined);
+        setStreamingMessage(undefined);
       });
     },
-    onError: (error) => {
-      setError(error);
+    onError: async (error) => {
+      setStreamingMessage(error);
     },
   });
 
@@ -65,10 +66,10 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   };
 
   useEffect(() => {
-    if (!lastStream) {
+    if (!streamingMessage) {
       fetchSession();
     }
-  }, [lastStream]);
+  }, [streamingMessage]);
 
   useEffect(() => {
     setIsSessionLoading(true);
@@ -87,8 +88,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         isSessionLoading,
         createSession,
         runModel,
-        error,
-        lastStream,
+        streamingMessage,
         currentSession,
       }}
     >

@@ -2,6 +2,7 @@ import { PromptType, RoleType } from "@/lib/prompts";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { get, set } from "idb-keyval";
 import { v4 } from "uuid";
+import { TModelKey } from "./use-model-list";
 
 export enum ModelType {
   GPT3 = "gpt-3",
@@ -20,7 +21,7 @@ export type PromptProps = {
 
 export type TChatMessage = {
   id: string;
-  model: ModelType;
+  model: TModelKey;
   human: HumanMessage;
   ai: AIMessage;
   rawHuman: string;

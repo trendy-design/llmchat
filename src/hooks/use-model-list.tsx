@@ -11,7 +11,9 @@ export type TModelKey =
   | "gpt-3.5-turbo-0125"
   | "claude-3-opus-20240229"
   | "claude-3-sonnet-20240229"
-  | "claude-3-haiku-20240307";
+  | "claude-3-haiku-20240307"
+  | "gemini-pro"
+  | "gemini-1.5-pro-latest";
 
 export type TModel = {
   name: string;
@@ -93,6 +95,20 @@ export const useModelList = () => {
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="anthropic" />,
       baseModel: "anthropic",
+    },
+    {
+      name: "Gemini Pro 1.5",
+      key: "gemini-1.5-pro-latest",
+      tokens: 200000,
+      icon: () => <ModelIcon size="md" type="gemini" />,
+      baseModel: "gemini",
+    },
+    {
+      name: "Gemini Pro",
+      key: "gemini-pro",
+      tokens: 200000,
+      icon: () => <ModelIcon size="md" type="gemini" />,
+      baseModel: "gemini",
     },
   ];
 

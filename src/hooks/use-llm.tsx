@@ -5,29 +5,29 @@ import {
   MessagesPlaceholder,
 } from "@langchain/core/prompts";
 import { v4 } from "uuid";
-import {
-  ModelType,
-  PromptProps,
-  TChatMessage,
-  useChatSession,
-} from "./use-chat-session";
-import { useModelList } from "./use-model-list";
+import { PromptProps, TChatMessage, useChatSession } from "./use-chat-session";
+import { TModelKey, useModelList } from "./use-model-list";
 import { usePreferences } from "./use-preferences";
 
 export type TStreamProps = {
   props: PromptProps;
+  model: TModelKey;
   sessionId: string;
-  messgae: string;
+  message?: string;
+  loading?: boolean;
+  error?: string;
 };
 
 export type TUseLLM = {
-  onStreamStart: () => void;
+  onInit: (props: TStreamProps) => Promise<void>;
+  onStreamStart: (props: TStreamProps) => Promise<void>;
   onStream: (props: TStreamProps) => Promise<void>;
-  onStreamEnd: () => void;
-  onError: (error: any) => void;
+  onStreamEnd: (props: TStreamProps) => Promise<void>;
+  onError: (props: TStreamProps) => Promise<void>;
 };
 
 export const useLLM = ({
+  onInit,
   onStream,
   onStreamStart,
   onStreamEnd,
@@ -95,6 +95,7 @@ export const useLLM = ({
 
     const preferences = await getPreferences();
     const modelKey = preferences.defaultModel;
+    onInit({ props, model: modelKey, sessionId, loading: true });
     const selectedModel = getModelByKey(modelKey);
     if (!selectedModel) {
       throw new Error("Model not found");
@@ -103,7 +104,13 @@ export const useLLM = ({
     const apiKey = await getApiKey(selectedModel?.baseModel);
 
     if (!apiKey) {
-      onError("API Key not found");
+      onError({
+        props,
+        model: modelKey,
+        sessionId,
+        error: "No API key found",
+        loading: false,
+      });
       return;
     }
 
@@ -126,16 +133,28 @@ export const useLLM = ({
         return;
       }
       let streamedMessage = "";
-      onStreamStart();
+      onStreamStart({
+        props,
+        sessionId,
+        message: streamedMessage,
+        model: modelKey,
+        loading: true,
+      });
       for await (const chunk of stream) {
         streamedMessage += chunk.content;
         console.log(streamedMessage);
-        onStream({ props, sessionId, messgae: streamedMessage });
+        onStream({
+          props,
+          sessionId,
+          message: streamedMessage,
+          model: modelKey,
+          loading: true,
+        });
       }
 
       const chatMessage = {
         id: newMessageId,
-        model: ModelType.GPT3,
+        model: selectedModel.key,
         human: new HumanMessage(props.query),
         ai: new AIMessage(streamedMessage),
         rawHuman: props.query,
@@ -144,13 +163,25 @@ export const useLLM = ({
       };
 
       addMessageToSession(sessionId, chatMessage).then(() => {
-        onStreamEnd();
+        onStreamEnd({
+          props,
+          sessionId,
+          message: streamedMessage,
+          model: modelKey,
+          loading: false,
+        });
       });
     } catch (e: any) {
       console.log(typeof e, e?.error?.error?.message);
       console.log(typeof e, e?.error);
 
-      onError(e?.error?.message || e?.error?.error?.message);
+      onError({
+        props,
+        sessionId,
+        model: modelKey,
+        error: e?.error?.error?.message || e?.error,
+        loading: false,
+      });
     }
   };
 

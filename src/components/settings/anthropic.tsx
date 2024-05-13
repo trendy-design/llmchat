@@ -25,6 +25,8 @@ export const AnthropicSettings = () => {
       <Input
         placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
         value={key}
+        type="password"
+        autoComplete="off"
         onChange={(e) => {
           setKey(e.target.value);
           setApiKey("anthropic", e.target.value);

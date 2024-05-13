@@ -21,6 +21,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
+    "framer-motion": "^11.1.9",
     "highlight.js": "^11.9.0",
     "idb-keyval": "^6.2.1",
     "marked-react": "^2.0.0",

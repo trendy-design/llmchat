@@ -5,11 +5,11 @@ import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
-export const OpenAISettings = () => {
+export const GeminiSettings = () => {
   const [key, setKey] = useState<string>("");
   const { getApiKey, setApiKey } = usePreferences();
   useEffect(() => {
-    getApiKey("openai").then((key) => {
+    getApiKey("gemini").then((key) => {
       if (key) {
         setKey(key);
       }
@@ -17,26 +17,28 @@ export const OpenAISettings = () => {
   }, []);
   return (
     <div className="px-4 flex flex-col items-start gap-2">
-      <p className="text-md font-medium text-white py-4">OpenAI Settings</p>
+      <p className="text-md font-medium text-white py-4">
+        Google Gemini Settings
+      </p>
 
       <div className="flex flex-row items-end justify-between">
-        <p className="text-xs  text-zinc-500">Open AI API Key</p>
+        <p className="text-xs  text-zinc-500">Google Gemini API Key</p>
       </div>
       <Input
-        placeholder="Sk-xxxxxxxxxxxxxxxxxxxxxxxx"
-        value={key}
+        placeholder="xxxxxxxxxxxxxxxxxxxxxxxx"
         type="password"
         autoComplete="off"
+        value={key}
         onChange={(e) => {
           setKey(e.target.value);
-          setApiKey("openai", e.target.value);
+          setApiKey("gemini", e.target.value);
         }}
       />
       <Button
         size="sm"
         variant="secondary"
         onClick={() => {
-          window.open("https://platform.openai.com/account/api-keys", "_blank");
+          window.open("https://aistudio.google.com/app/apikey", "_blank");
         }}
       >
         Get your API key here <ArrowRight size={16} weight="bold" />

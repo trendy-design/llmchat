@@ -1,6 +1,7 @@
 "use client";
 import { ModelIcon } from "@/components/icons/model-icon";
 import { AnthropicSettings } from "@/components/settings/anthropic";
+import { GeminiSettings } from "@/components/settings/gemini";
 import { OpenAISettings } from "@/components/settings/openai";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -72,7 +73,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
       key: "gemini",
       icon: () => <ModelIcon size="md" type="gemini" />,
 
-      component: <div>Gemini</div>,
+      component: <GeminiSettings />,
     },
   ];
 

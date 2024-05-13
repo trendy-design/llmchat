@@ -23,7 +23,7 @@ export const CodeBlock = ({ lang, code }: codeBlockProps) => {
   }, [code, language]);
 
   return (
-    <div className="bg-black/20 rounded-2xl p-4">
+    <div className="bg-black/20 rounded-2xl p-4 w-full">
       <div className="pl-2 w-full flex justify-between items-center">
         <p className="text-xs">{language}</p>
         <Button
@@ -37,7 +37,7 @@ export const CodeBlock = ({ lang, code }: codeBlockProps) => {
           {showCopied ? "copied" : "copy"}
         </Button>
       </div>
-      <pre className=" ">
+      <pre className="w-full">
         <code
           className={`hljs language-${language} whitespace-pre-wrap break-words overflow-x-auto w-full inline-block pr-[100%] text-sm`}
           ref={ref}
