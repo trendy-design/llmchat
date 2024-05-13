@@ -2,12 +2,13 @@ import { default as BoringAvatar } from "boring-avatars";
 
 export type TAvatar = {
   name: string;
+  size?: number;
 };
-export const Avatar = ({ name }: TAvatar) => {
+export const Avatar = ({ name, size }: TAvatar) => {
   return (
-    <div className="w-8 h-8 rounded-full relative">
+    <div className="rounded-full relative">
       <BoringAvatar
-        size={32}
+        size={size || 32}
         name={name}
         variant="marble"
         colors={["#FFFFFF"]}
