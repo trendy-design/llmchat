@@ -27,17 +27,21 @@ export const useModelList = () => {
       case "openai":
         return new ChatOpenAI({
           model: model.key,
+          streaming: true,
           apiKey,
         });
       case "anthropic":
         return new ChatAnthropic({
           model: model.key,
+          streaming: true,
+          anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
           apiKey,
         });
       case "gemini":
         return new ChatGoogleGenerativeAI({
           model: model.key,
           apiKey,
+          streaming: true,
         });
       default:
         throw new Error("Invalid model");

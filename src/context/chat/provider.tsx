@@ -32,12 +32,15 @@ export const ChatProvider = ({ children }: TChatProvider) => {
       });
     },
     onError: (error) => {
-      setError("An error occurred while running the model");
+      setError(error);
     },
   });
 
   const fetchSession = async () => {
-    getSessionById(sessionId.toString()).then((session) => {
+    if (!sessionId) {
+      return;
+    }
+    getSessionById(sessionId?.toString()).then((session) => {
       setCurrentSession(session);
     });
   };
@@ -84,6 +87,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         isSessionLoading,
         createSession,
         runModel,
+        error,
         lastStream,
         currentSession,
       }}

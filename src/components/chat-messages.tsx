@@ -1,6 +1,8 @@
 import { useChatContext } from "@/context/chat/context";
 import { useMarkdown } from "@/hooks/use-mdx";
+import { Warning } from "@phosphor-icons/react";
 import { useEffect, useRef } from "react";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Avatar } from "./ui/avatar";
 
 export const ChatMessages = () => {
@@ -45,6 +47,8 @@ export const ChatMessages = () => {
     );
   };
 
+  console.log("err", error);
+
   return (
     <div
       className="flex flex-col w-full items-center h-screen overflow-y-auto pt-[60px] pb-[200px]"
@@ -58,9 +62,11 @@ export const ChatMessages = () => {
           lastStream?.props?.query &&
           renderMessage("last", lastStream?.props?.query, lastStream?.messgae)}
         {error && (
-          <div className="text-red-500">
-            {renderMessage("error", "Ahh!", error)}
-          </div>
+          <Alert variant="destructive">
+            <Warning size={20} weight="bold" />
+            <AlertTitle>Ahh! Something went wrong!</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         )}
       </div>
     </div>
