@@ -11,6 +11,7 @@
   "dependencies": {
     "@langchain/anthropic": "^0.1.17",
     "@langchain/core": "^0.1.62",
+    "@langchain/google-genai": "^0.0.12",
     "@langchain/openai": "^0.0.28",
     "@phosphor-icons/react": "^2.1.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",

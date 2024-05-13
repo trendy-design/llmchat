@@ -33,6 +33,7 @@ export const ModelSelect = () => {
       <DropdownMenuContent className="w-56 mr-2 mt-2">
         {models.map((model) => (
           <DropdownMenuItem
+            key={model.key}
             onClick={() => {
               setPreferences({ defaultModel: model.key }).then(() => {
                 setSelectedModel(model.key);
