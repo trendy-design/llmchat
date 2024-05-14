@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/command";
 import { useChatSession } from "@/hooks/use-chat-session";
 import { Chat, Eraser, Plus } from "@phosphor-icons/react";
+import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useChatContext } from "../chat/context";
@@ -93,6 +94,9 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
                   className="text-zinc-500 flex-shrink-0"
                 />{" "}
                 <span className="w-full truncate">{session.title}</span>
+                <span className="pl-4 text-xs dark:text-zinc-700 flex-shrink-0">
+                  {moment(session.createdAt).fromNow(true)}
+                </span>
               </CommandItem>
             ))}
           </CommandGroup>

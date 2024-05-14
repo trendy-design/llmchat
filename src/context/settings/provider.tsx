@@ -5,7 +5,7 @@ import { GeminiSettings } from "@/components/settings/gemini";
 import { OpenAISettings } from "@/components/settings/openai";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { GearSix } from "@phosphor-icons/react";
+import { ChatCentered, GearSix, UserCircle } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useChatContext } from "../chat/context";
@@ -33,22 +33,22 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
 
   const settingMenu: TSettingMenuItem[] = [
     {
-      name: "Profile",
+      name: "Comman",
       icon: () => <GearSix size={16} weight="bold" />,
-      key: "profile",
-      component: <div>Profile</div>,
+      key: "Comman",
+      component: <div>Commen</div>,
     },
     {
       name: "Prompts",
       key: "prompts",
-      icon: () => <GearSix size={16} weight="bold" />,
+      icon: () => <ChatCentered size={16} weight="bold" />,
 
       component: <div>Prompts</div>,
     },
     {
       name: "Roles",
       key: "roles",
-      icon: () => <GearSix size={16} weight="bold" />,
+      icon: () => <UserCircle size={16} weight="bold" />,
 
       component: <div>Roles</div>,
     },

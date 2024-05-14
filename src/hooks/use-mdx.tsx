@@ -96,7 +96,7 @@ export const useMarkdown = () => {
               <motion.span
                 initial="hidden"
                 animate="visible"
-                className="px-2 py-1 text-xs rounded-md text-purple-300 bg-purple-600/30"
+                className="px-2 py-1 text-xs rounded-md text-[#41db8f] bg-[#41db8f]/20"
               >
                 {code}
               </motion.span>

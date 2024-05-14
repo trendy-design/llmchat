@@ -1,7 +1,7 @@
 import { useChatContext } from "@/context/chat/context";
 import { PromptType, RoleType } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
-import { ArrowElbowDownLeft, Plus, Sparkle } from "@phosphor-icons/react";
+import { ArrowElbowDownLeft, Plus, StarFour } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -83,9 +83,9 @@ export const ChatInput = () => {
               },
             }}
           >
-            <span className="text-zinc-500">Hello! 👋 </span>
+            <span className="text-zinc-500">Good morning! 👋 </span>
             <br />
-            What can I help you with today? 😊
+            How can I help you with today? 😊
           </motion.h1>
         </div>
       )}
@@ -93,11 +93,11 @@ export const ChatInput = () => {
         variants={slideUpVariant}
         initial={"initial"}
         animate={"animate"}
-        className="flex flex-row items-center px-3 bg-white/10 w-[700px] rounded-2xl"
+        className="flex flex-row items-center px-3 h-14 bg-white/10 w-[700px] rounded-2xl gap-0"
       >
         {isNewSession ? (
           <div className="min-w-8 h-8 flex justify-center items-center">
-            <Sparkle size={24} weight="fill" />
+            <StarFour size={24} weight="fill" />
           </div>
         ) : (
           <Button
@@ -136,7 +136,7 @@ export const ChatInput = () => {
               transition={{ delay: 1 }}
               initial={"initial"}
               animate={"animate"}
-              className="flex flex-row items-center text-sm py-3 px-4 bg-black/10 border border-white/5 text-zinc-400 w-full rounded-2xl hover:bg-black/20 hover:scale-[101%] cursor-pointer"
+              className="flex flex-row items-center text-sm py-3 px-4 border border-white/5 text-zinc-400 w-full rounded-2xl hover:bg-black/20 hover:scale-[101%] cursor-pointer"
               key={index}
               onClick={() => {
                 runModel(
