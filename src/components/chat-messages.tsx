@@ -104,7 +104,7 @@ export const ChatMessages = () => {
         {messagesByDate &&
           Object.keys(messagesByDate).map((date) => {
             return (
-              <div className="flex flex-col">
+              <div className="flex flex-col" key={date}>
                 <div className="flex flex-row items-center w-full pb-4 pt-8">
                   <div className="w-full h-[1px] bg-white/5"></div>
                   <p className="text-xs text-zinc-500 px-2 flex-shrink-0">
