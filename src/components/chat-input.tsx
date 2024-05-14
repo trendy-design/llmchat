@@ -1,12 +1,22 @@
 import { useChatContext } from "@/context/chat/context";
+import { useRecordVoice } from "@/hooks/use-record-voice";
 import { PromptType, RoleType } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
-import { ArrowElbowDownLeft, Plus, StarFour } from "@phosphor-icons/react";
+import {
+  ArrowElbowDownLeft,
+  Microphone,
+  Plus,
+  StarFour,
+  StopCircle,
+  X,
+} from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import Spinner from "./ui/loading-spinner";
 
 const slideUpVariant = {
   initial: { y: 50, opacity: 0 },
@@ -29,6 +39,8 @@ const zoomVariant = {
 export const ChatInput = () => {
   const { sessionId } = useParams();
   const router = useRouter();
+  const { startRecording, stopRecording, recording, text, transcribing } =
+    useRecordVoice();
   const [inputValue, setInputValue] = useState("");
   const { runModel, createSession, currentSession, streamingMessage } =
     useChatContext();
@@ -63,6 +75,21 @@ export const ChatInput = () => {
     "What is the population of India?",
     "What is the GDP of China?",
   ];
+
+  useEffect(() => {
+    if (text) {
+      setInputValue(text);
+      runModel(
+        {
+          role: RoleType.assistant,
+          type: PromptType.ask,
+          query: text,
+        },
+        sessionId.toString()
+      );
+      setInputValue("");
+    }
+  }, [text]);
 
   return (
     <div
@@ -102,6 +129,7 @@ export const ChatInput = () => {
         ) : (
           <Button
             size="icon"
+            variant={"ghost"}
             className="min-w-8 h-8"
             onClick={() => {
               createSession().then((session) => {
@@ -109,7 +137,7 @@ export const ChatInput = () => {
               });
             }}
           >
-            <Plus size={16} weight="bold" />
+            <Plus size={20} weight="bold" />
           </Button>
         )}
         <Input
@@ -124,6 +152,50 @@ export const ChatInput = () => {
           }}
           onKeyDown={handleKeyDown}
         />
+        {recording ? (
+          <div className="bg-black/50 rounded-xl px-2 py-1 h-10 flex flex-row items-center">
+            <AudioWaveSpinner />
+            <Button
+              variant="ghost"
+              size="iconSm"
+              onClick={() => {
+                stopRecording();
+              }}
+              onTouchStart={startRecording}
+              onTouchEnd={stopRecording}
+            >
+              <StopCircle size={20} weight="fill" className="text-red-300" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="iconXS"
+              rounded="default"
+              onClick={() => {
+                stopRecording();
+              }}
+              onTouchStart={startRecording}
+              onTouchEnd={stopRecording}
+            >
+              <X size={12} weight="bold" />
+            </Button>
+          </div>
+        ) : transcribing ? (
+          <Spinner />
+        ) : (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="min-w-8 h-8"
+            onClick={() => {
+              startRecording();
+            }}
+            onTouchStart={startRecording}
+            onTouchEnd={stopRecording}
+          >
+            <Microphone size={20} weight="bold" />
+          </Button>
+        )}
+
         <div className="min-w-8 h-8 flex justify-center items-center">
           <ArrowElbowDownLeft size={16} weight="bold" />
         </div>
