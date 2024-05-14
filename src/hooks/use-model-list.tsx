@@ -6,6 +6,7 @@ import { ChatOpenAI } from "@langchain/openai";
 export type TBaseModel = "openai" | "anthropic" | "gemini";
 
 export type TModelKey =
+  | "gpt-4o"
   | "gpt-4-turbo"
   | "gpt-3.5-turbo"
   | "gpt-3.5-turbo-0125"
@@ -50,6 +51,13 @@ export const useModelList = () => {
     }
   };
   const models: TModel[] = [
+    {
+      name: "GPT 4o",
+      key: "gpt-4o",
+      tokens: 128000,
+      icon: () => <ModelIcon size="md" type="gpt4" />,
+      baseModel: "openai",
+    },
     {
       name: "GPT4 Turbo",
       key: "gpt-4-turbo",
