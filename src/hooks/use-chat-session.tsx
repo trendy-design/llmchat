@@ -1,6 +1,7 @@
 import { PromptType, RoleType } from "@/lib/prompts";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { get, set } from "idb-keyval";
+import moment from "moment";
 import { v4 } from "uuid";
 import { TModelKey } from "./use-model-list";
 
@@ -35,6 +36,7 @@ export type TChatSession = {
   title?: string;
   id: string;
   createdAt: string;
+  updatedAt?: string;
 };
 
 export const useChatSession = () => {
@@ -60,9 +62,14 @@ export const useChatSession = () => {
             ...session,
             messages: [...session.messages, chatMessage],
             title: chatMessage.rawHuman,
+            updatedAt: moment().toISOString(),
           };
         }
-        return { ...session, messages: [...session.messages, chatMessage] };
+        return {
+          ...session,
+          messages: [...session.messages, chatMessage],
+          updatedAt: moment().toISOString(),
+        };
       }
       return session;
     });
@@ -96,11 +103,17 @@ export const useChatSession = () => {
     await set("chat-sessions", newSessions);
   };
 
-  const createNewSession = async () => {
-    const sessions = await getSessions();
+  const sortSessions = (
+    sessions: TChatSession[],
+    sortBy: "createdAt" | "updatedAt"
+  ) => {
+    return sessions.sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
+  };
 
-    const latestSession = sessions?.[0];
-    if (latestSession?.messages?.length === 0) {
+  const createNewSession = async () => {
+    const sessions = (await getSessions()) || [];
+    const latestSession = sortSessions(sessions, "createdAt")?.[0];
+    if (latestSession && !latestSession?.messages?.length) {
       return latestSession;
     }
 
@@ -108,12 +121,18 @@ export const useChatSession = () => {
       id: v4(),
       messages: [],
       title: "Untitled",
-      createdAt: new Date().toISOString(),
+      createdAt: moment().toISOString(),
     };
+
+    console.log("newSession", newSession);
 
     const newSessions = [...sessions, newSession];
     await set("chat-sessions", newSessions);
     return newSession;
+  };
+
+  const clearSessions = async () => {
+    await set("chat-sessions", []);
   };
 
   return {
@@ -122,7 +141,9 @@ export const useChatSession = () => {
     getSessionById,
     removeSessionById,
     updateSession,
+    sortSessions,
     addMessageToSession,
     createNewSession,
+    clearSessions,
   };
 };

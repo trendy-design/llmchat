@@ -16,7 +16,7 @@ const ChatSessionPage = () => {
         <p className="p-2 text-sm text-zinc-500">AIChat</p>
         <div className="flex flex-row gap-2 items-center">
           <ModelSelect />
-          <Avatar name="Deep" size={28} />
+          <Avatar name="Deep" size="sm" />
           <Button variant="secondary" size="iconSm" onClick={open}>
             <DotsThree size={20} weight="bold" />
           </Button>

@@ -25,6 +25,7 @@
     "highlight.js": "^11.9.0",
     "idb-keyval": "^6.2.1",
     "marked-react": "^2.0.0",
+    "moment": "^2.30.1",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",

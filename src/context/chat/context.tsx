@@ -9,6 +9,7 @@ export type TChatContext = {
   isSessionLoading: boolean;
   currentSession: TChatSession | undefined;
   createSession: () => Promise<TChatSession>;
+  clearChatSessions: () => Promise<void>;
   streamingMessage?: TStreamProps;
   runModel: (props: PromptProps, sessionId: string) => Promise<void>;
 };

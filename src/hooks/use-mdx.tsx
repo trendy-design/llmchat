@@ -18,6 +18,7 @@ export const useMarkdown = () => {
           text: (children) => (
             <motion.span
               variants={variants}
+              className="text-zinc-100"
               animate={"visible"}
               initial={animate ? "hidden" : "visible"}
             >
@@ -69,6 +70,15 @@ export const useMarkdown = () => {
             <motion.li className="my-4" initial="hidden" animate="visible">
               <p className="text-sm leading-7 ">{children}</p>
             </motion.li>
+          ),
+          strong: (children) => (
+            <motion.strong
+              initial="hidden"
+              animate="visible"
+              className="font-semibold"
+            >
+              {children}
+            </motion.strong>
           ),
           code: (code, lang) => {
             return (

@@ -1,12 +1,14 @@
 import { useChatContext } from "@/context/chat/context";
-import { useMarkdown } from "@/hooks/use-mdx";
+import { TChatMessage } from "@/hooks/use-chat-session";
 import { TModelKey } from "@/hooks/use-model-list";
+import { getRelativeDate } from "@/lib/date";
 import { Warning } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
+import moment from "moment";
 import { useEffect, useRef } from "react";
+import { AIMessageBubble } from "./ai-bubble";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Avatar } from "./ui/avatar";
-import Spinner from "./ui/loading-spinner";
 
 export type TRenderMessageProps = {
   key: string;
@@ -16,8 +18,18 @@ export type TRenderMessageProps = {
   loading?: boolean;
 };
 
+export type TMessageListByDate = Record<string, TChatMessage[]>;
+
+moment().calendar(null, {
+  sameDay: "[Today]",
+  nextDay: "[Tomorrow]",
+  nextWeek: "dddd",
+  lastDay: "[Yesterday]",
+  lastWeek: "[Last] dddd",
+  sameElse: "DD/MM/YYYY",
+});
+
 export const ChatMessages = () => {
-  const { renderMarkdown } = useMarkdown();
   const { streamingMessage, currentSession } = useChatContext();
   const chatContainer = useRef<HTMLDivElement>(null);
 
@@ -41,7 +53,8 @@ export const ChatMessages = () => {
     streamingMessage?.sessionId === currentSession?.id;
 
   const renderMessage = (porps: TRenderMessageProps) => {
-    const { key, humanMessage, aiMessage, loading, model } = porps;
+    const { key, humanMessage } = porps;
+
     return (
       <div className="flex flex-col gap-1 items-start w-full" key={key}>
         <motion.div
@@ -49,38 +62,34 @@ export const ChatMessages = () => {
           initial={{ opacity: 0 }}
           animate={{
             opacity: 1,
-
             transition: { duration: 1, ease: "easeInOut" },
           }}
         >
           <Avatar name="Deep" />
-          <span className="pt-1.5 leading-5">{humanMessage}</span>
+          <span className="pt-[0.35em] pb-[0.25em] leading-6">
+            {humanMessage}
+          </span>
         </motion.div>
-        <motion.div
-          className="bg-white/5 rounded-2xl p-4 w-full border border-white/5 flex flex-col items-start"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{
-            opacity: 1,
-            y: 0,
-            transition: { duration: 1, ease: "easeInOut" },
-          }}
-        >
-          {aiMessage && renderMarkdown(aiMessage, key === "streaming")}
-          {loading && <Spinner />}
-        </motion.div>
-        <motion.p
-          className="text-zinc-500 text-xs py-1/2 px-2"
-          initial={{ opacity: 0 }}
-          animate={{
-            opacity: 1,
-            transition: { duration: 1, ease: "easeInOut" },
-          }}
-        >
-          {model}
-        </motion.p>
+        <AIMessageBubble {...porps} />
       </div>
     );
   };
+
+  // group messages by createdAt date by days
+  const messagesByDate = currentSession?.messages.reduce(
+    (acc: TMessageListByDate, message) => {
+      const date = moment(message.createdAt).format("YYYY-MM-DD");
+      if (!acc?.[date]) {
+        acc[date] = [message];
+      } else {
+        acc[date] = [...acc[date], message];
+      }
+      return acc;
+    },
+    {}
+  );
+
+  console.log(messagesByDate);
 
   return (
     <div
@@ -92,14 +101,31 @@ export const ChatMessages = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, transition: { duration: 1, ease: "easeInOut" } }}
       >
-        {currentSession?.messages.map((message) =>
-          renderMessage({
-            key: message.id,
-            humanMessage: message.rawHuman,
-            model: message.model,
-            aiMessage: message.rawAI,
-          })
-        )}
+        {messagesByDate &&
+          Object.keys(messagesByDate).map((date) => {
+            return (
+              <div className="flex flex-col">
+                <div className="flex flex-row items-center w-full pb-4 pt-8">
+                  <div className="w-full h-[1px] bg-white/5"></div>
+                  <p className="text-xs text-zinc-500 px-2 flex-shrink-0">
+                    {getRelativeDate(date)}
+                  </p>
+                  <div className="w-full h-[1px] bg-white/5"></div>
+                </div>
+                <div className="flex flex-col gap-4 w-full items-start">
+                  {messagesByDate[date].map((message) =>
+                    renderMessage({
+                      key: message.id,
+                      humanMessage: message.rawHuman,
+                      model: message.model,
+                      aiMessage: message.rawAI,
+                    })
+                  )}
+                </div>
+              </div>
+            );
+          })}
+
         {isLastStreamBelongsToCurrentSession &&
           streamingMessage?.props?.query &&
           !streamingMessage?.error &&
