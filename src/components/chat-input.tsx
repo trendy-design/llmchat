@@ -250,7 +250,11 @@ export const ChatInput = () => {
       </div>
       {isNewSession && (
         <div className="flex flex-col gap-1">
-          <LabelDivider label={"Examples"} className="pt-0" />
+          <LabelDivider
+            label={"Examples"}
+            className="pt-0"
+            transitionDuration={4}
+          />
           <div className="grid grid-cols-3 gap-2 w-[700px]">
             {examples?.map((example, index) => (
               <motion.div
