@@ -8,7 +8,7 @@ export const AudioWaveSpinner = () => {
       animationContainer.current &&
       animationContainer?.current?.childNodes?.length === 0
     ) {
-      lottie.loadAnimation({
+      const player = lottie.loadAnimation({
         container: animationContainer.current,
         renderer: "svg",
         loop: true,

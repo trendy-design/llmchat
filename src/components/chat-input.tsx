@@ -1,9 +1,12 @@
 import { useChatContext } from "@/context/chat/context";
+import { useFilters } from "@/context/filters/context";
 import { useRecordVoice } from "@/hooks/use-record-voice";
 import { PromptType, RoleType } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import {
   ArrowElbowDownLeft,
+  ClockClockwise,
+  Command,
   Microphone,
   Plus,
   StarFour,
@@ -13,7 +16,9 @@ import {
 import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { ModelSelect } from "./model-select";
 import { AudioWaveSpinner } from "./ui/audio-wave";
+import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import Spinner from "./ui/loading-spinner";
@@ -38,6 +43,7 @@ const zoomVariant = {
 
 export const ChatInput = () => {
   const { sessionId } = useParams();
+  const { open: openFilters } = useFilters();
   const router = useRouter();
   const { startRecording, stopRecording, recording, text, transcribing } =
     useRecordVoice();
@@ -116,90 +122,120 @@ export const ChatInput = () => {
           </motion.h1>
         </div>
       )}
-      <motion.div
-        variants={slideUpVariant}
-        initial={"initial"}
-        animate={"animate"}
-        className="flex flex-row items-center px-3 h-14 bg-white/10 w-[700px] rounded-2xl gap-0"
-      >
-        {isNewSession ? (
-          <div className="min-w-8 h-8 flex justify-center items-center">
-            <StarFour size={24} weight="fill" />
-          </div>
-        ) : (
-          <Button
-            size="icon"
-            variant={"ghost"}
-            className="min-w-8 h-8"
-            onClick={() => {
-              createSession().then((session) => {
-                router.push(`/chat/${session.id}`);
-              });
-            }}
-          >
-            <Plus size={20} weight="bold" />
-          </Button>
-        )}
-        <Input
-          placeholder="Ask AI anything.."
-          value={inputValue}
-          ref={inputRef}
-          autoComplete="off"
-          autoCapitalize="off"
-          variant="ghost"
-          onChange={(e) => {
-            setInputValue(e.currentTarget.value);
-          }}
-          onKeyDown={handleKeyDown}
-        />
-        {recording ? (
-          <div className="bg-black/50 rounded-xl px-2 py-1 h-10 flex flex-row items-center">
-            <AudioWaveSpinner />
-            <Button
-              variant="ghost"
-              size="iconSm"
-              onClick={() => {
-                stopRecording();
-              }}
-              onTouchStart={startRecording}
-              onTouchEnd={stopRecording}
-            >
-              <StopCircle size={20} weight="fill" className="text-red-300" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="iconXS"
-              rounded="default"
-              onClick={() => {
-                stopRecording();
-              }}
-              onTouchStart={startRecording}
-              onTouchEnd={stopRecording}
-            >
-              <X size={12} weight="bold" />
-            </Button>
-          </div>
-        ) : transcribing ? (
-          <Spinner />
-        ) : (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="min-w-8 h-8"
-            onClick={() => {
-              startRecording();
-            }}
-            onTouchStart={startRecording}
-            onTouchEnd={stopRecording}
-          >
-            <Microphone size={20} weight="bold" />
-          </Button>
-        )}
 
-        <div className="min-w-8 h-8 flex justify-center items-center">
-          <ArrowElbowDownLeft size={16} weight="bold" />
-        </div>
-      </motion.div>
+      <div className="flex flex-col gap-1">
+        <motion.div
+          variants={slideUpVariant}
+          initial={"initial"}
+          animate={"animate"}
+          className="flex flex-col gap-0 bg-white/10 w-[700px] rounded-2xl "
+        >
+          <div className="flex flex-row items-center px-3 h-14  w-full gap-0">
+            {isNewSession ? (
+              <div className="min-w-8 h-8 flex justify-center items-center">
+                <StarFour size={24} weight="fill" />
+              </div>
+            ) : (
+              <Button
+                size="icon"
+                variant={"ghost"}
+                className="min-w-8 h-8"
+                onClick={() => {
+                  createSession().then((session) => {
+                    router.push(`/chat/${session.id}`);
+                  });
+                }}
+              >
+                <Plus size={20} weight="bold" />
+              </Button>
+            )}
+            <Input
+              placeholder="Ask AI anything.."
+              value={inputValue}
+              ref={inputRef}
+              autoComplete="off"
+              autoCapitalize="off"
+              variant="ghost"
+              onChange={(e) => {
+                setInputValue(e.currentTarget.value);
+              }}
+              onKeyDown={handleKeyDown}
+              className="px-2"
+            />
+            {recording ? (
+              <div className="bg-black/50 rounded-xl px-2 py-1 h-10 flex flex-row items-center">
+                <AudioWaveSpinner />
+                <Button
+                  variant="ghost"
+                  size="iconSm"
+                  onClick={() => {
+                    stopRecording();
+                  }}
+                  onTouchStart={startRecording}
+                  onTouchEnd={stopRecording}
+                >
+                  <StopCircle
+                    size={20}
+                    weight="fill"
+                    className="text-red-300"
+                  />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="iconXS"
+                  rounded="default"
+                  onClick={() => {
+                    stopRecording();
+                  }}
+                  onTouchStart={startRecording}
+                  onTouchEnd={stopRecording}
+                >
+                  <X size={12} weight="bold" />
+                </Button>
+              </div>
+            ) : transcribing ? (
+              <Spinner />
+            ) : (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="min-w-8 h-8"
+                onClick={() => {
+                  startRecording();
+                  setTimeout(() => {
+                    stopRecording();
+                  }, 20000);
+                }}
+                onTouchStart={startRecording}
+                onTouchEnd={stopRecording}
+              >
+                <Microphone size={20} weight="bold" />
+              </Button>
+            )}
+
+            <div className="min-w-8 h-8 flex justify-center items-center">
+              <ArrowElbowDownLeft size={16} weight="bold" />
+            </div>
+          </div>
+          <div className="flex flex-row items-center w-full justify-start gap-2 p-2">
+            <ModelSelect />
+            {/* <Button variant="secondary" size="sm">
+              <Book size={16} weight="bold" /> Prompts
+            </Button>
+            <Button variant="secondary" size="sm">
+              <GearSix size={16} weight="bold" /> Settings
+            </Button> */}
+            <div className="flex-1"></div>
+
+            <Button variant="secondary" size="sm" onClick={openFilters}>
+              <ClockClockwise size={16} weight="bold" /> History
+              <Badge>
+                <Command size={12} weight="bold" /> K
+              </Badge>
+            </Button>
+          </div>
+        </motion.div>
+      </div>
       {isNewSession && (
         <div className="grid grid-cols-2 gap-2 w-[700px]">
           {examples?.map((example, index) => (

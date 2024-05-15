@@ -19,6 +19,7 @@ export type TModelKey =
 export type TModel = {
   name: string;
   key: TModelKey;
+  isNew?: boolean;
   icon: () => JSX.Element;
   tokens: number;
   baseModel: TBaseModel;
@@ -55,6 +56,7 @@ export const useModelList = () => {
       name: "GPT 4o",
       key: "gpt-4o",
       tokens: 128000,
+      isNew: true,
       icon: () => <ModelIcon size="md" type="gpt4" />,
       baseModel: "openai",
     },
@@ -62,12 +64,15 @@ export const useModelList = () => {
       name: "GPT4 Turbo",
       key: "gpt-4-turbo",
       tokens: 128000,
+      isNew: false,
       icon: () => <ModelIcon size="md" type="gpt4" />,
       baseModel: "openai",
     },
     {
       name: "GPT3.5 Turbo",
       key: "gpt-3.5-turbo",
+      isNew: false,
+
       tokens: 16385,
       icon: () => <ModelIcon size="md" type="gpt3" />,
 
@@ -76,6 +81,8 @@ export const useModelList = () => {
     {
       name: "GPT3.5 Turbo 0125",
       key: "gpt-3.5-turbo-0125",
+      isNew: false,
+
       tokens: 16385,
       icon: () => <ModelIcon size="md" type="gpt3" />,
 
@@ -84,6 +91,8 @@ export const useModelList = () => {
     {
       name: "Claude 3 Opus",
       key: "claude-3-opus-20240229",
+      isNew: false,
+
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="anthropic" />,
 
@@ -92,6 +101,8 @@ export const useModelList = () => {
     {
       name: "Claude 3 Sonnet",
       key: "claude-3-sonnet-20240229",
+      isNew: false,
+
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="anthropic" />,
 
@@ -100,6 +111,8 @@ export const useModelList = () => {
     {
       name: "Claude 3 Haiku",
       key: "claude-3-haiku-20240307",
+      isNew: false,
+
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="anthropic" />,
       baseModel: "anthropic",
@@ -107,12 +120,15 @@ export const useModelList = () => {
     {
       name: "Gemini Pro 1.5",
       key: "gemini-1.5-pro-latest",
+      isNew: true,
+
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="gemini" />,
       baseModel: "gemini",
     },
     {
       name: "Gemini Pro",
+      isNew: false,
       key: "gemini-pro",
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="gemini" />,
