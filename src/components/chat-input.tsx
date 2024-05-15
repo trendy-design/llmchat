@@ -1,9 +1,11 @@
 import { useChatContext } from "@/context/chat/context";
 import { useFilters } from "@/context/filters/context";
 import { useRecordVoice } from "@/hooks/use-record-voice";
+import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
 import { PromptType, RoleType } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import {
+  ArrowDown,
   ArrowElbowDownLeft,
   ClockClockwise,
   Command,
@@ -45,6 +47,7 @@ const zoomVariant = {
 export const ChatInput = () => {
   const { sessionId } = useParams();
   const { open: openFilters } = useFilters();
+  const { showButton, scrollToBottom } = useScrollToBottom();
   const router = useRouter();
   const { startRecording, stopRecording, recording, text, transcribing } =
     useRecordVoice();
@@ -112,7 +115,7 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-center absolute bottom-0 px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 dark:to-transparent from-70% to-white/10 left-0 right-0 gap-6",
+        "w-full flex flex-col items-center justify-center absolute bottom-0 px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 dark:to-transparent from-70% to-white/10 left-0 right-0 gap-4",
         isNewSession && "top-0"
       )}
     >
@@ -133,6 +136,11 @@ export const ChatInput = () => {
             How can I help you with today? 😊
           </motion.h1>
         </div>
+      )}
+      {showButton && (
+        <Button onClick={scrollToBottom} variant="secondary" size="icon">
+          <ArrowDown size={20} weight="bold" />
+        </Button>
       )}
 
       <div className="flex flex-col gap-1">
