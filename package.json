@@ -24,6 +24,7 @@
     "framer-motion": "^11.1.9",
     "highlight.js": "^11.9.0",
     "idb-keyval": "^6.2.1",
+    "js-tiktoken": "^1.0.12",
     "lottie-react": "^2.4.0",
     "lottie-web": "^5.12.2",
     "marked-react": "^2.0.0",

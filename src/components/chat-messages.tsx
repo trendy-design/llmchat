@@ -99,7 +99,7 @@ export const ChatMessages = () => {
       id="chat-container"
     >
       <motion.div
-        className="w-[600px] flex flex-col gap-8"
+        className="w-[620px] flex flex-col gap-8"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, transition: { duration: 1, ease: "easeInOut" } }}
       >

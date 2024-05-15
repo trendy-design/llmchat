@@ -1,5 +1,7 @@
 import { getInstruction, getRole } from "@/lib/prompts";
+import type { Serialized } from "@langchain/core/load/serializable";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
+import { LLMResult } from "@langchain/core/outputs";
 import {
   ChatPromptTemplate,
   MessagesPlaceholder,
@@ -122,11 +124,29 @@ export const useLLM = ({
         currentSession?.messages || []
       );
 
+      const abortController = new AbortController();
+      abortController.abort();
+
       const model = await createInstance(selectedModel, apiKey);
       const stream = await model.stream(formattedChatPrompt, {
         options: {
           stream: true,
+          signal: abortController.signal,
         },
+        callbacks: [
+          {
+            handleLLMStart: async (llm: Serialized, prompts: string[]) => {
+              console.log(JSON.stringify(llm, null, 2));
+              console.log(JSON.stringify(prompts, null, 2));
+            },
+            handleLLMEnd: async (output: LLMResult) => {
+              console.log(JSON.stringify(output, null, 2));
+            },
+            handleLLMError: async (err: Error) => {
+              console.error(err);
+            },
+          },
+        ],
       });
       if (!stream) {
         return;
@@ -141,6 +161,7 @@ export const useLLM = ({
       });
       for await (const chunk of stream) {
         streamedMessage += chunk.content;
+
         console.log(streamedMessage);
         onStream({
           props,

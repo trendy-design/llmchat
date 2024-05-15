@@ -6,24 +6,29 @@ import { PromptType, RoleType } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import {
   ArrowDown,
-  ArrowElbowDownLeft,
+  ArrowUp,
   ClockClockwise,
   Command,
   Microphone,
   Plus,
+  Quotes,
   StarFour,
   StopCircle,
   X,
 } from "@phosphor-icons/react";
+import { encodingForModel } from "js-tiktoken";
+
+import { useTextSelection } from "@/hooks/usse-text-selection";
 import { motion } from "framer-motion";
+import moment from "moment";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { ChatExamples } from "./chat-examples";
 import { ModelSelect } from "./model-select";
 import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { LabelDivider } from "./ui/label-divider";
 import Spinner from "./ui/loading-spinner";
 
 const slideUpVariant = {
@@ -35,7 +40,7 @@ const slideUpVariant = {
   },
 };
 
-const zoomVariant = {
+export const zoomVariant = {
   initial: { scale: 0.8, opacity: 0 },
   animate: {
     scale: 1,
@@ -54,7 +59,11 @@ export const ChatInput = () => {
   const [inputValue, setInputValue] = useState("");
   const { runModel, createSession, currentSession, streamingMessage } =
     useChatContext();
+
+  const { showPopup, selectedText } = useTextSelection();
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const enc = encodingForModel("gpt-3.5-turbo");
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -112,6 +121,14 @@ export const ChatInput = () => {
     }
   }, [text]);
 
+  const renderGreeting = (name: string) => {
+    const date = moment();
+    const hours = date.get("hour");
+    if (hours < 12) return `Good Morning, ${name}.`;
+    if (hours < 18) return `Good Afternoon, ${name}.`;
+    return `Good Evening, ${name}.`;
+  };
+
   return (
     <div
       className={cn(
@@ -131,23 +148,36 @@ export const ChatInput = () => {
               },
             }}
           >
-            <span className="text-zinc-500">Good morning! 👋 </span>
+            <span className="text-zinc-500">{renderGreeting("Deep")}</span>
             <br />
-            How can I help you with today? 😊
+            How can I help you today? 😊
           </motion.h1>
         </div>
       )}
-      {showButton && (
-        <motion.span
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0, opacity: 0 }}
-        >
-          <Button onClick={scrollToBottom} variant="secondary" size="icon">
-            <ArrowDown size={20} weight="bold" />
-          </Button>
-        </motion.span>
-      )}
+      <div className="flex flex-row items-center gap-2">
+        {showButton && !showPopup && (
+          <motion.span
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+          >
+            <Button onClick={scrollToBottom} variant="secondary" size="iconSm">
+              <ArrowDown size={20} weight="bold" />
+            </Button>
+          </motion.span>
+        )}
+        {showPopup && (
+          <motion.span
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+          >
+            <Button onClick={() => {}} variant="secondary" size="sm">
+              <Quotes size={20} weight="bold" /> Reply
+            </Button>
+          </motion.span>
+        )}
+      </div>
 
       <div className="flex flex-col gap-1">
         <motion.div
@@ -239,21 +269,20 @@ export const ChatInput = () => {
               </Button>
             )}
 
-            <div className="min-w-8 h-8 flex justify-center items-center">
-              <ArrowElbowDownLeft size={16} weight="bold" />
-            </div>
+            <Button size="icon" variant="ghost" className="min-w-8 h-8 ml-1">
+              <ArrowUp size={20} weight="bold" />
+            </Button>
           </div>
           <div className="flex flex-row items-center w-full justify-start gap-2 p-2">
             <ModelSelect />
-            {/* <Button variant="secondary" size="sm">
-              <Book size={16} weight="bold" /> Prompts
-            </Button>
-            <Button variant="secondary" size="sm">
-              <GearSix size={16} weight="bold" /> Settings
-            </Button> */}
             <div className="flex-1"></div>
 
-            <Button variant="secondary" size="sm" onClick={openFilters}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={openFilters}
+              className="px-1.5"
+            >
               <ClockClockwise size={16} weight="bold" /> History
               <Badge>
                 <Command size={12} weight="bold" /> K
@@ -263,42 +292,20 @@ export const ChatInput = () => {
         </motion.div>
       </div>
       {isNewSession && (
-        <div className="flex flex-col gap-1">
-          <LabelDivider
-            label={"Examples"}
-            className="pt-0"
-            transitionDuration={4}
-          />
-          <div className="grid grid-cols-3 gap-2 w-[700px]">
-            {examples?.map((example, index) => (
-              <motion.div
-                variants={zoomVariant}
-                transition={{ delay: 1 }}
-                initial={"initial"}
-                animate={"animate"}
-                className="flex flex-col gap-2 items-start text-sm py-3 px-4 border border-white/5 text-zinc-400 w-full rounded-2xl hover:bg-black/20 hover:scale-[101%] cursor-pointer"
-                key={index}
-                onClick={() => {
-                  runModel(
-                    {
-                      role: RoleType.assistant,
-                      type: PromptType.ask,
-                      query: example.prompt,
-                    },
-                    sessionId.toString()
-                  );
-                }}
-              >
-                <p className="text-sm text-white font-semibold w-full">
-                  {example.title}
-                </p>
-                <p className="text-xs text-zinc-500 truncate w-full">
-                  {example.prompt}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+        <ChatExamples
+          examples={examples}
+          onExampleClick={(prompt) => {
+            setInputValue(prompt);
+            runModel(
+              {
+                role: RoleType.assistant,
+                type: PromptType.ask,
+                query: prompt,
+              },
+              sessionId.toString()
+            );
+          }}
+        />
       )}
     </div>
   );

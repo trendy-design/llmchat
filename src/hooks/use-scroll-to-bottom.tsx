@@ -10,7 +10,7 @@ const useScrollToBottom = () => {
       if (!chatContainer) {
         return;
       }
-      if (chatContainer?.scrollTop <= chatContainer?.scrollHeight - 2000) {
+      if (chatContainer?.scrollTop <= chatContainer?.scrollHeight - 1000) {
         setShowButton(true);
       } else {
         setShowButton(false);

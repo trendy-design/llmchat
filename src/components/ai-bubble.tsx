@@ -1,13 +1,7 @@
 import { useClipboard } from "@/hooks/use-clipboard";
 import { useMarkdown } from "@/hooks/use-mdx";
 import { useModelList } from "@/hooks/use-model-list";
-import {
-  ArrowClockwise,
-  BookmarkSimple,
-  Check,
-  Copy,
-  TrashSimple,
-} from "@phosphor-icons/react";
+import { ArrowClockwise, Check, Copy } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { useRef } from "react";
 import { TRenderMessageProps } from "./chat-messages";
@@ -55,9 +49,6 @@ export const AIMessageBubble = (props: TRenderMessageProps) => {
         </motion.p>
         {!loading && (
           <div className="flex flex-row gap-1">
-            <Button variant="ghost" size="iconSm" rounded="lg">
-              <BookmarkSimple size={16} weight="regular" />
-            </Button>
             <Button
               variant="ghost"
               size="iconSm"
@@ -72,9 +63,6 @@ export const AIMessageBubble = (props: TRenderMessageProps) => {
             </Button>
             <Button variant="ghost" size="iconSm" rounded="lg">
               <ArrowClockwise size={16} weight="regular" />
-            </Button>
-            <Button variant="ghost" size="iconSm" rounded="lg">
-              <TrashSimple size={16} weight="regular" />
             </Button>
           </div>
         )}
