@@ -138,9 +138,15 @@ export const ChatInput = () => {
         </div>
       )}
       {showButton && (
-        <Button onClick={scrollToBottom} variant="secondary" size="icon">
-          <ArrowDown size={20} weight="bold" />
-        </Button>
+        <motion.span
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0, opacity: 0 }}
+        >
+          <Button onClick={scrollToBottom} variant="secondary" size="icon">
+            <ArrowDown size={20} weight="bold" />
+          </Button>
+        </motion.span>
       )}
 
       <div className="flex flex-col gap-1">
