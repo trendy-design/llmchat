@@ -9,6 +9,7 @@ import { useEffect, useRef } from "react";
 import { AIMessageBubble } from "./ai-bubble";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { Avatar } from "./ui/avatar";
+import { LabelDivider } from "./ui/label-divider";
 
 export type TRenderMessageProps = {
   key: string;
@@ -105,13 +106,8 @@ export const ChatMessages = () => {
           Object.keys(messagesByDate).map((date) => {
             return (
               <div className="flex flex-col" key={date}>
-                <div className="flex flex-row items-center w-full pb-4 pt-8">
-                  <div className="w-full h-[1px] bg-white/5"></div>
-                  <p className="text-xs text-zinc-500 px-2 flex-shrink-0">
-                    {getRelativeDate(date)}
-                  </p>
-                  <div className="w-full h-[1px] bg-white/5"></div>
-                </div>
+                <LabelDivider label={getRelativeDate(date)} />
+
                 <div className="flex flex-col gap-4 w-full items-start">
                   {messagesByDate[date].map((message) =>
                     renderMessage({
