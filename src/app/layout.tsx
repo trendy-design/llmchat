@@ -1,3 +1,4 @@
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ChatProvider } from "@/context/chat/provider";
 import { FiltersProvider } from "@/context/filters/provider";
@@ -22,15 +23,16 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={inter.className}>
         <TooltipProvider>
-          <ChatProvider>
-            <SettingsProvider>
+          <SettingsProvider>
+            <ChatProvider>
               <FiltersProvider>
                 <div className="w-full h-screen flex flex-row dark:bg-zinc-800">
                   {children}
+                  <Toaster />
                 </div>
               </FiltersProvider>
-            </SettingsProvider>
-          </ChatProvider>
+            </ChatProvider>
+          </SettingsProvider>
         </TooltipProvider>
       </body>
     </html>

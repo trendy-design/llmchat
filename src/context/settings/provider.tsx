@@ -7,9 +7,7 @@ import { OpenAISettings } from "@/components/settings/openai";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { GearSix } from "@phosphor-icons/react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useChatContext } from "../chat/context";
 import { SettingsContext } from "./context";
 
 export type TSettingsProvider = {
@@ -23,8 +21,6 @@ export type TSettingMenuItem = {
   component: React.ReactNode;
 };
 export const SettingsProvider = ({ children }: TSettingsProvider) => {
-  const { sessions, createSession } = useChatContext();
-  const router = useRouter();
   const [isSettingOpen, setIsSettingOpen] = useState(false);
   const [selectedMenu, setSelectedMenu] = useState("common");
 
@@ -47,7 +43,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
   const modelsMenu: TSettingMenuItem[] = [
     {
       name: "OpenAI",
-      key: "open-ai",
+      key: "openai",
       icon: () => <ModelIcon size="md" type="openai" />,
       component: <OpenAISettings />,
     },
