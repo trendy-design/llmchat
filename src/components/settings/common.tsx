@@ -40,7 +40,7 @@ export const CommonSettings = () => {
     });
   }, []);
   return (
-    <div className="px-6 pb-12 flex flex-col items-start gap-2 h-full overflow-y-auto">
+    <div className="px-6 pb-12 flex flex-col items-start gap-2 h-full overflow-y-auto no-scrollbar">
       <p className="text-md font-medium text-white py-4">Default Settings</p>
 
       <div className="flex flex-row items-end justify-between w-full">

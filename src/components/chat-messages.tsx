@@ -57,7 +57,7 @@ export const ChatMessages = () => {
     return (
       <div className="flex flex-col gap-1 items-start w-full" key={props.id}>
         {props.props?.context && (
-          <div className="bg-black/30 rounded-2xl p-2 pl-3 text-sm flex flex-row gap-2 pr-4 border border-white/5">
+          <div className="hover:bg-black/30 bg-transparent rounded-2xl p-2 pl-3 text-sm flex flex-row gap-2 pr-4 border hover:border-white/5 border-transparent">
             <Quotes size={16} weight="fill" className="flex-shrink-0" />
 
             <span className="pt-[0.35em] pb-[0.25em] leading-6">
@@ -65,10 +65,10 @@ export const ChatMessages = () => {
             </span>
           </div>
         )}
-        <div className="bg-black/30 rounded-2xl p-2 text-sm flex flex-row gap-2 pr-4 border border-white/5">
+        <div className="hover:bg-black/30 bg-transparent rounded-2xl p-4 text-sm flex flex-row gap-2 pr-4 border hover:border-white/5 border-transparent">
           <Avatar name="Deep" size="sm" />
 
-          <span className="pt-[0.25em] pb-[0.15em] leading-6">
+          <span className="pt-[0.20em] pb-[0.15em] leading-6">
             {props.humanMessage}
           </span>
         </div>
@@ -96,7 +96,7 @@ export const ChatMessages = () => {
 
   return (
     <div
-      className="flex flex-col w-full items-center h-screen overflow-y-auto pt-[60px] pb-[200px]"
+      className="flex flex-col w-full items-center h-screen overflow-y-auto no-scrollbar pt-[60px] pb-[200px]"
       ref={chatContainer}
       id="chat-container"
     >

@@ -105,7 +105,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
               </Button>
             ))}
           </div>
-          <div className="ml-[250px] w-full h-full overflow-y-auto">
+          <div className="ml-[250px] w-full h-full overflow-y-auto no-scrollbar">
             {selectedMenuItem?.component}
           </div>
         </DialogContent>

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useClipboard } from "@/hooks/use-clipboard";
 import { CheckIcon, CopyIcon } from "@radix-ui/react-icons";
 import { Button } from "./ui/button";
+import { Tooltip } from "./ui/tooltip";
 
 export type codeBlockProps = {
   lang?: string;
@@ -26,16 +27,17 @@ export const CodeBlock = ({ lang, code }: codeBlockProps) => {
     <div className="bg-black/20 rounded-2xl p-4 w-full">
       <div className="pl-2 w-full flex justify-between items-center">
         <p className="text-xs">{language}</p>
-        <Button
-          size="sm"
-          variant="secondary"
-          onClick={() => {
-            code && copy(code);
-          }}
-        >
-          {showCopied ? <CheckIcon /> : <CopyIcon />}
-          {showCopied ? "copied" : "copy"}
-        </Button>
+        <Tooltip content={showCopied ? "Copied!" : "Copy"}>
+          <Button
+            size="iconSm"
+            variant="secondary"
+            onClick={() => {
+              code && copy(code);
+            }}
+          >
+            {showCopied ? <CheckIcon /> : <CopyIcon />}
+          </Button>
+        </Tooltip>
       </div>
       <pre className="w-full">
         <code

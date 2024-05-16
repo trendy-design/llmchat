@@ -33,7 +33,7 @@ export const ModelSelect = () => {
         </Button>
       </SheetTrigger>
       <SheetContent className="gap-0  overflow-hidden">
-        <div className="p-2 max-h-[320px] overflow-y-auto">
+        <div className="p-2 max-h-[320px] overflow-y-auto no-scrollbar">
           {models.map((model) => (
             <div
               className={cn(

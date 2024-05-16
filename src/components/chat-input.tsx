@@ -23,7 +23,6 @@ import {
 } from "@phosphor-icons/react";
 import { Stop } from "@phosphor-icons/react/dist/ssr";
 import { motion } from "framer-motion";
-import { encodingForModel } from "js-tiktoken";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -59,9 +58,10 @@ export const ChatInput = () => {
   const { showPopup, selectedText, handleClearSelection } = useTextSelection();
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const enc = encodingForModel("gpt-3.5-turbo");
-
   const handleRunModel = (query?: string) => {
+    if (!query && !inputValue) {
+      return;
+    }
     getPreferences().then(async (preference) => {
       const selectedModel = getModelByKey(preference.defaultModel);
 
@@ -302,7 +302,7 @@ export const ChatInput = () => {
           variants={slideUpVariant}
           initial={"initial"}
           animate={"animate"}
-          className="flex flex-col gap-0 bg-white/10 w-[700px] rounded-[1.25em] overflow-hidden"
+          className="flex flex-col gap-0 bg-white/5 w-[700px] border border-white/5 rounded-[1.25em] overflow-hidden"
         >
           <div className="flex flex-row items-center px-3 h-14  w-full gap-0">
             {renderNewSession()}
@@ -324,7 +324,8 @@ export const ChatInput = () => {
 
             <Button
               size="icon"
-              variant="ghost"
+              variant={!!inputValue ? "secondary" : "ghost"}
+              disabled={!inputValue}
               className="min-w-8 h-8 ml-1"
               onClick={() => handleRunModel()}
             >
