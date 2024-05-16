@@ -2,6 +2,8 @@ import { useChatContext } from "@/context/chat/context";
 import { useFilters } from "@/context/filters/context";
 import { useRecordVoice } from "@/hooks/use-record-voice";
 import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
+import { useTextSelection } from "@/hooks/usse-text-selection";
+import { slideUpVariant } from "@/lib/framer-motion";
 import { PromptType, RoleType } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import {
@@ -16,11 +18,9 @@ import {
   StopCircle,
   X,
 } from "@phosphor-icons/react";
-import { encodingForModel } from "js-tiktoken";
-
-import { useTextSelection } from "@/hooks/usse-text-selection";
-import { slideUpVariant } from "@/lib/framer-motion";
+import { Stop } from "@phosphor-icons/react/dist/ssr";
 import { motion } from "framer-motion";
+import { encodingForModel } from "js-tiktoken";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { ChatExamples } from "./chat-examples";
@@ -40,8 +40,13 @@ export const ChatInput = () => {
   const router = useRouter();
   const { startRecording, stopRecording, recording, text, transcribing } =
     useRecordVoice();
-  const { runModel, createSession, currentSession, streamingMessage } =
-    useChatContext();
+  const {
+    runModel,
+    createSession,
+    currentSession,
+    streamingMessage,
+    stopGeneration,
+  } = useChatContext();
   const [inputValue, setInputValue] = useState("");
   const [contextValue, setContextValue] = useState<string>("");
   const { showPopup, selectedText, handleClearSelection } = useTextSelection();
@@ -49,19 +54,23 @@ export const ChatInput = () => {
 
   const enc = encodingForModel("gpt-3.5-turbo");
 
+  const handleRunModel = () => {
+    runModel(
+      {
+        role: RoleType.assistant,
+        type: PromptType.ask,
+        query: inputValue,
+        context: contextValue,
+      },
+      sessionId.toString()
+    );
+    setContextValue("");
+    setInputValue("");
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      runModel(
-        {
-          role: RoleType.assistant,
-          type: PromptType.ask,
-          query: inputValue,
-          context: contextValue,
-        },
-        sessionId.toString()
-      );
-      setContextValue("");
-      setInputValue("");
+      handleRunModel();
     }
   };
 
@@ -210,6 +219,28 @@ export const ChatInput = () => {
     }
   };
 
+  const renderStopButton = () => {
+    if (streamingMessage?.loading) {
+      return (
+        <motion.span
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          exit={{ scale: 0, opacity: 0 }}
+        >
+          <Button
+            onClick={() => {
+              stopGeneration();
+            }}
+            variant="secondary"
+            size="sm"
+          >
+            <Stop size={20} weight="bold" /> Stop
+          </Button>
+        </motion.span>
+      );
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -246,7 +277,7 @@ export const ChatInput = () => {
           variants={slideUpVariant}
           initial={"initial"}
           animate={"animate"}
-          className="flex flex-col gap-0 bg-white/10 w-[700px] rounded-2xl overflow-hidden"
+          className="flex flex-col gap-0 bg-white/10 w-[700px] rounded-[1.25em] overflow-hidden"
         >
           <div className="flex flex-row items-center px-3 h-14  w-full gap-0">
             {renderNewSession()}
@@ -265,7 +296,12 @@ export const ChatInput = () => {
             />
             {renderRecordingControls()}
 
-            <Button size="icon" variant="ghost" className="min-w-8 h-8 ml-1">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="min-w-8 h-8 ml-1"
+              onClick={handleRunModel}
+            >
               <ArrowUp size={20} weight="bold" />
             </Button>
           </div>

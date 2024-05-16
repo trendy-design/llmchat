@@ -1,11 +1,12 @@
 "use client";
 import { ModelIcon } from "@/components/icons/model-icon";
 import { AnthropicSettings } from "@/components/settings/anthropic";
+import { CommonSettings } from "@/components/settings/common";
 import { GeminiSettings } from "@/components/settings/gemini";
 import { OpenAISettings } from "@/components/settings/openai";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { ChatCentered, GearSix, UserCircle } from "@phosphor-icons/react";
+import { GearSix } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useChatContext } from "../chat/context";
@@ -25,32 +26,21 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
   const { sessions, createSession } = useChatContext();
   const router = useRouter();
   const [isSettingOpen, setIsSettingOpen] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState("profile");
+  const [selectedMenu, setSelectedMenu] = useState("common");
 
-  const open = () => setIsSettingOpen(true);
+  const open = (key?: string) => {
+    setIsSettingOpen(true);
+    setSelectedMenu(key || "common");
+  };
 
   const dismiss = () => setIsSettingOpen(false);
 
   const settingMenu: TSettingMenuItem[] = [
     {
-      name: "Comman",
+      name: "Common",
       icon: () => <GearSix size={16} weight="bold" />,
-      key: "Comman",
-      component: <div>Commen</div>,
-    },
-    {
-      name: "Prompts",
-      key: "prompts",
-      icon: () => <ChatCentered size={16} weight="bold" />,
-
-      component: <div>Prompts</div>,
-    },
-    {
-      name: "Roles",
-      key: "roles",
-      icon: () => <UserCircle size={16} weight="bold" />,
-
-      component: <div>Roles</div>,
+      key: "common",
+      component: <CommonSettings />,
     },
   ];
 
@@ -59,7 +49,6 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
       name: "OpenAI",
       key: "open-ai",
       icon: () => <ModelIcon size="md" type="openai" />,
-
       component: <OpenAISettings />,
     },
     {
@@ -81,14 +70,16 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
 
   const selectedMenuItem = allMenus.find((menu) => menu.key === selectedMenu);
 
+  console.log(selectedMenuItem, selectedMenu);
+
   return (
     <SettingsContext.Provider value={{ open, dismiss }}>
       {children}
 
       <Dialog open={isSettingOpen} onOpenChange={setIsSettingOpen}>
-        <DialogContent className="min-w-[800px] min-h-[80vh] flex flex-row overflow-hidden border border-white/5 p-0">
+        <DialogContent className="min-w-[800px] h-[600px] flex flex-row overflow-hidden border border-white/5 p-0">
           <div className="w-[250px] bg-black/10 p-2 absolute left-0 top-0 bottom-0 flex flex-col">
-            <p className="px-4 py-2 text-xs font-semibold text-white/30">
+            <p className="px-2 py-2 text-xs font-semibold text-white/30">
               GENERAL
             </p>
             {settingMenu.map((menu) => (
@@ -102,7 +93,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
                 {menu.icon()} {menu.name}
               </Button>
             ))}
-            <p className="px-4 py-2 text-xs font-semibold text-white/30">
+            <p className="px-2 py-2 text-xs font-semibold text-white/30">
               MODELS
             </p>
             {modelsMenu.map((menu) => (
@@ -118,7 +109,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
               </Button>
             ))}
           </div>
-          <div className="ml-[250px] w-full h-full">
+          <div className="ml-[250px] w-full h-full overflow-y-auto">
             {selectedMenuItem?.component}
           </div>
         </DialogContent>

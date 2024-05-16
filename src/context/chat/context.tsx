@@ -12,6 +12,7 @@ export type TChatContext = {
   removeSession: (sessionId: string) => Promise<void>;
   clearChatSessions: () => Promise<void>;
   streamingMessage?: TStreamProps;
+  stopGeneration: () => void;
   runModel: (props: PromptProps, sessionId: string) => Promise<void>;
 };
 

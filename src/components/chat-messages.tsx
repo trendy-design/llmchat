@@ -68,7 +68,7 @@ export const ChatMessages = () => {
               transition: { duration: 1, ease: "easeInOut" },
             }}
           >
-            <Quotes size={16} weight="fill" className="flex-shrink-0 mt-2" />
+            <Quotes size={16} weight="fill" className="flex-shrink-0" />
 
             <span className="pt-[0.35em] pb-[0.25em] leading-6">
               {props.props?.context}

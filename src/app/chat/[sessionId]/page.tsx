@@ -19,7 +19,13 @@ const ChatSessionPage = () => {
         </div>
         <div className="flex flex-row gap-2 items-center">
           <Avatar name="Deep" size="md" />
-          <Button variant="secondary" size="iconSm" onClick={open}>
+          <Button
+            variant="secondary"
+            size="iconSm"
+            onClick={() => {
+              open();
+            }}
+          >
             <DotsThree size={20} weight="bold" />
           </Button>
         </div>

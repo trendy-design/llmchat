@@ -26,12 +26,12 @@ export const AIMessageBubble = (props: TRenderMessageProps) => {
     <motion.div
       ref={messageRef}
       className="bg-white/5 rounded-2xl px-4 pt-4 pb-2 w-full border border-white/5 flex flex-col items-start"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{
-        opacity: 1,
-        y: 0,
-        transition: { duration: 1, ease: "easeInOut" },
-      }}
+      // initial={{ opacity: 0, y: 10 }}
+      // animate={{
+      //   opacity: 1,
+      //   y: 0,
+      //   transition: { duration: 1, ease: "easeInOut" },
+      // }}
     >
       {aiMessage && renderMarkdown(aiMessage, key === "streaming")}
       {loading && <Spinner />}
