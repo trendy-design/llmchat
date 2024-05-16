@@ -72,7 +72,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
               value="delete"
               onSelect={(value) => {
                 currentSession?.id &&
-                  removeSession(currentSession?.id).then((session) => {
+                  removeSession(currentSession?.id).then(() => {
                     createSession().then((session) => {
                       router.push(`/chat/${session.id}`);
 

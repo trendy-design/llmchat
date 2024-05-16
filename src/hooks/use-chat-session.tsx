@@ -104,6 +104,25 @@ export const useChatSession = () => {
     return newSessions;
   };
 
+  const removeMessageById = async (sessionId: string, messageId: string) => {
+    const sessions = await getSessions();
+    const newSessions = sessions.map((session) => {
+      if (session.id === sessionId) {
+        const newMessages = session.messages.filter(
+          (message) => message.id !== messageId
+        );
+
+        console.log("newMessages", newMessages, messageId, sessionId);
+        return { ...session, messages: newMessages };
+      }
+      return session;
+    });
+
+    console.log("newSessions", newSessions);
+    await set("chat-sessions", newSessions);
+    return newSessions;
+  };
+
   const sortSessions = (
     sessions: TChatSession[],
     sortBy: "createdAt" | "updatedAt"
@@ -151,5 +170,6 @@ export const useChatSession = () => {
     createNewSession,
     clearSessions,
     sortMessages,
+    removeMessageById,
   };
 };
