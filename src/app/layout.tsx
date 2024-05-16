@@ -1,3 +1,4 @@
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ChatProvider } from "@/context/chat/provider";
 import { FiltersProvider } from "@/context/filters/provider";
 import { SettingsProvider } from "@/context/settings/provider";
@@ -20,15 +21,17 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className={inter.className}>
-        <ChatProvider>
-          <SettingsProvider>
-            <FiltersProvider>
-              <div className="w-full h-screen flex flex-row dark:bg-zinc-800">
-                {children}
-              </div>
-            </FiltersProvider>
-          </SettingsProvider>
-        </ChatProvider>
+        <TooltipProvider>
+          <ChatProvider>
+            <SettingsProvider>
+              <FiltersProvider>
+                <div className="w-full h-screen flex flex-row dark:bg-zinc-800">
+                  {children}
+                </div>
+              </FiltersProvider>
+            </SettingsProvider>
+          </ChatProvider>
+        </TooltipProvider>
       </body>
     </html>
   );

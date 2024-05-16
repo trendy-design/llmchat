@@ -1,8 +1,8 @@
 import { useChatContext } from "@/context/chat/context";
-import { TChatMessage } from "@/hooks/use-chat-session";
+import { PromptProps, TChatMessage } from "@/hooks/use-chat-session";
 import { TModelKey } from "@/hooks/use-model-list";
 import { getRelativeDate } from "@/lib/date";
-import { Warning } from "@phosphor-icons/react";
+import { Quotes, Warning } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import moment from "moment";
 import { useEffect, useRef } from "react";
@@ -14,6 +14,7 @@ import { LabelDivider } from "./ui/label-divider";
 export type TRenderMessageProps = {
   key: string;
   humanMessage: string;
+  props?: PromptProps;
   model: TModelKey;
   aiMessage?: string;
   loading?: boolean;
@@ -53,11 +54,27 @@ export const ChatMessages = () => {
   const isLastStreamBelongsToCurrentSession =
     streamingMessage?.sessionId === currentSession?.id;
 
-  const renderMessage = (porps: TRenderMessageProps) => {
-    const { key, humanMessage } = porps;
+  const renderMessage = (props: TRenderMessageProps) => {
+    const { key, humanMessage } = props;
 
     return (
       <div className="flex flex-col gap-1 items-start w-full" key={key}>
+        {props.props?.context && (
+          <motion.div
+            className="bg-black/30 rounded-2xl p-2 pl-3 text-sm flex flex-row gap-2 pr-4 border border-white/5"
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              transition: { duration: 1, ease: "easeInOut" },
+            }}
+          >
+            <Quotes size={16} weight="fill" className="flex-shrink-0 mt-2" />
+
+            <span className="pt-[0.35em] pb-[0.25em] leading-6">
+              {props.props?.context}
+            </span>
+          </motion.div>
+        )}
         <motion.div
           className="bg-black/30 rounded-2xl p-2 text-sm flex flex-row gap-2 pr-4 border border-white/5"
           initial={{ opacity: 0 }}
@@ -71,7 +88,8 @@ export const ChatMessages = () => {
             {humanMessage}
           </span>
         </motion.div>
-        <AIMessageBubble {...porps} />
+
+        <AIMessageBubble {...props} />
       </div>
     );
   };
@@ -115,6 +133,7 @@ export const ChatMessages = () => {
                       key: message.id,
                       humanMessage: message.rawHuman,
                       model: message.model,
+                      props: message.props,
                       aiMessage: message.rawAI,
                     })
                   )}

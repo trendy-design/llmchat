@@ -1,11 +1,6 @@
 import { useEffect, useState } from "react";
 
-interface UseTextSelectionPopup {
-  selectedText: string;
-  showPopup: boolean;
-}
-
-export const useTextSelection = (): UseTextSelectionPopup => {
+export const useTextSelection = () => {
   const [selectedText, setSelectedText] = useState<string>("");
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
@@ -14,7 +9,6 @@ export const useTextSelection = (): UseTextSelectionPopup => {
       const selection = window.getSelection();
       if (selection) {
         const selectedText = selection.toString().trim();
-
         if (selectedText) {
           setSelectedText(selectedText);
           setShowPopup(true);
@@ -42,5 +36,11 @@ export const useTextSelection = (): UseTextSelectionPopup => {
     };
   }, [showPopup]);
 
-  return { selectedText, showPopup };
+  const handleClearSelection = () => {
+    setShowPopup(false);
+    setSelectedText("");
+    window.getSelection()?.removeAllRanges();
+  };
+
+  return { selectedText, showPopup, handleClearSelection };
 };

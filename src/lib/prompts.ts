@@ -45,3 +45,21 @@ export const getRole = (type: RoleType) => {
       return "expert in tweeter, social media in general";
   }
 };
+
+export const examplePrompts = [
+  {
+    title: "Implement JWT Auth for Express.js",
+    prompt:
+      "Develop a secure user authentication system in a Node.js application using JSON Web Tokens (JWT) for authorization and authentication.",
+  },
+  {
+    title: "The Nature of Reality",
+    prompt:
+      "Discuss the concept of reality from both a subjective and objective perspective, incorporating theories from famous philosophers.",
+  },
+  {
+    title: "Professional Meeting Follow-Up",
+    prompt:
+      "Write a follow-up email to a potential employer after a job interview, expressing gratitude for the opportunity and reiterating your interest in the position.",
+  },
+];
