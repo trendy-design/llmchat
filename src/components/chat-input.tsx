@@ -300,7 +300,7 @@ export const ChatInput = () => {
               size="icon"
               variant="ghost"
               className="min-w-8 h-8 ml-1"
-              onClick={handleRunModel}
+              onClick={() => handleRunModel()}
             >
               <ArrowUp size={20} weight="bold" />
             </Button>
@@ -327,14 +327,7 @@ export const ChatInput = () => {
         <ChatExamples
           onExampleClick={(prompt) => {
             setInputValue(prompt);
-            runModel(
-              {
-                role: RoleType.assistant,
-                type: PromptType.ask,
-                query: prompt,
-              },
-              sessionId.toString()
-            );
+            handleRunModel();
           }}
         />
       )}
