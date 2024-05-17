@@ -65,7 +65,21 @@ export const useLLM = ({
 
     const messageHolders = new MessagesPlaceholder("chat_history");
 
-    const user: BaseMessagePromptTemplateLike = ["user", "{input}"];
+    const user: BaseMessagePromptTemplateLike = [
+      "user",
+      [
+        {
+          type: "text",
+          content: "{input}",
+        },
+        props.image
+          ? {
+              type: "image_url",
+              image_url: props.image,
+            }
+          : {},
+      ],
+    ];
 
     const prompt = ChatPromptTemplate.fromMessages([
       system,
@@ -76,9 +90,25 @@ export const useLLM = ({
     const previousMessageHistory = sortMessages(history, "createdAt")
       .slice(0, messageLimit === "all" ? history.length : messageLimit)
       .reduce(
-        (acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman }) => [
+        (acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman, image }) => [
           ...acc,
-          new HumanMessage(rawHuman),
+
+          new HumanMessage(
+            image
+              ? {
+                  content: [
+                    {
+                      type: "text",
+                      content: rawHuman,
+                    },
+                    {
+                      type: "image_url",
+                      image_url: image,
+                    },
+                  ],
+                }
+              : rawHuman
+          ),
           new AIMessage(rawAI),
         ],
         []
@@ -176,7 +206,20 @@ export const useLLM = ({
     const chatMessage: TChatMessage = {
       id: newMessageId,
       model: selectedModel.key,
-      human: new HumanMessage(props.query),
+      human: props?.image
+        ? new HumanMessage({
+            content: [
+              {
+                type: "text",
+                content: streamedMessage,
+              },
+              {
+                type: "image_url",
+                image_url: props.image,
+              },
+            ],
+          })
+        : new HumanMessage(props.query),
       ai: new AIMessage(streamedMessage),
       rawHuman: props.query,
       rawAI: streamedMessage,

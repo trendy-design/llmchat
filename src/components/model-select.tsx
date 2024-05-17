@@ -24,11 +24,7 @@ export const ModelSelect = () => {
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger>
-        <Button
-          variant="secondary"
-          className="pl-1 pr-3 gap-1 text-xs"
-          size="sm"
-        >
+        <Button variant="ghost" className="pl-1 pr-3 gap-1 text-xs" size="sm">
           {activeModel?.icon()} {activeModel?.name}
         </Button>
       </SheetTrigger>

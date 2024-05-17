@@ -4,6 +4,7 @@ import { TModelKey } from "@/hooks/use-model-list";
 import { getRelativeDate } from "@/lib/date";
 import { Quotes, Warning } from "@phosphor-icons/react";
 import moment from "moment";
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { AIMessageBubble } from "./ai-bubble";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
@@ -15,6 +16,7 @@ export type TRenderMessageProps = {
   humanMessage: string;
   props?: PromptProps;
   model: TModelKey;
+  image?: string;
   aiMessage?: string;
   loading?: boolean;
 };
@@ -65,9 +67,17 @@ export const ChatMessages = () => {
             </span>
           </div>
         )}
+        {props?.props?.image && (
+          <Image
+            src={props?.props?.image}
+            alt="uploaded image"
+            className="rounded-2xl min-w-[120px] h-[120px] border border-white/5 rotate-6 shadow-md object-cover"
+            width={0}
+            height={0}
+          />
+        )}
         <div className="hover:bg-black/30 bg-transparent rounded-2xl p-4 text-sm flex flex-row gap-2 pr-4 border hover:border-white/5 border-transparent">
           <Avatar name="Deep" size="sm" />
-
           <span className="pt-[0.20em] pb-[0.15em] leading-6">
             {props.humanMessage}
           </span>
@@ -113,6 +123,7 @@ export const ChatMessages = () => {
                       id: message.id,
                       humanMessage: message.rawHuman,
                       model: message.model,
+                      image: message.image,
                       props: message.props,
                       aiMessage: message.rawAI,
                     })
@@ -129,6 +140,7 @@ export const ChatMessages = () => {
             id: "streaming",
             humanMessage: streamingMessage?.props?.query,
             aiMessage: streamingMessage?.message,
+            image: streamingMessage.props?.image,
             model: streamingMessage?.model,
             loading: streamingMessage?.loading,
           })}

@@ -17,6 +17,7 @@ export type PromptProps = {
   context?: string;
   role: RoleType;
   query?: string;
+  image?: string;
   regenerate?: boolean;
 };
 
@@ -25,6 +26,7 @@ export type TChatMessage = {
   model: TModelKey;
   human: HumanMessage;
   ai: AIMessage;
+  image?: string;
   rawHuman: string;
   rawAI: string;
   props?: PromptProps;
