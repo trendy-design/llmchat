@@ -60,7 +60,7 @@ export const useMarkdown = () => {
           ),
           code: (code, lang) => {
             return (
-              <div className="my-4 w-full">
+              <div className="my-4 w-full flex-shrink-0">
                 <CodeBlock lang={lang} code={code?.toString()} />
               </div>
             );

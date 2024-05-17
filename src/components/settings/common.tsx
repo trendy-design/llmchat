@@ -17,6 +17,7 @@ export const CommonSettings = () => {
       temperature: 0.5,
       topP: 1,
       topK: 5,
+      maxTokens: 1000,
     },
     onSubmit: (values) => {},
   });
@@ -37,6 +38,10 @@ export const CommonSettings = () => {
       );
       formik.setFieldValue("topP", preferences.topP || defaultPreferences.topP);
       formik.setFieldValue("topK", preferences.topK || defaultPreferences.topK);
+      formik.setFieldValue(
+        "maxTokens",
+        preferences.maxTokens || defaultPreferences.maxTokens
+      );
     });
   }, []);
   return (
@@ -105,6 +110,32 @@ export const CommonSettings = () => {
           </>
         )}
       </div>
+
+      <div className="flex flex-row items-end justify-between w-full">
+        <p className="text-xs  text-zinc-500">Max Tokens</p>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => {
+            setPreferences({ maxTokens: defaultPreferences.maxTokens });
+            formik.setFieldValue("maxTokens", defaultPreferences.maxTokens);
+          }}
+        >
+          Reset to Default
+        </Button>
+      </div>
+
+      <Input
+        name="maxTokens"
+        type="number"
+        value={formik.values.maxTokens}
+        autoComplete="off"
+        onChange={(e) => {
+          setPreferences({ maxTokens: Number(e.target.value) });
+          formik.setFieldValue("maxTokens", Number(e.target.value));
+        }}
+      />
+
       <div className="flex flex-row items-end justify-between w-full">
         <p className="text-xs  text-zinc-500">Temperature</p>
         <Button

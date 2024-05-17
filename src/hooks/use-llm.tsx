@@ -67,18 +67,18 @@ export const useLLM = ({
 
     const user: BaseMessagePromptTemplateLike = [
       "user",
-      [
-        {
-          type: "text",
-          content: "{input}",
-        },
-        props.image
-          ? {
+      props?.image
+        ? [
+            {
+              type: "text",
+              content: "{input}",
+            },
+            {
               type: "image_url",
               image_url: props.image,
-            }
-          : {},
-      ],
+            },
+          ]
+        : "{input}",
     ];
 
     const prompt = ChatPromptTemplate.fromMessages([
@@ -92,23 +92,7 @@ export const useLLM = ({
       .reduce(
         (acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman, image }) => [
           ...acc,
-
-          new HumanMessage(
-            image
-              ? {
-                  content: [
-                    {
-                      type: "text",
-                      content: rawHuman,
-                    },
-                    {
-                      type: "image_url",
-                      image_url: image,
-                    },
-                  ],
-                }
-              : rawHuman
-          ),
+          new HumanMessage(rawHuman),
           new AIMessage(rawAI),
         ],
         []

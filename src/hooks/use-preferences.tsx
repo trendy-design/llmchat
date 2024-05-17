@@ -7,6 +7,7 @@ export type TPreferences = {
   systemPrompt: string;
   messageLimit: number | "all";
   temperature: number;
+  maxTokens: number;
   topP: number;
   topK: number;
 };
@@ -16,6 +17,7 @@ export const defaultPreferences: TPreferences = {
   systemPrompt: "You are a helpful assistant.",
   messageLimit: "all",
   temperature: 0.5,
+  maxTokens: 1000,
   topP: 1.0,
   topK: 5,
 };

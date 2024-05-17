@@ -34,6 +34,7 @@ export const useModelList = () => {
       preferences.temperature || defaultPreferences.temperature;
     const topP = preferences.topP || defaultPreferences.topP;
     const topK = preferences.topK || defaultPreferences.topK;
+    const maxTokens = preferences.maxTokens || model.tokens;
     switch (model.baseModel) {
       case "openai":
         return new ChatOpenAI({
@@ -41,6 +42,7 @@ export const useModelList = () => {
           streaming: true,
           apiKey,
           temperature,
+          maxTokens,
           topP,
         });
       case "anthropic":
@@ -49,6 +51,7 @@ export const useModelList = () => {
           streaming: true,
           anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
           apiKey,
+          maxTokens,
           temperature,
           topP,
           topK,
@@ -57,6 +60,7 @@ export const useModelList = () => {
         return new ChatGoogleGenerativeAI({
           model: model.key,
           apiKey,
+          maxOutputTokens: maxTokens,
           streaming: true,
           temperature,
           topP,
