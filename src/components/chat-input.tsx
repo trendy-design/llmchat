@@ -36,7 +36,6 @@ import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import Spinner from "./ui/loading-spinner";
 import { Tooltip } from "./ui/tooltip";
 
 export type TAttachment = {
@@ -170,8 +169,7 @@ export const ChatInput = () => {
   const renderRecordingControls = () => {
     if (recording) {
       return (
-        <div className="bg-black/50 rounded-xl px-2 py-1 h-10 flex flex-row items-center">
-          <AudioWaveSpinner />
+        <>
           <Button
             variant="ghost"
             size="iconSm"
@@ -183,25 +181,10 @@ export const ChatInput = () => {
           >
             <StopCircle size={20} weight="fill" className="text-red-300" />
           </Button>
-          <Button
-            variant="ghost"
-            size="iconXS"
-            rounded="default"
-            onClick={() => {
-              stopRecording();
-            }}
-            onTouchStart={startRecording}
-            onTouchEnd={stopRecording}
-          >
-            <X size={12} weight="bold" />
-          </Button>
-        </div>
+        </>
       );
     }
 
-    if (transcribing) {
-      return <Spinner />;
-    }
     return (
       <Tooltip content="Record">
         <Button
@@ -248,8 +231,26 @@ export const ChatInput = () => {
     );
   };
 
+  const renderListeningIndicator = () => {
+    if (transcribing) {
+      return (
+        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-4 py-1 h-10 flex flex-row items-center text-sm">
+          <AudioWaveSpinner /> <p>Transcribing ...</p>
+        </div>
+      );
+    }
+    if (recording) {
+      return (
+        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-2 pr-4 py-1 h-10 flex flex-row items-center text-sm">
+          <AudioWaveSpinner />
+          <p>Listening ...</p>
+        </div>
+      );
+    }
+  };
+
   const renderScrollToBottom = () => {
-    if (showButton && !showPopup) {
+    if (showButton && !showPopup && !recording && !transcribing) {
       return (
         <motion.span
           initial={{ scale: 0, opacity: 0 }}
@@ -265,7 +266,7 @@ export const ChatInput = () => {
   };
 
   const renderReplyButton = () => {
-    if (showPopup) {
+    if (showPopup && !recording && !transcribing) {
       return (
         <motion.span
           initial={{ scale: 0, opacity: 0 }}
@@ -313,7 +314,7 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-center absolute bottom-0 px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 dark:to-transparent from-70% to-white/10 left-0 right-0 gap-2",
+        "w-full flex flex-col items-center justify-center absolute bottom-0 px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-2",
         isNewSession && "top-0"
       )}
     >
@@ -321,6 +322,7 @@ export const ChatInput = () => {
       <div className="flex flex-row items-center gap-2">
         {renderScrollToBottom()}
         {renderReplyButton()}
+        {renderListeningIndicator()}
       </div>
 
       <div className="flex flex-col gap-1">
@@ -371,7 +373,7 @@ export const ChatInput = () => {
           variants={slideUpVariant}
           initial={"initial"}
           animate={"animate"}
-          className="flex flex-col gap-0 bg-zinc-100 border-zinc-200 dark:bg-white/5 w-[700px] border dark:border-white/5 rounded-[1.25em] overflow-hidden"
+          className="flex flex-col gap-0 bg-white shadow-sm border-black/10 dark:bg-white/5 w-[700px] border dark:border-white/5 rounded-[1.25em] overflow-hidden"
         >
           <div className="flex flex-row items-center px-3 h-14  w-full gap-0">
             {renderNewSession()}

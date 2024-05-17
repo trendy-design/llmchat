@@ -59,7 +59,7 @@ export const ChatMessages = () => {
     return (
       <div className="flex flex-col gap-1 items-start w-full" key={props.id}>
         {props.props?.context && (
-          <div className="bg-zinc-100 dark:bg-black/30 bg-transparent rounded-2xl p-2 pl-3 text-sm flex flex-row gap-2 pr-4 border hover:border-white/5 border-transparent">
+          <div className="bg-zinc-800 text-zinc-200 dark:bg-black/30 bg-transparent rounded-2xl p-2 pl-3 text-sm flex flex-row gap-2 pr-4 border hover:border-white/5 border-transparent">
             <ArrowElbowDownRight
               size={20}
               weight="bold"
@@ -80,7 +80,7 @@ export const ChatMessages = () => {
             height={0}
           />
         )}
-        <div className="bg-zinc-100 dark:bg-black/30 rounded-2xl p-2 text-sm flex flex-row gap-2 pr-4">
+        <div className="bg-zinc-800 dark text-zinc-200 dark:bg-black/30 rounded-2xl p-2 text-sm flex flex-row gap-2 pr-4">
           <Avatar name="Deep" size="sm" />
           <span className="pt-[0.20em] pb-[0.15em] leading-6">
             {props.humanMessage}

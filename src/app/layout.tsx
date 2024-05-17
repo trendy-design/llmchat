@@ -26,7 +26,7 @@ export default function RootLayout({
           <SettingsProvider>
             <ChatProvider>
               <FiltersProvider>
-                <div className="w-full h-screen flex flex-row dark:bg-zinc-800">
+                <div className="w-full h-screen flex flex-row bg-[#E9E9EC] dark:bg-zinc-800">
                   {children}
                   <Toaster />
                 </div>
