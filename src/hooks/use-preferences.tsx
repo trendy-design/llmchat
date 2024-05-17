@@ -17,7 +17,7 @@ export const defaultPreferences: TPreferences = {
   systemPrompt: "You are a helpful assistant.",
   messageLimit: "all",
   temperature: 0.5,
-  maxTokens: 1000,
+  maxTokens: 500,
   topP: 1.0,
   topK: 5,
 };

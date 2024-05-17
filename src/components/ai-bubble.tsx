@@ -50,7 +50,7 @@ export const AIMessageBubble = (props: TRenderMessageProps) => {
   return (
     <div
       ref={messageRef}
-      className="bg-white/5 rounded-2xl px-4 w-full border border-white/5 flex flex-col items-start"
+      className="dark:bg-white/5 hover:bg-zinc-100 rounded-2xl px-4 w-full border border-white/5 flex flex-col items-start"
     >
       {aiMessage && (
         <div className="pt-4 pb-2 w-full">

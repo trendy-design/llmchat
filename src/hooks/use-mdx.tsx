@@ -18,7 +18,7 @@ export const useMarkdown = () => {
           text: (children) => (
             <motion.span
               variants={variants}
-              className="text-zinc-100"
+              className="dark:text-zinc-100 text-zinc-700"
               animate={"visible"}
               initial={animate ? "hidden" : "visible"}
             >
@@ -67,7 +67,7 @@ export const useMarkdown = () => {
           },
           codespan(code, lang) {
             return (
-              <span className="px-2 py-1 text-xs rounded-md text-[#41db8f] bg-[#41db8f]/20">
+              <span className="px-2 py-1 text-xs rounded-md  dark:text-[#41db8f] bg-zinc-200 text-zinc-600 dark:bg-[#41db8f]/20 font-semibold">
                 {code}
               </span>
             );

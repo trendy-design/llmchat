@@ -175,16 +175,37 @@ code.hljs {
   
   */
 
+.dark .hljs-comment,
+.dark .hljs-quote {
+  color: #5c6370;
+  font-style: italic
+}
+
 .hljs-comment,
 .hljs-quote {
   color: #5c6370;
   font-style: italic
 }
 
+.dark .hljs-doctag,
+.dark .hljs-keyword,
+.dark .hljs-formula {
+  color: #e48bfe
+}
+
 .hljs-doctag,
 .hljs-keyword,
 .hljs-formula {
-  color: #e48bfe
+  color: #d665ee
+}
+
+
+.dark .hljs-section,
+.dark .hljs-name,
+.dark .hljs-selector-tag,
+.dark .hljs-deletion,
+.dark .hljs-subst {
+  color: #fa7883
 }
 
 .hljs-section,
@@ -195,8 +216,20 @@ code.hljs {
   color: #fa7883
 }
 
+.dark .hljs-literal {
+  color: #58d7e8
+}
+
 .hljs-literal {
   color: #58d7e8
+}
+
+.dark .hljs-string,
+.dark .hljs-regexp,
+.dark .hljs-addition,
+.dark .hljs-attribute,
+.dark .hljs-meta .hljs-string {
+  color: #41e696
 }
 
 .hljs-string,
@@ -204,7 +237,19 @@ code.hljs {
 .hljs-addition,
 .hljs-attribute,
 .hljs-meta .hljs-string {
-  color: #41e696
+  color: #33ac7d
+}
+
+
+.dark .hljs-attr,
+.dark .hljs-variable,
+.dark .hljs-template-variable,
+.dark .hljs-type,
+.dark .hljs-selector-class,
+.dark .hljs-selector-attr,
+.dark .hljs-selector-pseudo,
+.dark .hljs-number {
+  color: #e9b483
 }
 
 .hljs-attr,
@@ -215,7 +260,17 @@ code.hljs {
 .hljs-selector-attr,
 .hljs-selector-pseudo,
 .hljs-number {
-  color: #e9b483
+  color: #d38d57
+}
+
+
+.dark .hljs-symbol,
+.dark .hljs-bullet,
+.dark .hljs-link,
+.dark .hljs-meta,
+.dark .hljs-selector-id,
+.dark .hljs-title {
+  color: #61aeee
 }
 
 .hljs-symbol,
@@ -227,10 +282,16 @@ code.hljs {
   color: #61aeee
 }
 
+.dark .hljs-built_in,
+.dark .hljs-title.class_,
+.dark .hljs-class .hljs-title {
+  color: #e6c07b
+}
+
 .hljs-built_in,
 .hljs-title.class_,
 .hljs-class .hljs-title {
-  color: #e6c07b
+  color: #c89e32
 }
 
 .hljs-emphasis {

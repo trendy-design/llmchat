@@ -24,7 +24,7 @@ export const CodeBlock = ({ lang, code }: codeBlockProps) => {
   }, [code, language]);
 
   return (
-    <div className="bg-black/20 rounded-2xl p-4 w-full flex-shrink-0">
+    <div className="bg-white border border-black/10 dark:border-transparent text-zinc-600 dark:text-white dark:bg-black/20 rounded-2xl p-4 w-full flex-shrink-0">
       <div className="pl-2 w-full flex justify-between items-center">
         <p className="text-xs">{language}</p>
         <Tooltip content={showCopied ? "Copied!" : "Copy"}>
