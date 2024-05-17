@@ -3,6 +3,7 @@ import { ChatInput } from "@/components/chat-input";
 import { ChatMessages } from "@/components/chat-messages";
 import { ModelIcon } from "@/components/icons/model-icon";
 import { Avatar } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/context/settings/context";
 import { DotsThree } from "@phosphor-icons/react";
@@ -16,6 +17,7 @@ const ChatSessionPage = () => {
         <div className="flex flex-row gap-2 items-center">
           <ModelIcon type="aichat" size="md" />
           <p className="text-sm text-zinc-500">AIChat</p>
+          <Badge>Beta</Badge>
         </div>
         <div className="flex flex-row gap-2 items-center">
           <Avatar name="Deep" size="md" />
