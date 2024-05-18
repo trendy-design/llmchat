@@ -4,7 +4,6 @@ const LoadingDot = {
   display: "block",
   width: "4px",
   height: "4px",
-  backgroundColor: "white",
   borderRadius: "50%",
 };
 
@@ -63,16 +62,19 @@ export default function Spinner() {
       >
         <motion.span
           style={LoadingDot}
+          className="dark:bg-white/50 bg-zinc-600"
           variants={DotVariants}
           transition={DotTransition}
         />
         <motion.span
           style={LoadingDot}
+          className="dark:bg-white/50 bg-zinc-600"
           variants={DotVariants}
           transition={DotTransition}
         />
         <motion.span
           style={LoadingDot}
+          className="dark:bg-white/50 bg-zinc-600"
           variants={DotVariants}
           transition={DotTransition}
         />

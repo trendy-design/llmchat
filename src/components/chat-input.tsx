@@ -28,6 +28,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
+import Resizer from "react-image-file-resizer";
 import { toast } from "sonner";
 import { ChatExamples } from "./chat-examples";
 import { ChatGreeting } from "./chat-greeting";
@@ -67,8 +68,26 @@ export const ChatInput = () => {
 
   const [attachment, setAttachment] = useState<TAttachment>();
 
-  const handleImageUpload = (e: ChangeEvent<HTMLInputElement>) => {
+  const resizeFile = (file: File) =>
+    new Promise((resolve) => {
+      Resizer.imageFileResizer(
+        file,
+        1000,
+        1000,
+        "JPEG",
+        100,
+        0,
+        (uri) => {
+          console.log(typeof uri);
+          resolve(uri);
+        },
+        "file"
+      );
+    });
+
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     const reader = new FileReader();
 
     const fileTypes = ["image/jpeg", "image/png", "image/gif"];
@@ -91,6 +110,8 @@ export const ChatInput = () => {
         ...prev,
         file,
       }));
+      const resizedFile = await resizeFile(file);
+
       reader.readAsDataURL(file);
     }
   };
@@ -105,6 +126,15 @@ export const ChatInput = () => {
     }
     getPreferences().then(async (preference) => {
       const selectedModel = getModelByKey(preference.defaultModel);
+
+      if (
+        selectedModel?.key &&
+        !["gpt-4-turbo", "gpt-4o"].includes(selectedModel?.key) &&
+        attachment?.base64
+      ) {
+        toast.error("This model does not support image input.");
+        return;
+      }
 
       console.log(selectedModel?.baseModel);
       if (!selectedModel?.baseModel) {
@@ -216,18 +246,20 @@ export const ChatInput = () => {
     }
 
     return (
-      <Button
-        size="icon"
-        variant={"ghost"}
-        className="min-w-8 h-8"
-        onClick={() => {
-          createSession().then((session) => {
-            router.push(`/chat/${session.id}`);
-          });
-        }}
-      >
-        <Plus size={20} weight="bold" />
-      </Button>
+      <Tooltip content="New Session">
+        <Button
+          size="icon"
+          variant={"ghost"}
+          className="min-w-8 h-8"
+          onClick={() => {
+            createSession().then((session) => {
+              router.push(`/chat/${session.id}`);
+            });
+          }}
+        >
+          <Plus size={20} weight="bold" />
+        </Button>
+      </Tooltip>
     );
   };
 
@@ -311,10 +343,83 @@ export const ChatInput = () => {
     }
   };
 
+  const renderAttachedImage = () => {
+    if (attachment?.base64 && attachment?.file) {
+      return (
+        <div className="flex flex-row items-center bg-black/30 text-zinc-300 rounded-xl h-10 w-[700px] justify-start gap-2 pl-3 pr-1">
+          <ArrowElbowDownRight size={20} weight="bold" />
+          <p className="w-full relative ml-2 text-xs flex flex-row gap-2 items-center">
+            <Image
+              src={attachment.base64}
+              alt="uploaded image"
+              className="rounded-xl tanslate-y-[50%] min-w-[60px] h-[60px] border border-white/5 absolute rotate-6 shadow-md object-cover"
+              width={0}
+              height={0}
+            />
+            <span className="ml-[70px]">{attachment?.file?.name}</span>
+          </p>
+          <Button
+            size={"iconSm"}
+            variant="ghost"
+            onClick={() => {
+              setContextValue("");
+            }}
+            className="flex-shrink-0 ml-4"
+          >
+            <X size={16} weight="bold" />
+          </Button>
+        </div>
+      );
+    }
+  };
+
+  const renderSelectedContext = () => {
+    if (contextValue) {
+      return (
+        <div className="flex flex-row items-center bg-black/30 text-zinc-300 rounded-xl h-10 w-[700px] justify-start gap-2 pl-3 pr-1">
+          <ArrowElbowDownRight size={16} weight="fill" />
+          <p className="w-full overflow-hidden truncate ml-2 text-sm ">
+            {contextValue}
+          </p>
+          <Button
+            size={"iconSm"}
+            variant="ghost"
+            onClick={() => {
+              setContextValue("");
+            }}
+            className="flex-shrink-0 ml-4"
+          >
+            <X size={16} weight="bold" />
+          </Button>
+        </div>
+      );
+    }
+  };
+
+  const renderFileUpload = () => {
+    return (
+      <>
+        <input
+          type="file"
+          id="fileInput"
+          className="hidden"
+          onChange={handleImageUpload}
+        />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleFileSelect}
+          className="px-1.5"
+        >
+          <Paperclip size={16} weight="bold" /> Attach
+        </Button>
+      </>
+    );
+  };
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-center absolute bottom-0 px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-2",
+        "w-full flex flex-col items-center justify-center absolute bottom-0 px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-zinc-50 dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-2",
         isNewSession && "top-0"
       )}
     >
@@ -326,49 +431,8 @@ export const ChatInput = () => {
       </div>
 
       <div className="flex flex-col gap-1">
-        {contextValue && (
-          <div className="flex flex-row items-center bg-black/30 text-zinc-300 rounded-xl h-10 w-[700px] justify-start gap-2 pl-3 pr-1">
-            <ArrowElbowDownRight size={16} weight="fill" />
-            <p className="w-full overflow-hidden truncate ml-2 text-sm ">
-              {contextValue}
-            </p>
-            <Button
-              size={"iconSm"}
-              variant="ghost"
-              onClick={() => {
-                setContextValue("");
-              }}
-              className="flex-shrink-0 ml-4"
-            >
-              <X size={16} weight="bold" />
-            </Button>
-          </div>
-        )}
-        {attachment?.base64 && attachment?.file && (
-          <div className="flex flex-row items-center bg-black/30 text-zinc-300 rounded-xl h-10 w-[700px] justify-start gap-2 pl-3 pr-1">
-            <ArrowElbowDownRight size={20} weight="bold" />
-            <p className="w-full relative ml-2 text-xs flex flex-row gap-2 items-center">
-              <Image
-                src={attachment.base64}
-                alt="uploaded image"
-                className="rounded-xl tanslate-y-[50%] min-w-[60px] h-[60px] border border-white/5 absolute rotate-6 shadow-md object-cover"
-                width={0}
-                height={0}
-              />
-              <span className="ml-[70px]">{attachment?.file?.name}</span>
-            </p>
-            <Button
-              size={"iconSm"}
-              variant="ghost"
-              onClick={() => {
-                setContextValue("");
-              }}
-              className="flex-shrink-0 ml-4"
-            >
-              <X size={16} weight="bold" />
-            </Button>
-          </div>
-        )}
+        {renderSelectedContext()}
+        {renderAttachedImage()}
         <motion.div
           variants={slideUpVariant}
           initial={"initial"}
@@ -405,20 +469,7 @@ export const ChatInput = () => {
           </div>
           <div className="flex flex-row items-center w-full justify-start gap-2 px-2 pb-2 pt-1">
             <ModelSelect />
-            <input
-              type="file"
-              id="fileInput"
-              className="hidden"
-              onChange={handleImageUpload}
-            />
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleFileSelect}
-              className="px-1.5"
-            >
-              <Paperclip size={16} weight="bold" /> Attach
-            </Button>
+
             <div className="flex-1"></div>
 
             <Button
@@ -435,13 +486,12 @@ export const ChatInput = () => {
           </div>
         </motion.div>
       </div>
-      {isNewSession && (
-        <ChatExamples
-          onExampleClick={(prompt) => {
-            handleRunModel(prompt);
-          }}
-        />
-      )}
+      <ChatExamples
+        show={isNewSession}
+        onExampleClick={(prompt) => {
+          handleRunModel(prompt);
+        }}
+      />
     </div>
   );
 };

@@ -1,39 +1,32 @@
 "use client";
 import { ChatInput } from "@/components/chat-input";
 import { ChatMessages } from "@/components/chat-messages";
-import { ModelIcon } from "@/components/icons/model-icon";
-import { Avatar } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useSettings } from "@/context/settings/context";
-import { DotsThree } from "@phosphor-icons/react";
+import { Navbar } from "@/components/navbar";
+import Spinner from "@/components/ui/loading-spinner";
+import { useChatContext } from "@/context/chat/context";
 
 const ChatSessionPage = () => {
-  const { open } = useSettings();
+  const { isCurrentSessionLoading, isAllSessionLoading } = useChatContext();
 
+  const renderLoader = () => {
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        <Spinner />
+      </div>
+    );
+  };
+
+  const isLoading = isCurrentSessionLoading || isAllSessionLoading;
   return (
     <div className="w-full h-screen flex flex-row relative overflow-hidden">
-      <div className="absolute flex justify-between items-center p-4 flex-row top-0 left-0 right-0 bg-gradient-to-b dark:from-zinc-800 dark:to-transparent from-70% z-10">
-        <div className="flex flex-row gap-2 items-center">
-          <ModelIcon type="aichat" size="md" />
-          <p className="text-sm text-zinc-500">AIChat</p>
-          <Badge>Beta</Badge>
-        </div>
-        <div className="flex flex-row gap-2 items-center">
-          <Avatar name="Deep" size="md" />
-          <Button
-            variant="secondary"
-            size="iconSm"
-            onClick={() => {
-              open();
-            }}
-          >
-            <DotsThree size={20} weight="bold" />
-          </Button>
-        </div>
-      </div>
-      <ChatMessages />
-      <ChatInput />
+      <Navbar />
+      {isLoading && renderLoader()}
+      {!isLoading && (
+        <>
+          <ChatMessages />
+          <ChatInput />
+        </>
+      )}
     </div>
   );
 };

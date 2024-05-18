@@ -8,8 +8,16 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useChatSession } from "@/hooks/use-chat-session";
-import { Chat, Eraser, Plus, TrashSimple } from "@phosphor-icons/react";
+import {
+  Chat,
+  Eraser,
+  Moon,
+  Plus,
+  Sun,
+  TrashSimple,
+} from "@phosphor-icons/react";
 import moment from "moment";
+import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useChatContext } from "../chat/context";
@@ -29,6 +37,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
   const { sortSessions } = useChatSession();
   const router = useRouter();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   const open = () => setIsFilterOpen(true);
 
@@ -66,6 +75,21 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
             >
               <Plus size={14} weight="bold" />
               New session
+            </CommandItem>
+            <CommandItem
+              className="gap-3"
+              value="theme"
+              onSelect={(value) => {
+                setTheme(theme === "light" ? "dark" : "light");
+                dismiss();
+              }}
+            >
+              {theme === "light" ? (
+                <Moon size={14} weight="bold" />
+              ) : (
+                <Sun size={14} weight="bold" />
+              )}
+              Switch to {theme === "light" ? "dark" : "light"} mode
             </CommandItem>
             <CommandItem
               className="gap-3"

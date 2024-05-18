@@ -2,10 +2,8 @@
 import { TChatSession, useChatSession } from "@/hooks/use-chat-session";
 import { TStreamProps, useLLM } from "@/hooks/use-llm";
 import { useModelList } from "@/hooks/use-model-list";
-import { usePreferences } from "@/hooks/use-preferences";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSettings } from "../settings/context";
 import { ChatContext } from "./context";
 export type TChatProvider = {
   children: React.ReactNode;
@@ -22,9 +20,9 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     removeMessageById,
   } = useChatSession();
   const [sessions, setSessions] = useState<TChatSession[]>([]);
-  const [isSessionLoading, setIsSessionLoading] = useState<boolean>(true);
-  const { getApiKey, getPreferences } = usePreferences();
-  const { open: openSettings } = useSettings();
+  const [isAllSessionLoading, setAllSessionLoading] = useState<boolean>(true);
+  const [isCurrentSessionLoading, setCurrentSessionLoading] =
+    useState<boolean>(false);
   const [currentSession, setCurrentSession] = useState<
     TChatSession | undefined
   >();
@@ -41,7 +39,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
       setStreamingMessage(props);
     },
     onStreamEnd: async () => {
-      fetchSessions().then(() => {
+      fetchAllSessions().then(() => {
         setStreamingMessage(undefined);
       });
     },
@@ -50,48 +48,50 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     },
   });
 
-  const fetchSession = async () => {
+  const fetchCurrentSession = async () => {
     if (!sessionId) {
       return;
     }
-    getSessionById(sessionId?.toString()).then((session) => {
-      setCurrentSession(session);
-    });
+    getSessionById(sessionId?.toString())
+      .then((session) => {
+        setCurrentSession(session);
+        setCurrentSessionLoading(false);
+      })
+      .catch(() => {
+        setCurrentSessionLoading(false);
+      });
   };
 
   useEffect(() => {
     if (!sessionId) {
       return;
     }
-    fetchSession();
+    setCurrentSessionLoading(true);
+    fetchCurrentSession();
   }, [sessionId]);
 
-  const fetchSessions = async () => {
+  const fetchAllSessions = async () => {
     const sessions = await getSessions();
     setSessions(sessions);
-    setIsSessionLoading(false);
+    setAllSessionLoading(false);
   };
 
   const createSession = async () => {
     const newSession = await createNewSession();
-    fetchSessions();
+    fetchAllSessions();
     return newSession;
   };
 
   useEffect(() => {
     if (!streamingMessage) {
-      fetchSession();
+      fetchCurrentSession();
     }
   }, [streamingMessage]);
 
   useEffect(() => {
-    setIsSessionLoading(true);
-    fetchSessions();
+    setAllSessionLoading(true);
+    fetchAllSessions();
   }, []);
-
-  const refetchSessions = () => {
-    fetchSessions();
-  };
 
   const clearChatSessions = async () => {
     clearSessions().then(() => {
@@ -100,18 +100,16 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   };
 
   const removeSession = async (sessionId: string) => {
-    const sessions = await removeSessionById(sessionId);
-    await fetchSessions();
+    await removeSessionById(sessionId);
+    await fetchAllSessions();
   };
 
   const removeMessage = (messageId: string) => {
     if (!currentSession?.id) {
       return;
     }
-
-    console.log("removeMessage", messageId);
     removeMessageById(currentSession?.id, messageId).then(async () => {
-      fetchSession();
+      fetchAllSessions();
     });
   };
 
@@ -119,8 +117,9 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     <ChatContext.Provider
       value={{
         sessions,
-        refetchSessions,
-        isSessionLoading,
+        refetchSessions: fetchAllSessions,
+        isAllSessionLoading,
+        isCurrentSessionLoading,
         createSession,
         runModel,
         clearChatSessions,
