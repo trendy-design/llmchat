@@ -17,7 +17,9 @@ export const OpenAISettings = () => {
   }, []);
   return (
     <div className="px-6 flex flex-col items-start gap-2">
-      <p className="text-md font-medium text-white py-4">OpenAI Settings</p>
+      <p className="text-md font-medium text-zinc-600 dark:text-white py-4">
+        OpenAI Settings
+      </p>
 
       <div className="flex flex-row items-end justify-between">
         <p className="text-xs  text-zinc-500">Open AI API Key</p>

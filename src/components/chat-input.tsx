@@ -240,7 +240,7 @@ export const ChatInput = () => {
     if (isNewSession) {
       return (
         <div className="min-w-8 h-8 flex justify-center items-center dark:text-white text-zinc-500">
-          <StarFour size={24} weight="fill" />
+          <StarFour size={20} weight="fill" />
         </div>
       );
     }

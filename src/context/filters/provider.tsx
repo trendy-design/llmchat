@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/command";
 import { useChatSession } from "@/hooks/use-chat-session";
 import {
-  Chat,
   Eraser,
   Moon,
   Plus,
+  StarFour,
   Sun,
   TrashSimple,
 } from "@phosphor-icons/react";
@@ -135,13 +135,13 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
                   dismiss();
                 }}
               >
-                <Chat
+                <StarFour
                   size={14}
-                  weight="fill"
+                  weight="bold"
                   className="text-zinc-500 flex-shrink-0"
                 />{" "}
                 <span className="w-full truncate">{session.title}</span>
-                <span className="pl-4 text-xs dark:text-zinc-700 flex-shrink-0">
+                <span className="pl-4 text-xs  text-zinc-400 dark:text-zinc-700 flex-shrink-0">
                   {moment(session.createdAt).fromNow(true)}
                 </span>
               </CommandItem>
