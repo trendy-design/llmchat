@@ -29,7 +29,7 @@ export const ModelSelect = () => {
     <>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="pl-1 pr-3 gap-1 text-xs" size="sm">
+          <Button variant="ghost" className="pl-1 pr-3 gap-2 text-xs" size="sm">
             {activeModel?.icon()} {activeModel?.name}
           </Button>
         </DropdownMenuTrigger>

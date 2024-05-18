@@ -73,7 +73,11 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
                 });
               }}
             >
-              <Plus size={14} weight="bold" />
+              <Plus
+                size={14}
+                weight="bold"
+                className="text-zinc-500 flex-shrink-0"
+              />
               New session
             </CommandItem>
             <CommandItem
@@ -85,9 +89,17 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
               }}
             >
               {theme === "light" ? (
-                <Moon size={14} weight="bold" />
+                <Moon
+                  size={14}
+                  weight="bold"
+                  className="text-zinc-500 flex-shrink-0"
+                />
               ) : (
-                <Sun size={14} weight="bold" />
+                <Sun
+                  size={14}
+                  weight="bold"
+                  className="text-zinc-500 flex-shrink-0"
+                />
               )}
               Switch to {theme === "light" ? "dark" : "light"} mode
             </CommandItem>
@@ -105,7 +117,11 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
                   });
               }}
             >
-              <TrashSimple size={14} weight="bold" />
+              <TrashSimple
+                size={14}
+                weight="bold"
+                className="text-zinc-500 flex-shrink-0"
+              />
               Delete current session
             </CommandItem>
             <CommandItem
@@ -120,7 +136,11 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
                 });
               }}
             >
-              <Eraser size={14} weight="bold" />
+              <Eraser
+                size={14}
+                weight="bold"
+                className="text-zinc-500 flex-shrink-0"
+              />
               Clear History
             </CommandItem>
           </CommandGroup>
