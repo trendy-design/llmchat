@@ -8,6 +8,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useChatSession } from "@/hooks/use-chat-session";
+import { cn } from "@/lib/utils";
 import {
   Eraser,
   Moon,
@@ -64,7 +65,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
           <CommandEmpty>No results found.</CommandEmpty>
           <CommandGroup heading="Actions">
             <CommandItem
-              className="gap-3"
+              className={cn("gap-3")}
               value="new"
               onSelect={(value) => {
                 createSession().then((session) => {
@@ -149,7 +150,12 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
               <CommandItem
                 key={session.id}
                 value={`${session.id}/${session.title}`}
-                className="gap-3 w-full"
+                className={cn(
+                  "gap-3 w-full",
+                  currentSession?.id === session.id
+                    ? "bg-black/10 dark:bg-black/10"
+                    : ""
+                )}
                 onSelect={(value) => {
                   router.push(`/chat/${session.id}`);
                   dismiss();

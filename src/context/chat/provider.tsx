@@ -1,7 +1,6 @@
 "use client";
 import { TChatSession, useChatSession } from "@/hooks/use-chat-session";
 import { TStreamProps, useLLM } from "@/hooks/use-llm";
-import { useModelList } from "@/hooks/use-model-list";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChatContext } from "./context";
@@ -26,22 +25,18 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   const [currentSession, setCurrentSession] = useState<
     TChatSession | undefined
   >();
-  const { getModelByKey } = useModelList();
   const [streamingMessage, setStreamingMessage] = useState<TStreamProps>();
   const { runModel, stopGeneration } = useLLM({
     onInit: async (props) => {
       setStreamingMessage(props);
     },
-    onStreamStart: async (props) => {
-      setStreamingMessage(props);
-    },
+    onStreamStart: async (props) => {},
     onStream: async (props) => {
       setStreamingMessage(props);
     },
-    onStreamEnd: async () => {
-      fetchAllSessions().then(() => {
-        setStreamingMessage(undefined);
-      });
+    onStreamEnd: async (props) => {
+      fetchAllSessions();
+      setStreamingMessage(props);
     },
     onError: async (error) => {
       setStreamingMessage(error);

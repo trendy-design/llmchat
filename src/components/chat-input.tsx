@@ -7,7 +7,7 @@ import { useRecordVoice } from "@/hooks/use-record-voice";
 import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
 import { useTextSelection } from "@/hooks/usse-text-selection";
 import { slideUpVariant } from "@/lib/framer-motion";
-import { PromptType, RoleType } from "@/lib/prompts";
+import { PromptType, RoleType, examplePrompts } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import {
   ArrowDown,
@@ -29,14 +29,23 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Resizer from "react-image-file-resizer";
+import TextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
 import { ChatExamples } from "./chat-examples";
 import { ChatGreeting } from "./chat-greeting";
 import { ModelSelect } from "./model-select";
 import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Badge } from "./ui/badge";
+
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import {
+  Command as CMDKCommand,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "./ui/command";
+import { Popover, PopoverAnchor, PopoverContent } from "./ui/popover";
 import { Tooltip } from "./ui/tooltip";
 
 export type TAttachment = {
@@ -65,6 +74,7 @@ export const ChatInput = () => {
   const { open: openSettings } = useSettings();
   const { showPopup, selectedText, handleClearSelection } = useTextSelection();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
 
   const [attachment, setAttachment] = useState<TAttachment>();
 
@@ -166,8 +176,12 @@ export const ChatInput = () => {
     });
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const keyCode = e?.which || e?.keyCode;
+
+    if (keyCode === 13 && !e.shiftKey) {
+      // Don't generate a new line
+      e.preventDefault();
       handleRunModel();
     }
   };
@@ -433,58 +447,86 @@ export const ChatInput = () => {
       <div className="flex flex-col gap-1">
         {renderSelectedContext()}
         {renderAttachedImage()}
-        <motion.div
-          variants={slideUpVariant}
-          initial={"initial"}
-          animate={"animate"}
-          className="flex flex-col gap-0 bg-white shadow-sm border-black/10 dark:bg-white/5 w-[700px] border dark:border-white/5 rounded-[1.25em] overflow-hidden"
-        >
-          <div className="flex flex-row items-center px-3 h-14  w-full gap-0">
-            {renderNewSession()}
-            <Input
-              placeholder="Ask AI anything ..."
-              value={inputValue}
-              type="text"
-              ref={inputRef}
-              autoComplete="off"
-              autoCapitalize="off"
-              variant="ghost"
-              onChange={(e) => {
-                setInputValue(e.currentTarget.value);
-              }}
-              onKeyDown={handleKeyDown}
-              className="px-2"
-            />
-            {renderRecordingControls()}
-
-            <Button
-              size="icon"
-              variant={!!inputValue ? "secondary" : "ghost"}
-              disabled={!inputValue}
-              className="min-w-8 h-8 ml-1"
-              onClick={() => handleRunModel()}
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverAnchor>
+            <motion.div
+              variants={slideUpVariant}
+              initial={"initial"}
+              animate={"animate"}
+              className="flex flex-col gap-0 bg-white shadow-sm border-black/10 dark:bg-white/5 w-[700px] border dark:border-white/5 rounded-[1.25em] overflow-hidden"
             >
-              <ArrowUp size={20} weight="bold" />
-            </Button>
-          </div>
-          <div className="flex flex-row items-center w-full justify-start gap-2 px-2 pb-2 pt-1">
-            <ModelSelect />
+              <div className="flex flex-row items-start px-3 min-h-14 pt-3  w-full gap-0">
+                {renderNewSession()}
+                <TextareaAutosize
+                  minRows={1}
+                  maxRows={6}
+                  value={inputValue}
+                  autoComplete="off"
+                  autoCapitalize="off"
+                  placeholder="Ask AI anything ..."
+                  defaultValue="Just a single line..."
+                  onChange={(e) => {
+                    if (e.target.value === "/") {
+                      setOpen(true);
+                    }
+                    setInputValue(e.currentTarget.value);
+                  }}
+                  onKeyDown={handleKeyDown}
+                  className="px-2 py-1.5 w-full text-sm leading-5 tracking-[0.01em] border-none  resize-none bg-transparent outline-none "
+                />
 
-            <div className="flex-1"></div>
+                {renderRecordingControls()}
 
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={openFilters}
-              className="px-1.5"
-            >
-              <ClockClockwise size={16} weight="bold" /> History
-              <Badge>
-                <Command size={12} weight="bold" /> K
-              </Badge>
-            </Button>
-          </div>
-        </motion.div>
+                <Button
+                  size="icon"
+                  variant={!!inputValue ? "secondary" : "ghost"}
+                  disabled={!inputValue}
+                  className="min-w-8 h-8 ml-1"
+                  onClick={() => handleRunModel()}
+                >
+                  <ArrowUp size={20} weight="bold" />
+                </Button>
+              </div>
+              <div className="flex flex-row items-center w-full justify-start gap-2 px-2 pb-2 pt-1">
+                <ModelSelect />
+
+                <div className="flex-1"></div>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={openFilters}
+                  className="px-1.5"
+                >
+                  <ClockClockwise size={16} weight="bold" /> History
+                  <Badge>
+                    <Command size={12} weight="bold" /> K
+                  </Badge>
+                </Button>
+              </div>
+            </motion.div>
+          </PopoverAnchor>
+          <PopoverContent className="w-[700px] p-0 rounded-2xl overflow-hidden">
+            <CMDKCommand>
+              <CommandInput placeholder="Search framework..." className="h-9" />
+              <CommandEmpty>No framework found.</CommandEmpty>
+              <CommandList className="p-1">
+                {examplePrompts?.map((example, index) => (
+                  <CommandItem
+                    key={index}
+                    onSelect={() => {
+                      setInputValue(example.prompt);
+                      inputRef.current?.focus();
+                      setOpen(false);
+                    }}
+                  >
+                    {example.title}
+                  </CommandItem>
+                ))}
+              </CommandList>
+            </CMDKCommand>
+          </PopoverContent>
+        </Popover>
       </div>
       <ChatExamples
         show={isNewSession}
