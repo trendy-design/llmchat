@@ -466,7 +466,6 @@ export const ChatInput = () => {
                   autoComplete="off"
                   autoCapitalize="off"
                   placeholder="Ask AI anything ..."
-                  defaultValue="Just a single line..."
                   onChange={(e) => {
                     if (e.target.value === "/") {
                       setOpen(true);
@@ -512,7 +511,7 @@ export const ChatInput = () => {
           <PopoverContent className="w-[700px] p-0 rounded-2xl overflow-hidden">
             <CMDKCommand>
               <CommandInput
-                placeholder="Search framework..."
+                placeholder="Search..."
                 className="h-9"
                 value={commandInput}
                 onValueChange={setCommandInput}
