@@ -17,7 +17,6 @@ export type PromptProps = {
   role: RoleType;
   query?: string;
   image?: string;
-  regenerate?: boolean;
 };
 
 export type TChatMessage = {
@@ -60,17 +59,27 @@ export const useChatSession = () => {
     const sessions = await getSessions();
     const newSessions = sessions.map((session) => {
       if (session.id === sessionId) {
-        if (!session?.messages?.length) {
+        if (!!session?.messages?.length) {
+          const isExisingMessage = session.messages.find(
+            (m) => m.id === chatMessage.id
+          );
           return {
             ...session,
-            messages: [...session.messages, chatMessage],
-            title: chatMessage.rawHuman,
+            messages: isExisingMessage
+              ? session.messages.map((m) => {
+                  if (m.id === chatMessage.id) {
+                    return chatMessage;
+                  }
+                  return m;
+                })
+              : [...session.messages, chatMessage],
             updatedAt: moment().toISOString(),
           };
         }
         return {
           ...session,
-          messages: [...session.messages, chatMessage],
+          messages: [chatMessage],
+          title: chatMessage.rawHuman,
           updatedAt: moment().toISOString(),
         };
       }

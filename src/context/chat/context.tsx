@@ -1,5 +1,6 @@
 "use client";
-import { PromptProps, TChatSession } from "@/hooks/use-chat-session";
+import { TChatSession } from "@/hooks/use-chat-session";
+import { TRunModel } from "@/hooks/use-llm";
 import { createContext, useContext } from "react";
 
 export type TChatContext = {
@@ -13,7 +14,7 @@ export type TChatContext = {
   removeSession: (sessionId: string) => Promise<void>;
   clearChatSessions: () => Promise<void>;
   stopGeneration: () => void;
-  runModel: (props: PromptProps, sessionId: string) => Promise<void>;
+  runModel: (props: TRunModel) => Promise<void>;
   removeMessage: (messageId: string) => void;
 };
 

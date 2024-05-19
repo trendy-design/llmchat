@@ -7,7 +7,7 @@ import { useRecordVoice } from "@/hooks/use-record-voice";
 import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
 import { useTextSelection } from "@/hooks/usse-text-selection";
 import { slideUpVariant } from "@/lib/framer-motion";
-import { PromptType, RoleType, examplePrompts } from "@/lib/prompts";
+import { PromptType, RoleType, roles } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import {
   ArrowDown,
@@ -58,6 +58,7 @@ export const ChatInput = () => {
   const { open: openFilters } = useFilters();
   const { showButton, scrollToBottom } = useScrollToBottom();
   const router = useRouter();
+  const [selectedPrompt, setSelectedPrompt] = useState<string>();
   const { startRecording, stopRecording, recording, text, transcribing } =
     useRecordVoice();
   const { runModel, createSession, currentSession, streaming, stopGeneration } =
@@ -156,16 +157,16 @@ export const ChatInput = () => {
         return;
       }
       console.log(inputValue);
-      runModel(
-        {
+      runModel({
+        sessionId: sessionId.toString(),
+        props: {
           role: RoleType.assistant,
           type: PromptType.ask,
           image: attachment?.base64,
           query: query || inputValue,
           context: contextValue,
         },
-        sessionId.toString()
-      );
+      });
       setAttachment(undefined);
       setContextValue("");
       setInputValue("");
@@ -193,14 +194,14 @@ export const ChatInput = () => {
   useEffect(() => {
     if (text) {
       setInputValue(text);
-      runModel(
-        {
+      runModel({
+        props: {
           role: RoleType.assistant,
           type: PromptType.ask,
           query: text,
         },
-        sessionId.toString()
-      );
+        sessionId: sessionId.toString(),
+      });
       setInputValue("");
     }
   }, [text]);
@@ -454,8 +455,26 @@ export const ChatInput = () => {
               variants={slideUpVariant}
               initial={"initial"}
               animate={"animate"}
-              className="flex flex-col gap-0 bg-white shadow-sm border-black/10 dark:bg-white/5 w-[700px] border dark:border-white/5 rounded-[1.25em] overflow-hidden"
+              className="flex flex-col items-start gap-0 bg-white shadow-sm border-black/10 dark:bg-white/5 w-[700px] border dark:border-white/5 rounded-[1.25em] overflow-hidden"
             >
+              {selectedPrompt && (
+                <div className="px-1 pt-1 w-full">
+                  <div className="pl-3 pr-2 py-2 bg-black/10 rounded-t-2xl flex flex-row items-center rounded-b-md w-full text-xs text-zinc-600">
+                    <p className="w-full">{selectedPrompt}</p>
+                    <Button
+                      size={"iconXS"}
+                      variant="ghost"
+                      onClick={() => {
+                        setSelectedPrompt(undefined);
+                        focusToInput();
+                      }}
+                      className="flex-shrink-0 ml-4"
+                    >
+                      <X size={16} weight="bold" />
+                    </Button>
+                  </div>
+                </div>
+              )}
               <div className="flex flex-row items-start px-3 min-h-14 pt-3  w-full gap-0">
                 {renderNewSession()}
                 <TextareaAutosize
@@ -526,17 +545,18 @@ export const ChatInput = () => {
                 }}
               />
               <CommandEmpty>No framework found.</CommandEmpty>
-              <CommandList className="p-1">
-                {examplePrompts?.map((example, index) => (
+              <CommandList className="p-1 max-h-[140px]">
+                {roles?.map((role, index) => (
                   <CommandItem
                     key={index}
                     onSelect={() => {
-                      setInputValue(example.prompt);
+                      setSelectedPrompt(role.name);
+                      // setInputValue(role.content);
                       inputRef.current?.focus();
                       setOpen(false);
                     }}
                   >
-                    {example.title}
+                    {role.name}
                   </CommandItem>
                 ))}
               </CommandList>

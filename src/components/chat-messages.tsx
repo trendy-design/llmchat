@@ -42,19 +42,10 @@ export const ChatMessages = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (streamingMessage) {
-  //     scrollToBottom();
-  //   }
-  // }, [streamingMessage]);
-
-  // const isLastStreamBelongsToCurrentSession =
-  //   streamingMessage?.sessionId === currentSession?.id;
-
-  const renderMessage = (props: TChatMessage) => {
+  const renderMessage = (message: TChatMessage, isLast: boolean) => {
     return (
-      <div className="flex flex-col gap-1 items-end w-full" key={props.id}>
-        {props.props?.context && (
+      <div className="flex flex-col gap-1 items-end w-full" key={message.id}>
+        {message.props?.context && (
           <div className="bg-black/10 text-zinc-600 dark:text-zinc-100 dark:bg-black/30 rounded-2xl p-2 pl-3 text-sm flex flex-row gap-2 pr-4 border hover:border-white/5 border-transparent">
             <ArrowElbowDownRight
               size={20}
@@ -63,13 +54,13 @@ export const ChatMessages = () => {
             />
 
             <span className="pt-[0.35em] pb-[0.25em] leading-6">
-              {props.props?.context}
+              {message.props?.context}
             </span>
           </div>
         )}
-        {props?.props?.image && (
+        {message?.props?.image && (
           <Image
-            src={props?.props?.image}
+            src={message?.props?.image}
             alt="uploaded image"
             className="rounded-2xl min-w-[120px] h-[120px] border dark:border-white/10 border-black/10 shadow-sm object-cover"
             width={0}
@@ -79,11 +70,10 @@ export const ChatMessages = () => {
         )}
         <div className="bg-black/10 text-zinc-600 dark:text-zinc-100 dark:bg-black/30 ml-16 rounded-2xl text-sm flex flex-row gap-2 px-3 py-2">
           <span className="pt-[0.20em] pb-[0.15em] leading-6">
-            {props.rawHuman}
+            {message.rawHuman}
           </span>
         </div>
-
-        <AIMessageBubble {...props} />
+        <AIMessageBubble chatMessage={message} isLast={isLast} />
       </div>
     );
   };
@@ -102,8 +92,6 @@ export const ChatMessages = () => {
     {}
   );
 
-  console.log(messagesByDate);
-
   return (
     <div
       className="flex flex-col w-full items-center h-screen overflow-y-auto no-scrollbar pt-[60px] pb-[200px]"
@@ -111,43 +99,14 @@ export const ChatMessages = () => {
       id="chat-container"
     >
       <div className="w-[700px] flex flex-col gap-24">
-        {/* {messagesByDate &&
-          Object.keys(messagesByDate).map((date) => {
-            return (
-              <div className="flex flex-col" key={date}>
-                <LabelDivider label={getRelativeDate(date)} />
-
-                <div className="flex flex-col gap-8 w-full items-start">
-                  {messagesByDate[date].map((message) =>
-                    renderMessage({
-                      id: message.id,
-                      humanMessage: message.rawHuman,
-                      model: message.model,
-                      image: message.image,
-                      props: message.props,
-                      aiMessage: message.rawAI,
-                    })
-                  )}
-                </div>
-              </div>
-            );
-          })} */}
-
         <div className="flex flex-col gap-8 w-full items-start">
-          {currentSession?.messages?.map((message) => renderMessage(message))}
+          {currentSession?.messages?.map((message, index) =>
+            renderMessage(
+              message,
+              currentSession?.messages.length - 1 === index
+            )
+          )}
         </div>
-
-        {/* {isLastStreamBelongsToCurrentSession &&
-          streamingMessage?.props?.query &&
-          !streamingMessage?.error &&
-          renderMessage({
-            id: "streaming",
-            humanMessage: streamingMessage?.props?.query,
-            aiMessage: streamingMessage?.message,
-            image: streamingMessage.props?.image,
-            model: streamingMessage?.model,
-            loading: streamingMessage?.loading,
-          })} */}
 
         {/* {streamingMessage?.error && (
           <Alert variant="destructive">
