@@ -3,12 +3,11 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ChatProvider } from "@/context/chat/provider";
 import { FiltersProvider } from "@/context/filters/provider";
 import { SettingsProvider } from "@/context/settings/provider";
+import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
-import { Inter } from "next/font/google";
+import { inter } from "./fonts";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "AI Chat",
@@ -22,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={cn(inter.className)}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -205,7 +205,7 @@ code.hljs {
 .dark .hljs-selector-tag,
 .dark .hljs-deletion,
 .dark .hljs-subst {
-  color: #fa7883
+  color: #41e696
 }
 
 .hljs-section,
@@ -213,7 +213,7 @@ code.hljs {
 .hljs-selector-tag,
 .hljs-deletion,
 .hljs-subst {
-  color: #fa7883
+  color: #37ba7a
 }
 
 .dark .hljs-literal {
@@ -229,7 +229,7 @@ code.hljs {
 .dark .hljs-addition,
 .dark .hljs-attribute,
 .dark .hljs-meta .hljs-string {
-  color: #41e696
+  color: #85beff
 }
 
 .hljs-string,
@@ -237,7 +237,7 @@ code.hljs {
 .hljs-addition,
 .hljs-attribute,
 .hljs-meta .hljs-string {
-  color: #33ac7d
+  color: #5ca4f6
 }
 
 
@@ -249,7 +249,7 @@ code.hljs {
 .dark .hljs-selector-attr,
 .dark .hljs-selector-pseudo,
 .dark .hljs-number {
-  color: #e9b483
+  color: #e783e9
 }
 
 .hljs-attr,
@@ -260,7 +260,7 @@ code.hljs {
 .hljs-selector-attr,
 .hljs-selector-pseudo,
 .hljs-number {
-  color: #d38d57
+  color: #e783e9
 }
 
 
