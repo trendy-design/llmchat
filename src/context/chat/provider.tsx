@@ -132,7 +132,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
       return;
     }
     removeMessageById(currentSession?.id, messageId).then(async () => {
-      fetchAllSessions();
+      fetchCurrentSession();
     });
   };
 
