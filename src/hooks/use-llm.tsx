@@ -9,24 +9,15 @@ import {
 import moment from "moment";
 import { v4 } from "uuid";
 import { PromptProps, TChatMessage, useChatSession } from "./use-chat-session";
-import { TModelKey, useModelList } from "./use-model-list";
+import { useModelList } from "./use-model-list";
 import { defaultPreferences, usePreferences } from "./use-preferences";
 
-export type TStreamProps = {
-  props: PromptProps;
-  model: TModelKey;
-  sessionId: string;
-  message?: string;
-  loading?: boolean;
-  error?: string;
-};
-
 export type TUseLLM = {
-  onInit: (props: TStreamProps) => Promise<void>;
-  onStreamStart: (props: TStreamProps) => Promise<void>;
-  onStream: (props: TStreamProps) => Promise<void>;
-  onStreamEnd: (props: TStreamProps) => Promise<void>;
-  onError: (props: TStreamProps) => Promise<void>;
+  onInit: (props: TChatMessage) => Promise<void>;
+  onStreamStart: (props: TChatMessage) => Promise<void>;
+  onStream: (props: TChatMessage) => Promise<void>;
+  onStreamEnd: (props: TChatMessage) => Promise<void>;
+  onError: (props: TChatMessage) => Promise<void>;
 };
 
 export const useLLM = ({
@@ -96,11 +87,13 @@ export const useLLM = ({
     const previousMessageHistory = sortMessages(history, "createdAt")
       .slice(0, messageLimit === "all" ? history.length : messageLimit)
       .reduce(
-        (acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman, image }) => [
-          ...acc,
-          new HumanMessage(rawHuman),
-          new AIMessage(rawAI),
-        ],
+        (acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman, image }) => {
+          if (rawAI && rawHuman) {
+            return [...acc, new HumanMessage(rawHuman), new AIMessage(rawAI)];
+          } else {
+            return [...acc];
+          }
+        },
         []
       );
 
@@ -120,9 +113,19 @@ export const useLLM = ({
       return;
     }
 
+    const newMessageId = v4();
     const preferences = await getPreferences();
     const modelKey = preferences.defaultModel;
-    onInit({ props, model: modelKey, sessionId, loading: true });
+    onInit({
+      props,
+      id: newMessageId,
+      model: modelKey,
+      sessionId,
+      rawHuman: props.query,
+      createdAt: moment().toISOString(),
+      hasError: false,
+      isLoading: true,
+    });
     const selectedModel = getModelByKey(modelKey);
     if (!selectedModel) {
       throw new Error("Model not found");
@@ -133,15 +136,18 @@ export const useLLM = ({
     if (!apiKey) {
       onError({
         props,
-        model: modelKey,
+        id: newMessageId,
         sessionId,
-        error: "No API key found",
-        loading: false,
+        model: modelKey,
+        rawHuman: props.query,
+        createdAt: moment().toISOString(),
+        hasError: true,
+        isLoading: false,
+        errorMesssage: "API key not found",
       });
       return;
     }
 
-    const newMessageId = v4();
     const formattedChatPrompt = await preparePrompt(
       props,
       currentSession?.messages || []
@@ -174,57 +180,50 @@ export const useLLM = ({
     }
     let streamedMessage = "";
     onStreamStart({
+      id: newMessageId,
       props,
       sessionId,
-      message: streamedMessage,
+      rawHuman: props.query,
+      rawAI: streamedMessage,
       model: modelKey,
-      loading: true,
+      isLoading: true,
+      hasError: false,
+      errorMesssage: undefined,
+
+      createdAt: moment().toISOString(),
     });
     for await (const chunk of stream) {
       streamedMessage += chunk.content;
 
       console.log(streamedMessage);
       onStream({
+        id: newMessageId,
         props,
         sessionId,
-        message: streamedMessage,
+        rawHuman: props.query,
+        rawAI: streamedMessage,
         model: modelKey,
-        loading: true,
+        isLoading: true,
+        hasError: false,
+        errorMesssage: undefined,
+        createdAt: moment().toISOString(),
       });
     }
 
     const chatMessage: TChatMessage = {
       id: newMessageId,
-      model: selectedModel.key,
-      human: props?.image
-        ? new HumanMessage({
-            content: [
-              {
-                type: "text",
-                content: streamedMessage,
-              },
-              {
-                type: "image_url",
-                image_url: props.image,
-              },
-            ],
-          })
-        : new HumanMessage(props.query),
-      ai: new AIMessage(streamedMessage),
+      props,
+      sessionId,
       rawHuman: props.query,
       rawAI: streamedMessage,
-      props,
+      model: modelKey,
+      isLoading: false,
+      hasError: false,
       createdAt: moment().toISOString(),
     };
 
     addMessageToSession(sessionId, chatMessage).then(() => {
-      onStreamEnd({
-        props,
-        sessionId,
-        message: streamedMessage,
-        model: modelKey,
-        loading: false,
-      });
+      onStreamEnd(chatMessage);
     });
   };
 

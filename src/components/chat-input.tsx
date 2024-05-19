@@ -60,13 +60,8 @@ export const ChatInput = () => {
   const router = useRouter();
   const { startRecording, stopRecording, recording, text, transcribing } =
     useRecordVoice();
-  const {
-    runModel,
-    createSession,
-    currentSession,
-    streamingMessage,
-    stopGeneration,
-  } = useChatContext();
+  const { runModel, createSession, currentSession, streaming, stopGeneration } =
+    useChatContext();
   const [inputValue, setInputValue] = useState("");
   const [contextValue, setContextValue] = useState<string>("");
   const { getPreferences, getApiKey } = usePreferences();
@@ -192,8 +187,7 @@ export const ChatInput = () => {
     }
   }, [sessionId]);
 
-  const isNewSession =
-    !currentSession?.messages?.length && !streamingMessage?.loading;
+  const isNewSession = !currentSession?.messages?.length;
 
   useEffect(() => {
     if (text) {
@@ -336,25 +330,23 @@ export const ChatInput = () => {
   };
 
   const renderStopButton = () => {
-    if (streamingMessage?.loading) {
-      return (
-        <motion.span
-          initial={{ scale: 0, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0, opacity: 0 }}
+    return (
+      <motion.span
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0, opacity: 0 }}
+      >
+        <Button
+          onClick={() => {
+            stopGeneration();
+          }}
+          variant="secondary"
+          size="sm"
         >
-          <Button
-            onClick={() => {
-              stopGeneration();
-            }}
-            variant="secondary"
-            size="sm"
-          >
-            <Stop size={20} weight="bold" /> Stop
-          </Button>
-        </motion.span>
-      );
-    }
+          <Stop size={20} weight="bold" /> Stop
+        </Button>
+      </motion.span>
+    );
   };
 
   const renderAttachedImage = () => {

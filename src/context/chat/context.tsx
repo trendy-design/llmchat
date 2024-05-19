@@ -1,6 +1,5 @@
 "use client";
 import { PromptProps, TChatSession } from "@/hooks/use-chat-session";
-import { TStreamProps } from "@/hooks/use-llm";
 import { createContext, useContext } from "react";
 
 export type TChatContext = {
@@ -10,9 +9,9 @@ export type TChatContext = {
   isCurrentSessionLoading: boolean;
   currentSession: TChatSession | undefined;
   createSession: () => Promise<TChatSession>;
+  streaming: boolean;
   removeSession: (sessionId: string) => Promise<void>;
   clearChatSessions: () => Promise<void>;
-  streamingMessage?: TStreamProps;
   stopGeneration: () => void;
   runModel: (props: PromptProps, sessionId: string) => Promise<void>;
   removeMessage: (messageId: string) => void;

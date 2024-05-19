@@ -1,16 +1,15 @@
 import { useChatContext } from "@/context/chat/context";
 import { PromptProps, TChatMessage } from "@/hooks/use-chat-session";
 import { TModelKey } from "@/hooks/use-model-list";
-import { ArrowElbowDownRight, Warning } from "@phosphor-icons/react";
+import { ArrowElbowDownRight } from "@phosphor-icons/react";
 import moment from "moment";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { AIMessageBubble } from "./ai-bubble";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 
 export type TRenderMessageProps = {
   id: string;
-  humanMessage: string;
+  humanMessage?: string;
   props?: PromptProps;
   model: TModelKey;
   image?: string;
@@ -30,7 +29,7 @@ moment().calendar(null, {
 });
 
 export const ChatMessages = () => {
-  const { streamingMessage, currentSession } = useChatContext();
+  const { currentSession } = useChatContext();
   const chatContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,16 +42,16 @@ export const ChatMessages = () => {
     }
   };
 
-  useEffect(() => {
-    if (streamingMessage) {
-      scrollToBottom();
-    }
-  }, [streamingMessage]);
+  // useEffect(() => {
+  //   if (streamingMessage) {
+  //     scrollToBottom();
+  //   }
+  // }, [streamingMessage]);
 
-  const isLastStreamBelongsToCurrentSession =
-    streamingMessage?.sessionId === currentSession?.id;
+  // const isLastStreamBelongsToCurrentSession =
+  //   streamingMessage?.sessionId === currentSession?.id;
 
-  const renderMessage = (props: TRenderMessageProps) => {
+  const renderMessage = (props: TChatMessage) => {
     return (
       <div className="flex flex-col gap-1 items-end w-full" key={props.id}>
         {props.props?.context && (
@@ -80,7 +79,7 @@ export const ChatMessages = () => {
         )}
         <div className="bg-black/10 text-zinc-600 dark:text-zinc-100 dark:bg-black/30 ml-16 rounded-2xl text-sm flex flex-row gap-2 px-3 py-2">
           <span className="pt-[0.20em] pb-[0.15em] leading-6">
-            {props.humanMessage}
+            {props.rawHuman}
           </span>
         </div>
 
@@ -135,19 +134,10 @@ export const ChatMessages = () => {
           })} */}
 
         <div className="flex flex-col gap-8 w-full items-start">
-          {currentSession?.messages?.map((message) =>
-            renderMessage({
-              id: message.id,
-              humanMessage: message.rawHuman,
-              model: message.model,
-              image: message.image,
-              props: message.props,
-              aiMessage: message.rawAI,
-            })
-          )}
+          {currentSession?.messages?.map((message) => renderMessage(message))}
         </div>
 
-        {isLastStreamBelongsToCurrentSession &&
+        {/* {isLastStreamBelongsToCurrentSession &&
           streamingMessage?.props?.query &&
           !streamingMessage?.error &&
           renderMessage({
@@ -157,15 +147,15 @@ export const ChatMessages = () => {
             image: streamingMessage.props?.image,
             model: streamingMessage?.model,
             loading: streamingMessage?.loading,
-          })}
+          })} */}
 
-        {streamingMessage?.error && (
+        {/* {streamingMessage?.error && (
           <Alert variant="destructive">
             <Warning size={20} weight="bold" />
             <AlertTitle>Ahh! Something went wrong!</AlertTitle>
             <AlertDescription>{streamingMessage?.error}</AlertDescription>
           </Alert>
-        )}
+        )} */}
       </div>
     </div>
   );

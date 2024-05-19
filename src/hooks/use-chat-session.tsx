@@ -1,5 +1,4 @@
 import { PromptType, RoleType } from "@/lib/prompts";
-import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { get, set } from "idb-keyval";
 import moment from "moment";
 import { v4 } from "uuid";
@@ -24,13 +23,15 @@ export type PromptProps = {
 export type TChatMessage = {
   id: string;
   model: TModelKey;
-  human: HumanMessage;
-  ai: AIMessage;
   image?: string;
-  rawHuman: string;
-  rawAI: string;
-  props?: PromptProps;
-  createdAt?: string;
+  rawHuman?: string;
+  rawAI?: string;
+  sessionId: string;
+  props: PromptProps;
+  isLoading: boolean;
+  hasError: boolean;
+  errorMesssage?: string;
+  createdAt: string;
 };
 
 export type TChatSession = {
