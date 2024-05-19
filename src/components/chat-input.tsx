@@ -68,8 +68,9 @@ export const ChatInput = () => {
   const { getModelByKey } = useModelList();
   const { open: openSettings } = useSettings();
   const { showPopup, selectedText, handleClearSelection } = useTextSelection();
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [open, setOpen] = useState(false);
+  const [commandInput, setCommandInput] = useState("");
 
   const [attachment, setAttachment] = useState<TAttachment>();
 
@@ -422,6 +423,14 @@ export const ChatInput = () => {
       </>
     );
   };
+
+  const focusToInput = () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+      const len = inputRef.current.value.length;
+      inputRef.current.setSelectionRange(len, len);
+    }
+  };
   return (
     <div
       className={cn(
@@ -452,6 +461,7 @@ export const ChatInput = () => {
                 <TextareaAutosize
                   minRows={1}
                   maxRows={6}
+                  ref={inputRef}
                   value={inputValue}
                   autoComplete="off"
                   autoCapitalize="off"
@@ -462,6 +472,7 @@ export const ChatInput = () => {
                       setOpen(true);
                     }
                     setInputValue(e.currentTarget.value);
+                    focusToInput();
                   }}
                   onKeyDown={handleKeyDown}
                   className="px-2 py-1.5 w-full text-sm leading-5 tracking-[0.01em] border-none  resize-none bg-transparent outline-none "
@@ -500,7 +511,21 @@ export const ChatInput = () => {
           </PopoverAnchor>
           <PopoverContent className="w-[700px] p-0 rounded-2xl overflow-hidden">
             <CMDKCommand>
-              <CommandInput placeholder="Search framework..." className="h-9" />
+              <CommandInput
+                placeholder="Search framework..."
+                className="h-9"
+                value={commandInput}
+                onValueChange={setCommandInput}
+                onKeyDown={(e) => {
+                  if (
+                    (e.key === "Delete" || e.key === "Backspace") &&
+                    !commandInput
+                  ) {
+                    setOpen(false);
+                    focusToInput();
+                  }
+                }}
+              />
               <CommandEmpty>No framework found.</CommandEmpty>
               <CommandList className="p-1">
                 {examplePrompts?.map((example, index) => (
