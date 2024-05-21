@@ -8,15 +8,9 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useChatSession } from "@/hooks/use-chat-session";
+import { useModelList } from "@/hooks/use-model-list";
 import { cn } from "@/lib/utils";
-import {
-  Eraser,
-  Moon,
-  Plus,
-  StarFour,
-  Sun,
-  TrashSimple,
-} from "@phosphor-icons/react";
+import { Eraser, Moon, Plus, Sun, TrashSimple } from "@phosphor-icons/react";
 import moment from "moment";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
@@ -37,6 +31,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
   } = useChatContext();
   const { sortSessions } = useChatSession();
   const router = useRouter();
+  const { getModelByKey } = useModelList();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -161,11 +156,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
                   dismiss();
                 }}
               >
-                <StarFour
-                  size={14}
-                  weight="bold"
-                  className="text-zinc-500 flex-shrink-0"
-                />{" "}
+                {getModelByKey(session.messages?.[0]?.model)?.icon()}
                 <span className="w-full truncate">{session.title}</span>
                 <span className="pl-4 text-xs  text-zinc-400 dark:text-zinc-700 flex-shrink-0">
                   {moment(session.createdAt).fromNow(true)}
