@@ -15,6 +15,7 @@ export type TModelKey =
   | "claude-3-sonnet-20240229"
   | "claude-3-haiku-20240307"
   | "gemini-pro"
+  | "gemini-1.5-flash-latest"
   | "gemini-1.5-pro-latest";
 
 export type TModel = {
@@ -139,6 +140,15 @@ export const useModelList = () => {
     {
       name: "Gemini Pro 1.5",
       key: "gemini-1.5-pro-latest",
+      isNew: true,
+
+      tokens: 200000,
+      icon: () => <ModelIcon size="md" type="gemini" />,
+      baseModel: "gemini",
+    },
+    {
+      name: "Gemini Flash 1.5",
+      key: "gemini-1.5-flash-latest",
       isNew: true,
 
       tokens: 200000,
