@@ -1,4 +1,5 @@
 "use client";
+import { useToast } from "@/components/ui/use-toast";
 import { blobToBase64, createMediaStream } from "@/lib/record";
 import { OpenAI, toFile } from "openai";
 import { useEffect, useRef, useState } from "react";
@@ -17,6 +18,7 @@ export const useRecordVoice = (): UseRecordVoiceResult => {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
   );
+  const { toast } = useToast();
   const { getApiKey } = usePreferences();
   const [recording, setRecording] = useState<boolean>(false);
   const [transcribing, setIsTranscribing] = useState<boolean>(false);
@@ -56,6 +58,7 @@ export const useRecordVoice = (): UseRecordVoiceResult => {
       });
 
       const audioBuffer = Buffer.from(base64data, "base64");
+
       const transcription = await openai.audio.transcriptions.create({
         file: await toFile(audioBuffer, "audio.wav", {
           type: "audio/wav",
@@ -63,13 +66,16 @@ export const useRecordVoice = (): UseRecordVoiceResult => {
         model: "whisper-1",
       });
 
-      setIsTranscribing(false);
-
       setText(transcription?.text);
     } catch (error) {
+      console.error(error);
+      toast({
+        title: "Failed to transcribe",
+        description: "Something went wrong. Check your openai settings.",
+        variant: "destructive",
+      });
+    } finally {
       setIsTranscribing(false);
-
-      console.log(error);
     }
   };
 

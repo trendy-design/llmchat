@@ -1,3 +1,4 @@
+import { useToast } from "@/components/ui/use-toast";
 import type { Serialized } from "@langchain/core/load/serializable";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { LLMResult } from "@langchain/core/outputs";
@@ -40,6 +41,7 @@ export const useLLM = ({
   const { getApiKey, getPreferences } = usePreferences();
   const { createInstance, getModelByKey, getTestModelKey } = useModelList();
   const abortController = new AbortController();
+  const { toast } = useToast();
 
   const stopGeneration = () => {
     abortController?.abort();
@@ -266,7 +268,12 @@ export const useLLM = ({
         onStreamEnd?.(chatMessage);
       });
     } catch (err) {
-      console.error(err);
+      toast({
+        title: "Error",
+        description: "Something went wrong",
+        variant: "destructive",
+      });
+
       onError?.({
         props,
         id: newMessageId,
