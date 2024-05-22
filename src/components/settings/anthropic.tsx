@@ -1,3 +1,4 @@
+import { useLLMTest } from "@/hooks/use-llm-test";
 import { usePreferences } from "@/hooks/use-preferences";
 import { ArrowRight, Info } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
@@ -8,6 +9,8 @@ import { Input } from "../ui/input";
 export const AnthropicSettings = () => {
   const [key, setKey] = useState<string>("");
   const { getApiKey, setApiKey } = usePreferences();
+  const { renderTestButton } = useLLMTest();
+
   useEffect(() => {
     getApiKey("anthropic").then((key) => {
       if (key) {
@@ -43,6 +46,8 @@ export const AnthropicSettings = () => {
       >
         Get your API key here <ArrowRight size={16} weight="bold" />
       </Button>
+      {renderTestButton("anthropic")}
+
       <Alert variant="success">
         <Info className="h-4 w-4" />
         <AlertTitle>Attention!</AlertTitle>

@@ -1,6 +1,6 @@
 "use client";
 import { useTheme } from "next-themes";
-import { Toaster } from "sonner";
+import { Toaster } from "./ui/toaster";
 
 export type MainLayoutProps = {
   children: React.ReactNode;
