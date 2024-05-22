@@ -1,4 +1,5 @@
 import { CodeBlock } from "@/components/codeblock";
+import { LinkBlock } from "@/components/ui/link-block";
 import { motion } from "framer-motion";
 import Markdown from "marked-react";
 
@@ -33,11 +34,7 @@ export const useMarkdown = () => {
             return <h1 className="font-medium text-md">{children}</h1>;
           },
           link: (href, text) => {
-            return (
-              <a href={href} target="_blank">
-                {text}
-              </a>
-            );
+            return <LinkBlock url={href} />;
           },
           blockquote: (children) => (
             <div>
@@ -65,6 +62,7 @@ export const useMarkdown = () => {
               </div>
             );
           },
+
           codespan(code, lang) {
             return (
               <span className="px-2 py-1 text-xs rounded-md  dark:text-[#41db8f] bg-zinc-200 text-zinc-600 dark:bg-[#41db8f]/20 font-semibold">

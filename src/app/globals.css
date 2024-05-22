@@ -112,6 +112,32 @@ p {
   margin: 0 !important;
 }
 
+mark.prompt-highlight {
+  background-color: hsl(150deg 68% 56% / 20%);
+  color: #34b877;
+  padding: 0.2rem 0.4rem;
+  font-weight: 500;
+  border: 1px solid rgb(0 0 0 / 0%);
+  border-radius: 8px;
+}
+
+.dark mark.prompt-highlight {
+  background-color: hsl(150deg 68% 56% / 20%);
+  color: #41db8f;
+  padding: 0.2rem 0.4rem;
+  font-weight: 500;
+  border: 1px solid rgb(0 0 0 / 0%);
+  border-radius: 8px;
+}
+
+.tiptap .is-editor-empty:first-child::before {
+  color: #adb5bd;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
 
 
 

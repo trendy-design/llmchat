@@ -9,6 +9,7 @@ import { useTextSelection } from "@/hooks/usse-text-selection";
 import { slideUpVariant } from "@/lib/framer-motion";
 import { PromptType, RoleType, roles } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
+
 import {
   ArrowDown,
   ArrowElbowDownRight,
@@ -24,12 +25,18 @@ import {
   X,
 } from "@phosphor-icons/react";
 import { Stop } from "@phosphor-icons/react/dist/ssr";
+import Document from "@tiptap/extension-document";
+import Highlight from "@tiptap/extension-highlight";
+import Paragraph from "@tiptap/extension-paragraph";
+import Placeholder from "@tiptap/extension-placeholder";
+
+import Text from "@tiptap/extension-text";
+import { EditorContent, Extension, Mark, useEditor } from "@tiptap/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Resizer from "react-image-file-resizer";
-import TextareaAutosize from "react-textarea-autosize";
 import { toast } from "sonner";
 import { ChatExamples } from "./chat-examples";
 import { ChatGreeting } from "./chat-greeting";
@@ -63,7 +70,7 @@ export const ChatInput = () => {
     useRecordVoice();
   const { runModel, createSession, currentSession, streaming, stopGeneration } =
     useChatContext();
-  const [inputValue, setInputValue] = useState("");
+  // const [inputValue, setInputValue] = useState("");
   const [contextValue, setContextValue] = useState<string>("");
   const { getPreferences, getApiKey } = usePreferences();
   const { getModelByKey } = useModelList();
@@ -74,6 +81,98 @@ export const ChatInput = () => {
   const [commandInput, setCommandInput] = useState("");
 
   const [attachment, setAttachment] = useState<TAttachment>();
+
+  const ShiftEnter = Extension.create({
+    addKeyboardShortcuts() {
+      return {
+        "Shift-Enter": (_) => {
+          return _.editor.commands.enter();
+        },
+      };
+    },
+  });
+
+  const Enter = Extension.create({
+    addKeyboardShortcuts() {
+      return {
+        Enter: (_) => {
+          if (_.editor.getText()?.length > 0) {
+            handleRunModel(_.editor.getText(), () => {
+              _.editor.commands.clearContent();
+            });
+          }
+          return true;
+        },
+      };
+    },
+  });
+
+  const inputRegex = /\{\{(.*?)\}\}/g;
+
+  const CustomMark = Mark.create({
+    name: "customMark",
+  });
+
+  const editor = useEditor({
+    extensions: [
+      Document,
+      Paragraph,
+      Text,
+      Placeholder.configure({
+        placeholder: "Write something …",
+      }),
+      Enter,
+      ShiftEnter,
+      Highlight.configure({
+        HTMLAttributes: {
+          class: "prompt-highlight",
+        },
+      }),
+    ],
+    content: ``,
+    // onUpdate({ editor }) {
+    //   const text = editor.getText();
+    //   const html = editor.getHTML();
+
+    //   if (text === "/") {
+    //     setOpen(true);
+    //   } else {
+    //     console.log(text);
+    //     const newHTML = html.replace(
+    //       /{{(.*?)}}/g,
+    //       ` <mark class="prompt-highlight">$1</mark> `
+    //     );
+
+    //     if (newHTML !== html) {
+    //       editor.commands.setContent(newHTML, true, {
+    //         preserveWhitespace: true,
+    //       });
+    //     }
+    //     setOpen(false);
+    //   }
+    // },
+    onTransaction(props) {
+      const { editor } = props;
+      const text = editor.getText();
+      const html = editor.getHTML();
+      if (text === "/") {
+        setOpen(true);
+      } else {
+        console.log(text);
+        const newHTML = html.replace(
+          /{{{{(.*?)}}}}/g,
+          ` <mark class="prompt-highlight">$1</mark> `
+        );
+
+        if (newHTML !== html) {
+          editor.commands.setContent(newHTML, true, {
+            preserveWhitespace: true,
+          });
+        }
+        setOpen(false);
+      }
+    },
+  });
 
   const resizeFile = (file: File) =>
     new Promise((resolve) => {
@@ -127,8 +226,10 @@ export const ChatInput = () => {
     document.getElementById("fileInput")?.click();
   };
 
-  const handleRunModel = (query?: string) => {
-    if (!query && !inputValue) {
+  const handleRunModel = (query?: string, clear?: () => void) => {
+    console.log("handleRunmodel");
+
+    if (!query) {
       return;
     }
     getPreferences().then(async (preference) => {
@@ -156,31 +257,22 @@ export const ChatInput = () => {
         openSettings(selectedModel?.baseModel);
         return;
       }
-      console.log(inputValue);
       runModel({
         sessionId: sessionId.toString(),
         props: {
           role: RoleType.assistant,
           type: PromptType.ask,
           image: attachment?.base64,
-          query: query || inputValue,
+          query: query,
           context: contextValue,
         },
       });
       setAttachment(undefined);
       setContextValue("");
-      setInputValue("");
+
+      console.log(editor);
+      clear?.();
     });
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    const keyCode = e?.which || e?.keyCode;
-
-    if (keyCode === 13 && !e.shiftKey) {
-      // Don't generate a new line
-      e.preventDefault();
-      handleRunModel();
-    }
   };
 
   useEffect(() => {
@@ -193,7 +285,7 @@ export const ChatInput = () => {
 
   useEffect(() => {
     if (text) {
-      setInputValue(text);
+      editor?.commands.setContent(text);
       runModel({
         props: {
           role: RoleType.assistant,
@@ -202,7 +294,7 @@ export const ChatInput = () => {
         },
         sessionId: sessionId.toString(),
       });
-      setInputValue("");
+      editor?.commands.clearContent();
     }
   }, [text]);
 
@@ -426,12 +518,10 @@ export const ChatInput = () => {
   };
 
   const focusToInput = () => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-      const len = inputRef.current.value.length;
-      inputRef.current.setSelectionRange(len, len);
-    }
+    editor?.commands.clearContent();
+    editor?.commands.focus("end");
   };
+
   return (
     <div
       className={cn(
@@ -454,7 +544,7 @@ export const ChatInput = () => {
             <motion.div
               variants={slideUpVariant}
               initial={"initial"}
-              animate={"animate"}
+              animate={editor?.isActive ? "animate" : "initial"}
               className="flex flex-col items-start gap-0 bg-white shadow-sm border-black/10 dark:bg-white/5 w-[700px] border dark:border-white/5 rounded-[1.25em] overflow-hidden"
             >
               {selectedPrompt && (
@@ -477,31 +567,18 @@ export const ChatInput = () => {
               )}
               <div className="flex flex-row items-start px-3 min-h-14 pt-3  w-full gap-0">
                 {renderNewSession()}
-                <TextareaAutosize
-                  minRows={1}
-                  maxRows={6}
-                  ref={inputRef}
-                  value={inputValue}
-                  autoComplete="off"
-                  autoCapitalize="off"
-                  placeholder="Ask AI anything ..."
-                  onChange={(e) => {
-                    if (e.target.value === "/") {
-                      setOpen(true);
-                    }
-                    setInputValue(e.currentTarget.value);
-                    focusToInput();
-                  }}
-                  onKeyDown={handleKeyDown}
-                  className="px-2 py-1.5 w-full text-sm leading-5 tracking-[0.01em] border-none  resize-none bg-transparent outline-none "
+
+                <EditorContent
+                  editor={editor}
+                  className="w-full min-h-12 text-sm max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none [&>*]:leading-6 wysiwyg cursor-text"
                 />
 
                 {renderRecordingControls()}
 
                 <Button
                   size="icon"
-                  variant={!!inputValue ? "secondary" : "ghost"}
-                  disabled={!inputValue}
+                  variant={!!editor?.getText() ? "secondary" : "ghost"}
+                  disabled={!editor?.getText()}
                   className="min-w-8 h-8 ml-1"
                   onClick={() => handleRunModel()}
                 >
@@ -550,9 +627,10 @@ export const ChatInput = () => {
                   <CommandItem
                     key={index}
                     onSelect={() => {
-                      setSelectedPrompt(role.name);
-                      // setInputValue(role.content);
-                      inputRef.current?.focus();
+                      editor?.commands.setContent(role.content);
+                      editor?.commands.insertContent("");
+                      console.log(editor?.getText());
+                      editor?.commands.focus("end");
                       setOpen(false);
                     }}
                   >

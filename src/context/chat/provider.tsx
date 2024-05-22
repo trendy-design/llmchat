@@ -123,16 +123,23 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   };
 
   const removeSession = async (sessionId: string) => {
+    setCurrentSessionLoading(true);
     await removeSessionById(sessionId);
+    setCurrentSessionLoading(false);
+    setAllSessionLoading(true);
     await fetchAllSessions();
+    setAllSessionLoading(false);
   };
 
   const removeMessage = (messageId: string) => {
     if (!currentSession?.id) {
       return;
     }
+    setCurrentSessionLoading(true);
     removeMessageById(currentSession?.id, messageId).then(async () => {
-      fetchCurrentSession();
+      fetchCurrentSession().then(() => {
+        setCurrentSessionLoading(false);
+      });
     });
   };
 

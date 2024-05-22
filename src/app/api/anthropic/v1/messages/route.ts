@@ -12,6 +12,8 @@ export async function POST(req: NextRequest, resp: NextResponse) {
   const requestHeaders = new Headers(req.headers);
   const requestHeadersObject = Object.fromEntries(requestHeaders.entries());
 
+  console.log("requestHeadersObject", requestHeadersObject);
+
   const body = await req.json();
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -19,6 +21,7 @@ export async function POST(req: NextRequest, resp: NextResponse) {
       accept: requestHeadersObject["accept"],
       "accept-encoding": "gzip, deflate, br, zstd",
       "accept-language": "en-US,en;q=0.9",
+      "anthropic-beta": "tools-2024-05-16",
       "anthropic-version": requestHeadersObject["anthropic-version"],
       connection: requestHeadersObject["connection"],
       "content-type": "application/json",
@@ -27,7 +30,8 @@ export async function POST(req: NextRequest, resp: NextResponse) {
     body: JSON.stringify(body),
   });
 
-  console.log("body", res.body);
+  const resHeaders = new Headers(res.headers);
+  const headersObject = Object.fromEntries(resHeaders.entries());
 
   const stream = new TransformStream();
 
@@ -53,9 +57,9 @@ export async function POST(req: NextRequest, resp: NextResponse) {
 
   return new Response(stream.readable, {
     headers: {
-      "Transfer-Encoding": "chunked",
+      "Transfer-Encoding": headersObject["transfer-encoding"],
       charset: "utf-8",
-      "Content-Type": "text/plain",
+      "Content-Type": headersObject["content-type"],
     },
   });
 }
