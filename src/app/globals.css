@@ -18,6 +18,17 @@
 
 
   :root {
+    --color-zinc-50: 243 243 243;
+    --color-zinc-100: 232 232 232;
+    --color-zinc-200: 197 197 197;
+    --color-zinc-300: 161 161 162;
+    --color-zinc-400: 91 91 92;
+    --color-zinc-500: 21 21 22;
+    --color-zinc-600: 19 19 20;
+    --color-zinc-700: 13 13 13;
+    --color-zinc-800: 9 9 10;
+    --color-zinc-900: 6 6 7;
+
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
 

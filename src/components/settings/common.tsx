@@ -58,7 +58,7 @@ export const CommonSettings = () => {
           {renderResetToDefault("messageLimit")}
         </div>
 
-        <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-100 dark:bg-white/5 rounded-xl">
+        <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-50 dark:bg-white/5 rounded-xl">
           <div className="flex flex-row w-full justify-between">
             <p className="text-sm">Use all Previous Messages</p>
             <Switch
@@ -119,7 +119,7 @@ export const CommonSettings = () => {
             </Tooltip>
             {renderResetToDefault("temperature")}
           </div>
-          <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-100 dark:bg-white/5 rounded-xl">
+          <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-50 dark:bg-white/5 rounded-xl">
             <p className="text-xl  text-zinc-600 dark:text-white font-medium">
               {formik.values.temperature}
             </p>
@@ -157,7 +157,7 @@ export const CommonSettings = () => {
             </Tooltip>
             {renderResetToDefault("topP")}
           </div>
-          <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-100 dark:bg-white/5 rounded-xl">
+          <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-50 dark:bg-white/5 rounded-xl">
             <p className="text-xl  text-zinc-600 dark:text-white font-medium">
               {formik.values.topP}
             </p>
@@ -192,7 +192,7 @@ export const CommonSettings = () => {
             </Tooltip>
             {renderResetToDefault("topK")}
           </div>
-          <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-100 dark:bg-white/5 rounded-xl">
+          <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-50 dark:bg-white/5 rounded-xl">
             <p className="text-xl  text-zinc-600 dark:text-white font-medium">
               {formik.values.topK}
             </p>

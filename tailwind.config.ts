@@ -23,6 +23,20 @@ const config = {
     },
     extend: {
       colors: {
+        zinc: {
+          50: "color(display-p3 0.949 0.949 0.949 / <alpha-value>)",
+          100: "color(display-p3 0.89 0.89 0.89 / <alpha-value>)",
+          200: "color(display-p3 0.78 0.78 0.78 / <alpha-value>)",
+          300: "color(display-p3 0.671 0.671 0.671 / <alpha-value>)",
+          400: "color(display-p3 0.561 0.561 0.561 / <alpha-value>)",
+          500: "color(display-p3 0.459 0.459 0.459 / <alpha-value>)",
+          600: "color(display-p3 0.349 0.349 0.349 / <alpha-value>)",
+          700: "color(display-p3 0.239 0.239 0.239 / <alpha-value>)",
+          800: "color(display-p3 0.129 0.129 0.129 / <alpha-value>)",
+          900: "color(display-p3 0.059 0.059 0.059 / <alpha-value>)",
+          950: "color(display-p3 0.031 0.031 0.031 / <alpha-value>)",
+        },
+
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

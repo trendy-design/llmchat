@@ -48,7 +48,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
 
   return (
     <div className="flex flex-row gap-2 mt-6 w-full">
-      <div className="p-3">{modelForMessage?.icon()}</div>
+      <div className="px-3 py-1">{modelForMessage?.icon()}</div>
       <div
         ref={messageRef}
         className=" rounded-2xl w-full flex flex-col items-start"
@@ -68,12 +68,12 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
                 }}
               >
                 Check API Key
-              </Button>{" "}
+              </Button>
             </AlertDescription>
           </Alert>
         )}
 
-        <div className="flex flex-row w-full justify-between items-center py-3 opacity-50 hover:opacity-100 transition-opacity">
+        <div className="flex flex-row w-full justify-between items-center py-3 opacity-70 hover:opacity-100 transition-opacity">
           {isLoading && <Spinner />}
           {!isLoading && (
             <div className="flex flex-row gap-1">
