@@ -19,7 +19,7 @@ export const OpenAISettings = () => {
   }, []);
   return (
     <div className="px-6 flex flex-col items-start gap-2">
-      <p className="text-md font-medium text-zinc-600 dark:text-white py-4">
+      <p className="text-md font-medium text-zinc-800 dark:text-white py-4">
         OpenAI Settings
       </p>
 
