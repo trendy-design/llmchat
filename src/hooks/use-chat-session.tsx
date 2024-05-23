@@ -130,9 +130,11 @@ export const useChatSession = () => {
       return session;
     });
 
-    console.log("newSessions", newSessions);
-    await set("chat-sessions", newSessions);
-    return newSessions;
+    const newFilteredSessions = newSessions?.filter(
+      (s) => !!s?.messages?.length
+    );
+    await set("chat-sessions", newFilteredSessions);
+    return newFilteredSessions;
   };
 
   const sortSessions = (

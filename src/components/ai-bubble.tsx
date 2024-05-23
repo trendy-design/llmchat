@@ -4,13 +4,14 @@ import { TChatMessage } from "@/hooks/use-chat-session";
 import { useClipboard } from "@/hooks/use-clipboard";
 import { useMarkdown } from "@/hooks/use-mdx";
 import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { Check, Copy, Info, TrashSimple } from "@phosphor-icons/react";
-import { encodingForModel } from "js-tiktoken";
-import { useRef } from "react";
+import { useTokenCounter } from "@/hooks/use-token-counter";
+import { Check, Copy, TrashSimple } from "@phosphor-icons/react";
+import { useRef, useState } from "react";
 import { RegenerateWithModelSelect } from "./regenerate-model-select";
 import { Alert, AlertDescription } from "./ui/alert";
 import { Button } from "./ui/button";
 import Spinner from "./ui/loading-spinner";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Tooltip } from "./ui/tooltip";
 
 export type TAIMessageBubble = {
@@ -25,26 +26,15 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
   const { getModelByKey } = useModelList();
   const { renderMarkdown } = useMarkdown();
   const { open: openSettings } = useSettings();
+  const { getTokenCount } = useTokenCounter();
   const { removeMessage, runModel } = useChatContext();
+  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
 
   const modelForMessage = getModelByKey(model);
 
   const handleCopyContent = () => {
     messageRef?.current && rawAI && copy(rawAI);
   };
-
-  const getTokenCount = (
-    message: Partial<Pick<TChatMessage, "model" | "rawAI">>
-  ) => {
-    const enc = encodingForModel("gpt-3.5-turbo");
-
-    if (message.rawAI) {
-      return enc.encode(message.rawAI).length;
-    }
-    return undefined;
-  };
-
-  const tokenCount = getTokenCount({ model, rawAI });
 
   return (
     <div className="flex flex-row gap-2 mt-6 w-full">
@@ -104,28 +94,46 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
                 />
               )}
               <Tooltip content="Delete">
-                <Button
-                  variant="ghost"
-                  size="iconSm"
-                  rounded="lg"
-                  onClick={() => {
-                    removeMessage(id);
-                  }}
+                <Popover
+                  open={openDeleteConfirm}
+                  onOpenChange={setOpenDeleteConfirm}
                 >
-                  <TrashSimple size={16} weight="bold" />
-                </Button>
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost" size="iconSm" rounded="lg">
+                      <TrashSimple size={16} weight="bold" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <p className="text-sm font-medium pb-2">
+                      Are you sure you want to delete this message?
+                    </p>
+                    <div className="flex flex-row gap-1">
+                      <Button
+                        variant="default"
+                        className="bg-red-600 hover:bg-red-700"
+                        onClick={() => {
+                          removeMessage(id);
+                        }}
+                      >
+                        Delete Message
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={() => {
+                          setOpenDeleteConfirm(false);
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </Tooltip>
             </div>
           )}
-          {tokenCount && !isLoading && (
+          {!isLoading && (
             <div className="flex flex-row gap-2 items-center text-xs text-zinc-500">
               {modelForMessage?.name}
-              <Tooltip content="Estimated Output Tokens">
-                <span className="flex flex-row gap-1 p-2 items-center text-xs cursor-pointer">
-                  {`${tokenCount} tokens`}
-                  <Info size={14} weight="bold" />
-                </span>
-              </Tooltip>
             </div>
           )}
         </div>

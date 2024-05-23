@@ -9,6 +9,7 @@ import { useTextSelection } from "@/hooks/usse-text-selection";
 import { slideUpVariant } from "@/lib/framer-motion";
 import { PromptType, RoleType, roles } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
+import HardBreak from "@tiptap/extension-hard-break";
 
 import {
   ArrowDown,
@@ -37,7 +38,6 @@ import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Resizer from "react-image-file-resizer";
-import { toast } from "sonner";
 import { ChatExamples } from "./chat-examples";
 import { ModelSelect } from "./model-select";
 import { AudioWaveSpinner } from "./ui/audio-wave";
@@ -53,6 +53,7 @@ import {
 } from "./ui/command";
 import { Popover, PopoverAnchor, PopoverContent } from "./ui/popover";
 import { Tooltip } from "./ui/tooltip";
+import { useToast } from "./ui/use-toast";
 
 export type TAttachment = {
   file?: File;
@@ -64,6 +65,7 @@ export const ChatInput = () => {
   const { open: openFilters } = useFilters();
   const { showButton, scrollToBottom } = useScrollToBottom();
   const router = useRouter();
+  const { toast } = useToast();
   const [selectedPrompt, setSelectedPrompt] = useState<string>();
   const { startRecording, stopRecording, recording, text, transcribing } =
     useRecordVoice();
@@ -121,6 +123,7 @@ export const ChatInput = () => {
           class: "prompt-highlight",
         },
       }),
+      HardBreak,
     ],
     content: ``,
     autofocus: true,
@@ -177,7 +180,11 @@ export const ChatInput = () => {
 
     const fileTypes = ["image/jpeg", "image/png", "image/gif"];
     if (file && !fileTypes.includes(file?.type)) {
-      toast("Please select a valid image (JPEG, PNG, GIF).");
+      toast({
+        title: "Invalid format",
+        description: "Please select a valid image (JPEG, PNG, GIF).",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -219,7 +226,11 @@ export const ChatInput = () => {
         !["gpt-4-turbo", "gpt-4o"].includes(selectedModel?.key) &&
         attachment?.base64
       ) {
-        toast.error("This model does not support image input.");
+        toast({
+          title: "Ahh!",
+          description: "This model does not support image input.",
+          variant: "destructive",
+        });
         return;
       }
 
@@ -232,7 +243,11 @@ export const ChatInput = () => {
       console.log(apiKey);
 
       if (!apiKey) {
-        toast.error("API key is missing. Please check your settings.");
+        toast({
+          title: "Ahh!",
+          description: "API key is missing. Please check your settings.",
+          variant: "destructive",
+        });
         openSettings(selectedModel?.baseModel);
         return;
       }
@@ -302,7 +317,18 @@ export const ChatInput = () => {
           size="icon"
           variant="ghost"
           className="min-w-8 h-8"
-          onClick={() => {
+          onClick={async () => {
+            const apiKey = await getApiKey("openai");
+            if (!apiKey) {
+              toast({
+                title: "API key missing",
+                description:
+                  "Recordings require OpenAI API key. Please check settings.",
+                variant: "destructive",
+              });
+              openSettings("openai");
+              return;
+            }
             startRecording();
             setTimeout(() => {
               stopRecording();
@@ -529,31 +555,12 @@ export const ChatInput = () => {
               animate={editor?.isActive ? "animate" : "initial"}
               className="flex flex-col items-start gap-0 bg-zinc-50 dark:bg-white/5 w-[700px]  dark:border-white/5 rounded-[1.25em] overflow-hidden"
             >
-              {selectedPrompt && (
-                <div className="px-1 pt-1 w-full">
-                  <div className="pl-3 pr-2 py-2 bg-black/10 rounded-t-2xl flex flex-row items-center rounded-b-md w-full text-xs text-zinc-600">
-                    <p className="w-full">{selectedPrompt}</p>
-                    <Button
-                      size={"iconXS"}
-                      variant="ghost"
-                      onClick={() => {
-                        setSelectedPrompt(undefined);
-                        focusToInput();
-                      }}
-                      className="flex-shrink-0 ml-4"
-                    >
-                      <X size={16} weight="bold" />
-                    </Button>
-                  </div>
-                </div>
-              )}
-              <div className="flex flex-row items-start px-3 min-h-14 pt-3 w-full gap-0">
+              <div className="flex flex-row items-end px-3 min-h-14 pt-3 pb-2  w-full gap-0">
                 {renderNewSession()}
-
                 <EditorContent
                   editor={editor}
                   autoFocus
-                  className="w-full min-h-10 text-sm max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none [&>*]:leading-6 wysiwyg cursor-text"
+                  className="w-full min-h-8 text-sm max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none [&>*]:leading-6 wysiwyg cursor-text"
                 />
 
                 {renderRecordingControls()}
@@ -607,6 +614,10 @@ export const ChatInput = () => {
               />
               <CommandEmpty>No framework found.</CommandEmpty>
               <CommandList className="p-2 max-h-[140px]">
+                <CommandItem onSelect={() => {}} disabled={true}>
+                  <Plus size={14} weight="bold" className="flex-shrink-0" />{" "}
+                  Create New Prompt <Badge>Coming soon</Badge>
+                </CommandItem>
                 {roles?.map((role, index) => (
                   <CommandItem
                     key={index}

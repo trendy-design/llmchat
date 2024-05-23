@@ -124,11 +124,11 @@ p {
 }
 
 mark.prompt-highlight {
-  background-color: hsl(150deg 68% 56% / 20%);
-  color: #34b877;
-  padding: 0.2rem 0.4rem;
+  background-color: hsl(0deg 0% 100%);
+  color: #2c2a2d;
+  padding: 0.1rem 0.4rem;
   font-weight: 500;
-  border: 1px solid rgb(0 0 0 / 0%);
+  border: 1px solid rgb(0 0 0 / 12%);
   border-radius: 8px;
 }
 

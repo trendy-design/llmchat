@@ -23,6 +23,7 @@
     "@radix-ui/react-switch": "^1.0.3",
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
+    "@tiptap/extension-hard-break": "^2.4.0",
     "@tiptap/extension-highlight": "^2.4.0",
     "@tiptap/extension-placeholder": "^2.4.0",
     "@tiptap/pm": "^2.4.0",

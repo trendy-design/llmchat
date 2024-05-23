@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
   CommandEmpty,
@@ -7,6 +8,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { useToast } from "@/components/ui/use-toast";
 import { useChatSession } from "@/hooks/use-chat-session";
 import { useModelList } from "@/hooks/use-model-list";
 import { cn } from "@/lib/utils";
@@ -29,6 +31,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
     removeSession,
     currentSession,
   } = useChatContext();
+  const { toast } = useToast();
   const { sortSessions } = useChatSession();
   const router = useRouter();
   const { getModelByKey } = useModelList();
@@ -69,11 +72,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
                 });
               }}
             >
-              <Plus
-                size={14}
-                weight="bold"
-                className="text-zinc-500 flex-shrink-0"
-              />
+              <Plus size={16} weight="bold" className="flex-shrink-0" />
               New session
             </CommandItem>
             <CommandItem
@@ -85,17 +84,9 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
               }}
             >
               {theme === "light" ? (
-                <Moon
-                  size={14}
-                  weight="bold"
-                  className="text-zinc-500 flex-shrink-0"
-                />
+                <Moon size={16} weight="bold" className="flex-shrink-0" />
               ) : (
-                <Sun
-                  size={14}
-                  weight="bold"
-                  className="text-zinc-500 flex-shrink-0"
-                />
+                <Sun size={16} weight="bold" className="flex-shrink-0" />
               )}
               Switch to {theme === "light" ? "dark" : "light"} mode
             </CommandItem>
@@ -113,30 +104,39 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
                   });
               }}
             >
-              <TrashSimple
-                size={14}
-                weight="bold"
-                className="text-zinc-500 flex-shrink-0"
-              />
+              <TrashSimple size={16} weight="bold" className="flex-shrink-0" />
               Delete current session
             </CommandItem>
             <CommandItem
               className="gap-3"
               value="clear history"
               onSelect={(value) => {
-                clearChatSessions().then(() => {
-                  createSession().then((session) => {
-                    router.push(`/chat/${session?.id}`);
-                    dismiss();
-                  });
+                dismiss();
+                toast({
+                  title: "Are you sure?",
+                  description:
+                    "This will clear all chat history. This action cannot be undone.",
+                  variant: "destructive",
+                  action: (
+                    <Button
+                      size="sm"
+                      variant="default"
+                      onClick={() => {
+                        clearChatSessions().then(() => {
+                          createSession().then((session) => {
+                            router.push(`/chat/${session?.id}`);
+                            dismiss();
+                          });
+                        });
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  ),
                 });
               }}
             >
-              <Eraser
-                size={14}
-                weight="bold"
-                className="text-zinc-500 flex-shrink-0"
-              />
+              <Eraser size={16} weight="bold" className="flex-shrink-0" />
               Clear History
             </CommandItem>
           </CommandGroup>

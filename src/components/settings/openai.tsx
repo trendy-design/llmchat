@@ -37,16 +37,22 @@ export const OpenAISettings = () => {
         }}
       />
 
-      <Button
-        size="sm"
-        variant="secondary"
-        onClick={() => {
-          window.open("https://platform.openai.com/account/api-keys", "_blank");
-        }}
-      >
-        Get your API key here <ArrowRight size={16} weight="bold" />
-      </Button>
-      {renderTestButton("openai")}
+      <div className="flex flex-row items-center gap-2">
+        {renderTestButton("openai")}
+
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => {
+            window.open(
+              "https://platform.openai.com/account/api-keys",
+              "_blank"
+            );
+          }}
+        >
+          Get your API key here <ArrowRight size={16} weight="bold" />
+        </Button>
+      </div>
       <Alert variant="success">
         <Info className="h-4 w-4" />
         <AlertTitle>Attention!</AlertTitle>

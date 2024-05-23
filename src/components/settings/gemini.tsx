@@ -36,16 +36,19 @@ export const GeminiSettings = () => {
           setApiKey("gemini", e.target.value);
         }}
       />
-      <Button
-        size="sm"
-        variant="secondary"
-        onClick={() => {
-          window.open("https://aistudio.google.com/app/apikey", "_blank");
-        }}
-      >
-        Get your API key here <ArrowRight size={16} weight="bold" />
-      </Button>
-      {renderTestButton("gemini")}
+      <div className="flex flex-row items-center gap-2">
+        {renderTestButton("gemini")}
+
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => {
+            window.open("https://aistudio.google.com/app/apikey", "_blank");
+          }}
+        >
+          Get your API key here <ArrowRight size={16} weight="bold" />
+        </Button>
+      </div>
 
       <Alert variant="success">
         <Info className="h-4 w-4" />

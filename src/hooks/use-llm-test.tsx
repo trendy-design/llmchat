@@ -43,7 +43,7 @@ export const useLLMTest = () => {
     return (
       <Button
         size="sm"
-        variant="secondary"
+        variant="default"
         onClick={async () => {
           setIsTestRunning(true);
           const succeed = await testLLM(model);

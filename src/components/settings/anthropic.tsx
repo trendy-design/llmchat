@@ -37,16 +37,22 @@ export const AnthropicSettings = () => {
           setApiKey("anthropic", e.target.value);
         }}
       />
-      <Button
-        size="sm"
-        variant="secondary"
-        onClick={() => {
-          window.open("https://console.anthropic.com/settings/keys", "_blank");
-        }}
-      >
-        Get your API key here <ArrowRight size={16} weight="bold" />
-      </Button>
-      {renderTestButton("anthropic")}
+      <div className="flex flex-row items-center gap-2">
+        {renderTestButton("anthropic")}
+
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={() => {
+            window.open(
+              "https://console.anthropic.com/settings/keys",
+              "_blank"
+            );
+          }}
+        >
+          Get your API key here <ArrowRight size={16} weight="bold" />
+        </Button>
+      </div>
 
       <Alert variant="success">
         <Info className="h-4 w-4" />
