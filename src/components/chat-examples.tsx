@@ -9,13 +9,13 @@ export const ChatExamples = ({ onExampleClick, show }: TChatExamples) => {
   if (!show) return null;
   return (
     <div className="flex flex-col gap-3 mt-2">
-      <div className="grid grid-cols-3 gap-3 w-[700px]">
+      <div className="grid grid-cols-4 gap-3 w-[700px]">
         {examplePrompts?.map((example, index) => (
           <motion.div
             initial={{
               opacity: 0,
             }}
-            className="flex bg-white shadow-sm dark:bg-zinc-800 flex-col gap-2 items-start text-sm py-3 px-4 border border-dark/5 dark:border-white/5 text-zinc-600 dark:text-zinc-400 w-full rounded-2xl hover:bg-zinc-50 dark:hover:bg-black/20 cursor-pointer"
+            className="flex bg-white dark:bg-zinc-800 flex-col gap-2 items-start text-sm py-3 px-4 border border-black/10 dark:border-white/5 text-zinc-600 dark:text-zinc-400 w-full rounded-2xl hover:bg-zinc-50 dark:hover:bg-black/20 cursor-pointer"
             key={index}
             animate={{
               opacity: 1,

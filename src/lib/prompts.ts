@@ -62,6 +62,11 @@ export const examplePrompts = [
     prompt:
       "Write a follow-up email to a potential employer after a job interview, expressing gratitude for the opportunity and reiterating your interest in the position.",
   },
+  {
+    title: "Professional Meeting Follow-Up",
+    prompt:
+      "Write a follow-up email to a potential employer after a job interview, expressing gratitude for the opportunity and reiterating your interest in the position.",
+  },
 ];
 
 export const roles = [

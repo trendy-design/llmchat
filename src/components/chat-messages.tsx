@@ -29,8 +29,10 @@ moment().calendar(null, {
 });
 
 export const ChatMessages = () => {
-  const { currentSession } = useChatContext();
+  const { currentSession, runModel } = useChatContext();
   const chatContainer = useRef<HTMLDivElement>(null);
+
+  const isNewSession = currentSession?.messages.length === 0;
 
   useEffect(() => {
     scrollToBottom();
@@ -46,7 +48,7 @@ export const ChatMessages = () => {
     return (
       <div className="flex flex-col gap-1 items-end w-full" key={message.id}>
         {message.props?.context && (
-          <div className="bg-black/10 text-zinc-600 dark:text-zinc-100 dark:bg-black/30 rounded-2xl p-2 pl-3 text-sm flex flex-row gap-2 pr-4 border hover:border-white/5 border-transparent">
+          <div className="bg-zinc-100 text-zinc-600 dark:text-zinc-100 dark:bg-black/30 rounded-2xl p-2 pl-3 text-sm flex flex-row gap-2 pr-4 border hover:border-white/5 border-transparent">
             <ArrowElbowDownRight
               size={20}
               weight="bold"
@@ -68,7 +70,7 @@ export const ChatMessages = () => {
             height={0}
           />
         )}
-        <div className="bg-black/10 text-zinc-600 dark:text-zinc-100 dark:bg-black/30 ml-16 rounded-2xl text-sm flex flex-row gap-2 px-3 py-2">
+        <div className="bg-zinc-100 text-zinc-600 dark:text-zinc-100 dark:bg-black/30 ml-16 rounded-2xl text-sm flex flex-row gap-2 px-3 py-2">
           <span className="pt-[0.20em] pb-[0.15em] leading-6">
             {message.rawHuman}
           </span>

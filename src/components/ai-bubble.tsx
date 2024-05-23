@@ -1,4 +1,5 @@
 import { useChatContext } from "@/context/chat/context";
+import { useSettings } from "@/context/settings/context";
 import { TChatMessage } from "@/hooks/use-chat-session";
 import { useClipboard } from "@/hooks/use-clipboard";
 import { useMarkdown } from "@/hooks/use-mdx";
@@ -7,7 +8,7 @@ import { Check, Copy, Info, TrashSimple } from "@phosphor-icons/react";
 import { encodingForModel } from "js-tiktoken";
 import { useRef } from "react";
 import { RegenerateWithModelSelect } from "./regenerate-model-select";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Alert, AlertDescription } from "./ui/alert";
 import { Button } from "./ui/button";
 import Spinner from "./ui/loading-spinner";
 import { Tooltip } from "./ui/tooltip";
@@ -23,6 +24,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
   const { showCopied, copy } = useClipboard();
   const { getModelByKey } = useModelList();
   const { renderMarkdown } = useMarkdown();
+  const { open: openSettings } = useSettings();
   const { removeMessage, runModel } = useChatContext();
 
   const modelForMessage = getModelByKey(model);
@@ -56,8 +58,18 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
         )}
         {errorMesssage && (
           <Alert variant="destructive">
-            <AlertTitle>Something went wrong</AlertTitle>
-            <AlertDescription> {errorMesssage}</AlertDescription>
+            <AlertDescription>
+              Something went wrong. Make sure your API key is working.
+              <Button
+                variant="link"
+                size="link"
+                onClick={() => {
+                  openSettings();
+                }}
+              >
+                Check API Key
+              </Button>{" "}
+            </AlertDescription>
           </Alert>
         )}
 

@@ -1,7 +1,6 @@
-import { defaultPreferences, usePreferences } from "@/hooks/use-preferences";
+import { useModelSettings } from "@/hooks/use-model-settings";
+import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
 import { Info } from "@phosphor-icons/react";
-import { useFormik } from "formik";
-import { useEffect } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
@@ -10,42 +9,23 @@ import { Textarea } from "../ui/textarea";
 import { Tooltip } from "../ui/tooltip";
 
 export const CommonSettings = () => {
-  const { getPreferences, setPreferences } = usePreferences();
+  const { formik, setPreferences } = useModelSettings({});
 
-  const formik = useFormik({
-    initialValues: {
-      systemPrompt: "",
-      messageLimit: "all",
-      temperature: 0.5,
-      topP: 1,
-      topK: 5,
-      maxTokens: 1000,
-    },
-    onSubmit: (values) => {},
-  });
+  const renderResetToDefault = (key: keyof TPreferences) => {
+    return (
+      <Button
+        variant="link"
+        size="sm"
+        onClick={() => {
+          setPreferences({ [key]: defaultPreferences[key] });
+          formik.setFieldValue(key, defaultPreferences[key]);
+        }}
+      >
+        Reset to Default
+      </Button>
+    );
+  };
 
-  useEffect(() => {
-    getPreferences().then((preferences) => {
-      formik.setFieldValue(
-        "systemPrompt",
-        preferences.systemPrompt || defaultPreferences.systemPrompt
-      );
-      formik.setFieldValue(
-        "messageLimit",
-        preferences.messageLimit || defaultPreferences.messageLimit
-      );
-      formik.setFieldValue(
-        "temperature",
-        preferences.temperature || defaultPreferences.temperature
-      );
-      formik.setFieldValue("topP", preferences.topP || defaultPreferences.topP);
-      formik.setFieldValue("topK", preferences.topK || defaultPreferences.topK);
-      formik.setFieldValue(
-        "maxTokens",
-        preferences.maxTokens || defaultPreferences.maxTokens
-      );
-    });
-  }, []);
   return (
     <div className="px-6 pb-12 flex flex-col items-start gap-2 h-full overflow-y-auto no-scrollbar">
       <p className="text-md font-medium text-zinc-600 dark:text-white py-4">
@@ -57,9 +37,7 @@ export const CommonSettings = () => {
           <p className="text-xs text-zinc-500 flex flex-row items-center gap-1">
             System Default Prompt <Info weight="regular" size={14} />
           </p>
-          <Button variant="link" size="sm">
-            Reset to Default
-          </Button>
+          {renderResetToDefault("systemPrompt")}
         </div>
         <Textarea
           name="systemPrompt"
@@ -77,19 +55,7 @@ export const CommonSettings = () => {
           <p className="text-xs flex flex-row gap-2 items-center  text-zinc-500">
             Messages Limit
           </p>
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => {
-              setPreferences({ messageLimit: defaultPreferences.messageLimit });
-              formik.setFieldValue(
-                "messageLimit",
-                defaultPreferences.messageLimit
-              );
-            }}
-          >
-            Reset to Default
-          </Button>
+          {renderResetToDefault("messageLimit")}
         </div>
 
         <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-100 dark:bg-white/5 rounded-xl">
@@ -129,16 +95,7 @@ export const CommonSettings = () => {
           <p className="flex flex-row text-xs items-center gap-1  text-zinc-500">
             Max Tokens <Info weight="regular" size={14} />
           </p>
-          <Button
-            variant="link"
-            size="sm"
-            onClick={() => {
-              setPreferences({ maxTokens: defaultPreferences.maxTokens });
-              formik.setFieldValue("maxTokens", defaultPreferences.maxTokens);
-            }}
-          >
-            Reset to Default
-          </Button>
+          {renderResetToDefault("maxTokens")}
         </div>
 
         <Input
@@ -160,19 +117,7 @@ export const CommonSettings = () => {
                 Temperature <Info weight="regular" size={14} />
               </p>
             </Tooltip>
-            <Button
-              variant="link"
-              size="sm"
-              onClick={() => {
-                setPreferences({ temperature: defaultPreferences.temperature });
-                formik.setFieldValue(
-                  "temperature",
-                  defaultPreferences.temperature
-                );
-              }}
-            >
-              Reset to Default
-            </Button>
+            {renderResetToDefault("temperature")}
           </div>
           <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-100 dark:bg-white/5 rounded-xl">
             <p className="text-xl  text-zinc-600 dark:text-white font-medium">
@@ -210,16 +155,7 @@ export const CommonSettings = () => {
                 TopP <Info weight="regular" size={14} />
               </p>
             </Tooltip>
-            <Button
-              variant="link"
-              size="sm"
-              onClick={() => {
-                setPreferences({ topP: defaultPreferences.topP });
-                formik.setFieldValue("topP", defaultPreferences.topP);
-              }}
-            >
-              Reset to Default
-            </Button>
+            {renderResetToDefault("topP")}
           </div>
           <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-100 dark:bg-white/5 rounded-xl">
             <p className="text-xl  text-zinc-600 dark:text-white font-medium">
@@ -254,16 +190,7 @@ export const CommonSettings = () => {
                 TopK <Info weight="regular" size={14} />
               </p>
             </Tooltip>
-            <Button
-              variant="link"
-              size="sm"
-              onClick={() => {
-                setPreferences({ topK: defaultPreferences.topK });
-                formik.setFieldValue("topK", defaultPreferences.topK);
-              }}
-            >
-              Reset to Default
-            </Button>
+            {renderResetToDefault("topK")}
           </div>
           <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-100 dark:bg-white/5 rounded-xl">
             <p className="text-xl  text-zinc-600 dark:text-white font-medium">

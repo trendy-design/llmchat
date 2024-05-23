@@ -29,6 +29,7 @@ export type TModel = {
   outputPrice?: number;
   tokens: number;
   baseModel: TBaseModel;
+  maxOutputTokens: number;
 };
 
 export const useModelList = () => {
@@ -85,6 +86,7 @@ export const useModelList = () => {
       outputPrice: 15,
       icon: () => <ModelIcon size="md" type="gpt4" />,
       baseModel: "openai",
+      maxOutputTokens: 2048,
     },
     {
       name: "GPT4 Turbo",
@@ -95,6 +97,7 @@ export const useModelList = () => {
       outputPrice: 30,
       icon: () => <ModelIcon size="md" type="gpt4" />,
       baseModel: "openai",
+      maxOutputTokens: 4095,
     },
     {
       name: "GPT4",
@@ -105,6 +108,7 @@ export const useModelList = () => {
       outputPrice: 60,
       icon: () => <ModelIcon size="md" type="gpt4" />,
       baseModel: "openai",
+      maxOutputTokens: 4095,
     },
     {
       name: "GPT3.5 Turbo",
@@ -116,6 +120,7 @@ export const useModelList = () => {
       icon: () => <ModelIcon size="md" type="gpt3" />,
 
       baseModel: "openai",
+      maxOutputTokens: 4095,
     },
     {
       name: "GPT3.5 Turbo 0125",
@@ -124,6 +129,7 @@ export const useModelList = () => {
       tokens: 16385,
       icon: () => <ModelIcon size="md" type="gpt3" />,
       baseModel: "openai",
+      maxOutputTokens: 4095,
     },
     {
       name: "GPT3.5 Turbo Instruct",
@@ -134,6 +140,7 @@ export const useModelList = () => {
       outputPrice: 2,
       icon: () => <ModelIcon size="md" type="gpt3" />,
       baseModel: "openai",
+      maxOutputTokens: 4095,
     },
     {
       name: "Claude 3 Opus",
@@ -143,6 +150,7 @@ export const useModelList = () => {
       outputPrice: 75,
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="anthropic" />,
+      maxOutputTokens: 4095,
 
       baseModel: "anthropic",
     },
@@ -152,6 +160,7 @@ export const useModelList = () => {
       outputPrice: 15,
       key: "claude-3-sonnet-20240229",
       isNew: false,
+      maxOutputTokens: 4095,
 
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="anthropic" />,
@@ -165,6 +174,8 @@ export const useModelList = () => {
       inputPrice: 0.25,
       outputPrice: 1.5,
       tokens: 200000,
+      maxOutputTokens: 4095,
+
       icon: () => <ModelIcon size="md" type="anthropic" />,
       baseModel: "anthropic",
     },
@@ -177,6 +188,7 @@ export const useModelList = () => {
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="gemini" />,
       baseModel: "gemini",
+      maxOutputTokens: 8190,
     },
     {
       name: "Gemini Flash 1.5",
@@ -187,6 +199,7 @@ export const useModelList = () => {
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="gemini" />,
       baseModel: "gemini",
+      maxOutputTokens: 8190,
     },
     {
       name: "Gemini Pro",
@@ -197,6 +210,7 @@ export const useModelList = () => {
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="gemini" />,
       baseModel: "gemini",
+      maxOutputTokens: 4095,
     },
   ];
 

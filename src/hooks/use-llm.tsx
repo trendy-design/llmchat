@@ -57,20 +57,20 @@ export const useLLM = ({
 
     const system: BaseMessagePromptTemplateLike = [
       "system",
-      `${systemPrompt}. `,
+      `${systemPrompt}.${
+        props.context
+          ? `Answer user's question based on the following context: """{context}"""`
+          : ``
+      } ${
+        hasPreviousMessages
+          ? `You can also refer these previous conversations if needed:`
+          : ``
+      }`,
     ];
 
     const messageHolders = new MessagesPlaceholder("chat_history");
 
-    const userContent = `{input} ${
-      props.context
-        ? `Answer user's question based on the following context: """{context}"""`
-        : ``
-    } ${
-      hasPreviousMessages
-        ? `You can also refer these previous conversations if needed:`
-        : ``
-    } `;
+    const userContent = `{input}  `;
 
     const user: BaseMessagePromptTemplateLike = [
       "user",
