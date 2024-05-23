@@ -31,7 +31,7 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Placeholder from "@tiptap/extension-placeholder";
 
 import Text from "@tiptap/extension-text";
-import { EditorContent, Extension, Mark, useEditor } from "@tiptap/react";
+import { EditorContent, Extension, useEditor } from "@tiptap/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -106,12 +106,6 @@ export const ChatInput = () => {
     },
   });
 
-  const inputRegex = /\{\{(.*?)\}\}/g;
-
-  const CustomMark = Mark.create({
-    name: "customMark",
-  });
-
   const editor = useEditor({
     extensions: [
       Document,
@@ -129,27 +123,7 @@ export const ChatInput = () => {
       }),
     ],
     content: ``,
-    // onUpdate({ editor }) {
-    //   const text = editor.getText();
-    //   const html = editor.getHTML();
-
-    //   if (text === "/") {
-    //     setOpen(true);
-    //   } else {
-    //     console.log(text);
-    //     const newHTML = html.replace(
-    //       /{{(.*?)}}/g,
-    //       ` <mark class="prompt-highlight">$1</mark> `
-    //     );
-
-    //     if (newHTML !== html) {
-    //       editor.commands.setContent(newHTML, true, {
-    //         preserveWhitespace: true,
-    //       });
-    //     }
-    //     setOpen(false);
-    //   }
-    // },
+    autofocus: true,
     onTransaction(props) {
       const { editor } = props;
       const text = editor.getText();
@@ -172,6 +146,12 @@ export const ChatInput = () => {
       }
     },
   });
+
+  useEffect(() => {
+    if (editor?.isActive) {
+      editor.commands.focus("end");
+    }
+  }, [editor?.isActive]);
 
   const resizeFile = (file: File) =>
     new Promise((resolve) => {
@@ -516,8 +496,11 @@ export const ChatInput = () => {
     );
   };
 
-  const focusToInput = () => {
+  const clearInput = () => {
     editor?.commands.clearContent();
+  };
+
+  const focusToInput = () => {
     editor?.commands.focus("end");
   };
 
@@ -569,7 +552,8 @@ export const ChatInput = () => {
 
                 <EditorContent
                   editor={editor}
-                  className="w-full min-h-12 text-sm max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none [&>*]:leading-6 wysiwyg cursor-text"
+                  autoFocus
+                  className="w-full min-h-10 text-sm max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none [&>*]:leading-6 wysiwyg cursor-text"
                 />
 
                 {renderRecordingControls()}
@@ -579,7 +563,7 @@ export const ChatInput = () => {
                   variant={!!editor?.getText() ? "secondary" : "ghost"}
                   disabled={!editor?.getText()}
                   className="min-w-8 h-8 ml-1"
-                  onClick={() => handleRunModel()}
+                  onClick={() => handleRunModel(editor?.getText())}
                 >
                   <ArrowUp size={20} weight="bold" />
                 </Button>
@@ -616,6 +600,7 @@ export const ChatInput = () => {
                     !commandInput
                   ) {
                     setOpen(false);
+                    clearInput();
                     focusToInput();
                   }
                 }}
