@@ -21,7 +21,6 @@ import {
   Paperclip,
   Plus,
   Quotes,
-  StarFour,
   StopCircle,
   X,
 } from "@phosphor-icons/react";
@@ -347,33 +346,6 @@ export const ChatInput = () => {
     );
   };
 
-  const renderNewSession = () => {
-    if (isNewSession) {
-      return (
-        <div className="min-w-8 h-8 flex justify-center items-center dark:text-white text-zinc-500">
-          <StarFour size={20} weight="fill" />
-        </div>
-      );
-    }
-
-    return (
-      <Tooltip content="New Session">
-        <Button
-          size="icon"
-          variant={"ghost"}
-          className="min-w-8 h-8"
-          onClick={() => {
-            createSession().then((session) => {
-              router.push(`/chat/${session.id}`);
-            });
-          }}
-        >
-          <Plus size={20} weight="bold" />
-        </Button>
-      </Tooltip>
-    );
-  };
-
   const renderListeningIndicator = () => {
     if (transcribing) {
       return (
@@ -537,7 +509,7 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-center absolute bottom-0 px-2 pb-1 md:px-4 md:pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-2",
+        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 pb-1 md:px-4 md:pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-2",
         isNewSession && "top-0 "
       )}
     >
@@ -547,7 +519,17 @@ export const ChatInput = () => {
         {renderReplyButton()}
         {renderListeningIndicator()}
       </div>
-
+      <div className="flex flex-col  justify-center items-center">
+        <ChatExamples
+          show={isNewSession}
+          onExampleClick={(prompt) => {
+            handleRunModel(prompt, () => {
+              clearInput();
+              focusToInput();
+            });
+          }}
+        />
+      </div>
       <div className="flex flex-col gap-1 w-full md:w-[700px]">
         {renderSelectedContext()}
         {renderAttachedImage()}
@@ -557,10 +539,10 @@ export const ChatInput = () => {
               variants={slideUpVariant}
               initial={"initial"}
               animate={editor?.isActive ? "animate" : "initial"}
-              className="flex flex-col items-start gap-0 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-[1.25em] overflow-hidden"
+              className="flex flex-col items-start gap-0 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
             >
-              <div className="flex flex-row items-end px-3 min-h-14 pt-3 pb-2 w-full gap-0">
-                {renderNewSession()}
+              <div className="flex flex-row items-end px-3 py-2 w-full gap-0">
+                {/* {renderNewSession()} */}
                 <EditorContent
                   editor={editor}
                   autoFocus
@@ -582,23 +564,6 @@ export const ChatInput = () => {
                   }
                 >
                   <ArrowUp size={20} weight="bold" />
-                </Button>
-              </div>
-              <div className="flex flex-row items-center w-full justify-start gap-0 px-2 pb-2 pt-1">
-                <ModelSelect />
-
-                <div className="flex-1"></div>
-
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={openFilters}
-                  className="px-1.5"
-                >
-                  <ClockClockwise size={16} weight="bold" /> History
-                  <Badge>
-                    <Command size={12} weight="bold" /> K
-                  </Badge>
                 </Button>
               </div>
             </motion.div>
@@ -649,17 +614,23 @@ export const ChatInput = () => {
             </CMDKCommand>
           </PopoverContent>
         </Popover>
-      </div>
-      <div className="flex flex-col  justify-center items-center">
-        <ChatExamples
-          show={isNewSession}
-          onExampleClick={(prompt) => {
-            handleRunModel(prompt, () => {
-              clearInput();
-              focusToInput();
-            });
-          }}
-        />
+        <div className="flex flex-row items-center w-full justify-start gap-0 px-2 pb-2 pt-1">
+          <ModelSelect />
+
+          <div className="flex-1"></div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={openFilters}
+            className="px-1.5"
+          >
+            <ClockClockwise size={16} weight="bold" /> History
+            <Badge>
+              <Command size={12} weight="bold" /> K
+            </Badge>
+          </Button>
+        </div>
       </div>
     </div>
   );
