@@ -99,8 +99,8 @@ export const ChatInput = () => {
         Enter: (_) => {
           if (_.editor.getText()?.length > 0) {
             handleRunModel(_.editor.getText(), () => {
-              clearInput();
-              focusToInput();
+              _.editor.commands.clearContent();
+              _.editor.commands.focus("end");
             });
           }
           return true;
@@ -542,7 +542,7 @@ export const ChatInput = () => {
               animate={editor?.isActive ? "animate" : "initial"}
               className="flex flex-col items-start gap-0 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
             >
-              <div className="flex flex-row items-end px-3 py-2 w-full gap-0">
+              <div className="flex flex-row items-end pl-4 pr-2 py-2 w-full gap-0">
                 {/* {renderNewSession()} */}
                 <EditorContent
                   editor={editor}
@@ -615,7 +615,7 @@ export const ChatInput = () => {
             </CMDKCommand>
           </PopoverContent>
         </Popover>
-        <div className="flex flex-row items-center w-full justify-start gap-0 px-2 pt-1">
+        <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 px-2">
           <ModelSelect />
           <QuickSettings />
           <div className="flex-1"></div>
