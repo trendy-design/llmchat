@@ -100,7 +100,7 @@ export const ChatMessages = () => {
       ref={chatContainer}
       id="chat-container"
     >
-      <div className="w-[700px] flex flex-col gap-24">
+      <div className="w-full md:w-[700px] p-4 md:p-0 flex flex-col gap-24">
         <div className="flex flex-col gap-8 w-full items-start">
           {currentSession?.messages?.map((message, index) =>
             renderMessage(

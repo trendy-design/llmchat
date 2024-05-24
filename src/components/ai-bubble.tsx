@@ -37,8 +37,8 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
   };
 
   return (
-    <div className="flex flex-row gap-2 mt-6 w-full">
-      <div className="px-3 py-1">{modelForMessage?.icon()}</div>
+    <div className="flex  flex-col md:flex-row gap-2 mt-6 w-full">
+      <div className="px-0 md:px-3 py-1">{modelForMessage?.icon()}</div>
       <div
         ref={messageRef}
         className=" rounded-2xl w-full flex flex-col items-start"

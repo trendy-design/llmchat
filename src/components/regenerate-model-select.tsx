@@ -34,7 +34,7 @@ export const RegenerateWithModelSelect = ({
           </DropdownMenuTrigger>
         </Tooltip>
 
-        <DropdownMenuContent className="min-w-[250px] text-sm">
+        <DropdownMenuContent className="min-w-[250px] h-[300px] no-scrollbar overflow-y-auto">
           {models.map((model) => (
             <DropdownMenuItem
               key={model.key}

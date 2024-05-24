@@ -6,6 +6,7 @@ import { GeminiSettings } from "@/components/settings/gemini";
 import { OpenAISettings } from "@/components/settings/openai";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 import { GearSix } from "@phosphor-icons/react";
 import { useState } from "react";
 import { SettingsContext } from "./context";
@@ -73,9 +74,9 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
       {children}
 
       <Dialog open={isSettingOpen} onOpenChange={setIsSettingOpen}>
-        <DialogContent className="min-w-[800px] h-[600px] flex flex-row overflow-hidden border border-white/5 p-0">
-          <div className="w-[250px] bg-black/5 dark:bg-black/10 p-2 absolute left-0 top-0 bottom-0 flex flex-col">
-            <p className="px-2 py-2 text-xs font-semibold text-zinc-500">
+        <DialogContent className="w-[96dvw] h-[96dvh] rounded-xl md:min-w-[800px] md:h-[600px] flex flex-col md:flex-row overflow-hidden border border-white/5 p-0">
+          <div className="w-full md:w-[250px] bg-black/5 dark:bg-black/10 p-2 absolute left-0 top-0 right-0 md:bottom-0 flex flex-row md:flex-col md:gap-0 gap-1">
+            <p className="px-2 py-2 hidden md:flex text-xs font-semibold text-zinc-500">
               GENERAL
             </p>
             {settingMenu.map((menu) => (
@@ -86,10 +87,20 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
                 className="justify-start gap-2 px-2"
                 size="default"
               >
-                {menu.icon()} {menu.name}
+                <div className="w-6 h-6 flex flex-row items-center justify-center">
+                  {menu.icon()}
+                </div>
+                <span
+                  className={cn(
+                    "text-sm",
+                    selectedMenu === menu.key ? "flex" : "hidden"
+                  )}
+                >
+                  {menu.name}
+                </span>
               </Button>
             ))}
-            <p className="px-2 py-2 text-xs font-semibold text-zinc-500 ">
+            <p className="px-2 py-2 text-xs hidden md:flex  font-semibold text-zinc-500 ">
               MODELS
             </p>
             {modelsMenu.map((menu) => (
@@ -101,11 +112,19 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
                 size="default"
               >
                 {menu.icon()}
-                {menu.name}
+                <span
+                  className={cn(
+                    "text-sm",
+                    selectedMenu === menu.key ? "flex" : "hidden"
+                  )}
+                >
+                  {" "}
+                  {menu.name}
+                </span>
               </Button>
             ))}
           </div>
-          <div className="ml-[250px] w-full h-full overflow-y-auto no-scrollbar">
+          <div className="md:ml-[250px] mt-[60px] md:mt-0 w-full h-full overflow-y-auto no-scrollbar">
             {selectedMenuItem?.component}
           </div>
         </DialogContent>
