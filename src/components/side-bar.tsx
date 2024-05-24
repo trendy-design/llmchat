@@ -36,7 +36,7 @@ export const HistorySidebar = () => {
             "flex flex-col rounded-3xl outline-none h-[98dvh] w-[280px] fixed z-[901] md:bottom-2 left-2 top-2 "
           )}
         >
-          <div className="bg-white dark:bg-zinc-700 dark:border dark:border-white/5 flex flex-row rounded-2xl flex-1 p-2 relative">
+          <div className="bg-white dark:bg-zinc-700 h-[98dvh] dark:border dark:border-white/5 flex flex-row rounded-2xl flex-1 p-2 relative">
             <div className="flex flex-col w-full overflow-y-auto no-scrollbar">
               <div className="flex flex-row justify-between">
                 <Button
