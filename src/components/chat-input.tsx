@@ -557,7 +557,7 @@ export const ChatInput = () => {
               variants={slideUpVariant}
               initial={"initial"}
               animate={editor?.isActive ? "animate" : "initial"}
-              className="flex flex-col items-start gap-0 bg-zinc-50 dark:bg-white/5 w-full   dark:border-white/5 rounded-[1.25em] overflow-hidden"
+              className="flex flex-col items-start gap-0 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-[1.25em] overflow-hidden"
             >
               <div className="flex flex-row items-end px-3 min-h-14 pt-3 pb-2 w-full gap-0">
                 {renderNewSession()}
@@ -603,7 +603,11 @@ export const ChatInput = () => {
               </div>
             </motion.div>
           </PopoverAnchor>
-          <PopoverContent className="min-w-[96vw] md:w-[700px] p-0 rounded-2xl overflow-hidden">
+          <PopoverContent
+            side="top"
+            sideOffset={4}
+            className="min-w-[96vw] md:min-w-[700px] p-0 rounded-2xl overflow-hidden"
+          >
             <CMDKCommand>
               <CommandInput
                 placeholder="Search..."
@@ -622,7 +626,7 @@ export const ChatInput = () => {
                 }}
               />
               <CommandEmpty>No framework found.</CommandEmpty>
-              <CommandList className="p-2 max-h-[140px]">
+              <CommandList className="p-2 max-h-[160px]">
                 <CommandItem onSelect={() => {}} disabled={true}>
                   <Plus size={14} weight="bold" className="flex-shrink-0" />{" "}
                   Create New Prompt <Badge>Coming soon</Badge>
