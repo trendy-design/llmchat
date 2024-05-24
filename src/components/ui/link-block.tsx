@@ -85,17 +85,19 @@ export const LinkBlock = ({ url }: TLinkBlock) => {
           />
 
           <div className="flex flex-col gap-1 items-start w-full">
-            <p className="text-sm text-zinc-800 w-full truncate overflow-hidden">
+            <p className="text-sm md:text-base text-zinc-800 w-full truncate overflow-hidden">
               {ogResult.ogTitle}
             </p>
-            <p className="text-xs text-zinc-400">{ogResult.ogUrl}</p>
+            <p className="text-sm md:text-base text-zinc-400">
+              {ogResult.ogUrl}
+            </p>
           </div>
         </div>,
         ogResult.ogUrl
       )
     : renderConatiner(
         <div>
-          <p className="text-xs text-zinc-400">{url}</p>
+          <p className="text-sm md:text-base text-zinc-400">{url}</p>
         </div>,
         url
       );

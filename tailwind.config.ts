@@ -72,9 +72,9 @@ const config = {
         },
       },
       fontSize: {
-        xs: "0.80rem",
-        sm: "0.90rem",
-        base: "1rem",
+        xs: "0.78rem",
+        sm: "0.84rem",
+        base: "0.90rem",
         xl: "1.25rem",
         "2xl": "1.563rem",
         "3xl": "1.953rem",

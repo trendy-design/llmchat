@@ -104,7 +104,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent>
-                    <p className="text-sm font-medium pb-2">
+                    <p className="text-sm md:text-base font-medium pb-2">
                       Are you sure you want to delete this message?
                     </p>
                     <div className="flex flex-row gap-1">
@@ -132,7 +132,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
             </div>
           )}
           {!isLoading && (
-            <div className="flex flex-row gap-2 items-center text-xs text-zinc-500">
+            <div className="flex flex-row gap-2 items-center text-sm md:text-base text-zinc-500">
               {modelForMessage?.name}
             </div>
           )}

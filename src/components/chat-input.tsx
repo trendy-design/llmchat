@@ -376,14 +376,14 @@ export const ChatInput = () => {
   const renderListeningIndicator = () => {
     if (transcribing) {
       return (
-        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-4 py-1 h-10 flex flex-row items-center text-sm">
+        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-4 py-1 h-10 flex flex-row items-center text-sm md:text-base">
           <AudioWaveSpinner /> <p>Transcribing ...</p>
         </div>
       );
     }
     if (recording) {
       return (
-        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-2 pr-4 py-1 h-10 flex flex-row items-center text-sm">
+        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-2 pr-4 py-1 h-10 flex flex-row items-center text-sm md:text-base">
           <AudioWaveSpinner />
           <p>Listening ...</p>
         </div>
@@ -456,7 +456,7 @@ export const ChatInput = () => {
       return (
         <div className="flex flex-row items-center bg-black/30 text-zinc-300 rounded-xl h-10 w-full md:w-[700px] justify-start gap-2 pl-3 pr-1">
           <ArrowElbowDownRight size={20} weight="bold" />
-          <p className="w-full relative ml-2 text-xs flex flex-row gap-2 items-center">
+          <p className="w-full relative ml-2 text-sm md:text-base flex flex-row gap-2 items-center">
             <Image
               src={attachment.base64}
               alt="uploaded image"
@@ -486,7 +486,7 @@ export const ChatInput = () => {
       return (
         <div className="flex flex-row items-center bg-black/30 text-zinc-300 rounded-xl h-10 w-[700px] justify-start gap-2 pl-3 pr-1">
           <ArrowElbowDownRight size={16} weight="fill" />
-          <p className="w-full overflow-hidden truncate ml-2 text-sm ">
+          <p className="w-full overflow-hidden truncate ml-2 text-sm md:text-base ">
             {contextValue}
           </p>
           <Button
@@ -563,7 +563,7 @@ export const ChatInput = () => {
                 <EditorContent
                   editor={editor}
                   autoFocus
-                  className="w-full min-h-8 text-sm max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none [&>*]:leading-6 wysiwyg cursor-text"
+                  className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none [&>*]:leading-6 wysiwyg cursor-text"
                 />
 
                 {renderRecordingControls()}

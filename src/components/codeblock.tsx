@@ -33,7 +33,7 @@ export const CodeBlock = ({ lang, code }: codeBlockProps) => {
       )}
     >
       <div className="p-2 w-full flex justify-between items-center">
-        <p className="text-xs px-2 text-zinc-500">{language}</p>
+        <p className="text-sm md:text-base px-2 text-zinc-500">{language}</p>
         <Tooltip content={showCopied ? "Copied!" : "Copy"}>
           <Button
             size="iconSm"
@@ -53,7 +53,7 @@ export const CodeBlock = ({ lang, code }: codeBlockProps) => {
       <pre className="w-full px-6 py-2">
         <code
           style={ibmPlex.style}
-          className={`hljs language-${language} tracking-wide whitespace-pre-wrap break-words overflow-x-auto w-full inline-block pr-[100%] text-sm`}
+          className={`hljs language-${language} tracking-wide whitespace-pre-wrap break-words overflow-x-auto w-full inline-block pr-[100%] text-sm md:text-base`}
           ref={ref}
         ></code>
       </pre>

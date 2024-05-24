@@ -17,7 +17,9 @@ export const LabelDivider = ({
       className={cn("flex flex-row items-center w-full py-4", className)}
     >
       <div className="w-full h-[1px] dark:from-white/5 from-black/5 bg-gradient-to-l to-transaprent"></div>
-      <p className="text-xs text-zinc-500 px-2 flex-shrink-0">{label}</p>
+      <p className="text-sm md:text-base text-zinc-500 px-2 flex-shrink-0">
+        {label}
+      </p>
       <div className="w-full h-[1px] dark:from-white/5 from-black/5 bg-gradient-to-r to-transparent "></div>
     </motion.div>
   );
