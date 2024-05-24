@@ -37,7 +37,7 @@ export const HistorySidebar = () => {
           )}
         >
           <div className="bg-white dark:bg-zinc-700 dark:border dark:border-white/5 flex flex-row rounded-2xl flex-1 p-2 relative">
-            <div className="flex flex-col w-full">
+            <div className="flex flex-col w-full overflow-y-auto no-scrollbar">
               <div className="flex flex-row justify-between">
                 <Button
                   variant="ghost"
