@@ -132,7 +132,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
             </div>
           )}
           {!isLoading && (
-            <div className="flex flex-row gap-2 items-center text-sm md:text-base text-zinc-500">
+            <div className="flex flex-row gap-2 items-center text-xs md:text-base text-zinc-500">
               {modelForMessage?.name}
             </div>
           )}
