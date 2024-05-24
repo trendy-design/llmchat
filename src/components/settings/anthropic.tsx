@@ -19,7 +19,7 @@ export const AnthropicSettings = () => {
     });
   }, []);
   return (
-    <div className="px-6 flex flex-col items-start gap-2">
+    <div className="px-3 md:px-6 flex flex-col items-start gap-2">
       <p className="text-md font-medium text-zinc-800 dark:text-white py-4">
         Anthropic Settings
       </p>

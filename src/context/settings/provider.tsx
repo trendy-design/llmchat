@@ -74,7 +74,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
       {children}
 
       <Dialog open={isSettingOpen} onOpenChange={setIsSettingOpen}>
-        <DialogContent className="w-[96dvw] h-[96dvh] rounded-xl md:min-w-[800px] md:h-[600px] flex flex-col md:flex-row overflow-hidden border border-white/5 p-0">
+        <DialogContent className="w-[96dvw] max-h-[80dvh] rounded-xl md:min-w-[800px] md:h-[600px] flex flex-col md:flex-row overflow-hidden border border-white/5 p-0">
           <div className="w-full md:w-[250px] bg-black/5 dark:bg-black/10 p-2 absolute left-0 top-0 right-0 md:bottom-0 flex flex-row md:flex-col md:gap-0 gap-1">
             <p className="px-2 py-2 hidden md:flex text-sm md:text-base font-semibold text-zinc-500">
               GENERAL
@@ -124,7 +124,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
               </Button>
             ))}
           </div>
-          <div className="md:ml-[250px] mt-[60px] md:mt-0 w-full h-full overflow-y-auto no-scrollbar">
+          <div className="md:ml-[250px] mt-[60px] md:mt-0 pb-16 w-full h-full overflow-y-auto no-scrollbar">
             {selectedMenuItem?.component}
           </div>
         </DialogContent>
