@@ -9,7 +9,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="w-full h-screen flex flex-row bg-zinc-white dark:bg-zinc-800">
+    <div className="w-full h-[100dvh] flex flex-row bg-zinc-white dark:bg-zinc-800">
       {children}
       <Toaster />
     </div>

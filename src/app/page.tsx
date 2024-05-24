@@ -14,7 +14,7 @@ export default function Home() {
     });
   }, []);
   return (
-    <main className="flex flex-col gap-2 h-screen w-screen items-center justify-center">
+    <main className="flex flex-col gap-2 h-[100dvh] w-screen items-center justify-center">
       <ModelIcon type="aichat" size="lg" />
       <Spinner />
     </main>

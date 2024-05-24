@@ -96,7 +96,7 @@ export const ChatMessages = () => {
 
   return (
     <div
-      className="flex flex-col w-full items-center h-screen overflow-y-auto no-scrollbar pt-[60px] pb-[200px]"
+      className="flex flex-col w-full items-center h-[100dvh] overflow-y-auto no-scrollbar pt-[60px] pb-[200px]"
       ref={chatContainer}
       id="chat-container"
     >

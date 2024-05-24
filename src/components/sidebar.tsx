@@ -7,7 +7,7 @@ export const Sidebar = () => {
   const { sessions, createSession } = useChatContext();
   const { push } = useRouter();
   return (
-    <div className="w-[250px] flex flex-col h-screen">
+    <div className="w-[250px] flex flex-col h-[100dvh]">
       <Button
         onClick={() => {
           createSession();
