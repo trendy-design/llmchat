@@ -14,6 +14,15 @@ export const metadata: Metadata = {
   description: "Most intutive all-in-one AI chat client",
 };
 
+import type { Viewport } from "next";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
