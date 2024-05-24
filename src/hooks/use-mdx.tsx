@@ -2,7 +2,6 @@ import { motion } from "framer-motion";
 import Markdown from "marked-react";
 
 import { CodeBlock } from "@/components/codeblock";
-import { LinkBlock } from "@/components/ui/link-block";
 
 const VARIANTS = {
   hidden: { opacity: 0 },
@@ -33,7 +32,14 @@ export const useMarkdown = () => {
           const Heading = `h${level}` as keyof JSX.IntrinsicElements;
           return <Heading className="font-medium text-md">{children}</Heading>;
         },
-        link: (href) => <LinkBlock url={href} />,
+        link: (href, text) => (
+          <a
+            href={href}
+            className="underline underline-offset-4 decoration-blue-300 px-1 py-1 hover:bg-zinc-50 rounded-md dark:bg-white/10"
+          >
+            {text}
+          </a>
+        ),
         blockquote: (children) => (
           <blockquote className="border-l-4 border-gray-300 pl-4 italic">
             <p className="text-sm leading-7 ">{children}</p>
@@ -63,6 +69,33 @@ export const useMarkdown = () => {
             {code}
           </span>
         ),
+        table: (children) => (
+          <div className="overflow-x-auto my-3 border border-zinc-100 rounded-xl dark:border-white/10 ">
+            <table className="w-full  overflow-hidden text-sm text-left rtl:text-right text-gray-600 dark:text-gray-200">
+              {children}
+            </table>
+          </div>
+        ),
+        tableHeader(children) {
+          return (
+            <thead className="text-xs w-full font-medium text-zinc-800 uppercase bg-zinc-50 dark:bg-white/10 dark:text-white/20">
+              {children}
+            </thead>
+          );
+        },
+
+        tableRow(children) {
+          return (
+            <tr className="hover:bg-zinc-50 dark:bg-white/5">{children}</tr>
+          );
+        },
+        tableCell(children, flags) {
+          if (flags.header) {
+            return <th className="p-3 text-xs">{children}</th>;
+          }
+          return <td className="p-3 text-sm">{children}</td>;
+        },
+        tableBody: (children) => <tbody>{children}</tbody>,
       }}
     >
       {message}

@@ -148,6 +148,9 @@ export const ChatInput = () => {
         setOpen(false);
       }
     },
+    parseOptions: {
+      preserveWhitespace: true,
+    },
   });
 
   useEffect(() => {
