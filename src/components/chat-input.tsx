@@ -510,7 +510,7 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 pb-1 md:px-4 md:pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-1",
+        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 md:px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-1",
         isNewSession && "top-0 "
       )}
     >
@@ -542,7 +542,7 @@ export const ChatInput = () => {
               animate={editor?.isActive ? "animate" : "initial"}
               className="flex flex-col items-start gap-0 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
             >
-              <div className="flex flex-row items-end pl-4 pr-2 py-2 w-full gap-0">
+              <div className="flex flex-row items-end pl-2 md:pl-3 pr-2 py-2 w-full gap-0">
                 {/* {renderNewSession()} */}
                 <EditorContent
                   editor={editor}
