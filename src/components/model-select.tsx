@@ -38,7 +38,7 @@ export const ModelSelect = () => {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="pl-1 pr-3 gap-2 text-sm md:text-base"
+            className="pl-1 pr-3 gap-2 text-xs md:text-sm"
             size="sm"
           >
             {activeModel?.icon()} {activeModel?.name}
@@ -47,14 +47,14 @@ export const ModelSelect = () => {
         <DropdownMenuContent
           side="top"
           sideOffset={4}
-          className="min-w-[250px] text-sm md:text-base max-h-[260px] overflow-y-auto no-scrollbar"
+          className="min-w-[250px] text-xs md:text-sm max-h-[260px] overflow-y-auto no-scrollbar"
         >
           {models.map((model) => (
             <DropdownMenuSub key={model.key}>
               <DropdownMenuSubTrigger asChild>
                 <DropdownMenuItem
                   className={cn(
-                    "text-sm md:text-base font-medium",
+                    "text-xs md:text-sm font-medium",
                     activeModel?.key === model.key &&
                       "dark:bg-black/30 bg-zinc-50"
                   )}

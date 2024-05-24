@@ -65,7 +65,7 @@ export const useMarkdown = () => {
           </div>
         ),
         codespan: (code) => (
-          <span className="px-2 py-1 text-xs md:text-sm rounded-md dark:text-white bg-zinc-50 text-zinc-800 dark:bg-white/10 font-medium">
+          <span className="px-2 py-1 text-sm md:text-base rounded-md dark:text-white bg-zinc-50 text-zinc-800 dark:bg-white/10 font-medium">
             {code}
           </span>
         ),

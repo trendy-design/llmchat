@@ -42,6 +42,7 @@ import { ModelSelect } from "./model-select";
 import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Badge } from "./ui/badge";
 
+import { QuickSettings } from "./quick-settings";
 import { Button } from "./ui/button";
 import {
   Command as CMDKCommand,
@@ -509,7 +510,7 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 pb-1 md:px-4 md:pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-2",
+        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 pb-1 md:px-4 md:pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-1",
         isNewSession && "top-0 "
       )}
     >
@@ -614,11 +615,10 @@ export const ChatInput = () => {
             </CMDKCommand>
           </PopoverContent>
         </Popover>
-        <div className="flex flex-row items-center w-full justify-start gap-0 px-2 pb-2 pt-1">
+        <div className="flex flex-row items-center w-full justify-start gap-0 px-2 pt-1">
           <ModelSelect />
-
+          <QuickSettings />
           <div className="flex-1"></div>
-
           <Button
             variant="ghost"
             size="sm"
@@ -626,8 +626,8 @@ export const ChatInput = () => {
             className="px-1.5"
           >
             <ClockClockwise size={16} weight="bold" /> History
-            <Badge>
-              <Command size={12} weight="bold" /> K
+            <Badge variant="outline">
+              <Command size={16} weight="bold" /> K
             </Badge>
           </Button>
         </div>
