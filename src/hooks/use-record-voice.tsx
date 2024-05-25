@@ -85,7 +85,7 @@ export const useRecordVoice = (): UseRecordVoiceResult => {
       console.error(error);
       toast({
         title: "Failed to transcribe",
-        description: "Something went wrong. Check your OpenAI settings.",
+        description: `Something went wrong. Check your OpenAI settings. ${error}`,
         variant: "destructive",
       });
     } finally {
