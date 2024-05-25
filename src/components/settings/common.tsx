@@ -7,6 +7,7 @@ import { Slider } from "../ui/slider";
 import { Switch } from "../ui/switch";
 import { Textarea } from "../ui/textarea";
 import { Tooltip } from "../ui/tooltip";
+import { SettingsContainer } from "./settings-container";
 
 export const CommonSettings = () => {
   const { formik, setPreferences } = useModelSettings({});
@@ -27,11 +28,7 @@ export const CommonSettings = () => {
   };
 
   return (
-    <div className="px-3 md:px-6 pb-12 flex flex-col items-start gap-2 h-full overflow-y-auto no-scrollbar">
-      <p className="text-md font-medium text-zinc-800 dark:text-white py-4">
-        Default Settings
-      </p>
-
+    <SettingsContainer title="Model Settings">
       <div className="flex flex-col w-full">
         <div className="flex flex-row items-center justify-between py-2 w-full">
           <p className="text-sm md:text-base text-zinc-500 flex flex-row items-center gap-1">
@@ -218,6 +215,6 @@ export const CommonSettings = () => {
           </div>
         </div>
       </div>
-    </div>
+    </SettingsContainer>
   );
 };

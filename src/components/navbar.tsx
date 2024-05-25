@@ -18,6 +18,7 @@ import { ModelIcon } from "./icons/model-icon";
 import { HistorySidebar } from "./side-bar";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { ComingSoon } from "./ui/coming-soon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -105,11 +106,13 @@ export const Navbar = () => {
           <DropdownMenuContent className="min-w-[250px] text-sm md:text-base mr-2">
             <DropdownMenuItem onClick={() => {}}>
               <Robot size={14} weight="bold" />
-              Bots<Badge>Coming soon</Badge>
+              Bots
+              <ComingSoon />
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => {}}>
               <Textbox size={14} weight="bold" />
-              Prompts<Badge>Coming soon</Badge>
+              Prompts
+              <ComingSoon />
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {

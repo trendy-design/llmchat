@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import { SettingsContainer } from "./settings-container";
 
 export const OpenAISettings = () => {
   const [key, setKey] = useState<string>("");
@@ -18,11 +19,7 @@ export const OpenAISettings = () => {
     });
   }, []);
   return (
-    <div className="px-3 md:px-6 flex flex-col items-start gap-2">
-      <p className="text-md font-medium text-zinc-800 dark:text-white py-4">
-        OpenAI Settings
-      </p>
-
+    <SettingsContainer title="OpenAI Settings">
       <div className="flex flex-row items-end justify-between">
         <p className="text-sm md:text-base  text-zinc-500">Open AI API Key</p>
       </div>
@@ -61,6 +58,6 @@ export const OpenAISettings = () => {
           else.
         </AlertDescription>
       </Alert>
-    </div>
+    </SettingsContainer>
   );
 };

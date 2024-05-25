@@ -2,12 +2,14 @@
 import { ModelIcon } from "@/components/icons/model-icon";
 import { AnthropicSettings } from "@/components/settings/anthropic";
 import { CommonSettings } from "@/components/settings/common";
+import { Data } from "@/components/settings/data";
 import { GeminiSettings } from "@/components/settings/gemini";
 import { OpenAISettings } from "@/components/settings/openai";
+import { VoiceInput } from "@/components/settings/voice-input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import { GearSix, Microphone } from "@phosphor-icons/react";
+import { Database, GearSix, Microphone } from "@phosphor-icons/react";
 import { useState } from "react";
 import { SettingsContext } from "./context";
 
@@ -43,7 +45,13 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
       name: "Voice Input",
       icon: () => <Microphone size={16} weight="bold" />,
       key: "voice-input",
-      component: <CommonSettings />,
+      component: <VoiceInput />,
+    },
+    {
+      name: "Data",
+      icon: () => <Database size={16} weight="bold" />,
+      key: "Your Data",
+      component: <Data />,
     },
   ];
 

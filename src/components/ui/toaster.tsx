@@ -10,9 +10,10 @@ import {
 } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import { Check, Warning } from "@phosphor-icons/react";
+import { Button } from "./button";
 
 export function Toaster() {
-  const { toasts } = useToast();
+  const { toasts, dismiss } = useToast();
 
   return (
     <ToastProvider>
@@ -33,14 +34,27 @@ export function Toaster() {
                   className="text-blue-400 flex-shrink-0 mt-1"
                 />
               )}
-              <div className="grid gap-0 w-full">
+              <div className="flex  gap-0 flex-col items-start w-full">
                 {title && <ToastTitle>{title}</ToastTitle>}
                 {description && (
                   <ToastDescription>{description}</ToastDescription>
                 )}
+                {action && (
+                  <div className="pt-2 flex flex-row gap-1">
+                    {action}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        dismiss();
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                )}
               </div>
-              {action}
-              <ToastClose />
+              {!action && <ToastClose />}
             </div>
           </Toast>
         );

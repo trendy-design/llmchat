@@ -45,6 +45,7 @@ import { Badge } from "./ui/badge";
 import { removeExtraSpaces } from "@/lib/helper";
 import { QuickSettings } from "./quick-settings";
 import { Button } from "./ui/button";
+import { ComingSoon } from "./ui/coming-soon";
 import {
   Command as CMDKCommand,
   CommandEmpty,
@@ -595,7 +596,7 @@ export const ChatInput = () => {
               <CommandList className="p-2 max-h-[160px]">
                 <CommandItem onSelect={() => {}} disabled={true}>
                   <Plus size={14} weight="bold" className="flex-shrink-0" />{" "}
-                  Create New Prompt <Badge>Coming soon</Badge>
+                  Create New Prompt <ComingSoon />
                 </CommandItem>
                 {roles?.map((role, index) => (
                   <CommandItem
