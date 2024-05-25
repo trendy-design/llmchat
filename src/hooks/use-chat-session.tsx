@@ -90,7 +90,7 @@ export const useChatSession = () => {
 
   const updateSession = async (
     sessionId: string,
-    newSession: Omit<TChatSession, "id">
+    newSession: Partial<Omit<TChatSession, "id">>
   ) => {
     const sessions = await getSessions();
     const newSessions = sessions.map((session) => {

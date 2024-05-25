@@ -71,8 +71,14 @@ export const ChatInput = () => {
   const [selectedPrompt, setSelectedPrompt] = useState<string>();
   const { startRecording, stopRecording, recording, text, transcribing } =
     useRecordVoice();
-  const { runModel, createSession, currentSession, streaming, stopGeneration } =
-    useChatContext();
+  const {
+    runModel,
+    createSession,
+    currentSession,
+    streaming,
+    stopGeneration,
+    refetchSessions,
+  } = useChatContext();
   // const [inputValue, setInputValue] = useState("");
   const [contextValue, setContextValue] = useState<string>("");
   const { getPreferences, getApiKey } = usePreferences();
@@ -219,14 +225,11 @@ export const ChatInput = () => {
   };
 
   const handleRunModel = (query?: string, clear?: () => void) => {
-    console.log("handleRunmodel");
-
     if (!query) {
       return;
     }
     getPreferences().then(async (preference) => {
       const selectedModel = getModelByKey(preference.defaultModel);
-
       if (
         selectedModel?.key &&
         !["gpt-4-turbo", "gpt-4o"].includes(selectedModel?.key) &&
@@ -240,13 +243,11 @@ export const ChatInput = () => {
         return;
       }
 
-      console.log(selectedModel?.baseModel);
       if (!selectedModel?.baseModel) {
         throw new Error("Model not found");
       }
 
       const apiKey = await getApiKey(selectedModel?.baseModel);
-      console.log(apiKey);
 
       if (!apiKey) {
         toast({
@@ -257,7 +258,11 @@ export const ChatInput = () => {
         openSettings(selectedModel?.baseModel);
         return;
       }
-      runModel({
+
+      setAttachment(undefined);
+      setContextValue("");
+      clear?.();
+      await runModel({
         sessionId: sessionId.toString(),
         props: {
           role: RoleType.assistant,
@@ -267,11 +272,7 @@ export const ChatInput = () => {
           context: removeExtraSpaces(contextValue),
         },
       });
-      setAttachment(undefined);
-      setContextValue("");
-
-      console.log(editor);
-      clear?.();
+      await refetchSessions();
     });
   };
 

@@ -13,7 +13,6 @@ import { v4 } from "uuid";
 import { PromptProps, TChatMessage, useChatSession } from "./use-chat-session";
 import { TModelKey, useModelList } from "./use-model-list";
 import { defaultPreferences, usePreferences } from "./use-preferences";
-import { useTokenCounter } from "./use-token-counter";
 
 export type TRunModel = {
   props: PromptProps;
@@ -37,13 +36,11 @@ export const useLLM = ({
   onStreamEnd,
   onError,
 }: TUseLLM) => {
-  const { getSessionById, addMessageToSession, sortMessages } =
+  const { getSessionById, addMessageToSession, sortMessages, updateSession } =
     useChatSession();
   const { getApiKey, getPreferences } = usePreferences();
   const { createInstance, getModelByKey, getTestModelKey } = useModelList();
   const abortController = new AbortController();
-  const { getTokenCount, countPricing } = useTokenCounter();
-
   const { toast } = useToast();
 
   const stopGeneration = () => {
@@ -52,8 +49,6 @@ export const useLLM = ({
 
   const preparePrompt = async (props: PromptProps, history: TChatMessage[]) => {
     const preferences = await getPreferences();
-    const messageLimit =
-      preferences.messageLimit || defaultPreferences.messageLimit;
     const hasPreviousMessages = history?.length > 0;
     const systemPrompt =
       preferences.systemPrompt || defaultPreferences.systemPrompt;
@@ -97,19 +92,6 @@ export const useLLM = ({
       user,
     ]);
 
-    const previousMessageHistory = sortMessages(history, "createdAt")
-      .slice(0, messageLimit === "all" ? history.length : messageLimit)
-      .reduce(
-        (acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman, image }) => {
-          if (rawAI && rawHuman) {
-            return [...acc, new HumanMessage(rawHuman), new AIMessage(rawAI)];
-          } else {
-            return [...acc];
-          }
-        },
-        []
-      );
-
     return prompt;
   };
 
@@ -146,148 +128,13 @@ export const useLLM = ({
       isLoading: true,
     });
     const selectedModelKey = getModelByKey(modelKey);
-    try {
-      if (!selectedModelKey) {
-        throw new Error("Model not found");
-      }
+    if (!selectedModelKey) {
+      throw new Error("Model not found");
+    }
 
-      const apiKey = await getApiKey(selectedModelKey?.baseModel);
+    const apiKey = await getApiKey(selectedModelKey?.baseModel);
 
-      if (!apiKey) {
-        onError?.({
-          props,
-          id: newMessageId,
-          sessionId,
-          model: modelKey,
-          rawHuman: props.query,
-          createdAt: moment().toISOString(),
-          hasError: true,
-          isLoading: false,
-          errorMesssage: "API key not found",
-        });
-        return;
-      }
-
-      const prompt = await preparePrompt(
-        props,
-        currentSession?.messages?.filter((m) => m.id !== messageId) || []
-      );
-
-      const selectedModel = await createInstance(selectedModelKey, apiKey);
-
-      const previousAllowedChatHistory = chatHistory
-        .slice(0, messageLimit === "all" ? history.length : messageLimit)
-        .reduce(
-          (acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman, image }) => {
-            if (rawAI && rawHuman) {
-              return [...acc, new HumanMessage(rawHuman), new AIMessage(rawAI)];
-            } else {
-              return [...acc];
-            }
-          },
-          []
-        );
-
-      const chain = RunnableSequence.from([
-        prompt,
-        selectedModel.bind({
-          // ADD Tools here
-          signal: abortController.signal,
-        }) as RunnableLike,
-      ]);
-
-      const promptValue = await prompt.formatPromptValue({
-        chat_history: previousAllowedChatHistory || [],
-        context: props.context,
-        input: props.query,
-      });
-
-      console.log("pm", promptValue.toString());
-
-      const stream = await chain.stream(
-        {
-          chat_history: previousAllowedChatHistory || [],
-          context: props.context,
-          input: props.query,
-        },
-        {
-          callbacks: [
-            {
-              handleLLMStart: async (llm: Serialized, prompts: string[]) => {
-                console.log("LLM Start");
-              },
-              handleLLMEnd: async (output: LLMResult) => {
-                console.log("LLM End", output);
-              },
-              handleLLMError: async (err: Error) => {
-                console.error(err);
-              },
-            },
-          ],
-        }
-      );
-
-      if (!stream) {
-        return;
-      }
-
-      let streamedMessage = "";
-      onStreamStart?.({
-        id: newMessageId,
-        props,
-        sessionId,
-        rawHuman: props.query,
-        rawAI: streamedMessage,
-        model: modelKey,
-        isLoading: true,
-        hasError: false,
-        errorMesssage: undefined,
-
-        createdAt: moment().toISOString(),
-      });
-      let finalChunk;
-
-      for await (const chunk of stream) {
-        streamedMessage += chunk.content;
-
-        console.log("chunk", chunk);
-
-        onStream?.({
-          id: newMessageId,
-          props,
-          sessionId,
-          rawHuman: props.query,
-          rawAI: streamedMessage,
-          model: modelKey,
-          isLoading: true,
-          hasError: false,
-          errorMesssage: undefined,
-          createdAt: moment().toISOString(),
-        });
-      }
-
-      const chatMessage: TChatMessage = {
-        id: newMessageId,
-        props,
-        sessionId,
-        rawHuman: props.query,
-        rawAI: streamedMessage,
-        model: modelKey,
-        isLoading: false,
-        hasError: false,
-        createdAt: moment().toISOString(),
-      };
-
-      addMessageToSession(sessionId, chatMessage).then(() => {
-        onStreamEnd?.(chatMessage);
-      });
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Something went wrong",
-        variant: "destructive",
-      });
-
+    if (!apiKey) {
       onError?.({
         props,
         id: newMessageId,
@@ -297,10 +144,188 @@ export const useLLM = ({
         createdAt: moment().toISOString(),
         hasError: true,
         isLoading: false,
-        errorMesssage: "Something went wrong",
+        errorMesssage: "API key not found",
       });
+      return;
+    }
+
+    const prompt = await preparePrompt(
+      props,
+      currentSession?.messages?.filter((m) => m.id !== messageId) || []
+    );
+
+    const selectedModel = await createInstance(selectedModelKey, apiKey);
+
+    const previousAllowedChatHistory = chatHistory
+      .slice(0, messageLimit === "all" ? history.length : messageLimit)
+      .reduce(
+        (acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman, image }) => {
+          if (rawAI && rawHuman) {
+            return [...acc, new HumanMessage(rawHuman), new AIMessage(rawAI)];
+          } else {
+            return [...acc];
+          }
+        },
+        []
+      );
+
+    const chain = RunnableSequence.from([
+      prompt,
+      selectedModel.bind({
+        signal: abortController.signal,
+      }) as RunnableLike,
+    ]);
+
+    const stream = await chain.stream(
+      {
+        chat_history: previousAllowedChatHistory || [],
+        context: props.context,
+        input: props.query,
+      },
+      {
+        callbacks: [
+          {
+            handleLLMStart: async (llm: Serialized, prompts: string[]) => {
+              console.log("LLM Start");
+            },
+            handleLLMEnd: async (output: LLMResult) => {
+              console.log("LLM End", output);
+            },
+
+            handleText(text, runId, parentRunId, tags) {
+              console.log("text", text);
+            },
+            handleLLMError: async (err: Error) => {
+              console.error(err);
+              toast({
+                title: "Error",
+                description: "Something went wrong",
+                variant: "destructive",
+              });
+
+              onError?.({
+                props,
+                id: newMessageId,
+                sessionId,
+                model: modelKey,
+                rawHuman: props.query,
+                createdAt: moment().toISOString(),
+                hasError: true,
+                isLoading: false,
+                errorMesssage: "Something went wrong",
+              });
+            },
+          },
+        ],
+      }
+    );
+
+    if (!stream) {
+      return;
+    }
+
+    console.log("stream", stream);
+
+    let streamedMessage = "";
+    onStreamStart?.({
+      id: newMessageId,
+      props,
+      sessionId,
+      rawHuman: props.query,
+      rawAI: streamedMessage,
+      model: modelKey,
+      isLoading: true,
+      hasError: false,
+      errorMesssage: undefined,
+      createdAt: moment().toISOString(),
+    });
+
+    for await (const chunk of stream) {
+      streamedMessage += chunk.content;
+      onStream?.({
+        id: newMessageId,
+        props,
+        sessionId,
+        rawHuman: props.query,
+        rawAI: streamedMessage,
+        model: modelKey,
+        isLoading: true,
+        hasError: false,
+        errorMesssage: undefined,
+        createdAt: moment().toISOString(),
+      });
+    }
+
+    const chatMessage: TChatMessage = {
+      id: newMessageId,
+      props,
+      sessionId,
+      rawHuman: props.query,
+      rawAI: streamedMessage,
+      model: modelKey,
+      isLoading: false,
+      hasError: false,
+      createdAt: moment().toISOString(),
+    };
+
+    await addMessageToSession(sessionId, chatMessage);
+    await generateTitleForSession(sessionId);
+    await onStreamEnd?.(chatMessage);
+  };
+
+  const generateTitleForSession = async (sessionId: string) => {
+    const session = await getSessionById(sessionId);
+    const preferences = await getPreferences();
+    const modelKey = preferences.defaultModel;
+    const selectedModelKey = getModelByKey(modelKey);
+
+    if (!selectedModelKey) {
+      throw new Error("Model not found");
+    }
+
+    const apiKey = await getApiKey(selectedModelKey?.baseModel);
+
+    if (!apiKey) {
+      throw new Error("API key not found");
+    }
+
+    const selectedModel = await createInstance(selectedModelKey, apiKey);
+
+    console.log("title session", session);
+
+    const firstMessage = session?.messages?.[0];
+
+    if (!firstMessage || !firstMessage.rawAI || !firstMessage.rawHuman) {
+      return;
+    }
+
+    const template = ChatPromptTemplate.fromMessages([
+      new MessagesPlaceholder("message"),
+      [
+        "user",
+        "Make this prompt clear and consise? You must strictly answer with only the title, no other text is allowed.\n\nAnswer in English.",
+      ],
+    ]);
+
+    try {
+      const prompt = await template.formatMessages({
+        message: [new HumanMessage(firstMessage.rawHuman)],
+      });
+
+      const generation = await selectedModel.invoke(prompt, {});
+
+      console.log("title generation", generation);
+
+      const newTitle = generation?.content?.toString() || session.title;
+      await updateSession(
+        sessionId,
+        newTitle ? { title: newTitle, updatedAt: moment().toISOString() } : {}
+      );
+    } catch (e) {
+      console.error(e);
+      return firstMessage.rawHuman;
     }
   };
 
-  return { runModel, stopGeneration };
+  return { runModel, stopGeneration, generateTitleForSession };
 };
