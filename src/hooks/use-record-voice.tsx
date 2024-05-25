@@ -29,7 +29,7 @@ export const useRecordVoice = (): UseRecordVoiceResult => {
   const startRecording = (): void => {
     if (mediaRecorder) {
       isRecording.current = true;
-      mediaRecorder.start();
+      mediaRecorder.start(1000);
       setRecording(true);
     }
   };
