@@ -37,7 +37,7 @@ export const useRecordVoice = (): UseRecordVoiceResult => {
         chunks.current.push(ev.data);
       };
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(chunks.current, { type: "audio/mp4" });
+        const audioBlob = new Blob(chunks.current, { type: "audio/mp3" });
         blobToBase64(audioBlob, getText);
       };
       setMediaRecorder(mediaRecorder);
@@ -75,8 +75,8 @@ export const useRecordVoice = (): UseRecordVoiceResult => {
       });
       const audioBuffer = Buffer.from(base64data, "base64");
       const transcription = await openai.audio.transcriptions.create({
-        file: await toFile(audioBuffer, "audio.mp4", {
-          type: "audio/mp4",
+        file: await toFile(audioBuffer, "audio.mp3", {
+          type: "audio/mp3",
         }),
         model: "whisper-1",
       });
