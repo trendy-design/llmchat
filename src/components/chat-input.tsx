@@ -299,6 +299,21 @@ export const ChatInput = () => {
     }
   }, [text]);
 
+  const startVoiceRecording = async () => {
+    const apiKey = await getApiKey("openai");
+    if (!apiKey) {
+      toast({
+        title: "API key missing",
+        description:
+          "Recordings require OpenAI API key. Please check settings.",
+        variant: "destructive",
+      });
+      openSettings("openai");
+      return;
+    }
+    startRecording();
+  };
+
   const renderRecordingControls = () => {
     if (recording) {
       return (
@@ -309,8 +324,7 @@ export const ChatInput = () => {
             onClick={() => {
               stopRecording();
             }}
-            onTouchStart={startRecording}
-            onTouchEnd={stopRecording}
+            onTouchStart={stopRecording}
           >
             <StopCircle size={20} weight="fill" className="text-red-300" />
           </Button>
@@ -324,22 +338,8 @@ export const ChatInput = () => {
           size="icon"
           variant="ghost"
           className="min-w-8 h-8"
-          onClick={async () => {
-            const apiKey = await getApiKey("openai");
-            if (!apiKey) {
-              toast({
-                title: "API key missing",
-                description:
-                  "Recordings require OpenAI API key. Please check settings.",
-                variant: "destructive",
-              });
-              openSettings("openai");
-              return;
-            }
-            startRecording();
-          }}
-          onTouchStart={startRecording}
-          onTouchEnd={stopRecording}
+          onClick={startVoiceRecording}
+          onTouchStart={startVoiceRecording}
         >
           <Microphone size={20} weight="bold" />
         </Button>
