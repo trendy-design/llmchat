@@ -7,3 +7,9 @@ export function formatNumber(number: number) {
     return number.toString();
   }
 }
+
+export function removeExtraSpaces(str?: string) {
+  str = str?.trim();
+  str = str?.replace(/\n{2,}/g, "\n");
+  return str;
+}

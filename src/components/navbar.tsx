@@ -7,7 +7,9 @@ import {
   GearSix,
   Moon,
   Plus,
+  Robot,
   Sun,
+  Textbox,
 } from "@phosphor-icons/react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
@@ -101,6 +103,14 @@ export const Navbar = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
           <DropdownMenuContent className="min-w-[250px] text-sm md:text-base mr-2">
+            <DropdownMenuItem onClick={() => {}}>
+              <Robot size={14} weight="bold" />
+              Bots<Badge>Coming soon</Badge>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => {}}>
+              <Textbox size={14} weight="bold" />
+              Prompts<Badge>Coming soon</Badge>
+            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
                 openSettings();

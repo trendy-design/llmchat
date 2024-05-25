@@ -42,6 +42,7 @@ import { ModelSelect } from "./model-select";
 import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Badge } from "./ui/badge";
 
+import { removeExtraSpaces } from "@/lib/helper";
 import { QuickSettings } from "./quick-settings";
 import { Button } from "./ui/button";
 import {
@@ -261,8 +262,8 @@ export const ChatInput = () => {
           role: RoleType.assistant,
           type: PromptType.ask,
           image: attachment?.base64,
-          query: query,
-          context: contextValue,
+          query: removeExtraSpaces(query),
+          context: removeExtraSpaces(contextValue),
         },
       });
       setAttachment(undefined);
@@ -514,7 +515,6 @@ export const ChatInput = () => {
         isNewSession && "top-0 "
       )}
     >
-      {/* {isNewSession && <ChatGreeting />} */}
       <div className="flex flex-row items-center gap-2">
         {renderScrollToBottom()}
         {renderReplyButton()}
@@ -631,6 +631,14 @@ export const ChatInput = () => {
             </Badge>
           </Button>
         </div>
+        {isNewSession && (
+          <div className="fixed bottom-0 left-0 right-0 w-full p-3 text-xs flex flex-row justify-center">
+            <p className="text-xs text-zinc-500/50">
+              P.S. Your data is stored locally on local storage, not in the
+              cloud.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

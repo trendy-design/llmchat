@@ -11,9 +11,9 @@ export const ChatGreeting = () => {
   };
 
   return (
-    <div className="flex flex-row items-center w-[680px] justify-start gap-2">
+    <div className="flex flex-row items-center justify-center w-[680px] flex-1 gap-2">
       <motion.h1
-        className="text-2xl font-semibold tracking-tight text-zinc-700 dark:text-zinc-100"
+        className="text-4xl font-bold text-center leading-10 tracking-tighter text-zinc-800 dark:text-zinc-100"
         initial={{ opacity: 0 }}
         animate={{
           opacity: 1,
@@ -22,7 +22,7 @@ export const ChatGreeting = () => {
           },
         }}
       >
-        <span className="text-zinc-400 dark:text-zinc-500">
+        <span className="text-zinc-300 dark:text-zinc-500">
           {renderGreeting("Deep")}
         </span>
         <br />
