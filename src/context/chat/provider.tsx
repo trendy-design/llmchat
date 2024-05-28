@@ -43,6 +43,8 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     },
     onStreamEnd: async (props) => {
       appendToCurrentSession(props);
+
+
       setStreaming(false);
     },
     onError: async (error) => {

@@ -65,17 +65,6 @@ export const QuickSettings = () => {
                 formik.setFieldValue("maxTokens", value?.[0]);
               }}
             />
-            <div className="flex flex-row justify-between w-full">
-              <p className="text-[10px] md:text-xs text-zinc-500 dark:text-zinc-600">
-                Precise
-              </p>
-              <p className="text-[10px] md:text-xs text-zinc-500 dark:text-zinc-600">
-                Neutral
-              </p>
-              <p className="text-[10px] md:text-xs text-zinc-500 dark:text-zinc-600">
-                Creative
-              </p>
-            </div>
           </div>
           <div className="flex flex-col w-full p-3 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl">
             <div className="flex flex-row items-center justify-between w-full">

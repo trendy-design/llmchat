@@ -64,7 +64,12 @@ export const Navbar = () => {
       </div>
       <div className="flex flex-row gap-2 items-center">
         {renderNewSession()}
-        <Button variant="ghost" size="iconSm" onClick={openFilters}>
+        <Button
+          variant="ghost"
+          size="iconSm"
+          onClick={openFilters}
+          className="flex md:hidden"
+        >
           <Command size={20} weight="bold" />
         </Button>
 

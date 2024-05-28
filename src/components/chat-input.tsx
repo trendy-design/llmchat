@@ -623,7 +623,7 @@ export const ChatInput = () => {
             className="px-1.5"
           >
             <ClockClockwise size={16} weight="bold" /> History
-            <Badge variant="outline">
+            <Badge variant="outline" className="hidden md:flex">
               <Command size={16} weight="bold" /> K
             </Badge>
           </Button>

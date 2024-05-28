@@ -60,7 +60,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
       action: () => {
         createSession().then((session) => {
           router.push(`/chat/${session.id}`);
-          dismiss();
+          onClose();
         });
       },
     },
@@ -69,7 +69,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
       icon: theme === "light" ? Moon : Sun,
       action: () => {
         setTheme(theme === "light" ? "dark" : "light");
-        dismiss();
+        onClose();
       },
     },
     {
@@ -141,7 +141,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
                 )}
                 onSelect={(value) => {
                   router.push(`/chat/${session.id}`);
-                  dismiss();
+                  onClose();
                 }}
               >
                 {getModelByKey(session.messages?.[0]?.model)?.icon()}

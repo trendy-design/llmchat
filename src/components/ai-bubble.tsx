@@ -109,8 +109,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
                     </p>
                     <div className="flex flex-row gap-1">
                       <Button
-                        variant="default"
-                        className="bg-red-600 hover:bg-red-700"
+                        variant="destructive"
                         onClick={() => {
                           removeMessage(id);
                         }}

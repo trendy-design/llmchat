@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import Markdown from "marked-react";
 
 import { CodeBlock } from "@/components/codeblock";
+import { cn } from "@/lib/utils";
 
 const VARIANTS = {
   hidden: { opacity: 0 },
@@ -30,7 +31,16 @@ export const useMarkdown = () => {
         ),
         heading: (children, level) => {
           const Heading = `h${level}` as keyof JSX.IntrinsicElements;
-          return <Heading className="font-medium text-md">{children}</Heading>;
+          return (
+            <Heading
+              className={cn(
+                "font-medium",
+                level < 4 ? "py-2 text-lg" : "py-1 text-md"
+              )}
+            >
+              {children}
+            </Heading>
+          );
         },
         link: (href, text) => (
           <a
@@ -47,9 +57,9 @@ export const useMarkdown = () => {
         ),
         list: (children, ordered) =>
           ordered ? (
-            <ol className="list-decimal ml-8">{children}</ol>
+            <ol className="list-decimal ml-4">{children}</ol>
           ) : (
-            <ul className="list-disc ml-8">{children}</ul>
+            <ul className="list-disc ml-4">{children}</ul>
           ),
         listItem: (children) => (
           <li className="my-4">
@@ -57,7 +67,7 @@ export const useMarkdown = () => {
           </li>
         ),
         strong: (children) => (
-          <strong className="font-semibold">{children}</strong>
+          <strong className="font-medium">{children}</strong>
         ),
         code: (code, lang) => (
           <div className="my-4 w-full flex-shrink-0">
@@ -69,6 +79,7 @@ export const useMarkdown = () => {
             {code}
           </span>
         ),
+        br: () => <br />,
         table: (children) => (
           <div className="overflow-x-auto my-3 border border-zinc-100 rounded-xl dark:border-white/10 ">
             <table className="w-full  overflow-hidden text-sm md:text-base text-left rtl:text-right text-gray-600 dark:text-gray-200">
@@ -91,7 +102,7 @@ export const useMarkdown = () => {
         },
         tableCell(children, flags) {
           if (flags.header) {
-            return <th className="p-3 text-sm md:text-base">{children}</th>;
+            return <th className="p-3 text-xs md:text-sm">{children}</th>;
           }
           return <td className="p-3 text-sm md:text-base">{children}</td>;
         },

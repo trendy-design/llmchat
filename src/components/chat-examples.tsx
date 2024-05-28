@@ -1,5 +1,5 @@
 import { examplePrompts } from "@/lib/prompts";
-import { Asterisk } from "@phosphor-icons/react";
+import { Asterisk } from "lucide-react";
 import { motion } from "framer-motion";
 
 export type TChatExamples = {
@@ -25,7 +25,7 @@ export const ChatExamples = ({ onExampleClick, show }: TChatExamples) => {
               onExampleClick(example.prompt);
             }}
           >
-            <Asterisk size={20} weight="bold" />
+            <Asterisk size={20} stroke="2" />
             <p className="text-sm md:text-base text-zinc-800 dark:text-white font-medium w-full">
               {example.title}
             </p>
