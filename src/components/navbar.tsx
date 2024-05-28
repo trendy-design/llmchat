@@ -59,7 +59,7 @@ export const Navbar = () => {
       <div className="flex flex-row gap-2 items-center">
         <HistorySidebar />
         <ModelIcon type="aichat" size="md" />
-        <p className="text-sm md:text-base text-zinc-500">AIChat</p>
+        <p className="text-sm md:text-base text-zinc-500">LLMChat</p>
         <Badge>Beta</Badge>
       </div>
       <div className="flex flex-row gap-2 items-center">
