@@ -88,8 +88,8 @@ export const useLLM = ({
 
     const prompt = ChatPromptTemplate.fromMessages([
       system,
-      user,
       messageHolders,
+      user,
     ]);
 
     return prompt;
