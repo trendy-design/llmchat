@@ -44,7 +44,6 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     onStreamEnd: async (props) => {
       appendToCurrentSession(props);
 
-
       setStreaming(false);
     },
     onError: async (error) => {
@@ -83,17 +82,17 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     if (!sessionId) {
       return;
     }
-    getSessionById(sessionId?.toString())
-      .then((session) => {
+    getSessionById(sessionId?.toString()).then((session) => {
+      if (session) {
         setCurrentSession(session);
         setCurrentSessionLoading(false);
-      })
-      .catch(() => {
+      } else {
         createNewSession().then((session) => {
           setCurrentSession(session);
           setCurrentSessionLoading(false);
         });
-      });
+      }
+    });
   };
 
   useEffect(() => {

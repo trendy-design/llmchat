@@ -286,6 +286,7 @@ export const ChatInput = () => {
 
   useEffect(() => {
     if (text) {
+      editor?.commands.clearContent();
       editor?.commands.setContent(text);
       runModel({
         props: {
@@ -564,6 +565,22 @@ export const ChatInput = () => {
                   <ArrowUp size={20} weight="bold" />
                 </Button>
               </div>
+              <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 pb-2 px-2">
+                <ModelSelect />
+                <QuickSettings />
+                <div className="flex-1"></div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={openFilters}
+                  className="px-1.5"
+                >
+                  <ClockClockwise size={16} weight="bold" /> History
+                  <Badge variant="outline" className="hidden md:flex">
+                    <Command size={16} weight="bold" /> K
+                  </Badge>
+                </Button>
+              </div>
             </motion.div>
           </PopoverAnchor>
           <PopoverContent
@@ -612,22 +629,7 @@ export const ChatInput = () => {
             </CMDKCommand>
           </PopoverContent>
         </Popover>
-        <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 px-2">
-          <ModelSelect />
-          <QuickSettings />
-          <div className="flex-1"></div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={openFilters}
-            className="px-1.5"
-          >
-            <ClockClockwise size={16} weight="bold" /> History
-            <Badge variant="outline" className="hidden md:flex">
-              <Command size={16} weight="bold" /> K
-            </Badge>
-          </Button>
-        </div>
+
         {isNewSession && (
           <div className="fixed bottom-0 left-0 right-0 w-full p-3 text-xs flex flex-row justify-center">
             <p className="text-xs text-zinc-500/50">
