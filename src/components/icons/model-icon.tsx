@@ -12,7 +12,7 @@ export const ModelIcon = ({ type, size }: TModelIcon) => {
     anthropic: "/icons/claude.svg",
     gemini: "/icons/gemini.svg",
     openai: "/icons/openai.svg",
-    aichat: "/icons/aichat.svg",
+    aichat: "/icons/llmchat.png",
   };
 
   return (
