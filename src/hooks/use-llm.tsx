@@ -2,17 +2,19 @@ import { useToast } from "@/components/ui/use-toast";
 import type { Serialized } from "@langchain/core/load/serializable";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { LLMResult } from "@langchain/core/outputs";
+
 import {
   BaseMessagePromptTemplateLike,
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from "@langchain/core/prompts";
-import { RunnableLike, RunnableSequence } from "@langchain/core/runnables";
+import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import moment from "moment";
 import { v4 } from "uuid";
 import { PromptProps, TChatMessage, useChatSession } from "./use-chat-session";
 import { TModelKey, useModelList } from "./use-model-list";
 import { defaultPreferences, usePreferences } from "./use-preferences";
+import { useTools } from "./use-tools";
 
 export type TRunModel = {
   props: PromptProps;
@@ -22,26 +24,17 @@ export type TRunModel = {
 };
 
 export type TUseLLM = {
-  onInit?: (props: TChatMessage) => Promise<void>;
-  onStreamStart?: (props: TChatMessage) => Promise<void>;
-  onStream?: (props: TChatMessage) => Promise<void>;
-  onStreamEnd?: (props: TChatMessage) => Promise<void>;
-  onError?: (props: TChatMessage) => Promise<void>;
+  onChange?: (props: TChatMessage) => void;
 };
 
-export const useLLM = ({
-  onInit,
-  onStream,
-  onStreamStart,
-  onStreamEnd,
-  onError,
-}: TUseLLM) => {
+export const useLLM = ({ onChange }: TUseLLM) => {
   const { getSessionById, addMessageToSession, sortMessages, updateSession } =
     useChatSession();
   const { getApiKey, getPreferences } = usePreferences();
-  const { createInstance, getModelByKey, getTestModelKey } = useModelList();
+  const { createInstance, getModelByKey } = useModelList();
   const abortController = new AbortController();
   const { toast } = useToast();
+  const { calculatorTool, webSearchTool, getToolByKey } = useTools();
 
   const stopGeneration = () => {
     abortController?.abort();
@@ -90,6 +83,7 @@ export const useLLM = ({
       system,
       messageHolders,
       user,
+      ["placeholder", "{agent_scratchpad}"],
     ]);
 
     return prompt;
@@ -114,17 +108,22 @@ export const useLLM = ({
     const allPreviousMessages =
       currentSession?.messages?.filter((m) => m.id !== messageId) || [];
     const chatHistory = sortMessages(allPreviousMessages, "createdAt");
+    const plugins = preferences.defaultPlugins || [];
+
     const messageLimit =
       preferences.messageLimit || defaultPreferences.messageLimit;
 
-    onInit?.({
+    const defaultChangeProps = {
       props,
       id: newMessageId,
       model: modelKey,
       sessionId,
       rawHuman: props.query,
       createdAt: moment().toISOString(),
-      hasError: false,
+    };
+
+    onChange?.({
+      ...defaultChangeProps,
       isLoading: true,
     });
     const selectedModelKey = getModelByKey(modelKey);
@@ -135,15 +134,10 @@ export const useLLM = ({
     const apiKey = await getApiKey(selectedModelKey?.baseModel);
 
     if (!apiKey) {
-      onError?.({
-        props,
-        id: newMessageId,
-        sessionId,
-        model: modelKey,
-        rawHuman: props.query,
-        createdAt: moment().toISOString(),
-        hasError: true,
+      onChange?.({
+        ...defaultChangeProps,
         isLoading: false,
+        hasError: true,
         errorMesssage: "API key not found",
       });
       return;
@@ -169,14 +163,37 @@ export const useLLM = ({
         []
       );
 
-    const chain = RunnableSequence.from([
-      prompt,
-      selectedModel.bind({
-        signal: abortController.signal,
-      }) as RunnableLike,
-    ]);
+    const availableTools =
+      selectedModelKey?.plugins
+        ?.filter((p) => {
+          return plugins.includes(p);
+        })
+        ?.map((p) => getToolByKey(p)?.(preferences))
+        ?.filter((t): t is any => !!t) || [];
 
-    const stream = await chain.stream(
+    console.log("available tools", availableTools);
+
+    const agentWithTool = await createToolCallingAgent({
+      llm: selectedModel as any,
+      tools: availableTools,
+      prompt: prompt as any,
+      streamRunnable: true,
+    });
+
+    const agentExecutor = new AgentExecutor({
+      agent: agentWithTool,
+      tools: availableTools,
+    });
+
+    const chainWithoutTools = prompt.pipe(selectedModel as any);
+
+    let streamedMessage = "";
+    let toolName: string | undefined;
+
+    const stream: any = await (!!availableTools?.length
+      ? agentExecutor
+      : chainWithoutTools
+    ).invoke(
       {
         chat_history: previousAllowedChatHistory || [],
         context: props.context,
@@ -186,15 +203,78 @@ export const useLLM = ({
         callbacks: [
           {
             handleLLMStart: async (llm: Serialized, prompts: string[]) => {
-              console.log("LLM Start");
-            },
-            handleLLMEnd: async (output: LLMResult) => {
-              console.log("LLM End", output);
+              console.log("llm start");
+
+              onChange?.({
+                ...defaultChangeProps,
+                rawAI: streamedMessage,
+                isLoading: true,
+                isToolRunning: false,
+                hasError: false,
+                toolName,
+                errorMesssage: undefined,
+                createdAt: moment().toISOString(),
+              });
             },
 
-            handleText(text, runId, parentRunId, tags) {
-              console.log("text", text);
+            handleToolStart(
+              tool,
+              input,
+              runId,
+              parentRunId,
+              tags,
+              metadata,
+              name
+            ) {
+              console.log(
+                "tool start",
+                tool,
+                input,
+                runId,
+                parentRunId,
+                tags,
+                metadata,
+                name
+              );
+              toolName = name;
+              onChange?.({
+                ...defaultChangeProps,
+                toolName: name,
+                isToolRunning: true,
+              });
             },
+            handleToolEnd(output, runId, parentRunId, tags) {
+              onChange?.({
+                ...defaultChangeProps,
+                isToolRunning: false,
+                toolName,
+                toolResult: output,
+              });
+            },
+            handleAgentAction(action, runId, parentRunId, tags) {
+              console.log("agent action", action);
+            },
+
+            handleLLMEnd: async (output: LLMResult) => {
+              console.log("llm end", output);
+            },
+            handleLLMNewToken: async (token: string) => {
+              console.log("token", token);
+
+              streamedMessage += token;
+              onChange?.({
+                ...defaultChangeProps,
+                isLoading: true,
+                rawAI: streamedMessage,
+                toolName,
+                hasError: false,
+                errorMesssage: undefined,
+              });
+            },
+            handleChainEnd: async (output: LLMResult) => {
+              console.log("chain end", output);
+            },
+
             handleLLMError: async (err: Error) => {
               console.error(err);
               toast({
@@ -202,16 +282,10 @@ export const useLLM = ({
                 description: "Something went wrong",
                 variant: "destructive",
               });
-
-              onError?.({
-                props,
-                id: newMessageId,
-                sessionId,
-                model: modelKey,
-                rawHuman: props.query,
-                createdAt: moment().toISOString(),
-                hasError: true,
+              onChange?.({
+                ...defaultChangeProps,
                 isLoading: false,
+                hasError: true,
                 errorMesssage: "Something went wrong",
               });
             },
@@ -220,57 +294,23 @@ export const useLLM = ({
       }
     );
 
-    if (!stream) {
-      return;
-    }
-
     console.log("stream", stream);
 
-    let streamedMessage = "";
-    onStreamStart?.({
-      id: newMessageId,
-      props,
-      sessionId,
-      rawHuman: props.query,
-      rawAI: streamedMessage,
-      model: modelKey,
-      isLoading: true,
-      hasError: false,
-      errorMesssage: undefined,
-      createdAt: moment().toISOString(),
-    });
-
-    for await (const chunk of stream) {
-      streamedMessage += chunk.content;
-      onStream?.({
-        id: newMessageId,
-        props,
-        sessionId,
-        rawHuman: props.query,
-        rawAI: streamedMessage,
-        model: modelKey,
-        isLoading: true,
-        hasError: false,
-        errorMesssage: undefined,
-        createdAt: moment().toISOString(),
-      });
-    }
-
     const chatMessage: TChatMessage = {
-      id: newMessageId,
-      props,
-      sessionId,
+      ...defaultChangeProps,
       rawHuman: props.query,
-      rawAI: streamedMessage,
-      model: modelKey,
+      rawAI: stream?.content || stream?.output,
+      isToolRunning: false,
+      toolName,
       isLoading: false,
       hasError: false,
       createdAt: moment().toISOString(),
     };
 
+    console.log("saving", chatMessage);
     await addMessageToSession(sessionId, chatMessage);
     await generateTitleForSession(sessionId);
-    await onStreamEnd?.(chatMessage);
+    await onChange?.(chatMessage);
   };
 
   const generateTitleForSession = async (sessionId: string) => {

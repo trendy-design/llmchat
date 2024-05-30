@@ -18,8 +18,15 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-export const ModelSelect = () => {
-  const [selectedModel, setSelectedModel] = useState<TModelKey>("gpt-4-turbo");
+export type TModelSelect = {
+  selectedModel: TModelKey;
+  setSelectedModel: (model: TModelKey) => void;
+};
+
+export const ModelSelect = ({
+  selectedModel,
+  setSelectedModel,
+}: TModelSelect) => {
   const [isOpen, setIsOpen] = useState(false);
   const { getPreferences, setPreferences } = usePreferences();
   const { getModelByKey, models } = useModelList();

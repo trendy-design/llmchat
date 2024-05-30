@@ -3,6 +3,7 @@ import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOpenAI } from "@langchain/openai";
 import { defaultPreferences, usePreferences } from "./use-preferences";
+import { TToolKey } from "./use-tools";
 
 export type TBaseModel = "openai" | "anthropic" | "gemini";
 
@@ -28,6 +29,7 @@ export type TModel = {
   inputPrice?: number;
   outputPrice?: number;
   tokens: number;
+  plugins: TToolKey[];
   baseModel: TBaseModel;
   maxOutputTokens: number;
 };
@@ -84,6 +86,7 @@ export const useModelList = () => {
       isNew: true,
       inputPrice: 5,
       outputPrice: 15,
+      plugins: ["web_search", "calculator"],
       icon: () => <ModelIcon size="md" type="gpt4" />,
       baseModel: "openai",
       maxOutputTokens: 2048,
@@ -93,6 +96,7 @@ export const useModelList = () => {
       key: "gpt-4-turbo",
       tokens: 128000,
       isNew: false,
+      plugins: ["web_search", "calculator"],
       inputPrice: 10,
       outputPrice: 30,
       icon: () => <ModelIcon size="md" type="gpt4" />,
@@ -104,6 +108,7 @@ export const useModelList = () => {
       key: "gpt-4",
       tokens: 128000,
       isNew: false,
+      plugins: ["web_search", "calculator"],
       inputPrice: 30,
       outputPrice: 60,
       icon: () => <ModelIcon size="md" type="gpt4" />,
@@ -116,9 +121,9 @@ export const useModelList = () => {
       isNew: false,
       inputPrice: 0.5,
       outputPrice: 1.5,
+      plugins: ["web_search", "calculator"],
       tokens: 16385,
       icon: () => <ModelIcon size="md" type="gpt3" />,
-
       baseModel: "openai",
       maxOutputTokens: 4095,
     },
@@ -127,6 +132,7 @@ export const useModelList = () => {
       key: "gpt-3.5-turbo-0125",
       isNew: false,
       tokens: 16385,
+      plugins: ["web_search", "calculator"],
       icon: () => <ModelIcon size="md" type="gpt3" />,
       baseModel: "openai",
       maxOutputTokens: 4095,
@@ -138,6 +144,7 @@ export const useModelList = () => {
       tokens: 4000,
       inputPrice: 1.5,
       outputPrice: 2,
+      plugins: ["web_search", "calculator"],
       icon: () => <ModelIcon size="md" type="gpt3" />,
       baseModel: "openai",
       maxOutputTokens: 4095,
@@ -149,6 +156,7 @@ export const useModelList = () => {
       inputPrice: 15,
       outputPrice: 75,
       tokens: 200000,
+      plugins: [],
       icon: () => <ModelIcon size="md" type="anthropic" />,
       maxOutputTokens: 4095,
 
@@ -158,10 +166,10 @@ export const useModelList = () => {
       name: "Claude 3 Sonnet",
       inputPrice: 3,
       outputPrice: 15,
+      plugins: [],
       key: "claude-3-sonnet-20240229",
       isNew: false,
       maxOutputTokens: 4095,
-
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="anthropic" />,
 
@@ -174,8 +182,8 @@ export const useModelList = () => {
       inputPrice: 0.25,
       outputPrice: 1.5,
       tokens: 200000,
+      plugins: [],
       maxOutputTokens: 4095,
-
       icon: () => <ModelIcon size="md" type="anthropic" />,
       baseModel: "anthropic",
     },
@@ -185,6 +193,7 @@ export const useModelList = () => {
       isNew: true,
       inputPrice: 3.5,
       outputPrice: 10.5,
+      plugins: [],
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="gemini" />,
       baseModel: "gemini",
@@ -196,6 +205,7 @@ export const useModelList = () => {
       isNew: true,
       inputPrice: 0.35,
       outputPrice: 1.05,
+      plugins: [],
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="gemini" />,
       baseModel: "gemini",
@@ -207,6 +217,7 @@ export const useModelList = () => {
       key: "gemini-pro",
       inputPrice: 0.5,
       outputPrice: 1.5,
+      plugins: [],
       tokens: 200000,
       icon: () => <ModelIcon size="md" type="gemini" />,
       baseModel: "gemini",

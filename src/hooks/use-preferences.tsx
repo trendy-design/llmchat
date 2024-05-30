@@ -1,5 +1,6 @@
 import { get, set } from "idb-keyval";
 import { TBaseModel, TModelKey } from "./use-model-list";
+import { TToolKey } from "./use-tools";
 
 export type TApiKeys = Partial<Record<TBaseModel, string>>;
 export type TPreferences = {
@@ -7,9 +8,12 @@ export type TPreferences = {
   systemPrompt: string;
   messageLimit: number | "all";
   temperature: number;
+  defaultPlugins: TToolKey[];
   maxTokens: number;
   topP: number;
   topK: number;
+  googleSearchEngineId?: string;
+  googleSearchApiKey?: string;
 };
 
 export const defaultPreferences: TPreferences = {
@@ -17,6 +21,7 @@ export const defaultPreferences: TPreferences = {
   systemPrompt: "You are a helpful assistant.",
   messageLimit: "all",
   temperature: 0.5,
+  defaultPlugins: [],
   maxTokens: 500,
   topP: 1.0,
   topK: 5,

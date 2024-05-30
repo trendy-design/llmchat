@@ -42,14 +42,19 @@ export const useMarkdown = () => {
             </Heading>
           );
         },
-        link: (href, text) => (
-          <a
-            href={href}
-            className="underline underline-offset-4 decoration-blue-300 px-1 py-1 hover:bg-zinc-50 rounded-md dark:bg-white/10"
-          >
-            {text}
-          </a>
-        ),
+        link: (href, text) => {
+          if (text && href) {
+            return (
+              <a
+                href={href}
+                className="underline underline-offset-4 decoration-blue-300 px-1 py-1 hover:bg-blue-400/30 rounded-md dark:bg-white/10"
+              >
+                {text}
+              </a>
+            );
+          }
+          return <></>;
+        },
         blockquote: (children) => (
           <blockquote className="border-l-4 border-gray-300 pl-4 italic">
             <p className="text-sm md:text-base leading-7 ">{children}</p>

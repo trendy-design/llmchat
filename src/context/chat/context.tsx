@@ -10,7 +10,6 @@ export type TChatContext = {
   isCurrentSessionLoading: boolean;
   currentSession: TChatSession | undefined;
   createSession: () => Promise<TChatSession>;
-  streaming: boolean;
   removeSession: (sessionId: string) => Promise<void>;
   clearChatSessions: () => Promise<void>;
   stopGeneration: () => void;

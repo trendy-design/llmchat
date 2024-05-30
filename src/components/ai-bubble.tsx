@@ -5,6 +5,7 @@ import { useClipboard } from "@/hooks/use-clipboard";
 import { useMarkdown } from "@/hooks/use-mdx";
 import { TModelKey, useModelList } from "@/hooks/use-model-list";
 import { useTokenCounter } from "@/hooks/use-token-counter";
+import { TToolKey, useTools } from "@/hooks/use-tools";
 import { Check, Copy, TrashSimple } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 import { RegenerateWithModelSelect } from "./regenerate-model-select";
@@ -20,7 +21,21 @@ export type TAIMessageBubble = {
 };
 
 export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
-  const { id, rawAI, isLoading, model, errorMesssage } = chatMessage;
+  const {
+    id,
+    rawAI,
+    isLoading,
+    model,
+    errorMesssage,
+    isToolRunning,
+    toolName,
+  } = chatMessage;
+
+  const { getToolInfoByKey } = useTools();
+
+  const toolUsed = toolName
+    ? getToolInfoByKey(toolName as TToolKey)
+    : undefined;
   const messageRef = useRef<HTMLDivElement>(null);
   const { showCopied, copy } = useClipboard();
   const { getModelByKey } = useModelList();
@@ -43,8 +58,21 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
         ref={messageRef}
         className=" rounded-2xl w-full flex flex-col items-start"
       >
+        {toolUsed && (
+          <div className="flex flex-row gap-2 py-2 items-center text-xs text-zinc-500/60">
+            {toolUsed.smallIcon()}
+            {isToolRunning ? (
+              <p className="text-xs">{toolUsed.loadingMessage}</p>
+            ) : (
+              <p>{toolUsed.resultMessage}</p>
+            )}
+          </div>
+        )}
+
         {rawAI && (
-          <div className="pb-2 w-full">{renderMarkdown(rawAI, isLoading)}</div>
+          <div className="pb-2 w-full">
+            {renderMarkdown(rawAI, !!isLoading)}
+          </div>
         )}
         {errorMesssage && (
           <Alert variant="destructive">
@@ -64,7 +92,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
         )}
 
         <div className="flex flex-row w-full justify-between items-center py-3 opacity-70 hover:opacity-100 transition-opacity">
-          {isLoading && <Spinner />}
+          {isLoading && !isToolRunning && <Spinner />}
           {!isLoading && (
             <div className="flex flex-row gap-1">
               <Tooltip content="Copy">

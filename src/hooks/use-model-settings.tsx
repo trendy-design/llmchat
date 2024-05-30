@@ -20,6 +20,8 @@ export const useModelSettings = ({ refresh }: TModelSettings) => {
       topP: 1,
       topK: 5,
       maxTokens: 1000,
+      googleSearchEngineId: "",
+      googleSearchApiKey: "",
     },
     onSubmit: (values) => {},
   });
@@ -45,6 +47,14 @@ export const useModelSettings = ({ refresh }: TModelSettings) => {
       formik.setFieldValue(
         "maxTokens",
         preferences.maxTokens || defaultPreferences.maxTokens
+      );
+      formik.setFieldValue(
+        "googleSearchEngineId",
+        preferences.googleSearchEngineId || ""
+      );
+      formik.setFieldValue(
+        "googleSearchApiKey",
+        preferences.googleSearchApiKey || ""
       );
     });
   }, [refresh]);

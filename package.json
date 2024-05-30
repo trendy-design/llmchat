@@ -31,6 +31,7 @@
     "@tiptap/starter-kit": "^2.4.0",
     "@types/lodash": "^4.17.1",
     "add": "^2.0.6",
+    "axios": "^1.7.2",
     "boring-avatars": "^1.10.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

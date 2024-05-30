@@ -1,7 +1,7 @@
 import { useChatContext } from "@/context/chat/context";
 import { useFilters } from "@/context/filters/context";
 import { useSettings } from "@/context/settings/context";
-import { useModelList } from "@/hooks/use-model-list";
+import { TModelKey, useModelList } from "@/hooks/use-model-list";
 import { usePreferences } from "@/hooks/use-preferences";
 import { useRecordVoice } from "@/hooks/use-record-voice";
 import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
@@ -34,7 +34,7 @@ import Text from "@tiptap/extension-text";
 import { EditorContent, Extension, useEditor } from "@tiptap/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Resizer from "react-image-file-resizer";
 import { ChatExamples } from "./chat-examples";
@@ -43,6 +43,7 @@ import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Badge } from "./ui/badge";
 
 import { removeExtraSpaces } from "@/lib/helper";
+import { PluginSelect } from "./plugin-select";
 import { QuickSettings } from "./quick-settings";
 import { Button } from "./ui/button";
 import { ComingSoon } from "./ui/coming-soon";
@@ -66,20 +67,11 @@ export const ChatInput = () => {
   const { sessionId } = useParams();
   const { open: openFilters } = useFilters();
   const { showButton, scrollToBottom } = useScrollToBottom();
-  const router = useRouter();
   const { toast } = useToast();
-  const [selectedPrompt, setSelectedPrompt] = useState<string>();
   const { startRecording, stopRecording, recording, text, transcribing } =
     useRecordVoice();
-  const {
-    runModel,
-    createSession,
-    currentSession,
-    streaming,
-    stopGeneration,
-    refetchSessions,
-  } = useChatContext();
-  // const [inputValue, setInputValue] = useState("");
+  const { runModel, currentSession, stopGeneration, refetchSessions } =
+    useChatContext();
   const [contextValue, setContextValue] = useState<string>("");
   const { getPreferences, getApiKey } = usePreferences();
   const { getModelByKey } = useModelList();
@@ -88,6 +80,7 @@ export const ChatInput = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [open, setOpen] = useState(false);
   const [commandInput, setCommandInput] = useState("");
+  const [selectedModel, setSelectedModel] = useState<TModelKey>("gpt-4-turbo");
 
   const [attachment, setAttachment] = useState<TAttachment>();
 
@@ -545,7 +538,7 @@ export const ChatInput = () => {
                 <EditorContent
                   editor={editor}
                   autoFocus
-                  className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none [&>*]:leading-6 wysiwyg cursor-text"
+                  className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
                 />
 
                 {renderRecordingControls()}
@@ -566,7 +559,11 @@ export const ChatInput = () => {
                 </Button>
               </div>
               <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 pb-2 px-2">
-                <ModelSelect />
+                <ModelSelect
+                  selectedModel={selectedModel}
+                  setSelectedModel={setSelectedModel}
+                />
+                <PluginSelect selectedModel={selectedModel} />
                 <QuickSettings />
                 <div className="flex-1"></div>
                 <Button

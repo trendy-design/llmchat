@@ -5,6 +5,7 @@ import { CommonSettings } from "@/components/settings/common";
 import { Data } from "@/components/settings/data";
 import { GeminiSettings } from "@/components/settings/gemini";
 import { OpenAISettings } from "@/components/settings/openai";
+import { WebSearchPlugin } from "@/components/settings/plugins/web-search";
 import { VoiceInput } from "@/components/settings/voice-input";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -76,8 +77,16 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
       component: <GeminiSettings />,
     },
   ];
+  const pluginsMenu: TSettingMenuItem[] = [
+    {
+      name: "Web Search",
+      key: "web-search",
+      icon: () => <ModelIcon size="md" type="websearch" />,
+      component: <WebSearchPlugin />,
+    },
+  ];
 
-  const allMenus = [...settingMenu, ...modelsMenu];
+  const allMenus = [...settingMenu, ...modelsMenu, ...pluginsMenu];
 
   const selectedMenuItem = allMenus.find((menu) => menu.key === selectedMenu);
 
@@ -90,7 +99,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
       <Dialog open={isSettingOpen} onOpenChange={setIsSettingOpen}>
         <DialogContent className="w-[96dvw] max-h-[80dvh] rounded-xl md:min-w-[800px] md:h-[600px] flex flex-col md:flex-row overflow-hidden border border-white/5 p-0">
           <div className="w-full md:w-[250px] bg-black/5 dark:bg-black/10 p-2 absolute left-0 top-0 right-0 md:bottom-0 flex flex-row md:flex-col md:gap-0 gap-1">
-            <p className="px-2 py-2 hidden md:flex text-xs md:text-sm font-medium text-zinc-500">
+            <p className="px-2 py-2 hidden md:flex text-xs md:text-xs font-medium text-zinc-500">
               GENERAL
             </p>
             {settingMenu.map((menu) => (
@@ -114,10 +123,33 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
                 </span>
               </Button>
             ))}
-            <p className="px-2 py-2 text-xs md:text-sm hidden md:flex  font-medium text-zinc-500">
+            <p className="px-2 py-2 text-xs md:text-xs hidden md:flex  font-medium text-zinc-500">
               MODELS
             </p>
             {modelsMenu.map((menu) => (
+              <Button
+                variant={selectedMenu === menu.key ? "secondary" : "ghost"}
+                key={menu.key}
+                onClick={() => setSelectedMenu(menu.key)}
+                className="justify-start gap-2 px-2"
+                size="default"
+              >
+                {menu.icon()}
+                <span
+                  className={cn(
+                    "text-sm md:text-base md:flex",
+                    selectedMenu === menu.key ? "flex" : "hidden"
+                  )}
+                >
+                  {" "}
+                  {menu.name}
+                </span>
+              </Button>
+            ))}
+            <p className="px-2 py-2 text-xs md:text-xs hidden md:flex  font-medium text-zinc-500">
+              PLUGINS
+            </p>
+            {pluginsMenu.map((menu) => (
               <Button
                 variant={selectedMenu === menu.key ? "secondary" : "ghost"}
                 key={menu.key}

@@ -33,7 +33,7 @@ export const QuickSettings = () => {
       <Tooltip content="Configure Model">
         <PopoverTrigger asChild>
           <Button variant="ghost" size="iconSm">
-            <SlidersHorizontal size={20} weight="bold" />
+            <SlidersHorizontal size={16} weight="bold" />
           </Button>
         </PopoverTrigger>
       </Tooltip>
@@ -44,7 +44,7 @@ export const QuickSettings = () => {
           </div>
         )}
         <div className="grid grid-cols-1 p-1">
-          <div className="flex flex-col w-full p-3 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl">
+          <div className="flex flex-col w-full p-2 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl">
             <div className="flex flex-row items-center justify-between w-full">
               <Tooltip content="Temprature">
                 <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-400 flex flex-row items-center gap-1">
@@ -66,7 +66,7 @@ export const QuickSettings = () => {
               }}
             />
           </div>
-          <div className="flex flex-col w-full p-3 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl">
+          <div className="flex flex-col w-full p-2 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl">
             <div className="flex flex-row items-center justify-between w-full">
               <Tooltip content="Temprature">
                 <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-400 flex flex-row items-center gap-1">
@@ -99,7 +99,7 @@ export const QuickSettings = () => {
               </p>
             </div>
           </div>{" "}
-          <div className="flex flex-col w-full p-3 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl">
+          <div className="flex flex-col w-full p-2 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl">
             <div className="flex flex-row items-center justify-between w-full">
               <Tooltip content="TopP">
                 <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-400 flex flex-row items-center gap-1">
@@ -129,7 +129,7 @@ export const QuickSettings = () => {
               </p>
             </div>
           </div>{" "}
-          <div className="flex flex-col w-full p-3 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl">
+          <div className="flex flex-col w-full p-2 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl">
             <div className="flex flex-row items-center justify-between w-full">
               <Tooltip content="TopK">
                 <p className="text-sm md:text-base text-zinc-600 dark:text-zinc-400 flex flex-row items-center gap-1">
