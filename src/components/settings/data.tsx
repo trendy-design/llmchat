@@ -12,16 +12,31 @@ export const Data = () => {
   const { clearSessions, createNewSession } = useChatSession();
 
   const clearAllData = async () => {
-    clearSessions().then(() => {
-      createNewSession().then((session) => {
-        toast({
-          title: "Data Cleared",
-          description: "All chat data has been cleared",
-          variant: "default",
-        });
-        push(`/chat/${session?.id}`);
-        dismiss();
-      });
+    toast({
+      title: "Clear All Data?",
+      description: "This action cannot be undone.",
+      variant: "destructive",
+      action: (
+        <Button
+          size="sm"
+          variant="default"
+          onClick={() => {
+            clearSessions().then(() => {
+              createNewSession().then((session) => {
+                toast({
+                  title: "Data Cleared",
+                  description: "All chat data has been cleared",
+                  variant: "default",
+                });
+                push(`/chat/${session?.id}`);
+                dismiss();
+              });
+            });
+          }}
+        >
+          Clear All
+        </Button>
+      ),
     });
   };
   return (
