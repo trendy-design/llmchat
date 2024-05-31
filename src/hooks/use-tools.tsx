@@ -1,6 +1,6 @@
 import { ModelIcon } from "@/components/icons/model-icon";
 import { DynamicStructuredTool } from "@langchain/core/tools";
-import { Calculator, Globe } from "@phosphor-icons/react";
+import { Browser, Calculator, Globe } from "@phosphor-icons/react";
 import axios from "axios";
 import { ReactNode } from "react";
 import { ZodObject, z } from "zod";
@@ -86,7 +86,71 @@ const webSearchTool = (preference: TPreferences) => {
   });
 };
 
-export type TToolKey = "calculator" | "web_search";
+const duckduckGoTool = () => {
+  const webSearchSchema = z.object({
+    input: z.string(),
+  });
+
+  return new DynamicStructuredTool({
+    name: "duckduckgo_search",
+    description:
+      "A search engine optimized for comprehensive, accurate, and trusted results. Useful for when you need to answer questions about current events. Input should be a search query.",
+    schema: webSearchSchema,
+    func: async ({ input }, runManager) => {
+      try {
+        const response = await axios.post("/api/search", { query: input });
+        const result = response.data?.results;
+        if (!result) {
+          runManager?.handleToolError("Error performing Duckduck go search");
+          throw new Error("Invalid response");
+        }
+
+        const searchPrompt = `Information: \n\n ${result} \n\n Based on snippet please answer the given question with proper citations. Must Remove XML tags if any. Question: ${input} use read_website tool to extract more information.`;
+
+        return searchPrompt;
+      } catch (error) {
+        return "Error performing Google search. Ask user to check API keys.";
+      }
+    },
+  });
+};
+
+const readWebsiteTool = () => {
+  const webSearchSchema = z.object({
+    url: z.string().url(),
+    query: z.string(),
+  });
+
+  return new DynamicStructuredTool({
+    name: "read_website",
+    description:
+      "Website reader tool to extract information from a website. Useful when you want to look into website content to answer question. Input should be a URL and query",
+    schema: webSearchSchema,
+    func: async ({ url, query }, runManager) => {
+      try {
+        const response = await axios.post("/api/extract", { url });
+
+        if (!response?.data?.text) {
+          runManager?.handleToolError("Error performing Google search");
+          throw new Error("Invalid response");
+        }
+        const content = response.data.text;
+
+        const searchPrompt = `Information: \n\n ${content} \n\n\n Based on snippet please answer the given question with proper citations. Must Remove XML tags if any. Question: ${query}`;
+
+        return searchPrompt;
+      } catch (error) {
+        return "Error performing Google search. Ask user to check API keys.";
+      }
+    },
+  });
+};
+
+export type TToolKey =
+  | "calculator"
+  | "web_search"
+  | "read_website"
+  | "duckduckgo_search";
 export type IconSize = "sm" | "md" | "lg";
 export type TTool = {
   key: TToolKey;
@@ -117,6 +181,24 @@ export const useTools = () => {
       resultMessage: "Results from Google Search",
       icon: (size: IconSize) => <ModelIcon type="websearch" size={size} />,
       smallIcon: () => <Globe size={16} weight="bold" />,
+    },
+    {
+      key: "duckduckgo_search",
+      tool: duckduckGoTool,
+      name: "DuckDuckGo Search",
+      loadingMessage: "Searching on web...",
+      resultMessage: "Results from DuckDuckGo Search",
+      icon: (size: IconSize) => <ModelIcon type="websearch" size={size} />,
+      smallIcon: () => <Globe size={16} weight="bold" />,
+    },
+    {
+      key: "read_website",
+      tool: readWebsiteTool,
+      name: "Read Website",
+      loadingMessage: "Analyzing website...",
+      resultMessage: "Results from Website Reader",
+      icon: (size: IconSize) => <ModelIcon type="websearch" size={size} />,
+      smallIcon: () => <Browser size={16} weight="bold" />,
     },
   ];
 
