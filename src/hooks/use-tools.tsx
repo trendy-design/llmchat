@@ -45,7 +45,7 @@ const webSearchTool = (preference: TPreferences) => {
   return new DynamicStructuredTool({
     name: "web_search",
     description:
-      "A search engine optimized for comprehensive, accurate, and trusted results. Useful for when you need to answer questions about current events. Input should be a search query.",
+      "A search engine optimized for comprehensive, accurate, and trusted results. Useful for when you need to answer questions about current events. Input should be a search query. Don't use tool if already used it to answer the question.",
     schema: webSearchSchema,
     func: async ({ input }, runManager) => {
       const url = "https://www.googleapis.com/customsearch/v1";
@@ -95,7 +95,7 @@ const duckduckGoTool = () => {
   return new DynamicStructuredTool({
     name: "duckduckgo_search",
     description:
-      "A search engine optimized for comprehensive, accurate, and trusted results. Useful for when you need to answer question about current event. Input should be a search query and use this tool if you don't know the answer.",
+      "A search engine optimized for comprehensive, accurate, and trusted results. Useful for when you need to answer questions about current events. Input should be a search query. Don't use tool if already used it to answer the question.",
     schema: webSearchSchema,
     func: async ({ input }, runManager) => {
       try {
@@ -106,11 +106,11 @@ const duckduckGoTool = () => {
           throw new Error("Invalid response");
         }
 
-        const searchPrompt = `Information: \n\n ${result} \n\n Based on snippet please answer the given question with proper citations. Must Remove XML tags if any. Question: ${input} use read_website tool to extract more information.`;
+        const searchPrompt = `Information: \n\n ${result} \n\n Based on snippet please answer the given question with proper citations without using duckduckgo_search function again. Must Remove XML tags if any. Question: ${input}`;
 
         return searchPrompt;
       } catch (error) {
-        return "Error performing Google search. Ask user to check API keys.";
+        return "Error performing search. Must not use duckduckgo_search tool now. Ask user to check API keys.";
       }
     },
   });

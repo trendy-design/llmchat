@@ -335,7 +335,12 @@ export const useLLM = ({ onChange }: TUseLLM) => {
 
     const firstMessage = session?.messages?.[0];
 
-    if (!firstMessage || !firstMessage.rawAI || !firstMessage.rawHuman) {
+    if (
+      !firstMessage ||
+      !firstMessage.rawAI ||
+      !firstMessage.rawHuman ||
+      session?.messages?.length > 2
+    ) {
       return;
     }
 
