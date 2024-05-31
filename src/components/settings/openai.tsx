@@ -2,7 +2,6 @@ import { useLLMTest } from "@/hooks/use-llm-test";
 import { usePreferences } from "@/hooks/use-preferences";
 import { ArrowRight, Info } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import { Alert, AlertDescription, AlertTitle } from "../ui/alert";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { SettingsContainer } from "./settings-container";
@@ -10,7 +9,7 @@ import { SettingsContainer } from "./settings-container";
 export const OpenAISettings = () => {
   const [key, setKey] = useState<string>("");
   const { getApiKey, setApiKey } = usePreferences();
-  const { renderTestButton } = useLLMTest();
+  const { renderSaveApiKeyButton } = useLLMTest();
   useEffect(() => {
     getApiKey("openai").then((key) => {
       if (key) {
@@ -30,12 +29,13 @@ export const OpenAISettings = () => {
         autoComplete="off"
         onChange={(e) => {
           setKey(e.target.value);
-          setApiKey("openai", e.target.value);
         }}
       />
 
       <div className="flex flex-row items-center gap-2">
-        {renderTestButton("openai")}
+        {renderSaveApiKeyButton("openai", key, () => {
+          setApiKey("openai", key);
+        })}
 
         <Button
           size="sm"
@@ -50,14 +50,14 @@ export const OpenAISettings = () => {
           Get your API key here <ArrowRight size={16} weight="bold" />
         </Button>
       </div>
-      <Alert variant="success">
-        <Info className="h-4 w-4" />
-        <AlertTitle>Attention!</AlertTitle>
-        <AlertDescription>
+
+      <div className="flex flex-row items-start gap-1 py-2 text-zinc-500">
+        <Info size={16} weight="bold" />
+        <p className=" text-xs">
           Your API Key is stored locally on your browser and never sent anywhere
           else.
-        </AlertDescription>
-      </Alert>
+        </p>
+      </div>
     </SettingsContainer>
   );
 };

@@ -2,18 +2,14 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
 import { TBaseModel, useModelList } from "./use-model-list";
-import { usePreferences } from "./use-preferences";
 
 export const useLLMTest = () => {
   const { getTestModelKey, getModelByKey, createInstance } = useModelList();
   const [isTestRunning, setIsTestRunning] = useState(false);
   const { toast } = useToast();
-
-  const { getApiKey } = usePreferences();
-  const testLLM = async (model: TBaseModel) => {
+  const testLLM = async (model: TBaseModel, apiKey?: string) => {
     try {
       const modelKey = getTestModelKey(model);
-      const apiKey = await getApiKey(model);
 
       if (!apiKey) {
         return false;
@@ -27,9 +23,29 @@ export const useLLMTest = () => {
 
       const selectedModel = await createInstance(selectedModelKey, apiKey);
 
-      const data = await selectedModel.invoke("This is Test Message");
+      const data = await selectedModel
+        .withListeners({
+          onError: (error) => {
+            console.error("error", error);
+          },
+        })
+        .withConfig({
+          recursionLimit: 2,
+        })
+        .invoke("This is Test Message", {
+          callbacks: [
+            {
+              handleLLMError: (error) => {
+                console.error("lll", error);
+                throw new Error(error);
+              },
+            },
+          ],
+        });
 
-      if (data.content) {
+      console.log(data);
+
+      if (data) {
         return true;
       }
       return false;
@@ -39,23 +55,27 @@ export const useLLMTest = () => {
     }
   };
 
-  const renderTestButton = (model: TBaseModel) => {
+  const renderSaveApiKeyButton = (
+    model: TBaseModel,
+    key: string,
+    onValidated: () => void
+  ) => {
     return (
       <Button
         size="sm"
-        variant="default"
         onClick={async () => {
           setIsTestRunning(true);
-          const succeed = await testLLM(model);
-          if (succeed) {
+          const isWorking = await testLLM(model, key);
+          if (isWorking) {
+            onValidated();
             toast({
-              title: "Test Succeed",
+              title: "API Key saved successfully",
               description: "Model is working as expected",
               variant: "default",
             });
           } else {
             toast({
-              title: "Test Failed",
+              title: "API Key Invalid",
               description: "Please check your API key and try again.",
               variant: "destructive",
             });
@@ -63,10 +83,10 @@ export const useLLMTest = () => {
           setIsTestRunning(false);
         }}
       >
-        {isTestRunning ? "Running ..." : "Run Test"}
+        {isTestRunning ? "Validating..." : "Save API Key"}
       </Button>
     );
   };
 
-  return { renderTestButton };
+  return { testLLM, renderSaveApiKeyButton };
 };

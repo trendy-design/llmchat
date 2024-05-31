@@ -37,9 +37,7 @@ export const PluginSelect = ({ selectedModel }: TPluginSelect) => {
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm">
               <Plug size={16} weight="bold" />
-              {!!selectedPlugins?.length && (
-                <Badge>{selectedPlugins.length}</Badge>
-              )}
+              <Badge>{selectedPlugins.length}</Badge>
             </Button>
           </PopoverTrigger>
         </Tooltip>

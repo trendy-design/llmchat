@@ -97,81 +97,86 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
       {children}
 
       <Dialog open={isSettingOpen} onOpenChange={setIsSettingOpen}>
-        <DialogContent className="w-[96dvw] max-h-[80dvh] rounded-xl md:min-w-[800px] md:h-[600px] flex flex-col md:flex-row overflow-hidden border border-white/5 p-0">
-          <div className="w-full md:w-[250px] bg-black/5 dark:bg-black/10 p-2 absolute left-0 top-0 right-0 md:bottom-0 flex flex-row md:flex-col md:gap-0 gap-1">
-            <p className="px-2 py-2 hidden md:flex text-xs md:text-xs font-medium text-zinc-500">
-              GENERAL
-            </p>
-            {settingMenu.map((menu) => (
-              <Button
-                variant={selectedMenu === menu.key ? "secondary" : "ghost"}
-                key={menu.key}
-                onClick={() => setSelectedMenu(menu.key)}
-                className="justify-start gap-2 px-2"
-                size="default"
-              >
-                <div className="w-6 h-6 flex flex-row items-center justify-center">
-                  {menu.icon()}
-                </div>
-                <span
-                  className={cn(
-                    "text-sm md:text-base md:flex",
-                    selectedMenu === menu.key ? "flex" : "hidden"
-                  )}
-                >
-                  {menu.name}
-                </span>
-              </Button>
-            ))}
-            <p className="px-2 py-2 text-xs md:text-xs hidden md:flex  font-medium text-zinc-500">
-              MODELS
-            </p>
-            {modelsMenu.map((menu) => (
-              <Button
-                variant={selectedMenu === menu.key ? "secondary" : "ghost"}
-                key={menu.key}
-                onClick={() => setSelectedMenu(menu.key)}
-                className="justify-start gap-2 px-2"
-                size="default"
-              >
-                {menu.icon()}
-                <span
-                  className={cn(
-                    "text-sm md:text-base md:flex",
-                    selectedMenu === menu.key ? "flex" : "hidden"
-                  )}
-                >
-                  {" "}
-                  {menu.name}
-                </span>
-              </Button>
-            ))}
-            <p className="px-2 py-2 text-xs md:text-xs hidden md:flex  font-medium text-zinc-500">
-              PLUGINS
-            </p>
-            {pluginsMenu.map((menu) => (
-              <Button
-                variant={selectedMenu === menu.key ? "secondary" : "ghost"}
-                key={menu.key}
-                onClick={() => setSelectedMenu(menu.key)}
-                className="justify-start gap-2 px-2"
-                size="default"
-              >
-                {menu.icon()}
-                <span
-                  className={cn(
-                    "text-sm md:text-base md:flex",
-                    selectedMenu === menu.key ? "flex" : "hidden"
-                  )}
-                >
-                  {" "}
-                  {menu.name}
-                </span>
-              </Button>
-            ))}
+        <DialogContent className="w-[96dvw] max-h-[80dvh] rounded-xl md:min-w-[800px] gap-0 md:h-[600px] flex flex-col overflow-hidden border border-white/5 p-0">
+          <div className="w-full px-4 py-3 border-b border-zinc-500/20">
+            <p className="text-md font-medium">Settings</p>
           </div>
-          <div className="md:ml-[250px] mt-[60px] md:mt-0 pb-16 w-full h-full overflow-y-auto no-scrollbar">
-            {selectedMenuItem?.component}
+          <div className="flex flex-col md:flex-row w-full relative h-full">
+            <div className="w-full md:w-[250px] px-2 border-r border-zinc-500/10 absolute left-0 top-0 right-0 md:bottom-0 flex flex-row md:flex-col md:gap-0 gap-1">
+              <p className="px-2 py-2 hidden md:flex text-xs md:text-xs font-medium text-zinc-500">
+                GENERAL
+              </p>
+              {settingMenu.map((menu) => (
+                <Button
+                  variant={selectedMenu === menu.key ? "secondary" : "ghost"}
+                  key={menu.key}
+                  onClick={() => setSelectedMenu(menu.key)}
+                  className="justify-start gap-2 px-2"
+                  size="default"
+                >
+                  <div className="w-6 h-6 flex flex-row items-center justify-center">
+                    {menu.icon()}
+                  </div>
+                  <span
+                    className={cn(
+                      "text-sm md:text-base md:flex",
+                      selectedMenu === menu.key ? "flex" : "hidden"
+                    )}
+                  >
+                    {menu.name}
+                  </span>
+                </Button>
+              ))}
+              <p className="px-2 py-2 text-xs md:text-xs hidden md:flex  font-medium text-zinc-500">
+                MODELS
+              </p>
+              {modelsMenu.map((menu) => (
+                <Button
+                  variant={selectedMenu === menu.key ? "secondary" : "ghost"}
+                  key={menu.key}
+                  onClick={() => setSelectedMenu(menu.key)}
+                  className="justify-start gap-2 px-2"
+                  size="default"
+                >
+                  {menu.icon()}
+                  <span
+                    className={cn(
+                      "text-sm md:text-base md:flex",
+                      selectedMenu === menu.key ? "flex" : "hidden"
+                    )}
+                  >
+                    {" "}
+                    {menu.name}
+                  </span>
+                </Button>
+              ))}
+              <p className="px-2 py-2 text-xs md:text-xs hidden md:flex  font-medium text-zinc-500">
+                PLUGINS
+              </p>
+              {pluginsMenu.map((menu) => (
+                <Button
+                  variant={selectedMenu === menu.key ? "secondary" : "ghost"}
+                  key={menu.key}
+                  onClick={() => setSelectedMenu(menu.key)}
+                  className="justify-start gap-2 px-2"
+                  size="default"
+                >
+                  {menu.icon()}
+                  <span
+                    className={cn(
+                      "text-sm md:text-base md:flex",
+                      selectedMenu === menu.key ? "flex" : "hidden"
+                    )}
+                  >
+                    {" "}
+                    {menu.name}
+                  </span>
+                </Button>
+              ))}
+            </div>
+            <div className="md:ml-[250px] pb-16 w-full h-full overflow-y-auto no-scrollbar">
+              {selectedMenuItem?.component}
+            </div>
           </div>
         </DialogContent>
       </Dialog>

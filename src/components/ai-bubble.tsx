@@ -59,7 +59,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
         className=" rounded-2xl w-full flex flex-col items-start"
       >
         {toolUsed && (
-          <div className="flex flex-row gap-2 py-2 items-center text-xs text-zinc-500/60">
+          <div className="flex flex-row gap-2 py-2 items-center text-xs text-zinc-500">
             {toolUsed.smallIcon()}
             {isToolRunning ? (
               <p className="text-xs">{toolUsed.loadingMessage}</p>

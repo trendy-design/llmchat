@@ -46,7 +46,7 @@ export const Data = () => {
           Clear all chat data
         </p>
       </div>
-      <Button variant="destructive" onClick={clearAllData}>
+      <Button variant="destructive" size="sm" onClick={clearAllData}>
         Clear All Data
       </Button>
     </SettingsContainer>

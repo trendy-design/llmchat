@@ -71,6 +71,10 @@ export const useModelList = () => {
           maxOutputTokens: maxTokens,
           streaming: true,
           temperature,
+          maxRetries: 1,
+          onFailedAttempt: (error) => {
+            console.error("Failed attempt", error);
+          },
           topP,
           topK,
         });
