@@ -10,6 +10,6 @@ export function formatNumber(number: number) {
 
 export function removeExtraSpaces(str?: string) {
   str = str?.trim();
-  str = str?.replace(/\n{2,}/g, "\n");
+  str = str?.replace(/\n{3,}/g, "\n\n");
   return str;
 }
