@@ -48,6 +48,7 @@ export const useMarkdown = () => {
             </Heading>
           );
         },
+        hr: () => <hr className="my-4 border-gray-100 dark:border-white/10" />,
         link: (href, text) => {
           if (text && href) {
             return (

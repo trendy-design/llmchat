@@ -5,7 +5,7 @@ import {
   useChatSession,
 } from "@/hooks/use-chat-session";
 import { useLLM } from "@/hooks/use-llm";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { ChatContext } from "./context";
 export type TChatProvider = {
@@ -29,6 +29,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   const [currentSession, setCurrentSession] = useState<
     TChatSession | undefined
   >();
+  const { push } = useRouter();
 
   const appendToCurrentSession = (props: TChatMessage) => {
     setCurrentSession((session) => {
@@ -42,7 +43,6 @@ export const ChatProvider = ({ children }: TChatProvider) => {
           ...session,
           messages: session.messages.map((message) => {
             if (message.id === props.id) {
-              console.log("message", props);
               return { message, ...props };
             }
             return message;
@@ -71,8 +71,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         setCurrentSessionLoading(false);
       } else {
         createNewSession().then((session) => {
-          setCurrentSession(session);
-          setCurrentSessionLoading(false);
+          push(`/chat/${session.id}`);
         });
       }
     });

@@ -22,7 +22,7 @@ export const defaultPreferences: TPreferences = {
   messageLimit: "all",
   temperature: 0.5,
   defaultPlugins: [],
-  maxTokens: 500,
+  maxTokens: 1000,
   topP: 1.0,
   topK: 5,
 };

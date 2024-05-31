@@ -37,7 +37,6 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Resizer from "react-image-file-resizer";
-import { ChatExamples } from "./chat-examples";
 import { ModelSelect } from "./model-select";
 import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Badge } from "./ui/badge";
@@ -511,7 +510,7 @@ export const ChatInput = () => {
         {renderReplyButton()}
         {renderListeningIndicator()}
       </div>
-      <div className="flex flex-col  justify-center items-center">
+      {/* <div className="flex flex-col  justify-center items-center">
         <ChatExamples
           show={isNewSession}
           onExampleClick={(prompt) => {
@@ -521,7 +520,7 @@ export const ChatInput = () => {
             });
           }}
         />
-      </div>
+      </div> */}
       <div className="flex flex-col gap-1 w-full md:w-[700px]">
         {renderSelectedContext()}
         {renderAttachedImage()}

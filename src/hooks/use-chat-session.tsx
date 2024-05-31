@@ -80,6 +80,8 @@ export const useChatSession = () => {
             updatedAt: moment().toISOString(),
           };
         }
+
+        console.log("new messgae", chatMessage);
         return {
           ...session,
           messages: [chatMessage],

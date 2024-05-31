@@ -14,10 +14,12 @@ async function scrapeWebsite(url: string) {
 
   // Remove script and style tags
   await page.evaluate(() => {
-    document.querySelectorAll("script, style").forEach((el) => el.remove());
+    document
+      .querySelectorAll("script, style, noscript, iframe")
+      .forEach((el) => el.remove());
   });
 
-  // Remove sidebar and navbar
+  // Remove sidebar and navbarx
   await page.evaluate(() => {
     document
       .querySelectorAll("sidebar, nav, footer, header")
@@ -40,12 +42,11 @@ export async function POST(req: NextRequest, resp: NextResponse) {
 
   const htmlContent = await scrapeWebsite(url);
 
-  console.log(htmlContent);
-
   if (!htmlContent) {
     return Response.json({ error: "Error fetching content" }, { status: 500 });
   }
   const markdownContent = turndownService.turndown(htmlContent);
 
+  console.log(markdownContent);
   return NextResponse.json({ text: markdownContent });
 }

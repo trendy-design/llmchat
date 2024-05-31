@@ -31,7 +31,7 @@ export const CommonSettings = () => {
     <SettingsContainer title="Model Settings">
       <div className="flex flex-col w-full">
         <div className="flex flex-row items-center justify-between py-2 w-full">
-          <p className="text-sm md:text-base text-zinc-500 flex flex-row items-center gap-1">
+          <p className="text-xs md:text-sm text-zinc-500 flex flex-row items-center gap-1">
             System Default Prompt <Info weight="regular" size={14} />
           </p>
           {renderResetToDefault("systemPrompt")}
@@ -49,7 +49,7 @@ export const CommonSettings = () => {
 
       <div className="flex flex-col w-full">
         <div className="flex flex-row items-center justify-between py-2 w-full">
-          <p className="text-sm md:text-base flex flex-row gap-2 items-center  text-zinc-500">
+          <p className="text-xs md:text-sm flex flex-row gap-2 items-center  text-zinc-500">
             Context Length
           </p>
           {renderResetToDefault("messageLimit")}
@@ -57,7 +57,7 @@ export const CommonSettings = () => {
 
         <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-50 dark:bg-white/5 rounded-xl">
           <div className="flex flex-row w-full justify-between">
-            <p className="text-sm md:text-base">Use all Previous Messages</p>
+            <p className="text-xs md:text-sm">Use all Previous Messages</p>
             <Switch
               checked={formik.values.messageLimit === "all"}
               onCheckedChange={(checked) => {
@@ -68,7 +68,7 @@ export const CommonSettings = () => {
           </div>
           {formik.values.messageLimit !== "all" && (
             <>
-              <p className="text-sm md:text-base flex flex-row gap-2 items-center text-zinc-500">
+              <p className="text-xs md:text-sm flex flex-row gap-2 items-center text-zinc-500">
                 Previous Messages Limit <Info weight="regular" size={14} />
               </p>
 
@@ -89,7 +89,7 @@ export const CommonSettings = () => {
 
       <div className="flex flex-col w-full">
         <div className="flex flex-row items-center justify-between py-2 w-full">
-          <p className="flex flex-row text-sm md:text-base items-center gap-1  text-zinc-500">
+          <p className="flex flex-row text-xs md:text-sm items-center gap-1  text-zinc-500">
             Max Tokens <Info weight="regular" size={14} />
           </p>
           {renderResetToDefault("maxTokens")}
@@ -110,7 +110,7 @@ export const CommonSettings = () => {
         <div className="flex flex-col">
           <div className="flex flex-row items-center justify-between py-2 w-full">
             <Tooltip content="Temprature">
-              <p className="text-sm md:text-base text-zinc-500 flex flex-row items-center gap-1">
+              <p className="text-xs md:text-sm text-zinc-500 flex flex-row items-center gap-1">
                 Temperature <Info weight="regular" size={14} />
               </p>
             </Tooltip>
@@ -132,13 +132,13 @@ export const CommonSettings = () => {
               }}
             />
             <div className="flex flex-row justify-between w-full">
-              <p className="text-sm md:text-base text-zinc-400 dark:text-zinc-600">
+              <p className="text-xs md:text-sm text-zinc-400 dark:text-zinc-600">
                 Precise
               </p>
-              <p className="text-sm md:text-base  text-zinc-400 dark:text-zinc-600">
+              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
                 Neutral
               </p>
-              <p className="text-sm md:text-base  text-zinc-400 dark:text-zinc-600">
+              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
                 Creative
               </p>
             </div>
@@ -148,7 +148,7 @@ export const CommonSettings = () => {
         <div className="flex flex-col">
           <div className="flex flex-row items-center justify-between py-2 w-full">
             <Tooltip content="TopP">
-              <p className="text-sm md:text-base flex flex-row gap-1 items-center  text-zinc-500">
+              <p className="text-xs md:text-sm flex flex-row gap-1 items-center  text-zinc-500">
                 TopP <Info weight="regular" size={14} />
               </p>
             </Tooltip>
@@ -171,10 +171,10 @@ export const CommonSettings = () => {
               }}
             />
             <div className="flex flex-row justify-between w-full">
-              <p className="text-sm md:text-base  text-zinc-400 dark:text-zinc-600">
+              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
                 Precise
               </p>
-              <p className="text-sm md:text-base  text-zinc-400 dark:text-zinc-600">
+              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
                 Creative
               </p>
             </div>
@@ -183,7 +183,7 @@ export const CommonSettings = () => {
         <div className="flex flex-col">
           <div className="flex flex-row items-center justify-between py-2 w-full">
             <Tooltip content="TopK">
-              <p className="text-sm md:text-base flex flex-row gap-1 items-center  text-zinc-500">
+              <p className="text-xs md:text-sm flex flex-row gap-1 items-center  text-zinc-500">
                 TopK <Info weight="regular" size={14} />
               </p>
             </Tooltip>
@@ -205,10 +205,10 @@ export const CommonSettings = () => {
               }}
             />
             <div className="flex flex-row justify-between w-full">
-              <p className="text-sm md:text-base  text-zinc-400 dark:text-zinc-600">
+              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
                 Precise
               </p>
-              <p className="text-sm md:text-base  text-zinc-400 dark:text-zinc-600">
+              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
                 Creative
               </p>
             </div>

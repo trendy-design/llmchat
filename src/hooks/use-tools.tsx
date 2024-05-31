@@ -1,10 +1,11 @@
 import { ModelIcon } from "@/components/icons/model-icon";
+import { useSettings } from "@/context/settings/context";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { Browser, Calculator, Globe } from "@phosphor-icons/react";
 import axios from "axios";
 import { ReactNode } from "react";
 import { ZodObject, z } from "zod";
-import { TPreferences } from "./use-preferences";
+import { TPreferences, usePreferences } from "./use-preferences";
 
 const calculatorTool = () => {
   const calculatorSchema = z.object({
@@ -94,7 +95,7 @@ const duckduckGoTool = () => {
   return new DynamicStructuredTool({
     name: "duckduckgo_search",
     description:
-      "A search engine optimized for comprehensive, accurate, and trusted results. Useful for when you need to answer questions about current events. Input should be a search query.",
+      "A search engine optimized for comprehensive, accurate, and trusted results. Useful for when you need to answer question about current event. Input should be a search query and use this tool if you don't know the answer.",
     schema: webSearchSchema,
     func: async ({ input }, runManager) => {
       try {
@@ -158,12 +159,16 @@ export type TTool = {
   loadingMessage?: string;
   resultMessage?: string;
   isBeta?: boolean;
+  validate?: () => Promise<boolean>;
+  validationFailedAction?: () => void;
   tool: (arg?: any) => DynamicStructuredTool<ZodObject<any>>;
   icon: (size: IconSize) => ReactNode;
   smallIcon: () => ReactNode;
 };
 
 export const useTools = () => {
+  const { getPreferences } = usePreferences();
+  const { open } = useSettings();
   const tools: TTool[] = [
     {
       key: "calculator",
@@ -180,6 +185,19 @@ export const useTools = () => {
       tool: webSearchTool,
       name: "Google Search",
       isBeta: true,
+      validate: async () => {
+        const prefrences = await getPreferences();
+        if (
+          !prefrences.googleSearchApiKey ||
+          !prefrences.googleSearchEngineId
+        ) {
+          return false;
+        }
+        return true;
+      },
+      validationFailedAction: () => {
+        open("web-search");
+      },
       loadingMessage: "Searching on web...",
       resultMessage: "Results from Google Search",
       icon: (size: IconSize) => <ModelIcon type="websearch" size={size} />,
