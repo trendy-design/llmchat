@@ -1,4 +1,4 @@
-import { examplePrompts } from "@/lib/prompts";
+import { prompts } from "@/lib/prompts";
 import { Asterisk } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 
@@ -11,7 +11,7 @@ export const ChatExamples = ({ onExampleClick, show }: TChatExamples) => {
   return (
     <div className="flex flex-col gap-3 mb-2">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-1 md:gap-3 md:w-[700px] w-full">
-        {examplePrompts?.map((example, index) => (
+        {prompts?.map((example, index) => (
           <motion.div
             initial={{
               opacity: 0,
@@ -22,12 +22,12 @@ export const ChatExamples = ({ onExampleClick, show }: TChatExamples) => {
               opacity: 1,
             }}
             onClick={() => {
-              onExampleClick(example.prompt);
+              onExampleClick(example.content);
             }}
           >
             <Asterisk size={20} weight="bold" />
             <p className="text-sm md:text-base text-zinc-800 dark:text-white font-medium w-full">
-              {example.title}
+              {example.name}
             </p>
           </motion.div>
         ))}
