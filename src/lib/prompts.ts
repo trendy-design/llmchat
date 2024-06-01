@@ -46,30 +46,7 @@ export const getRole = (type: RoleType) => {
   }
 };
 
-export const examplePrompts = [
-  {
-    title: "Implement JWT Auth for Express.js",
-    prompt:
-      "Develop a secure user authentication system in a Node.js application using JSON Web Tokens (JWT) for authorization and authentication.",
-  },
-  {
-    title: "The Nature of Reality",
-    prompt:
-      "Discuss the concept of reality from both a subjective and objective perspective, incorporating theories from famous philosophers.",
-  },
-  {
-    title: "Professional Meeting Follow-Up",
-    prompt:
-      "Write a follow-up email to a potential employer after a job interview, expressing gratitude for the opportunity and reiterating your interest in the position.",
-  },
-  {
-    title: "Professional Meeting Follow-Up",
-    prompt:
-      "Write a follow-up email to a potential employer after a job interview, expressing gratitude for the opportunity and reiterating your interest in the position.",
-  },
-];
-
-export const roles = [
+export const prompts = [
   {
     name: "Fix Grammer and Typos",
     content: `Please correct all the grammar errors found in the text provided below without altering the style of the text. After correcting the errors, list them in a clear and structured format.\n Text to be corrected: {{{{your content here}}}}`,

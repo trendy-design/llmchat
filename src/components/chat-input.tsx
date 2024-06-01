@@ -7,7 +7,7 @@ import { useRecordVoice } from "@/hooks/use-record-voice";
 import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
 import { useTextSelection } from "@/hooks/usse-text-selection";
 import { slideUpVariant } from "@/lib/framer-motion";
-import { PromptType, RoleType, roles } from "@/lib/prompts";
+import { PromptType, RoleType, prompts } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import HardBreak from "@tiptap/extension-hard-break";
 
@@ -41,11 +41,11 @@ import { ModelSelect } from "./model-select";
 import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Badge } from "./ui/badge";
 
+import { usePrompts } from "@/context/prompts/context";
 import { removeExtraSpaces } from "@/lib/helper";
 import { PluginSelect } from "./plugin-select";
 import { QuickSettings } from "./quick-settings";
 import { Button } from "./ui/button";
-import { ComingSoon } from "./ui/coming-soon";
 import {
   Command as CMDKCommand,
   CommandEmpty,
@@ -80,6 +80,7 @@ export const ChatInput = () => {
   const [open, setOpen] = useState(false);
   const [commandInput, setCommandInput] = useState("");
   const [selectedModel, setSelectedModel] = useState<TModelKey>("gpt-4-turbo");
+  const { open: openPrompts } = usePrompts();
 
   const [attachment, setAttachment] = useState<TAttachment>();
 
@@ -93,7 +94,7 @@ export const ChatInput = () => {
     },
   });
 
-  const Enter = Extension.create({
+  const EnterRunModel = Extension.create({
     addKeyboardShortcuts() {
       return {
         Enter: (_) => {
@@ -117,7 +118,7 @@ export const ChatInput = () => {
       Placeholder.configure({
         placeholder: "Type / or Enter prompt here...",
       }),
-      Enter,
+      EnterRunModel,
       ShiftEnter,
       Highlight.configure({
         HTMLAttributes: {
@@ -601,24 +602,28 @@ export const ChatInput = () => {
                   }
                 }}
               />
-              <CommandEmpty>No framework found.</CommandEmpty>
+              <CommandEmpty>No Prompts found.</CommandEmpty>
               <CommandList className="p-2 max-h-[160px]">
-                <CommandItem onSelect={() => {}} disabled={true}>
+                <CommandItem
+                  onSelect={() => {
+                    openPrompts();
+                  }}
+                >
                   <Plus size={14} weight="bold" className="flex-shrink-0" />{" "}
-                  Create New Prompt <ComingSoon />
+                  Create New Prompt
                 </CommandItem>
-                {roles?.map((role, index) => (
+                {prompts?.map((prompt, index) => (
                   <CommandItem
                     key={index}
                     onSelect={() => {
-                      editor?.commands.setContent(role.content);
+                      editor?.commands.setContent(prompt.content);
                       editor?.commands.insertContent("");
                       console.log(editor?.getText());
                       editor?.commands.focus("end");
                       setOpen(false);
                     }}
                   >
-                    {role.name}
+                    {prompt.name}
                   </CommandItem>
                 ))}
               </CommandList>

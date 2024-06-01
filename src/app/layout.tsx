@@ -14,6 +14,8 @@ export const metadata: Metadata = {
   description: "Most intutive all-in-one AI chat client",
 };
 
+import { PromptsProvider } from "@/context/prompts/provider";
+import { ReactQueryProvider } from "@/context/react-query/provider";
 import type { Viewport } from "next";
 
 export const viewport: Viewport = {
@@ -37,15 +39,19 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <TooltipProvider>
-            <SettingsProvider>
-              <ChatProvider>
-                <FiltersProvider>
-                  <MainLayout>{children}</MainLayout>
-                </FiltersProvider>
-              </ChatProvider>
-            </SettingsProvider>
-          </TooltipProvider>
+          <ReactQueryProvider>
+            <TooltipProvider>
+              <SettingsProvider>
+                <ChatProvider>
+                  <FiltersProvider>
+                    <PromptsProvider>
+                      <MainLayout>{children}</MainLayout>
+                    </PromptsProvider>
+                  </FiltersProvider>
+                </ChatProvider>
+              </SettingsProvider>
+            </TooltipProvider>
+          </ReactQueryProvider>
         </ThemeProvider>
       </body>
     </html>

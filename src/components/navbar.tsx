@@ -1,5 +1,6 @@
 import { useChatContext } from "@/context/chat/context";
 import { useFilters } from "@/context/filters/context";
+import { usePrompts } from "@/context/prompts/context";
 import { useSettings } from "@/context/settings/context";
 import {
   Command,
@@ -31,6 +32,7 @@ export const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const { open: openSettings } = useSettings();
   const { open: openFilters } = useFilters();
+  const { open: openPrompts } = usePrompts();
   const [isOpen, setIsOpen] = useState(false);
   const { push } = useRouter();
   const { createSession } = useChatContext();
@@ -114,7 +116,11 @@ export const Navbar = () => {
               Bots
               <ComingSoon />
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {}}>
+            <DropdownMenuItem
+              onClick={() => {
+                openPrompts();
+              }}
+            >
               <Textbox size={14} weight="bold" />
               Prompts
               <ComingSoon />

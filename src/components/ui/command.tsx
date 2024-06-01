@@ -43,7 +43,7 @@ const CommandInput = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div className="flex items-center px-3" cmdk-input-wrapper="">
     <MagnifyingGlass
-      size={20}
+      size={24}
       weight="bold"
       className="mr-2 h-4 w-4 shrink-0 opacity-50"
     />

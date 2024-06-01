@@ -24,6 +24,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@radix-ui/react-tooltip": "^1.0.7",
     "@sparticuz/chromium-min": "^123.0.1",
+    "@tanstack/react-query": "^5.40.0",
     "@tiptap/extension-hard-break": "^2.4.0",
     "@tiptap/extension-highlight": "^2.4.0",
     "@tiptap/extension-placeholder": "^2.4.0",
