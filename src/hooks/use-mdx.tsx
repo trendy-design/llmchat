@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { ArrowUpRight, Link } from "@phosphor-icons/react";
 
-const VARIANTS = {
+export const REVEAL_ANIMATION_VARIANTS = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -24,7 +24,7 @@ export const useMarkdown = () => {
       renderer={{
         text: (children) => (
           <motion.span
-            variants={VARIANTS}
+            variants={REVEAL_ANIMATION_VARIANTS}
             className="dark:text-zinc-100 text-zinc-700 tracking-[0.01em]"
             animate={"visible"}
             initial={animate ? "hidden" : "visible"}

@@ -1,4 +1,5 @@
 "use client";
+import { TBot } from "@/hooks/use-bots";
 import { TChatSession } from "@/hooks/use-chat-session";
 import { TRunModel } from "@/hooks/use-llm";
 import { createContext, useContext } from "react";
@@ -9,10 +10,11 @@ export type TChatContext = {
   isAllSessionLoading: boolean;
   isCurrentSessionLoading: boolean;
   currentSession: TChatSession | undefined;
-  createSession: () => Promise<TChatSession>;
+  createSession: (bot?: TBot, redirect?: boolean) => Promise<TChatSession>;
   removeSession: (sessionId: string) => Promise<void>;
   clearChatSessions: () => Promise<void>;
   stopGeneration: () => void;
+  refetchCurrentSession: () => Promise<void>;
   runModel: (props: TRunModel) => Promise<void>;
   removeMessage: (messageId: string) => void;
 };

@@ -11,7 +11,12 @@ import {
 import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import moment from "moment";
 import { v4 } from "uuid";
-import { PromptProps, TChatMessage, useChatSession } from "./use-chat-session";
+import {
+  PromptProps,
+  TChatMessage,
+  TChatSession,
+  useChatSession,
+} from "./use-chat-session";
 import { TModelKey, useModelList } from "./use-model-list";
 import { defaultPreferences, usePreferences } from "./use-preferences";
 import { useTools } from "./use-tools";
@@ -40,21 +45,27 @@ export const useLLM = ({ onChange }: TUseLLM) => {
     abortController?.abort();
   };
 
-  const preparePrompt = async (props: PromptProps, history: TChatMessage[]) => {
+  const preparePrompt = async (
+    props: PromptProps,
+    history: TChatMessage[],
+    bot?: TChatSession["bot"]
+  ) => {
     const preferences = await getPreferences();
     const hasPreviousMessages = history?.length > 0;
     const systemPrompt =
-      preferences.systemPrompt || defaultPreferences.systemPrompt;
+      bot?.prompt ||
+      preferences.systemPrompt ||
+      defaultPreferences.systemPrompt;
 
     const system: BaseMessagePromptTemplateLike = [
       "system",
-      `${systemPrompt}.${
+      `${systemPrompt} ${
         props.context
           ? `Answer user's question based on the following context: """{context}"""`
           : ``
       } ${
         hasPreviousMessages
-          ? `You can also refer these previous conversations if needed.`
+          ? `You can also refer to these previous conversations`
           : ``
       }`,
     ];
@@ -145,7 +156,8 @@ export const useLLM = ({ onChange }: TUseLLM) => {
 
     const prompt = await preparePrompt(
       props,
-      currentSession?.messages?.filter((m) => m.id !== messageId) || []
+      currentSession?.messages?.filter((m) => m.id !== messageId) || [],
+      currentSession?.bot
     );
 
     const selectedModel = await createInstance(selectedModelKey, apiKey);

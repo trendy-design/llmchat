@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   description: "Most intutive all-in-one AI chat client",
 };
 
+import { BotsProvider } from "@/context/bots/provider";
 import { PromptsProvider } from "@/context/prompts/provider";
 import { ReactQueryProvider } from "@/context/react-query/provider";
 import type { Viewport } from "next";
@@ -44,9 +45,11 @@ export default function RootLayout({
               <SettingsProvider>
                 <ChatProvider>
                   <FiltersProvider>
-                    <PromptsProvider>
-                      <MainLayout>{children}</MainLayout>
-                    </PromptsProvider>
+                    <BotsProvider>
+                      <PromptsProvider>
+                        <MainLayout>{children}</MainLayout>
+                      </PromptsProvider>
+                    </BotsProvider>
                   </FiltersProvider>
                 </ChatProvider>
               </SettingsProvider>

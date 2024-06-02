@@ -3,7 +3,7 @@
 import { createContext, useContext } from "react";
 
 export type TPromptsContext = {
-  open: () => void;
+  open: (action?: "public" | "local" | "create") => void;
   dismiss: () => void;
 };
 export const PromptsContext = createContext<undefined | TPromptsContext>(

@@ -1,4 +1,5 @@
 "use client";
+import { TBot } from "@/hooks/use-bots";
 import {
   TChatMessage,
   TChatSession,
@@ -91,9 +92,10 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     setAllSessionLoading(false);
   };
 
-  const createSession = async () => {
-    const newSession = await createNewSession();
+  const createSession = async (bot?: TBot, redirect?: boolean) => {
+    const newSession = await createNewSession(bot);
     fetchAllSessions();
+    redirect && push(`/chat/${newSession.id}`);
     return newSession;
   };
 
@@ -134,6 +136,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
       value={{
         sessions,
         refetchSessions: fetchAllSessions,
+        refetchCurrentSession: fetchCurrentSession,
         isAllSessionLoading,
         isCurrentSessionLoading,
         createSession,

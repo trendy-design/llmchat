@@ -20,12 +20,16 @@ import {
 
 export type TModelSelect = {
   selectedModel: TModelKey;
+  variant?: "outline" | "ghost" | "default" | "secondary";
   setSelectedModel: (model: TModelKey) => void;
+  className?: string;
 };
 
 export const ModelSelect = ({
   selectedModel,
+  variant,
   setSelectedModel,
+  className,
 }: TModelSelect) => {
   const [isOpen, setIsOpen] = useState(false);
   const { getPreferences, setPreferences } = usePreferences();
@@ -44,8 +48,8 @@ export const ModelSelect = ({
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
           <Button
-            variant="ghost"
-            className="pl-1 pr-3 gap-2 text-xs md:text-sm"
+            variant={variant || "ghost"}
+            className={cn("pl-1 pr-3 gap-2 text-xs md:text-sm", className)}
             size="sm"
           >
             {activeModel?.icon()} {activeModel?.name}

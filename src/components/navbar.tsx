@@ -1,8 +1,10 @@
+import { useBots } from "@/context/bots/context";
 import { useChatContext } from "@/context/chat/context";
 import { useFilters } from "@/context/filters/context";
 import { usePrompts } from "@/context/prompts/context";
 import { useSettings } from "@/context/settings/context";
 import {
+  Book,
   Command,
   DotsThree,
   GearSix,
@@ -10,16 +12,12 @@ import {
   Plus,
   Robot,
   Sun,
-  Textbox,
 } from "@phosphor-icons/react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ModelIcon } from "./icons/model-icon";
 import { HistorySidebar } from "./side-bar";
-import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { ComingSoon } from "./ui/coming-soon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,6 +31,7 @@ export const Navbar = () => {
   const { open: openSettings } = useSettings();
   const { open: openFilters } = useFilters();
   const { open: openPrompts } = usePrompts();
+  const { open: openBots } = useBots();
   const [isOpen, setIsOpen] = useState(false);
   const { push } = useRouter();
   const { createSession } = useChatContext();
@@ -60,9 +59,9 @@ export const Navbar = () => {
     <div className="absolute flex justify-between items-center p-2 pb-6 md:p-3 flex-row top-0 left-0 right-0 bg-gradient-to-b from-white dark:from-zinc-800 to-transparent from-70% z-50">
       <div className="flex flex-row gap-2 items-center">
         <HistorySidebar />
-        <ModelIcon type="aichat" size="md" />
+        {/* <ModelIcon type="aichat" size="md" />
         <p className="text-sm md:text-base text-zinc-500">LLMChat</p>
-        <Badge>Beta</Badge>
+        <Badge>Beta</Badge> */}
       </div>
       <div className="flex flex-row gap-2 items-center">
         {renderNewSession()}
@@ -111,19 +110,21 @@ export const Navbar = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
           <DropdownMenuContent className="min-w-[250px] text-sm md:text-base mr-2">
-            <DropdownMenuItem onClick={() => {}}>
+            <DropdownMenuItem
+              onClick={() => {
+                openBots();
+              }}
+            >
               <Robot size={14} weight="bold" />
               Bots
-              <ComingSoon />
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
                 openPrompts();
               }}
             >
-              <Textbox size={14} weight="bold" />
-              Prompts
-              <ComingSoon />
+              <Book size={14} weight="bold" />
+              Prompts Library
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {

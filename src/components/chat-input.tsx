@@ -503,7 +503,7 @@ export const ChatInput = () => {
     <div
       className={cn(
         "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-8 md:bottom-0 px-2 md:px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-1",
-        isNewSession && "top-0 "
+        isNewSession && !currentSession?.bot && "top-0"
       )}
     >
       <div className="flex flex-row items-center gap-2">
@@ -631,7 +631,7 @@ export const ChatInput = () => {
           </PopoverContent>
         </Popover>
 
-        {isNewSession && (
+        {isNewSession && !currentSession?.bot && (
           <div className="fixed bottom-0 left-0 right-0 w-full p-3 text-xs flex flex-row justify-center">
             <p className="text-xs text-zinc-500/50">
               P.S. Your data is stored locally on local storage, not in the
