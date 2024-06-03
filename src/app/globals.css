@@ -350,3 +350,28 @@ code.hljs {
 .hljs-link {
   text-decoration: underline
 }
+
+.greeting-bubble::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  bottom: 0;
+  left: -7px;
+  /* Tailwind doesn't support very specific pixel values like -7px */
+  height: 20px;
+  width: 20px;
+  background: #eee;
+  border-bottom-right-radius: 15px;
+}
+
+.greeting-bubble::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  bottom: 0;
+  left: -10px;
+  width: 10px;
+  height: 20px;
+  background: white;
+  border-bottom-right-radius: 10px;
+}

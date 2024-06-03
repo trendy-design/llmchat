@@ -1,8 +1,5 @@
-import { TBot, useBots } from "@/hooks/use-bots";
+import { TBot } from "@/hooks/use-bots";
 import { BookBookmark, FolderSimple, Plus } from "@phosphor-icons/react";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
-import { useEffect, useState } from "react";
 import { BotAvatar } from "../ui/bot-avatar";
 import { Button } from "../ui/button";
 import {
@@ -16,6 +13,8 @@ import {
 export type TBotLibrary = {
   open: boolean;
   tab: "public" | "local";
+  localBots: TBot[];
+  publicBots: TBot[];
   onTabChange: (tab: "public" | "local") => void;
   onCreate: () => void;
   assignBot: (Bot: TBot) => void;
@@ -26,23 +25,10 @@ export const BotLibrary = ({
   tab,
   onCreate,
   onTabChange,
+  localBots,
+  publicBots,
   assignBot,
 }: TBotLibrary) => {
-  const [localBots, setLocalBots] = useState<TBot[]>([]);
-  const { getBots } = useBots();
-
-  const query = useQuery<{ Bots: TBot[] }>({
-    queryKey: ["Bots"],
-    queryFn: async () => axios.get("/api/Bots").then((res) => res.data),
-  });
-
-  useEffect(() => {
-    getBots().then((Bots) => {
-      console.log(Bots);
-      setLocalBots(Bots);
-    });
-  }, [open]);
-
   return (
     <Command>
       <div className="w-full p-1">
@@ -83,21 +69,21 @@ export const BotLibrary = ({
           </Button>
         </CommandEmpty>
         <CommandList className="px-2 py-2">
-          {(tab === "local" ? localBots : query?.data?.Bots)?.map((Bot) => (
+          {(tab === "local" ? localBots : publicBots)?.map((bot) => (
             <CommandItem
-              value={Bot.name}
-              key={Bot.id}
+              value={bot.name}
+              key={bot.id}
               className="w-full !px-2"
               onSelect={(value) => {
-                assignBot(Bot);
+                assignBot(bot);
               }}
             >
               <div className="flex flex-row gap-2 p-1 items-center justify-start w-full overflow-hidden">
-                <BotAvatar name={Bot.name} size={40} />
+                <BotAvatar name={bot.name} size="medium" avatar={bot?.avatar} />
                 <div className="flex flex-col items-start gap-0 w-full">
-                  <p className="text-base font-medium">{Bot.name}</p>
+                  <p className="text-base font-medium">{bot.name}</p>
                   <p className="text-xs text-zinc-500 w-full line-clamp-1">
-                    {Bot.description}
+                    {bot.description}
                   </p>
                 </div>
               </div>

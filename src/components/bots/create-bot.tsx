@@ -1,4 +1,5 @@
 import { TBot, useBots } from "@/hooks/use-bots";
+import { convertFileToBase64 } from "@/lib/helper";
 import { ArrowLeft, Plus } from "@phosphor-icons/react";
 import { useFormik } from "formik";
 import { useEffect, useRef } from "react";
@@ -43,6 +44,11 @@ export const CreateBot = ({ open, onOpenChange }: TCreateBot) => {
     formik.resetForm();
   };
 
+  const uploadFile = (file: File) => {
+    convertFileToBase64(file, (base64) => {
+      formik.setFieldValue("avatar", base64);
+    });
+  };
   return (
     <div className="flex flex-col items-start w-full relative h-full overflow-y-auto no-scrollbar">
       <div className="w-full px-2 py-2 border-b border-zinc-500/20 flex flex-row gap-3 items-center">
@@ -62,6 +68,7 @@ export const CreateBot = ({ open, onOpenChange }: TCreateBot) => {
           <FormLabel label="Base Model" />
           <ModelSelect
             variant="secondary"
+            fullWidth
             className="w-full justify-start p-2 h-10"
             selectedModel={formik.values.deafultBaseModel}
             setSelectedModel={(model) => {
@@ -71,10 +78,29 @@ export const CreateBot = ({ open, onOpenChange }: TCreateBot) => {
         </div>
         <p className="text-sm md:text-base font-medium">Bot Profile</p>
         <div className="flex flex-row justify-start items-center gap-2 w-full">
-          <BotAvatar name={formik.values.name} size={60} />
-          <Button variant="outline" size="sm">
+          <BotAvatar
+            name={formik.values.name}
+            size="large"
+            avatar={formik.values.avatar}
+          />
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              document.getElementById("avatar")?.click();
+            }}
+          >
             Upload Avatar
           </Button>
+          <input
+            type="file"
+            id="avatar"
+            hidden
+            onChange={(e) => {
+              e.target.files?.[0] && uploadFile(e.target.files?.[0]);
+            }}
+          />
         </div>
 
         <div className="flex flex-col gap-2 w-full">

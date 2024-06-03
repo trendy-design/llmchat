@@ -6,6 +6,7 @@ import { Plus, SidebarSimple } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Drawer } from "vaul";
+import { BotAvatar } from "./ui/bot-avatar";
 import { Button } from "./ui/button";
 
 export const HistorySidebar = () => {
@@ -77,7 +78,15 @@ export const HistorySidebar = () => {
                     setOpen(false);
                   }}
                 >
-                  {getModelByKey(session.messages?.[0]?.model)?.icon()}
+                  {session.bot ? (
+                    <BotAvatar
+                      size="small"
+                      name={session?.bot?.name}
+                      avatar={session?.bot?.avatar}
+                    />
+                  ) : (
+                    getModelByKey(session.messages?.[0]?.model)?.icon()
+                  )}
                   <span className="w-full truncate text-xs md:text-sm">
                     {session.title}
                   </span>

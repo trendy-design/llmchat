@@ -41,7 +41,8 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
   const { getModelByKey } = useModelList();
   const { renderMarkdown } = useMarkdown();
   const { open: openSettings } = useSettings();
-  const { removeMessage, runModel, currentSession } = useChatContext();
+
+  const { removeMessage, currentSession, handleRunModel } = useChatContext();
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
 
   const modelForMessage = getModelByKey(model);
@@ -52,9 +53,13 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
 
   return (
     <div className="flex  flex-col md:flex-row gap-2 mt-6 w-full">
-      <div className="px-0 md:px-3 py-1">
+      <div className="px-0 md:px-3 py-0">
         {currentSession?.bot ? (
-          <BotAvatar size={24} name={currentSession?.bot?.name} />
+          <BotAvatar
+            size="small"
+            name={currentSession?.bot?.name}
+            avatar={currentSession?.bot?.avatar}
+          />
         ) : (
           modelForMessage?.icon()
         )}
@@ -117,10 +122,10 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
               {chatMessage && isLast && (
                 <RegenerateWithModelSelect
                   onRegenerate={(model: TModelKey) => {
-                    runModel({
+                    handleRunModel({
+                      input: chatMessage.rawAI,
                       messageId: chatMessage.id,
                       model: model,
-                      props: chatMessage.props,
                       sessionId: chatMessage.sessionId,
                     });
                   }}

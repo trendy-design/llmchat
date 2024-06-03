@@ -20,6 +20,7 @@ import {
 
 export type TModelSelect = {
   selectedModel: TModelKey;
+  fullWidth?: boolean;
   variant?: "outline" | "ghost" | "default" | "secondary";
   setSelectedModel: (model: TModelKey) => void;
   className?: string;
@@ -28,6 +29,7 @@ export type TModelSelect = {
 export const ModelSelect = ({
   selectedModel,
   variant,
+  fullWidth,
   setSelectedModel,
   className,
 }: TModelSelect) => {
@@ -57,8 +59,12 @@ export const ModelSelect = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent
           side="top"
+          align="start"
           sideOffset={4}
-          className="min-w-[250px] text-xs md:text-sm max-h-[260px] overflow-y-auto no-scrollbar"
+          className={cn(
+            "text-xs md:text-sm max-h-[260px] overflow-y-auto no-scrollbar",
+            fullWidth ? "w-full" : "min-w-[250px]"
+          )}
         >
           {models.map((model) => (
             <DropdownMenuSub key={model.key}>

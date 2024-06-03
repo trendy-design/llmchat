@@ -3,6 +3,7 @@ import { get, set } from "idb-keyval";
 import moment from "moment";
 import { v4 } from "uuid";
 import { TBot } from "./use-bots";
+import { TRunModel } from "./use-llm";
 import { TModelKey } from "./use-model-list";
 
 export enum ModelType {
@@ -12,7 +13,7 @@ export enum ModelType {
   CLAUDE3 = "claude-3",
 }
 
-export type PromptProps = {
+export type InputProps = {
   type: PromptType;
   context?: string;
   role: RoleType;
@@ -27,7 +28,7 @@ export type TChatMessage = {
   rawHuman?: string;
   rawAI?: string;
   sessionId: string;
-  props: PromptProps;
+  runModelProps: TRunModel;
   toolName?: string;
   toolResult?: string;
   isLoading?: boolean;

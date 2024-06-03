@@ -1,5 +1,7 @@
+import { supabase } from "@/lib/supabase";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function GET(req: NextRequest, resp: NextResponse) {
-  return NextResponse.json({ bots: [] });
+  const { data, error } = await supabase.from("bots").select();
+  return NextResponse.json({ bots: data || [] });
 }

@@ -2,6 +2,7 @@
 import { TBot } from "@/hooks/use-bots";
 import { TChatSession } from "@/hooks/use-chat-session";
 import { TRunModel } from "@/hooks/use-llm";
+import { Editor } from "@tiptap/react";
 import { createContext, useContext } from "react";
 
 export type TChatContext = {
@@ -14,8 +15,11 @@ export type TChatContext = {
   removeSession: (sessionId: string) => Promise<void>;
   clearChatSessions: () => Promise<void>;
   stopGeneration: () => void;
+  editor?: Editor | null;
+  openPromptsBotCombo: boolean;
+  setOpenPromptsBotCombo: (value: boolean) => void;
   refetchCurrentSession: () => Promise<void>;
-  runModel: (props: TRunModel) => Promise<void>;
+  handleRunModel: (props: TRunModel, clear?: () => void) => void;
   removeMessage: (messageId: string) => void;
 };
 

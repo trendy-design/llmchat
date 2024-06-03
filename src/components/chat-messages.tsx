@@ -1,6 +1,7 @@
 import { useBots } from "@/context/bots/context";
 import { useChatContext } from "@/context/chat/context";
-import { PromptProps, TChatMessage } from "@/hooks/use-chat-session";
+import { TChatMessage, useChatSession } from "@/hooks/use-chat-session";
+import { TRunModel } from "@/hooks/use-llm";
 import { TModelKey } from "@/hooks/use-model-list";
 import { removeExtraSpaces } from "@/lib/helper";
 import { ArrowElbowDownRight, Info, TrashSimple } from "@phosphor-icons/react";
@@ -11,11 +12,12 @@ import { AIMessageBubble } from "./ai-bubble";
 import { GreetingBubble } from "./greeting-bubble";
 import { BotAvatar } from "./ui/bot-avatar";
 import { Button } from "./ui/button";
+import { Tooltip } from "./ui/tooltip";
 
 export type TRenderMessageProps = {
   id: string;
   humanMessage?: string;
-  props?: PromptProps;
+  props?: TRunModel;
   model: TModelKey;
   image?: string;
   aiMessage?: string;
@@ -34,7 +36,8 @@ moment().calendar(null, {
 });
 
 export const ChatMessages = () => {
-  const { currentSession, runModel } = useChatContext();
+  const { currentSession, refetchCurrentSession } = useChatContext();
+  const { updateSession } = useChatSession();
   const chatContainer = useRef<HTMLDivElement>(null);
   const { open: openBot } = useBots();
 
@@ -42,7 +45,7 @@ export const ChatMessages = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, []);
+  }, [currentSession?.messages?.length]);
 
   const scrollToBottom = () => {
     if (chatContainer.current) {
@@ -53,7 +56,7 @@ export const ChatMessages = () => {
   const renderMessage = (message: TChatMessage, isLast: boolean) => {
     return (
       <div className="flex flex-col gap-1 items-end w-full" key={message.id}>
-        {message.props?.context && (
+        {message.runModelProps?.context && (
           <div className="bg-zinc-50 text-zinc-600 dark:text-zinc-100 dark:bg-black/30 rounded-2xl p-2 pl-3 text-sm md:text-base flex flex-row gap-2 pr-4 border hover:border-white/5 border-transparent">
             <ArrowElbowDownRight
               size={20}
@@ -62,13 +65,13 @@ export const ChatMessages = () => {
             />
 
             <span className="pt-[0.35em] pb-[0.25em] leading-6">
-              {message.props?.context}
+              {message.runModelProps?.context}
             </span>
           </div>
         )}
-        {message?.props?.image && (
+        {message?.runModelProps?.image && (
           <Image
-            src={message?.props?.image}
+            src={message?.runModelProps?.image}
             alt="uploaded image"
             className="rounded-2xl min-w-[120px] h-[120px] border dark:border-white/10 border-black/10 shadow-sm object-cover"
             width={0}
@@ -109,7 +112,11 @@ export const ChatMessages = () => {
       <div className="w-full md:w-[700px] p-4 md:p-0 flex flex-col gap-24">
         {currentSession?.bot && (
           <div className="flex flex-col gap-2 items-center">
-            <BotAvatar name={currentSession.bot.name} size={40} />
+            <BotAvatar
+              name={currentSession.bot.name}
+              size="medium"
+              avatar={currentSession?.bot?.avatar}
+            />
             <p className="text-sm md:text-base text-zinc-800 dark:text-white font-medium">
               {currentSession.bot.name}
             </p>
@@ -118,9 +125,11 @@ export const ChatMessages = () => {
             </p>
             {!currentSession?.messages?.length && (
               <div className="flex flex-row gap-1">
-                <Button variant="outline" size="iconSm" onClick={() => {}}>
-                  <Info size={16} weight="bold" />
-                </Button>
+                <Tooltip content="Bot Info">
+                  <Button variant="outline" size="iconSm" onClick={() => {}}>
+                    <Info size={16} weight="bold" />
+                  </Button>
+                </Tooltip>
                 <Button
                   variant="outline"
                   size="sm"
@@ -130,9 +139,18 @@ export const ChatMessages = () => {
                 >
                   Change Bot
                 </Button>
-                <Button variant="outline" size="iconSm" onClick={() => {}}>
-                  <TrashSimple size={16} weight="bold" />
-                </Button>
+                <Tooltip content="Remove bot">
+                  <Button
+                    variant="outline"
+                    size="iconSm"
+                    onClick={() => {
+                      updateSession(currentSession.id, { bot: undefined });
+                      refetchCurrentSession();
+                    }}
+                  >
+                    <TrashSimple size={16} weight="bold" />
+                  </Button>
+                </Tooltip>
               </div>
             )}
           </div>

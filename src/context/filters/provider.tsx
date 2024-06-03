@@ -1,4 +1,5 @@
 "use client";
+import { BotAvatar } from "@/components/ui/bot-avatar";
 import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
@@ -112,7 +113,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
 
         <CommandList className="border-t border-zinc-500/20">
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Actions">
+          <CommandGroup heading="Quick Actions">
             {actions.map((action) => (
               <CommandItem
                 key={action.name}
@@ -120,16 +121,18 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
                 value={action.name}
                 onSelect={action.action}
               >
-                <action.icon
-                  size={14}
-                  weight="bold"
-                  className="flex-shrink-0"
-                />
+                <div className="w-6 h-6 items-center justify-center flex">
+                  <action.icon
+                    size={16}
+                    weight="bold"
+                    className="flex-shrink-0"
+                  />
+                </div>
                 {action.name}
               </CommandItem>
             ))}
           </CommandGroup>
-          <CommandGroup heading="Sessions">
+          <CommandGroup heading="Recent Conversations">
             {sortSessions(sessions, "updatedAt")?.map((session) => (
               <CommandItem
                 key={session.id}
@@ -145,7 +148,15 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
                   onClose();
                 }}
               >
-                {getModelByKey(session.messages?.[0]?.model)?.icon()}
+                {session.bot ? (
+                  <BotAvatar
+                    size="small"
+                    name={session?.bot?.name}
+                    avatar={session?.bot?.avatar}
+                  />
+                ) : (
+                  getModelByKey(session.messages?.[0]?.model)?.icon()
+                )}
                 <span className="w-full truncate">{session.title}</span>
                 <span className="pl-4 text-xs md:text-xs  text-zinc-400 dark:text-zinc-700 flex-shrink-0">
                   {moment(session.createdAt).fromNow(true)}

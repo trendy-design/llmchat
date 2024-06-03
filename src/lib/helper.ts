@@ -13,3 +13,26 @@ export function removeExtraSpaces(str?: string) {
   str = str?.replace(/\n{3,}/g, "\n\n");
   return str;
 }
+
+export const convertFileToBase64 = (
+  file: File,
+  onChange: (base64: string) => void
+): void => {
+  if (!file) {
+    alert("Please select a file!");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (event: ProgressEvent<FileReader>) => {
+    const base64String = event.target?.result as string;
+    onChange(base64String);
+  };
+
+  reader.onerror = (error: ProgressEvent<FileReader>) => {
+    console.error("Error: ", error);
+    alert("Error reading file!");
+  };
+
+  reader.readAsDataURL(file);
+};

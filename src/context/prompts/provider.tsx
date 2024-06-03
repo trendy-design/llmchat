@@ -2,7 +2,11 @@
 import { CreatePrompt } from "@/components/prompts/create-prompt";
 import { PromptLibrary } from "@/components/prompts/prompt-library";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { useState } from "react";
+import { TPrompt, usePrompts } from "@/hooks/use-prompts";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useChatContext } from "../chat/context";
 import { PromptsContext } from "./context";
 
 export type TPromptsProvider = {
@@ -19,6 +23,9 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
   const [isPromptOpen, setIsPromptOpen] = useState(false);
   const [showCreatePrompt, setShowCreatePrompt] = useState(false);
   const [tab, setTab] = useState<"public" | "local">("public");
+  const [localPrompts, setLocalPrompts] = useState<TPrompt[]>([]);
+  const { getPrompts } = usePrompts();
+  const { editor } = useChatContext();
 
   const open = (action?: "public" | "local" | "create") => {
     if (action === "create") {
@@ -31,12 +38,25 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
 
   const dismiss = () => setIsPromptOpen(false);
 
+  const query = useQuery<{ prompts: TPrompt[] }>({
+    queryKey: ["prompts"],
+    queryFn: async () => axios.get("/api/prompts").then((res) => res.data),
+  });
+
+  useEffect(() => {
+    getPrompts().then((prompts) => {
+      setLocalPrompts(prompts);
+    });
+  }, [open]);
+
+  const allPrompts = [...localPrompts, ...(query.data?.prompts || [])];
+
   return (
-    <PromptsContext.Provider value={{ open, dismiss }}>
+    <PromptsContext.Provider value={{ open, dismiss, allPrompts }}>
       {children}
 
       <Dialog open={isPromptOpen} onOpenChange={setIsPromptOpen}>
-        <DialogContent className="w-[96dvw] max-h-[80dvh] rounded-2xl md:min-w-[600px] gap-0 md:max-h-[600px] flex flex-col overflow-hidden border border-white/5 p-0">
+        <DialogContent className="w-[96dvw] max-h-[80dvh] rounded-2xl md:min-w-[640px] gap-0 md:max-h-[600px] flex flex-col overflow-hidden border border-white/5 p-0">
           {showCreatePrompt ? (
             <CreatePrompt
               open={showCreatePrompt}
@@ -51,6 +71,14 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
             <PromptLibrary
               open={!showCreatePrompt}
               tab={tab}
+              onPromptSelect={(prompt) => {
+                editor?.commands?.clearContent();
+                editor?.commands?.setContent(prompt.content);
+                editor?.commands?.focus("end");
+                dismiss();
+              }}
+              localPrompts={localPrompts}
+              publicPrompts={query.data?.prompts || []}
               onTabChange={setTab}
               onCreate={() => setShowCreatePrompt(true)}
             />

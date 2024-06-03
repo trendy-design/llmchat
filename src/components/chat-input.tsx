@@ -1,15 +1,12 @@
 import { useChatContext } from "@/context/chat/context";
 import { useFilters } from "@/context/filters/context";
-import { useSettings } from "@/context/settings/context";
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
+import { TModelKey } from "@/hooks/use-model-list";
 import { usePreferences } from "@/hooks/use-preferences";
 import { useRecordVoice } from "@/hooks/use-record-voice";
 import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
 import { useTextSelection } from "@/hooks/usse-text-selection";
 import { slideUpVariant } from "@/lib/framer-motion";
-import { PromptType, RoleType, prompts } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
-import HardBreak from "@tiptap/extension-hard-break";
 
 import {
   ArrowDown,
@@ -19,19 +16,13 @@ import {
   Command,
   Microphone,
   Paperclip,
-  Plus,
   Quotes,
   StopCircle,
   X,
 } from "@phosphor-icons/react";
 import { Stop } from "@phosphor-icons/react/dist/ssr";
-import Document from "@tiptap/extension-document";
-import Highlight from "@tiptap/extension-highlight";
-import Paragraph from "@tiptap/extension-paragraph";
-import Placeholder from "@tiptap/extension-placeholder";
 
-import Text from "@tiptap/extension-text";
-import { EditorContent, Extension, useEditor } from "@tiptap/react";
+import { EditorContent } from "@tiptap/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -41,19 +32,12 @@ import { ModelSelect } from "./model-select";
 import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Badge } from "./ui/badge";
 
-import { usePrompts } from "@/context/prompts/context";
-import { removeExtraSpaces } from "@/lib/helper";
+import { useSettings } from "@/context/settings/context";
+import { Footer } from "./footer";
 import { PluginSelect } from "./plugin-select";
+import { PromptsBotsCombo } from "./prompts-bots-combo";
 import { QuickSettings } from "./quick-settings";
 import { Button } from "./ui/button";
-import {
-  Command as CMDKCommand,
-  CommandEmpty,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "./ui/command";
-import { Popover, PopoverAnchor, PopoverContent } from "./ui/popover";
 import { Tooltip } from "./ui/tooltip";
 import { useToast } from "./ui/use-toast";
 
@@ -69,91 +53,23 @@ export const ChatInput = () => {
   const { toast } = useToast();
   const { startRecording, stopRecording, recording, text, transcribing } =
     useRecordVoice();
-  const { runModel, currentSession, stopGeneration, refetchSessions } =
-    useChatContext();
+  const {
+    currentSession,
+    stopGeneration,
+    editor,
+    handleRunModel,
+    openPromptsBotCombo,
+    setOpenPromptsBotCombo,
+  } = useChatContext();
   const [contextValue, setContextValue] = useState<string>("");
-  const { getPreferences, getApiKey } = usePreferences();
-  const { getModelByKey } = useModelList();
+  const { getApiKey } = usePreferences();
   const { open: openSettings } = useSettings();
+
   const { showPopup, selectedText, handleClearSelection } = useTextSelection();
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [open, setOpen] = useState(false);
-  const [commandInput, setCommandInput] = useState("");
   const [selectedModel, setSelectedModel] = useState<TModelKey>("gpt-4-turbo");
-  const { open: openPrompts } = usePrompts();
 
   const [attachment, setAttachment] = useState<TAttachment>();
-
-  const ShiftEnter = Extension.create({
-    addKeyboardShortcuts() {
-      return {
-        "Shift-Enter": (_) => {
-          return _.editor.commands.enter();
-        },
-      };
-    },
-  });
-
-  const EnterRunModel = Extension.create({
-    addKeyboardShortcuts() {
-      return {
-        Enter: (_) => {
-          if (_.editor.getText()?.length > 0) {
-            handleRunModel(_.editor.getText(), () => {
-              _.editor.commands.clearContent();
-              _.editor.commands.focus("end");
-            });
-          }
-          return true;
-        },
-      };
-    },
-  });
-
-  const editor = useEditor({
-    extensions: [
-      Document,
-      Paragraph,
-      Text,
-      Placeholder.configure({
-        placeholder: "Type / or Enter prompt here...",
-      }),
-      EnterRunModel,
-      ShiftEnter,
-      Highlight.configure({
-        HTMLAttributes: {
-          class: "prompt-highlight",
-        },
-      }),
-      HardBreak,
-    ],
-    content: ``,
-    autofocus: true,
-    onTransaction(props) {
-      const { editor } = props;
-      const text = editor.getText();
-      const html = editor.getHTML();
-      if (text === "/") {
-        setOpen(true);
-      } else {
-        console.log(text);
-        const newHTML = html.replace(
-          /{{{{(.*?)}}}}/g,
-          ` <mark class="prompt-highlight">$1</mark> `
-        );
-
-        if (newHTML !== html) {
-          editor.commands.setContent(newHTML, true, {
-            preserveWhitespace: true,
-          });
-        }
-        setOpen(false);
-      }
-    },
-    parseOptions: {
-      preserveWhitespace: true,
-    },
-  });
 
   useEffect(() => {
     if (editor?.isActive) {
@@ -217,78 +133,24 @@ export const ChatInput = () => {
     document.getElementById("fileInput")?.click();
   };
 
-  const handleRunModel = (query?: string, clear?: () => void) => {
-    if (!query) {
-      return;
-    }
-    getPreferences().then(async (preference) => {
-      const selectedModel = getModelByKey(preference.defaultModel);
-      if (
-        selectedModel?.key &&
-        !["gpt-4-turbo", "gpt-4o"].includes(selectedModel?.key) &&
-        attachment?.base64
-      ) {
-        toast({
-          title: "Ahh!",
-          description: "This model does not support image input.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (!selectedModel?.baseModel) {
-        throw new Error("Model not found");
-      }
-
-      const apiKey = await getApiKey(selectedModel?.baseModel);
-
-      if (!apiKey) {
-        toast({
-          title: "Ahh!",
-          description: "API key is missing. Please check your settings.",
-          variant: "destructive",
-        });
-        openSettings(selectedModel?.baseModel);
-        return;
-      }
-
-      setAttachment(undefined);
-      setContextValue("");
-      clear?.();
-      await runModel({
-        sessionId: sessionId.toString(),
-        props: {
-          role: RoleType.assistant,
-          type: PromptType.ask,
-          image: attachment?.base64,
-          query: removeExtraSpaces(query),
-          context: removeExtraSpaces(contextValue),
-        },
-      });
-      await refetchSessions();
-    });
-  };
-
   useEffect(() => {
     if (sessionId) {
       inputRef.current?.focus();
     }
   }, [sessionId]);
 
-  const isNewSession = !currentSession?.messages?.length;
+  const isFreshSession =
+    !currentSession?.messages?.length && !currentSession?.bot;
 
   useEffect(() => {
     if (text) {
       editor?.commands.clearContent();
       editor?.commands.setContent(text);
-      runModel({
-        props: {
-          role: RoleType.assistant,
-          type: PromptType.ask,
-          query: text,
-        },
+      handleRunModel({
+        input: text,
         sessionId: sessionId.toString(),
       });
+
       editor?.commands.clearContent();
     }
   }, [text]);
@@ -503,7 +365,7 @@ export const ChatInput = () => {
     <div
       className={cn(
         "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-8 md:bottom-0 px-2 md:px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-1",
-        isNewSession && !currentSession?.bot && "top-0"
+        isFreshSession && "top-0"
       )}
     >
       <div className="flex flex-row items-center gap-2">
@@ -511,30 +373,36 @@ export const ChatInput = () => {
         {renderReplyButton()}
         {renderListeningIndicator()}
       </div>
-      {/* <div className="flex flex-col  justify-center items-center">
-        <ChatExamples
-          show={isNewSession}
-          onExampleClick={(prompt) => {
-            handleRunModel(prompt, () => {
-              clearInput();
-              focusToInput();
-            });
-          }}
-        />
-      </div> */}
+
       <div className="flex flex-col gap-1 w-full md:w-[700px]">
         {renderSelectedContext()}
         {renderAttachedImage()}
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverAnchor className="w-full">
+        {editor && (
+          <PromptsBotsCombo
+            open={openPromptsBotCombo}
+            onBack={() => {
+              clearInput();
+              focusToInput();
+            }}
+            onPromptSelect={(prompt) => {
+              editor?.commands.setContent(prompt.content);
+              editor?.commands.insertContent("");
+              editor?.commands.focus("end");
+              setOpenPromptsBotCombo(false);
+            }}
+            onOpenChange={setOpenPromptsBotCombo}
+            onBotSelect={(bot) => {
+              editor?.commands?.clearContent();
+              editor?.commands.focus("end");
+            }}
+          >
             <motion.div
               variants={slideUpVariant}
               initial={"initial"}
-              animate={editor?.isActive ? "animate" : "initial"}
+              animate={editor.isEditable ? "animate" : "initial"}
               className="flex flex-col items-start gap-0 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
             >
               <div className="flex flex-row items-end pl-2 md:pl-3 pr-2 py-2 w-full gap-0">
-                {/* {renderNewSession()} */}
                 <EditorContent
                   editor={editor}
                   autoFocus
@@ -549,10 +417,16 @@ export const ChatInput = () => {
                   disabled={!editor?.getText()}
                   className="min-w-8 h-8 ml-1"
                   onClick={() =>
-                    handleRunModel(editor?.getText(), () => {
-                      clearInput();
-                      focusToInput();
-                    })
+                    handleRunModel(
+                      {
+                        input: editor?.getText(),
+                        sessionId: sessionId.toString(),
+                      },
+                      () => {
+                        clearInput();
+                        focusToInput();
+                      }
+                    )
                   }
                 >
                   <ArrowUp size={20} weight="bold" />
@@ -579,66 +453,10 @@ export const ChatInput = () => {
                 </Button>
               </div>
             </motion.div>
-          </PopoverAnchor>
-          <PopoverContent
-            side="top"
-            sideOffset={4}
-            className="min-w-[96vw] md:min-w-[700px] p-0 rounded-2xl overflow-hidden"
-          >
-            <CMDKCommand>
-              <CommandInput
-                placeholder="Search..."
-                className="h-10"
-                value={commandInput}
-                onValueChange={setCommandInput}
-                onKeyDown={(e) => {
-                  if (
-                    (e.key === "Delete" || e.key === "Backspace") &&
-                    !commandInput
-                  ) {
-                    setOpen(false);
-                    clearInput();
-                    focusToInput();
-                  }
-                }}
-              />
-              <CommandEmpty>No Prompts found.</CommandEmpty>
-              <CommandList className="p-2 max-h-[160px]">
-                <CommandItem
-                  onSelect={() => {
-                    openPrompts();
-                  }}
-                >
-                  <Plus size={14} weight="bold" className="flex-shrink-0" />{" "}
-                  Create New Prompt
-                </CommandItem>
-                {prompts?.map((prompt, index) => (
-                  <CommandItem
-                    key={index}
-                    onSelect={() => {
-                      editor?.commands.setContent(prompt.content);
-                      editor?.commands.insertContent("");
-                      console.log(editor?.getText());
-                      editor?.commands.focus("end");
-                      setOpen(false);
-                    }}
-                  >
-                    {prompt.name}
-                  </CommandItem>
-                ))}
-              </CommandList>
-            </CMDKCommand>
-          </PopoverContent>
-        </Popover>
-
-        {isNewSession && !currentSession?.bot && (
-          <div className="fixed bottom-0 left-0 right-0 w-full p-3 text-xs flex flex-row justify-center">
-            <p className="text-xs text-zinc-500/50">
-              P.S. Your data is stored locally on local storage, not in the
-              cloud.
-            </p>
-          </div>
+          </PromptsBotsCombo>
         )}
+
+        <Footer show={isFreshSession} />
       </div>
     </div>
   );
