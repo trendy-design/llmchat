@@ -9,5 +9,3 @@ export const ShiftEnterToLineBreak = Extension.create({
     };
   },
 });
-
-export 
