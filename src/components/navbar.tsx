@@ -14,7 +14,6 @@ import {
   Sun,
 } from "@phosphor-icons/react";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { HistorySidebar } from "./side-bar";
 import { Button } from "./ui/button";
@@ -33,7 +32,6 @@ export const Navbar = () => {
   const { open: openPrompts } = usePrompts();
   const { open: openBots } = useBots();
   const [isOpen, setIsOpen] = useState(false);
-  const { push } = useRouter();
   const { createSession } = useChatContext();
 
   const renderNewSession = () => {
@@ -44,8 +42,8 @@ export const Navbar = () => {
           variant={"ghost"}
           className="min-w-8 h-8"
           onClick={() => {
-            createSession().then((session) => {
-              push(`/chat/${session.id}`);
+            createSession({
+              redirect: true,
             });
           }}
         >

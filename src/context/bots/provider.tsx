@@ -61,7 +61,10 @@ export const BotsProvider = ({ children }: TBotsProvider) => {
           refetchCurrentSession();
         });
     } else {
-      createSession(bot, true);
+      createSession({
+        bot,
+        redirect: true,
+      });
     }
     dismiss();
   };

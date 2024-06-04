@@ -9,8 +9,8 @@ export default function Home() {
   const router = useRouter();
   const { createSession } = useChatContext();
   useEffect(() => {
-    createSession().then((session) => {
-      router.push(`/chat/${session.id}`);
+    createSession({
+      redirect: true,
     });
   }, []);
   return (

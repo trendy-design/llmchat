@@ -107,6 +107,9 @@ export const useLLM = ({ onChange }: TUseLLM) => {
     const { sessionId, messageId, input, context, image, model } = props;
     const currentSession = await getSessionById(sessionId);
 
+    console.log("run model", props);
+    console.log("current session", currentSession);
+
     if (!input) {
       return;
     }
@@ -184,28 +187,27 @@ export const useLLM = ({ onChange }: TUseLLM) => {
         ?.map((p) => getToolByKey(p)?.(preferences))
         ?.filter((t): t is any => !!t) || [];
 
-    console.log("available tools", availableTools);
+    let agentExecutor: AgentExecutor | undefined;
 
-    const agentWithTool = await createToolCallingAgent({
-      llm: selectedModel as any,
-      tools: availableTools,
-      prompt: prompt as any,
-      streamRunnable: true,
-    });
+    if (availableTools?.length) {
+      const agentWithTool = await createToolCallingAgent({
+        llm: selectedModel as any,
+        tools: availableTools,
+        prompt: prompt as any,
+        streamRunnable: true,
+      });
 
-    const agentExecutor = new AgentExecutor({
-      agent: agentWithTool,
-      tools: availableTools,
-    });
-
+      agentExecutor = new AgentExecutor({
+        agent: agentWithTool,
+        tools: availableTools,
+      });
+    }
     const chainWithoutTools = prompt.pipe(selectedModel as any);
 
     let streamedMessage = "";
     let toolName: string | undefined;
 
-    console.log("input", input);
-
-    const stream: any = await (!!availableTools?.length
+    const stream: any = await (!!availableTools?.length && agentExecutor
       ? agentExecutor
       : chainWithoutTools
     ).invoke(

@@ -122,8 +122,12 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
               {chatMessage && isLast && (
                 <RegenerateWithModelSelect
                   onRegenerate={(model: TModelKey) => {
+                    console.log(
+                      "Regenerating with model",
+                      chatMessage.sessionId
+                    );
                     handleRunModel({
-                      input: chatMessage.rawAI,
+                      input: chatMessage.rawHuman,
                       messageId: chatMessage.id,
                       model: model,
                       sessionId: chatMessage.sessionId,

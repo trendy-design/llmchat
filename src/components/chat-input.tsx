@@ -60,6 +60,7 @@ export const ChatInput = () => {
     handleRunModel,
     openPromptsBotCombo,
     setOpenPromptsBotCombo,
+    sendMessage,
   } = useChatContext();
   const [contextValue, setContextValue] = useState<string>("");
   const { getApiKey } = usePreferences();
@@ -146,6 +147,7 @@ export const ChatInput = () => {
     if (text) {
       editor?.commands.clearContent();
       editor?.commands.setContent(text);
+      console.log("Voice run", sessionId.toString());
       handleRunModel({
         input: text,
         sessionId: sessionId.toString(),
@@ -406,6 +408,12 @@ export const ChatInput = () => {
                 <EditorContent
                   editor={editor}
                   autoFocus
+                  onKeyDown={(e) => {
+                    console.log("keydown", e.key);
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      sendMessage();
+                    }
+                  }}
                   className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
                 />
 
@@ -416,18 +424,9 @@ export const ChatInput = () => {
                   variant={!!editor?.getText() ? "secondary" : "ghost"}
                   disabled={!editor?.getText()}
                   className="min-w-8 h-8 ml-1"
-                  onClick={() =>
-                    handleRunModel(
-                      {
-                        input: editor?.getText(),
-                        sessionId: sessionId.toString(),
-                      },
-                      () => {
-                        clearInput();
-                        focusToInput();
-                      }
-                    )
-                  }
+                  onClick={() => {
+                    sendMessage();
+                  }}
                 >
                   <ArrowUp size={20} weight="bold" />
                 </Button>

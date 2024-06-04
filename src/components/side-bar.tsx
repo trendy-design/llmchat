@@ -10,14 +10,7 @@ import { BotAvatar } from "./ui/bot-avatar";
 import { Button } from "./ui/button";
 
 export const HistorySidebar = () => {
-  const {
-    sessions,
-    createSession,
-    clearChatSessions,
-    removeSession,
-    currentSession,
-  } = useChatContext();
-  const { push } = useRouter();
+  const { sessions, createSession, currentSession } = useChatContext();
   const [open, setOpen] = useState(false);
   const { sortSessions } = useChatSession();
   const router = useRouter();
@@ -53,8 +46,8 @@ export const HistorySidebar = () => {
                   variant="ghost"
                   size="iconSm"
                   onClick={() => {
-                    createSession().then((session) => {
-                      push(`/chat/${session.id}`);
+                    createSession({
+                      redirect: true,
                     });
                   }}
                 >

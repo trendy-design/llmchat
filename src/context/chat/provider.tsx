@@ -19,7 +19,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { useModelList } from "@/hooks/use-model-list";
 import { usePreferences } from "@/hooks/use-preferences";
 import { removeExtraSpaces } from "@/lib/helper";
-import { EnterKey, ShiftEnterToLineBreak } from "@/lib/tiptap-extensions";
+import { ShiftEnterToLineBreak } from "@/lib/tiptap-extensions";
 import HardBreak from "@tiptap/extension-hard-break";
 import Text from "@tiptap/extension-text";
 import { useSettings } from "../settings/context";
@@ -45,7 +45,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   const [currentSession, setCurrentSession] = useState<
     TChatSession | undefined
   >();
-  const { push } = useRouter();
+  const { push, refresh } = useRouter();
   const { getPreferences, getApiKey } = usePreferences();
   const { getModelByKey } = useModelList();
   const { toast } = useToast();
@@ -77,6 +77,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         messages: [...session.messages, props],
       };
     });
+    fetchAllSessions();
   };
 
   const { runModel, stopGeneration } = useLLM({
@@ -94,6 +95,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
       } else {
         createNewSession().then((session) => {
           push(`/chat/${session.id}`);
+          refresh();
         });
       }
     });
@@ -113,11 +115,13 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     setAllSessionLoading(false);
   };
 
-  const createSession = async (bot?: TBot, redirect?: boolean) => {
+  const createSession = async (props: { bot?: TBot; redirect?: boolean }) => {
+    const { bot, redirect } = props;
     const newSession = await createNewSession(bot);
-    fetchAllSessions();
-    redirect && push(`/chat/${newSession.id}`);
-    return newSession;
+    if (redirect) {
+      push(`/chat/${newSession.id}`);
+      refresh();
+    }
   };
 
   useEffect(() => {
@@ -153,6 +157,9 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   };
 
   const handleRunModel = (props: TRunModel, clear?: () => void) => {
+    console.log("sessionId", sessionId);
+    console.log("currentSession", currentSession);
+    console.log("handleRun", props);
     if (!props?.input) {
       return;
     }
@@ -193,8 +200,9 @@ export const ChatProvider = ({ children }: TChatProvider) => {
       // setAttachment(undefined);
       setContextValue("");
       clear?.();
+      console.log(props);
       await runModel({
-        sessionId: props.sessionId.toString(),
+        sessionId: props?.sessionId?.toString(),
         input: removeExtraSpaces(props?.input),
         context: removeExtraSpaces(props?.context),
         image: props?.image,
@@ -214,19 +222,6 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         placeholder: "Type / or Enter prompt here...",
       }),
       ShiftEnterToLineBreak,
-      EnterKey((editor) => {
-        handleRunModel(
-          {
-            input: editor.getText(),
-            sessionId: sessionId?.toString(),
-          },
-          () => {
-            editor.commands.clearContent();
-            editor.commands.insertContent("");
-            editor.commands.focus("end");
-          }
-        );
-      }),
       Highlight.configure({
         HTMLAttributes: {
           class: "prompt-highlight",
@@ -256,10 +251,29 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         setOpenPromptsBotCombo(false);
       }
     },
+
     parseOptions: {
       preserveWhitespace: true,
     },
   });
+
+  const sendMessage = async () => {
+    if (!editor) {
+      return;
+    }
+    console.log("send button click", sessionId);
+    handleRunModel(
+      {
+        input: editor.getText(),
+        sessionId: sessionId?.toString(),
+      },
+      () => {
+        editor.commands.clearContent();
+        editor.commands.insertContent("");
+        editor.commands.focus("end");
+      }
+    );
+  };
 
   return (
     <ChatContext.Provider
@@ -275,6 +289,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         clearChatSessions,
         removeSession,
         currentSession,
+        sendMessage,
         stopGeneration,
         removeMessage,
         openPromptsBotCombo,
