@@ -3,7 +3,7 @@ import { defaultPreferences, usePreferences } from "@/hooks/use-preferences";
 import { cn } from "@/lib/utils";
 import { GearSix } from "@phosphor-icons/react";
 import { DropdownMenuSubTrigger } from "@radix-ui/react-dropdown-menu";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ModelInfo } from "./model-info";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
@@ -34,16 +34,11 @@ export const ModelSelect = ({
   className,
 }: TModelSelect) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { getPreferences, setPreferences } = usePreferences();
+  const { preferencesQuery, setPreferencesMutation } = usePreferences();
   const { getModelByKey, models } = useModelList();
 
-  useEffect(() => {
-    getPreferences().then((preferences) => {
-      setSelectedModel(preferences.defaultModel);
-    });
-  }, []);
-
-  const activeModel = getModelByKey(selectedModel);
+  const activeModel =
+    preferencesQuery?.data?.defaultModel && getModelByKey(selectedModel);
 
   return (
     <>
@@ -77,13 +72,18 @@ export const ModelSelect = ({
                   )}
                   key={model.key}
                   onClick={() => {
-                    setPreferences({
-                      defaultModel: model.key,
-                      maxTokens: defaultPreferences.maxTokens,
-                    }).then(() => {
-                      setSelectedModel(model.key);
-                      setIsOpen(false);
-                    });
+                    setPreferencesMutation.mutate(
+                      {
+                        defaultModel: model.key,
+                        maxTokens: defaultPreferences.maxTokens,
+                      },
+                      {
+                        onSuccess: () => {
+                          setSelectedModel(model.key);
+                          setIsOpen(false);
+                        },
+                      }
+                    );
                   }}
                 >
                   {model.icon()} {model.name}{" "}

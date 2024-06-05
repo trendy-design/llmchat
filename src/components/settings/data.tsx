@@ -2,7 +2,10 @@ import { useSettings } from "@/context/settings/context";
 import { useChatSession } from "@/hooks/use-chat-session";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
+import { Flex } from "../ui/flex";
+import { Type } from "../ui/text";
 import { useToast } from "../ui/use-toast";
+import { SettingCard } from "./setting-card";
 import { SettingsContainer } from "./settings-container";
 
 export const Data = () => {
@@ -41,14 +44,25 @@ export const Data = () => {
   };
   return (
     <SettingsContainer title="Manage your Data">
-      <div className="flex flex-row items-end justify-between">
-        <p className="text-sm md:text-base  text-zinc-500">
-          Clear all chat data
-        </p>
-      </div>
-      <Button variant="destructive" size="sm" onClick={clearAllData}>
-        Clear All Data
-      </Button>
+      <Flex direction="col" gap="md" className="w-full">
+        <SettingCard className="p-3">
+          <Flex items="center" justify="between">
+            <Type textColor="secondary">Clear all chat sessions</Type>
+            <Button variant="destructive" size="sm" onClick={clearAllData}>
+              Clear all
+            </Button>
+          </Flex>
+          <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
+          <Flex items="center" justify="between">
+            <Type textColor="secondary">
+              Delete all data and reset all settings
+            </Type>
+            <Button variant="destructive" size="sm" onClick={clearAllData}>
+              Reset
+            </Button>
+          </Flex>
+        </SettingCard>
+      </Flex>
     </SettingsContainer>
   );
 };

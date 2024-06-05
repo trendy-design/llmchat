@@ -165,6 +165,10 @@ export const useChatSession = () => {
     const sessions = (await getSessions()) || [];
     const latestSession = sortSessions(sessions, "createdAt")?.[0];
     if (latestSession && !latestSession?.messages?.length) {
+      if (latestSession.bot) {
+        await updateSession(latestSession.id, { bot: undefined });
+        return { ...latestSession, bot: undefined };
+      }
       return latestSession;
     }
 

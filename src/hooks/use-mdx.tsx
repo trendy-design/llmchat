@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/hover-card";
 import { cn } from "@/lib/utils";
 import { ArrowUpRight, Link } from "@phosphor-icons/react";
+import { ReactNode, useState } from "react";
 
 export const REVEAL_ANIMATION_VARIANTS = {
   hidden: { opacity: 0 },
@@ -18,14 +19,23 @@ export const REVEAL_ANIMATION_VARIANTS = {
   },
 };
 
+export type TLink = {
+  href: string;
+  text: ReactNode;
+};
 export const useMarkdown = () => {
-  const renderMarkdown = (message: string, animate: boolean) => (
+  const [links, setLinks] = useState<TLink[]>([]);
+
+  const renderMarkdown = (
+    message: string,
+    animate: boolean,
+    messageId: string
+  ) => (
     <Markdown
       renderer={{
         text: (children) => (
           <motion.span
             variants={REVEAL_ANIMATION_VARIANTS}
-            className="dark:text-zinc-100 text-zinc-700 tracking-[0.01em]"
             animate={"visible"}
             initial={animate ? "hidden" : "visible"}
           >
@@ -33,19 +43,18 @@ export const useMarkdown = () => {
           </motion.span>
         ),
         paragraph: (children) => (
-          <p className="text-sm md:text-base leading-7">{children}</p>
+          <p className="text-xs md:text-sm leading-relaxed dark:text-zinc-100 text-zinc-700">
+            {children}
+          </p>
         ),
         em: (children) => (
-          <em className="italic text-sm md:text-base opacity-50">{children}</em>
+          <em className="italic text-xs md:text-sm opacity-50">{children}</em>
         ),
         heading: (children, level) => {
           const Heading = `h${level}` as keyof JSX.IntrinsicElements;
           return (
             <Heading
-              className={cn(
-                "font-medium",
-                level < 4 ? "py-2 text-lg" : "py-1 text-md"
-              )}
+              className={cn("font-medium", level < 4 ? "text-md" : "text-base")}
             >
               {children}
             </Heading>
@@ -59,7 +68,8 @@ export const useMarkdown = () => {
                 <HoverCardTrigger>
                   <a
                     href={href}
-                    className="underline underline-offset-4 decoration-blue-300 px-1 py-1 hover:bg-blue-400/30 rounded-md dark:bg-white/10 "
+                    data-message-id={messageId}
+                    className="underline underline-offset-4 decoration-blue-400/10 hover:decoration-blue-400 text-blue-500 dark:text-blue-300 px-1 py-1 hover:bg-blue-400/10 rounded-md"
                   >
                     {text}
                   </a>
@@ -71,7 +81,7 @@ export const useMarkdown = () => {
                     window.open(href, "_blank");
                   }}
                 >
-                  <p className="flex flex-row text-xs items-center gap-2 text-zinc-200 dark:text-zinc-200 leading-5 w-full whitespace-pre-wrap overflow-hidden">
+                  <p className="flex flex-row text-xs items-center gap-2 text-zinc-200 dark:text-zinc-200 leading-relaxed w-full whitespace-pre-wrap overflow-hidden">
                     <Link
                       size={16}
                       weight="bold"
@@ -92,18 +102,18 @@ export const useMarkdown = () => {
         },
         blockquote: (children) => (
           <blockquote className="border-l-4 border-gray-300 pl-4 italic">
-            <p className="text-sm md:text-base leading-7 ">{children}</p>
+            <p className="text-xs md:text-sm leading-relaxed ">{children}</p>
           </blockquote>
         ),
         list: (children, ordered) =>
           ordered ? (
-            <ol className="list-decimal ml-4">{children}</ol>
+            <ol className="list-decimal text-xs md:text-sm ml-4">{children}</ol>
           ) : (
             <ul className="list-disc ml-4">{children}</ul>
           ),
         listItem: (children) => (
           <li className="my-4">
-            <p className="text-sm md:text-base leading-7 ">{children}</p>
+            <p className="text-xs md:text-sm leading-relaxed">{children}</p>
           </li>
         ),
         strong: (children) => (
@@ -115,21 +125,21 @@ export const useMarkdown = () => {
           </div>
         ),
         codespan: (code) => (
-          <span className="px-2 py-1 text-sm md:text-base rounded-md dark:text-white bg-zinc-50 text-zinc-800 dark:bg-white/10 font-medium">
+          <span className="px-2 py-1 text-xs md:text-sm rounded-md dark:text-white bg-zinc-50 text-zinc-800 dark:bg-white/10 font-medium">
             {code}
           </span>
         ),
         br: () => <br />,
         table: (children) => (
           <div className="overflow-x-auto my-3 border border-zinc-100 rounded-xl dark:border-white/10 ">
-            <table className="w-full  overflow-hidden text-sm md:text-base text-left rtl:text-right text-gray-600 dark:text-gray-200">
+            <table className="w-full  overflow-hidden text-xs md:text-sm text-left rtl:text-right text-gray-600 dark:text-gray-200">
               {children}
             </table>
           </div>
         ),
         tableHeader(children) {
           return (
-            <thead className="text-sm md:text-base w-full font-medium text-zinc-800 uppercase bg-zinc-50 dark:bg-white/10 dark:text-white/20">
+            <thead className="text-xs md:text-sm w-full font-medium text-zinc-800 uppercase bg-zinc-50 dark:bg-white/10 dark:text-white/20">
               {children}
             </thead>
           );
@@ -144,7 +154,7 @@ export const useMarkdown = () => {
           if (flags.header) {
             return <th className="p-3 text-xs md:text-sm">{children}</th>;
           }
-          return <td className="p-3 text-sm md:text-base">{children}</td>;
+          return <td className="p-3 text-xs md:text-sm">{children}</td>;
         },
         tableBody: (children) => <tbody>{children}</tbody>,
       }}
@@ -153,5 +163,5 @@ export const useMarkdown = () => {
     </Markdown>
   );
 
-  return { renderMarkdown };
+  return { renderMarkdown, links };
 };

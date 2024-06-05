@@ -1,11 +1,12 @@
 import { ModelIcon } from "@/components/icons/model-icon";
+import { usePreferenceContext } from "@/context/preferences/context";
 import { useSettings } from "@/context/settings/context";
 import { DynamicStructuredTool } from "@langchain/core/tools";
-import { Browser, Calculator, Globe } from "@phosphor-icons/react";
+import { Globe } from "@phosphor-icons/react";
 import axios from "axios";
 import { ReactNode } from "react";
 import { ZodObject, z } from "zod";
-import { TPreferences, usePreferences } from "./use-preferences";
+import { TPreferences } from "./use-preferences";
 
 const calculatorTool = () => {
   const calculatorSchema = z.object({
@@ -159,6 +160,7 @@ export type TTool = {
   loadingMessage?: string;
   resultMessage?: string;
   isBeta?: boolean;
+  showInMenu?: boolean;
   validate?: () => Promise<boolean>;
   validationFailedAction?: () => void;
   tool: (arg?: any) => DynamicStructuredTool<ZodObject<any>>;
@@ -167,24 +169,27 @@ export type TTool = {
 };
 
 export const useTools = () => {
-  const { getPreferences } = usePreferences();
+  const { getPreferences, preferencesQuery } = usePreferenceContext();
   const { open } = useSettings();
-  const tools: TTool[] = [
-    {
-      key: "calculator",
-      tool: calculatorTool,
-      name: "Calculator",
 
-      loadingMessage: "Calculating...",
-      resultMessage: "Calculated Result",
-      icon: (size: IconSize) => <ModelIcon type="calculator" size={size} />,
-      smallIcon: () => <Calculator size={16} weight="bold" />,
-    },
+  console.log("preferencesQuery", preferencesQuery);
+  const tools: TTool[] = [
+    // {
+    //   key: "calculator",
+    //   tool: calculatorTool,
+    //   name: "Calculator",
+
+    //   loadingMessage: "Calculating...",
+    //   resultMessage: "Calculated Result",
+    //   icon: (size: IconSize) => <ModelIcon type="calculator" size={size} />,
+    //   smallIcon: () => <Calculator size={16} weight="bold" />,
+    // },
     {
       key: "web_search",
       tool: webSearchTool,
-      name: "Google Search",
+      name: "Web Search",
       isBeta: true,
+      showInMenu: preferencesQuery.data?.defaultWebSearchEngine === "google",
       validate: async () => {
         const prefrences = await getPreferences();
         if (
@@ -199,7 +204,7 @@ export const useTools = () => {
         open("web-search");
       },
       loadingMessage: "Searching on web...",
-      resultMessage: "Results from Google Search",
+      resultMessage: "Results from web search",
       icon: (size: IconSize) => <ModelIcon type="websearch" size={size} />,
       smallIcon: () => <Globe size={16} weight="bold" />,
     },
@@ -208,33 +213,21 @@ export const useTools = () => {
       tool: duckduckGoTool,
       name: "DuckDuckGo Search",
       isBeta: true,
-
-      loadingMessage: "Searching on web...",
-      resultMessage: "Results from DuckDuckGo Search",
-      icon: (size: IconSize) => (
-        <ModelIcon type="duckduckgo_search" size={size} />
-      ),
+      showInMenu:
+        preferencesQuery.data?.defaultWebSearchEngine === "duckduckgo",
+      loadingMessage: "Searching on DuckDuckGo...",
+      resultMessage: "Results from DuckDuckGo",
+      icon: (size: IconSize) => <ModelIcon type="websearch" size={size} />,
       smallIcon: () => <Globe size={16} weight="bold" />,
-    },
-    {
-      key: "read_website",
-      tool: readWebsiteTool,
-      name: "Read Website",
-      isBeta: true,
-
-      loadingMessage: "Analyzing website...",
-      resultMessage: "Results from Website Reader",
-      icon: (size: IconSize) => <ModelIcon type="website_reader" size={size} />,
-      smallIcon: () => <Browser size={16} weight="bold" />,
     },
   ];
 
   const getToolByKey = (key: TToolKey) => {
-    return tools.find((tool) => tool.key === key)?.tool;
+    return tools.find((tool) => tool.key.includes(key));
   };
 
   const getToolInfoByKey = (key: TToolKey) => {
-    return tools.find((tool) => tool.key === key);
+    return tools.find((tool) => tool.key.includes(key));
   };
   return {
     calculatorTool,

@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 import { BotsProvider } from "@/context/bots/provider";
+import { PreferenceProvider } from "@/context/preferences/provider";
 import { PromptsProvider } from "@/context/prompts/provider";
 import { ReactQueryProvider } from "@/context/react-query/provider";
 import type { Viewport } from "next";
@@ -42,17 +43,19 @@ export default function RootLayout({
         >
           <ReactQueryProvider>
             <TooltipProvider>
-              <SettingsProvider>
-                <ChatProvider>
-                  <FiltersProvider>
-                    <BotsProvider>
-                      <PromptsProvider>
-                        <MainLayout>{children}</MainLayout>
-                      </PromptsProvider>
-                    </BotsProvider>
-                  </FiltersProvider>
-                </ChatProvider>
-              </SettingsProvider>
+              <PreferenceProvider>
+                <SettingsProvider>
+                  <ChatProvider>
+                    <FiltersProvider>
+                      <BotsProvider>
+                        <PromptsProvider>
+                          <MainLayout>{children}</MainLayout>
+                        </PromptsProvider>
+                      </BotsProvider>
+                    </FiltersProvider>
+                  </ChatProvider>
+                </SettingsProvider>
+              </PreferenceProvider>
             </TooltipProvider>
           </ReactQueryProvider>
         </ThemeProvider>

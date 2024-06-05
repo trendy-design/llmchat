@@ -118,8 +118,11 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   const createSession = async (props: { bot?: TBot; redirect?: boolean }) => {
     const { bot, redirect } = props;
     const newSession = await createNewSession(bot);
+
+    console.log("newSession", newSession, redirect);
     if (redirect) {
       push(`/chat/${newSession.id}`);
+      fetchCurrentSession();
       refresh();
     }
   };

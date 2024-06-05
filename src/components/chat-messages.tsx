@@ -5,13 +5,13 @@ import { TRunModel } from "@/hooks/use-llm";
 import { TModelKey } from "@/hooks/use-model-list";
 import { removeExtraSpaces } from "@/lib/helper";
 import { ArrowElbowDownRight, Info, TrashSimple } from "@phosphor-icons/react";
-import moment from "moment";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { AIMessageBubble } from "./ai-bubble";
 import { GreetingBubble } from "./greeting-bubble";
 import { BotAvatar } from "./ui/bot-avatar";
 import { Button } from "./ui/button";
+import { Type } from "./ui/text";
 import { Tooltip } from "./ui/tooltip";
 
 export type TRenderMessageProps = {
@@ -26,26 +26,15 @@ export type TRenderMessageProps = {
 
 export type TMessageListByDate = Record<string, TChatMessage[]>;
 
-moment().calendar(null, {
-  sameDay: "[Today]",
-  nextDay: "[Tomorrow]",
-  nextWeek: "dddd",
-  lastDay: "[Yesterday]",
-  lastWeek: "[Last] dddd",
-  sameElse: "DD/MM/YYYY",
-});
-
 export const ChatMessages = () => {
   const { currentSession, refetchCurrentSession } = useChatContext();
   const { updateSession } = useChatSession();
   const chatContainer = useRef<HTMLDivElement>(null);
   const { open: openBot } = useBots();
 
-  const isNewSession = currentSession?.messages.length === 0;
-
   useEffect(() => {
     scrollToBottom();
-  }, [currentSession?.messages?.length]);
+  }, [currentSession?.messages]);
 
   const scrollToBottom = () => {
     if (chatContainer.current) {
@@ -89,20 +78,6 @@ export const ChatMessages = () => {
     );
   };
 
-  // group messages by createdAt date by days
-  const messagesByDate = currentSession?.messages.reduce(
-    (acc: TMessageListByDate, message) => {
-      const date = moment(message.createdAt).format("YYYY-MM-DD");
-      if (!acc?.[date]) {
-        acc[date] = [message];
-      } else {
-        acc[date] = [...acc[date], message];
-      }
-      return acc;
-    },
-    {}
-  );
-
   return (
     <div
       className="flex flex-col w-full items-center h-[100dvh] overflow-y-auto no-scrollbar pt-[60px] pb-[200px]"
@@ -117,12 +92,16 @@ export const ChatMessages = () => {
               size="medium"
               avatar={currentSession?.bot?.avatar}
             />
-            <p className="text-sm md:text-base text-zinc-800 dark:text-white font-medium">
+            <Type size="base" weight="medium" textColor="primary">
               {currentSession.bot.name}
-            </p>
-            <p className="text-xs md:text-sm text-center md:max-w-[400px] text-zinc-500">
+            </Type>
+            <Type
+              size="xs"
+              className="text-center md:max-w-[400px]"
+              textColor="tertiary"
+            >
               {currentSession.bot.description}
-            </p>
+            </Type>
             {!currentSession?.messages?.length && (
               <div className="flex flex-row gap-1">
                 <Tooltip content="Bot Info">
@@ -164,14 +143,6 @@ export const ChatMessages = () => {
             )
           )}
         </div>
-
-        {/* {streamingMessage?.error && (
-          <Alert variant="destructive">
-            <Warning size={20} weight="bold" />
-            <AlertTitle>Ahh! Something went wrong!</AlertTitle>
-            <AlertDescription>{streamingMessage?.error}</AlertDescription>
-          </Alert>
-        )} */}
       </div>
     </div>
   );

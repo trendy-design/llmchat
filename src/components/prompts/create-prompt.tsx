@@ -82,7 +82,7 @@ export const CreatePrompt = ({ open, onOpenChange }: TCreatePrompt) => {
   };
 
   return (
-    <div className="flex flex-col items-start  w-full">
+    <div className="flex flex-col items-start  w-full h-full relative overflow-hidden">
       <div className="w-full px-2 py-2 border-b border-zinc-500/20 flex flex-row gap-3 items-center">
         <Button
           size="iconSm"
@@ -95,7 +95,7 @@ export const CreatePrompt = ({ open, onOpenChange }: TCreatePrompt) => {
         </Button>
         <p className="text-base font-medium">Create New Prompt</p>
       </div>
-      <div className="flex flex-col w-full flex-1 p-2">
+      <div className="flex flex-col w-full flex-1 p-2 overflow-y-auto h-full pb-[80px] no-scrollbar">
         <Input
           type="text"
           placeholder="Prompt Title"
@@ -108,15 +108,14 @@ export const CreatePrompt = ({ open, onOpenChange }: TCreatePrompt) => {
         <EditorContent
           editor={editor}
           autoFocus
-          className="w-full min-h-24 p-3 [&>*]:leading-7 text-sm md:text-base h-full outline-none focus:outline-none  [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar  wysiwyg cursor-text"
+          className="w-full p-3 [&>*]:leading-7 text-sm md:text-base outline-none focus:outline-none  [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar cursor-text"
         />
         <p className="text-xs text-zinc-500 py-2 px-3 flex flex-row gap-2 items-center">
           Use <Badge>{`{{{{ input }}}}`}</Badge> for user input
         </p>
       </div>
-      <div className="w-full px-2 py-2 border-t border-zinc-500/20 flex flex-row gap-3 items-center">
+      <div className="w-full px-2 py-2 border-t bg-white dark:bg-zinc-800 absolute bottom-0 left-0 right-0 border-zinc-500/20 flex flex-row gap-3 items-center">
         <Button
-          size="sm"
           variant="default"
           onClick={() => {
             savePrompt();
@@ -125,7 +124,6 @@ export const CreatePrompt = ({ open, onOpenChange }: TCreatePrompt) => {
           Save
         </Button>
         <Button
-          size="sm"
           variant="ghost"
           onClick={() => {
             onOpenChange(false);

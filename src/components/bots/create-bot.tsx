@@ -50,7 +50,7 @@ export const CreateBot = ({ open, onOpenChange }: TCreateBot) => {
     });
   };
   return (
-    <div className="flex flex-col items-start w-full relative h-full overflow-y-auto no-scrollbar">
+    <div className="flex flex-col items-start w-full relative h-full overflow-hidden">
       <div className="w-full px-2 py-2 border-b border-zinc-500/20 flex flex-row gap-3 items-center">
         <Button
           size="iconSm"
@@ -63,7 +63,7 @@ export const CreateBot = ({ open, onOpenChange }: TCreateBot) => {
         </Button>
         <p className="text-base font-medium">Create New Bot</p>
       </div>
-      <div className="flex flex-col w-full flex-1 p-4 gap-4 items-start">
+      <div className="flex flex-col w-full p-4 gap-8 items-start h-full overflow-y-auto no-scrollbar pb-[100px]">
         <div className="flex flex-col gap-2 w-full">
           <FormLabel label="Base Model" />
           <ModelSelect
@@ -76,31 +76,34 @@ export const CreateBot = ({ open, onOpenChange }: TCreateBot) => {
             }}
           />
         </div>
-        <p className="text-sm md:text-base font-medium">Bot Profile</p>
-        <div className="flex flex-row justify-start items-center gap-2 w-full">
-          <BotAvatar
-            name={formik.values.name}
-            size="large"
-            avatar={formik.values.avatar}
-          />
+        <div className="flex flex-col gap-2 w-full">
+          <FormLabel label="Bot Avatar" />
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              document.getElementById("avatar")?.click();
-            }}
-          >
-            Upload Avatar
-          </Button>
-          <input
-            type="file"
-            id="avatar"
-            hidden
-            onChange={(e) => {
-              e.target.files?.[0] && uploadFile(e.target.files?.[0]);
-            }}
-          />
+          <div className="flex flex-row justify-start items-center gap-2 w-full">
+            <BotAvatar
+              name={formik.values.name}
+              size="large"
+              avatar={formik.values.avatar}
+            />
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                document.getElementById("avatar")?.click();
+              }}
+            >
+              Upload Avatar
+            </Button>
+            <input
+              type="file"
+              id="avatar"
+              hidden
+              onChange={(e) => {
+                e.target.files?.[0] && uploadFile(e.target.files?.[0]);
+              }}
+            />
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 w-full">
@@ -169,7 +172,7 @@ export const CreateBot = ({ open, onOpenChange }: TCreateBot) => {
           />
         </div>
       </div>
-      <div className="w-full sticky bottom-0 left-0 right-0 bg-white dark:bg-zinc-800  px-2 py-2 border-t border-zinc-500/20 flex flex-row gap-3 items-center">
+      <div className="w-full absolute bottom-0 left-0 right-0 bg-white dark:bg-zinc-800  px-2 py-2 border-t border-zinc-500/20 flex flex-row gap-3 items-center">
         <Button
           size="sm"
           variant="default"

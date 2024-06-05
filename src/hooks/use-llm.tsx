@@ -167,7 +167,7 @@ export const useLLM = ({ onChange }: TUseLLM) => {
     const selectedModel = await createInstance(selectedModelKey, apiKey);
 
     const previousAllowedChatHistory = chatHistory
-      .slice(0, messageLimit === "all" ? history.length : messageLimit)
+      .slice(0, messageLimit)
       .reduce(
         (acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman, image }) => {
           if (rawAI && rawHuman) {
@@ -184,7 +184,7 @@ export const useLLM = ({ onChange }: TUseLLM) => {
         ?.filter((p) => {
           return plugins.includes(p);
         })
-        ?.map((p) => getToolByKey(p)?.(preferences))
+        ?.map((p) => getToolByKey(p)?.tool())
         ?.filter((t): t is any => !!t) || [];
 
     let agentExecutor: AgentExecutor | undefined;
@@ -207,10 +207,14 @@ export const useLLM = ({ onChange }: TUseLLM) => {
     let streamedMessage = "";
     let toolName: string | undefined;
 
-    const stream: any = await (!!availableTools?.length && agentExecutor
-      ? agentExecutor
-      : chainWithoutTools
-    ).invoke(
+    console.log("available tools", availableTools);
+
+    const executor =
+      !!availableTools?.length && agentExecutor
+        ? agentExecutor
+        : chainWithoutTools;
+
+    const stream: any = await executor.invoke(
       {
         chat_history: previousAllowedChatHistory || [],
         context,

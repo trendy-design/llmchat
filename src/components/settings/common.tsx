@@ -1,40 +1,79 @@
+import { usePreferenceContext } from "@/context/preferences/context";
 import { useModelSettings } from "@/hooks/use-model-settings";
 import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
-import { Info } from "@phosphor-icons/react";
+import { ArrowClockwise, Info } from "@phosphor-icons/react";
+import { ChangeEvent } from "react";
 import { Button } from "../ui/button";
+import { Flex } from "../ui/flex";
 import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
-import { Switch } from "../ui/switch";
+import { Type } from "../ui/text";
 import { Textarea } from "../ui/textarea";
-import { Tooltip } from "../ui/tooltip";
+import { SettingCard } from "./setting-card";
 import { SettingsContainer } from "./settings-container";
 
 export const CommonSettings = () => {
+  const { preferencesQuery, setPreferencesMutation } = usePreferenceContext();
   const { formik, setPreferences } = useModelSettings({});
 
   const renderResetToDefault = (key: keyof TPreferences) => {
     return (
       <Button
-        variant="link"
-        size="linkSm"
+        variant="outline"
+        size="iconXS"
+        rounded="lg"
         onClick={() => {
           setPreferences({ [key]: defaultPreferences[key] });
           formik.setFieldValue(key, defaultPreferences[key]);
         }}
       >
-        Reset to Default
+        <ArrowClockwise size={14} weight="bold" />
       </Button>
     );
+  };
+
+  const onInputChange = (min: number, max: number, key: keyof TPreferences) => {
+    return (e: ChangeEvent<HTMLInputElement>) => {
+      const value = Number(e.target.value);
+      if (value < min) {
+        setPreferencesMutation.mutate({ [key]: min });
+        return;
+      } else if (value > max) {
+        setPreferencesMutation.mutate({ [key]: max });
+        return;
+      }
+      setPreferencesMutation.mutate({ [key]: value });
+    };
+  };
+
+  const onSliderChange = (
+    min: number,
+    max: number,
+    key: keyof TPreferences
+  ) => {
+    return (value: number[]) => {
+      if (value?.[0] < min) {
+        setPreferencesMutation.mutate({ [key]: min });
+        return;
+      } else if (value?.[0] > max) {
+        setPreferencesMutation.mutate({ [key]: max });
+        return;
+      }
+      setPreferencesMutation.mutate({ [key]: value?.[0] });
+    };
   };
 
   return (
     <SettingsContainer title="Model Settings">
       <div className="flex flex-col w-full">
-        <div className="flex flex-row items-center justify-between py-2 w-full">
-          <p className="text-xs md:text-sm text-zinc-500 flex flex-row items-center gap-1">
+        <div className="flex flex-row items-center justify-between py-1 w-full">
+          <Type
+            size="xs"
+            textColor="secondary"
+            className="flex flex-row items-center gap-1"
+          >
             System Default Prompt <Info weight="regular" size={14} />
-          </p>
-          {renderResetToDefault("systemPrompt")}
+          </Type>
         </div>
         <Textarea
           name="systemPrompt"
@@ -47,174 +86,157 @@ export const CommonSettings = () => {
         />
       </div>
 
-      <div className="flex flex-col w-full">
-        <div className="flex flex-row items-center justify-between py-2 w-full">
-          <p className="text-xs md:text-sm flex flex-row gap-2 items-center  text-zinc-500">
-            Context Length
-          </p>
-          {renderResetToDefault("messageLimit")}
-        </div>
-
-        <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-50 dark:bg-white/5 rounded-xl">
-          <div className="flex flex-row w-full justify-between">
-            <p className="text-xs md:text-sm">Use all Previous Messages</p>
-            <Switch
-              checked={formik.values.messageLimit === "all"}
-              onCheckedChange={(checked) => {
-                setPreferences({ messageLimit: checked ? "all" : 4 });
-                formik.setFieldValue("messageLimit", checked ? "all" : 4);
+      <SettingCard className="p-3 mt-2">
+        <Flex justify="between">
+          <Flex direction="col" items="start">
+            <Type>Context Length</Type>
+            <Type size="xxs" textColor="secondary">
+              Number of previous messages to use as context
+            </Type>
+          </Flex>
+          <Flex items="center" gap="sm">
+            <Input
+              name="messageLimit"
+              type="number"
+              size="sm"
+              className="w-[100px]"
+              value={preferencesQuery?.data?.messageLimit}
+              autoComplete="off"
+              onChange={(e) => {
+                setPreferencesMutation.mutate({
+                  messageLimit: Number(e.target.value),
+                });
               }}
             />
-          </div>
-          {formik.values.messageLimit !== "all" && (
-            <>
-              <p className="text-xs md:text-sm flex flex-row gap-2 items-center text-zinc-500">
-                Previous Messages Limit <Info weight="regular" size={14} />
-              </p>
+            {renderResetToDefault("messageLimit")}
+          </Flex>
+        </Flex>
+        <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
 
-              <Input
-                name="messageLimit"
-                type="number"
-                value={formik.values.messageLimit}
-                autoComplete="off"
-                onChange={(e) => {
-                  setPreferences({ messageLimit: Number(e.target.value) });
-                  formik.setFieldValue("messageLimit", Number(e.target.value));
-                }}
-              />
-            </>
-          )}
-        </div>
-      </div>
-
-      <div className="flex flex-col w-full">
-        <div className="flex flex-row items-center justify-between py-2 w-full">
-          <p className="flex flex-row text-xs md:text-sm items-center gap-1  text-zinc-500">
-            Max Tokens <Info weight="regular" size={14} />
-          </p>
-          {renderResetToDefault("maxTokens")}
-        </div>
-
-        <Input
-          name="maxTokens"
-          type="number"
-          value={formik.values.maxTokens}
-          autoComplete="off"
-          onChange={(e) => {
-            setPreferences({ maxTokens: Number(e.target.value) });
-            formik.setFieldValue("maxTokens", Number(e.target.value));
-          }}
-        />
-      </div>
-      <div className="grid grid-cols-1 w-full gap-2">
-        <div className="flex flex-col">
-          <div className="flex flex-row items-center justify-between py-2 w-full">
-            <Tooltip content="Temprature">
-              <p className="text-xs md:text-sm text-zinc-500 flex flex-row items-center gap-1">
-                Temperature <Info weight="regular" size={14} />
-              </p>
-            </Tooltip>
-            {renderResetToDefault("temperature")}
-          </div>
-          <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-50 dark:bg-white/5 rounded-xl">
-            <p className="text-xl  text-zinc-600 dark:text-white font-medium">
-              {formik.values.temperature}
-            </p>
-            <Slider
-              className="my-2"
-              value={[Number(formik.values.temperature)]}
-              step={0.1}
-              min={0.1}
-              max={1}
-              onValueChange={(value: number[]) => {
-                setPreferences({ temperature: value?.[0] });
-                formik.setFieldValue("temperature", value?.[0]);
+        <Flex justify="between">
+          <Flex direction="col" items="start">
+            <Type>Max output tokens</Type>
+            <Type size="xxs" textColor="secondary">
+              Maximum number of tokens to generate
+            </Type>
+          </Flex>
+          <Flex items="center" gap="sm">
+            <Input
+              name="maxTokens"
+              type="number"
+              size="sm"
+              className="w-[100px]"
+              value={preferencesQuery?.data?.maxTokens}
+              autoComplete="off"
+              onChange={(e) => {
+                setPreferencesMutation.mutate({
+                  maxTokens: Number(e.target.value),
+                });
               }}
             />
-            <div className="flex flex-row justify-between w-full">
-              <p className="text-xs md:text-sm text-zinc-400 dark:text-zinc-600">
-                Precise
-              </p>
-              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
-                Neutral
-              </p>
-              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
-                Creative
-              </p>
-            </div>
-          </div>
-        </div>
+            {renderResetToDefault("maxTokens")}
+          </Flex>
+        </Flex>
+        <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
 
-        <div className="flex flex-col">
-          <div className="flex flex-row items-center justify-between py-2 w-full">
-            <Tooltip content="TopP">
-              <p className="text-xs md:text-sm flex flex-row gap-1 items-center  text-zinc-500">
-                TopP <Info weight="regular" size={14} />
-              </p>
-            </Tooltip>
-            {renderResetToDefault("topP")}
-          </div>
-          <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-50 dark:bg-white/5 rounded-xl">
-            <p className="text-xl  text-zinc-600 dark:text-white font-medium">
-              {formik.values.topP}
-            </p>
+        <Flex justify="between">
+          <Flex direction="col" items="start">
+            <Type>Temprature</Type>
+            <Type size="xxs" textColor="secondary">
+              Maximum number of tokens to generate
+            </Type>
+          </Flex>
+          <Flex items="center" gap="sm">
             <Slider
-              className="my-2"
-              value={[Number(formik.values.topP)]}
+              className="my-2 w-[80px]"
+              value={[Number(preferencesQuery?.data?.temperature)]}
               min={0}
-              name="topP"
-              step={0.01}
+              step={0.1}
               max={1}
-              onValueChange={(value: number[]) => {
-                setPreferences({ topP: value?.[0] });
-                formik.setFieldValue("topP", value?.[0]);
-              }}
+              onValueChange={onSliderChange(0, 1, "temperature")}
             />
-            <div className="flex flex-row justify-between w-full">
-              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
-                Precise
-              </p>
-              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
-                Creative
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col">
-          <div className="flex flex-row items-center justify-between py-2 w-full">
-            <Tooltip content="TopK">
-              <p className="text-xs md:text-sm flex flex-row gap-1 items-center  text-zinc-500">
-                TopK <Info weight="regular" size={14} />
-              </p>
-            </Tooltip>
-            {renderResetToDefault("topK")}
-          </div>
-          <div className="flex flex-col gap-2 justify-between w-full p-3 bg-zinc-50 dark:bg-white/5 rounded-xl">
-            <p className="text-xl  text-zinc-600 dark:text-white font-medium">
-              {formik.values.topK}
-            </p>
-            <Slider
-              className="my-2"
-              value={[Number(formik.values.topK)]}
+            <Input
+              name="temperature"
+              type="number"
+              size="sm"
+              className="w-[80px]"
+              value={preferencesQuery?.data?.temperature}
               min={0}
               step={1}
               max={100}
-              onValueChange={(value: number[]) => {
-                setPreferences({ topK: value?.[0] });
-                formik.setFieldValue("topK", value?.[0]);
-              }}
+              autoComplete="off"
+              onChange={onInputChange(0, 1, "temperature")}
             />
-            <div className="flex flex-row justify-between w-full">
-              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
-                Precise
-              </p>
-              <p className="text-xs md:text-sm  text-zinc-400 dark:text-zinc-600">
-                Creative
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+            {renderResetToDefault("temperature")}
+          </Flex>
+        </Flex>
+        <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
+
+        <Flex justify="between">
+          <Flex direction="col" items="start">
+            <Type>TopP</Type>
+            <Type size="xxs" textColor="secondary">
+              Maximum number of tokens to generate
+            </Type>
+          </Flex>
+          <Flex items="center" gap="sm">
+            <Slider
+              className="my-2 w-[80px]"
+              value={[Number(formik.values.topP)]}
+              min={0}
+              step={0.01}
+              max={1}
+              onValueChange={onSliderChange(0, 1, "topP")}
+            />
+            <Input
+              name="topP"
+              type="number"
+              size="sm"
+              className="w-[80px]"
+              value={formik.values.topP}
+              min={0}
+              step={1}
+              max={1}
+              autoComplete="off"
+              onChange={onInputChange(0, 1, "topP")}
+            />
+            {renderResetToDefault("topP")}
+          </Flex>
+        </Flex>
+        <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
+
+        <Flex justify="between">
+          <Flex direction="col" items="start">
+            <Type>TopK</Type>
+            <Type size="xxs" textColor="secondary">
+              Maximum number of tokens to generate
+            </Type>
+          </Flex>
+          <Flex items="center" gap="sm">
+            <Slider
+              className="my-2 w-[80px]"
+              value={[Number(formik.values.topK)]}
+              min={1}
+              step={1}
+              max={100}
+              onValueChange={onSliderChange(1, 100, "topK")}
+            />
+            <Input
+              name="topK"
+              type="number"
+              size="sm"
+              className="w-[80px]"
+              value={formik.values.topK}
+              min={0}
+              step={1}
+              max={100}
+              autoComplete="off"
+              onChange={onInputChange(1, 100, "topK")}
+            />
+            {renderResetToDefault("topK")}
+          </Flex>
+        </Flex>
+      </SettingCard>
     </SettingsContainer>
   );
 };

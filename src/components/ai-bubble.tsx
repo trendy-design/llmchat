@@ -11,8 +11,10 @@ import { RegenerateWithModelSelect } from "./regenerate-model-select";
 import { Alert, AlertDescription } from "./ui/alert";
 import { BotAvatar } from "./ui/bot-avatar";
 import { Button } from "./ui/button";
+import { Flex } from "./ui/flex";
 import Spinner from "./ui/loading-spinner";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { Type } from "./ui/text";
 import { Tooltip } from "./ui/tooltip";
 
 export type TAIMessageBubble = {
@@ -39,7 +41,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
   const messageRef = useRef<HTMLDivElement>(null);
   const { showCopied, copy } = useClipboard();
   const { getModelByKey } = useModelList();
-  const { renderMarkdown } = useMarkdown();
+  const { renderMarkdown, links } = useMarkdown();
   const { open: openSettings } = useSettings();
 
   const { removeMessage, currentSession, handleRunModel } = useChatContext();
@@ -52,8 +54,8 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
   };
 
   return (
-    <div className="flex  flex-col md:flex-row gap-2 mt-6 w-full">
-      <div className="px-0 md:px-3 py-0">
+    <div className="flex flex-col md:flex-row mt-6 w-full">
+      <div className="p-0 md:p-3">
         {currentSession?.bot ? (
           <BotAvatar
             size="small"
@@ -64,26 +66,29 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
           modelForMessage?.icon()
         )}
       </div>
-      <div
+      <Flex
         ref={messageRef}
-        className=" rounded-2xl w-full flex flex-col items-start"
+        direction="col"
+        gap="md"
+        items="start"
+        className="w-full p-4 rounded-2xl dark:hover:bg-white/5 hover:bg-zinc-50/50"
       >
         {toolUsed && (
-          <div className="flex flex-row gap-2 py-2 items-center text-xs text-zinc-500">
+          <Type
+            size="xs"
+            className="flex flex-row gap-2 items-center"
+            textColor="tertiary"
+          >
             {toolUsed.smallIcon()}
             {isToolRunning ? (
-              <p className="text-xs">{toolUsed.loadingMessage}</p>
+              <span>{toolUsed.loadingMessage}</span>
             ) : (
-              <p>{toolUsed.resultMessage}</p>
+              <span>{toolUsed.resultMessage}</span>
             )}
-          </div>
+          </Type>
         )}
 
-        {rawAI && (
-          <div className="pb-2 w-full">
-            {renderMarkdown(rawAI, !!isLoading)}
-          </div>
-        )}
+        {rawAI && renderMarkdown(rawAI, !!isLoading, id)}
         {errorMesssage && (
           <Alert variant="destructive">
             <AlertDescription>
@@ -101,9 +106,13 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
           </Alert>
         )}
 
-        <div className="flex flex-row w-full justify-between items-center py-3 opacity-70 hover:opacity-100 transition-opacity">
+        <Flex
+          justify="between"
+          items="center"
+          className="w-full pt-3 opacity-70 hover:opacity-100 transition-opacity"
+        >
           {isLoading && !isToolRunning && <Spinner />}
-          {!isLoading && (
+          {!isLoading && !isToolRunning && (
             <div className="flex flex-row gap-1">
               <Tooltip content="Copy">
                 <Button
@@ -172,13 +181,13 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
               </Tooltip>
             </div>
           )}
-          {!isLoading && (
+          {!isLoading && !isToolRunning && (
             <div className="flex flex-row gap-2 items-center text-xs text-zinc-500">
               {modelForMessage?.name}
             </div>
           )}
-        </div>
-      </div>
+        </Flex>
+      </Flex>
     </div>
   );
 };

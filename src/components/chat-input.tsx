@@ -32,6 +32,7 @@ import { ModelSelect } from "./model-select";
 import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Badge } from "./ui/badge";
 
+import { usePreferenceContext } from "@/context/preferences/context";
 import { useSettings } from "@/context/settings/context";
 import { Footer } from "./footer";
 import { PluginSelect } from "./plugin-select";
@@ -65,6 +66,7 @@ export const ChatInput = () => {
   const [contextValue, setContextValue] = useState<string>("");
   const { getApiKey } = usePreferences();
   const { open: openSettings } = useSettings();
+  const { preferencesQuery } = usePreferenceContext();
 
   const { showPopup, selectedText, handleClearSelection } = useTextSelection();
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -169,7 +171,18 @@ export const ChatInput = () => {
       openSettings("openai");
       return;
     }
-    startRecording();
+
+    if (preferencesQuery.data?.whisperSpeechToTextEnabled) {
+      startRecording();
+    } else {
+      toast({
+        title: "Enable Speech to Text",
+        description:
+          "Recordings require Speech to Text enabled. Please check settings.",
+        variant: "destructive",
+      });
+      openSettings("voice-input");
+    }
   };
 
   const renderRecordingControls = () => {
