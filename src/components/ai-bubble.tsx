@@ -1,4 +1,5 @@
-import { useChatContext } from "@/context/chat/context";
+import { useChatContext } from "@/context/chat/provider";
+import { useSessionsContext } from "@/context/sessions/provider";
 import { useSettings } from "@/context/settings/context";
 import { TChatMessage } from "@/hooks/use-chat-session";
 import { useClipboard } from "@/hooks/use-clipboard";
@@ -43,8 +44,8 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
   const { getModelByKey } = useModelList();
   const { renderMarkdown, links } = useMarkdown();
   const { open: openSettings } = useSettings();
-
-  const { removeMessage, currentSession, handleRunModel } = useChatContext();
+  const { removeMessage, currentSession } = useSessionsContext();
+  const { handleRunModel } = useChatContext();
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
 
   const modelForMessage = getModelByKey(model);
@@ -131,10 +132,6 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
               {chatMessage && isLast && (
                 <RegenerateWithModelSelect
                   onRegenerate={(model: TModelKey) => {
-                    console.log(
-                      "Regenerating with model",
-                      chatMessage.sessionId
-                    );
                     handleRunModel({
                       input: chatMessage.rawHuman,
                       messageId: chatMessage.id,

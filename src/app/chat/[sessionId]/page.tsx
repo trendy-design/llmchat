@@ -3,10 +3,10 @@ import { ChatInput } from "@/components/chat-input";
 import { ChatMessages } from "@/components/chat-messages";
 import { Navbar } from "@/components/navbar";
 import Spinner from "@/components/ui/loading-spinner";
-import { useChatContext } from "@/context/chat/context";
+import { useSessionsContext } from "@/context/sessions/provider";
 
 const ChatSessionPage = () => {
-  const { isCurrentSessionLoading, isAllSessionLoading } = useChatContext();
+  const { isCurrentSessionLoading, isAllSessionLoading } = useSessionsContext();
 
   const renderLoader = () => {
     return (

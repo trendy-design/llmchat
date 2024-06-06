@@ -1,10 +1,10 @@
 "use client";
-import { useChatContext } from "@/context/chat/context";
+import { useSessionsContext } from "@/context/sessions/provider";
 import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 
 export const Sidebar = () => {
-  const { sessions, createSession } = useChatContext();
+  const { sessions, createSession } = useSessionsContext();
   const { push } = useRouter();
   return (
     <div className="w-[250px] flex flex-col h-[100dvh]">

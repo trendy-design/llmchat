@@ -1,3 +1,6 @@
+import { TChatMessage, TChatSession } from "@/hooks/use-chat-session";
+import moment from "moment";
+
 export function formatNumber(number: number) {
   if (number >= 1000000) {
     return (number / 1000000).toFixed(0) + "M";
@@ -13,6 +16,17 @@ export function removeExtraSpaces(str?: string) {
   str = str?.replace(/\n{3,}/g, "\n\n");
   return str;
 }
+
+export const sortSessions = (
+  sessions: TChatSession[],
+  sortBy: "createdAt" | "updatedAt"
+) => {
+  return sessions.sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
+};
+
+export const sortMessages = (messages: TChatMessage[], sortBy: "createdAt") => {
+  return messages.sort((a, b) => moment(a[sortBy]).diff(moment(b[sortBy])));
+};
 
 export const convertFileToBase64 = (
   file: File,

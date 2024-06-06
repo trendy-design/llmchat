@@ -1,13 +1,13 @@
 "use client";
 import { ModelIcon } from "@/components/icons/model-icon";
 import Spinner from "@/components/ui/loading-spinner";
-import { useChatContext } from "@/context/chat/context";
+import { useSessionsContext } from "@/context/sessions/provider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
-  const { createSession } = useChatContext();
+  const { createSession } = useSessionsContext();
   useEffect(() => {
     createSession({
       redirect: true,

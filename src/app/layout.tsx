@@ -1,7 +1,7 @@
 import { MainLayout } from "@/components/main-layout";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { ChatProvider } from "@/context/chat/provider";
 import { FiltersProvider } from "@/context/filters/provider";
+import { SessionsProvider } from "@/context/sessions/provider";
 import { SettingsProvider } from "@/context/settings/provider";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 import { BotsProvider } from "@/context/bots/provider";
+import { ChatProvider } from "@/context/chat/provider";
 import { PreferenceProvider } from "@/context/preferences/provider";
 import { PromptsProvider } from "@/context/prompts/provider";
 import { ReactQueryProvider } from "@/context/react-query/provider";
@@ -44,17 +45,19 @@ export default function RootLayout({
           <ReactQueryProvider>
             <TooltipProvider>
               <PreferenceProvider>
-                <SettingsProvider>
-                  <ChatProvider>
-                    <FiltersProvider>
-                      <BotsProvider>
-                        <PromptsProvider>
-                          <MainLayout>{children}</MainLayout>
-                        </PromptsProvider>
-                      </BotsProvider>
-                    </FiltersProvider>
-                  </ChatProvider>
-                </SettingsProvider>
+                <SessionsProvider>
+                  <SettingsProvider>
+                    <ChatProvider>
+                      <FiltersProvider>
+                        <BotsProvider>
+                          <PromptsProvider>
+                            <MainLayout>{children}</MainLayout>
+                          </PromptsProvider>
+                        </BotsProvider>
+                      </FiltersProvider>
+                    </ChatProvider>
+                  </SettingsProvider>
+                </SessionsProvider>
               </PreferenceProvider>
             </TooltipProvider>
           </ReactQueryProvider>

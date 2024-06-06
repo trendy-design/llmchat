@@ -6,7 +6,7 @@ import { TPrompt, usePrompts } from "@/hooks/use-prompts";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useChatContext } from "../chat/context";
+import { useChatContext } from "../chat/provider";
 import { PromptsContext } from "./context";
 
 export type TPromptsProvider = {

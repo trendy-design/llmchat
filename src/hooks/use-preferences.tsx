@@ -46,9 +46,7 @@ export const usePreferences = () => {
   const setPreferencesMutation = useMutation({
     mutationFn: async (preferences: Partial<TPreferences>) =>
       await setPreferences(preferences),
-
     onSuccess() {
-      console.log("refetching");
       preferencesQuery.refetch();
     },
   });

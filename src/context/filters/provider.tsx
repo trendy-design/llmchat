@@ -10,15 +10,15 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useToast } from "@/components/ui/use-toast";
-import { useChatSession } from "@/hooks/use-chat-session";
 import { useModelList } from "@/hooks/use-model-list";
+import { sortSessions } from "@/lib/helper";
 import { cn } from "@/lib/utils";
 import { Moon, Plus, Sun, TrashSimple } from "@phosphor-icons/react";
 import moment from "moment";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useChatContext } from "../chat/context";
+import { useSessionsContext } from "../sessions/provider";
 import { FiltersContext } from "./context";
 
 export type TFiltersProvider = {
@@ -28,20 +28,19 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
   const {
     sessions,
     createSession,
-    clearChatSessions,
-    removeSession,
+    removeSessionMutation,
+    clearSessionsMutation,
     currentSession,
     refetchSessions,
-  } = useChatContext();
+  } = useSessionsContext();
   const { toast, dismiss } = useToast();
-  const { sortSessions } = useChatSession();
   const router = useRouter();
   const { getModelByKey } = useModelList();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
   const open = () => {
-    refetchSessions();
+    refetchSessions?.();
     setIsFilterOpen(true);
   };
 
@@ -92,11 +91,13 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
               variant="default"
               onClick={() => {
                 currentSession?.id &&
-                  removeSession(currentSession?.id).then(() => {
-                    createSession({
-                      redirect: true,
-                    });
-                    dismiss();
+                  removeSessionMutation.mutate(currentSession?.id, {
+                    onSuccess() {
+                      createSession({
+                        redirect: true,
+                      });
+                      dismiss();
+                    },
                   });
               }}
             >

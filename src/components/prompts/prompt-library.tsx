@@ -1,4 +1,4 @@
-import { useChatContext } from "@/context/chat/context";
+import { useChatContext } from "@/context/chat/provider";
 import { TPrompt } from "@/hooks/use-prompts";
 import { BookBookmark, FolderSimple, Plus } from "@phosphor-icons/react";
 import { Button } from "../ui/button";

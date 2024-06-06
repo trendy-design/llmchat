@@ -1,18 +1,15 @@
+import { AudioWaveSpinner } from "@/components/ui/audio-wave";
+import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { usePreferenceContext } from "@/context/preferences/provider";
+import { useSettings } from "@/context/settings/context";
 import { blobToBase64 } from "@/lib/record";
+import { Microphone, StopCircle } from "@phosphor-icons/react";
 import { OpenAI, toFile } from "openai";
 import { useRef, useState } from "react";
 
-interface UseRecordVoiceResult {
-  recording: boolean;
-  startRecording: () => void;
-  stopRecording: () => void;
-  transcribing: boolean;
-  text: string;
-}
-
-export const useRecordVoice = (): UseRecordVoiceResult => {
+export const useRecordVoice = () => {
   const [text, setText] = useState<string>("");
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
@@ -21,6 +18,8 @@ export const useRecordVoice = (): UseRecordVoiceResult => {
   const { apiKeys } = usePreferenceContext();
   const [recording, setRecording] = useState<boolean>(false);
   const [transcribing, setIsTranscribing] = useState<boolean>(false);
+  const { preferences } = usePreferenceContext();
+  const { open: openSettings } = useSettings();
   const chunks = useRef<Blob[]>([]);
 
   const startRecording = async (): Promise<void> => {
@@ -88,5 +87,89 @@ export const useRecordVoice = (): UseRecordVoiceResult => {
     }
   };
 
-  return { recording, startRecording, stopRecording, transcribing, text };
+  const startVoiceRecording = async () => {
+    const openAIAPIKeys = apiKeys.openai;
+    if (!openAIAPIKeys) {
+      toast({
+        title: "API key missing",
+        description:
+          "Recordings require OpenAI API key. Please check settings.",
+        variant: "destructive",
+      });
+      openSettings("openai");
+      return;
+    }
+
+    if (preferences?.whisperSpeechToTextEnabled) {
+      startRecording();
+    } else {
+      toast({
+        title: "Enable Speech to Text",
+        description:
+          "Recordings require Speech to Text enabled. Please check settings.",
+        variant: "destructive",
+      });
+      openSettings("voice-input");
+    }
+  };
+
+  const renderRecordingControls = () => {
+    if (recording) {
+      return (
+        <>
+          <Button
+            variant="ghost"
+            size="iconSm"
+            onClick={() => {
+              stopRecording();
+            }}
+          >
+            <StopCircle size={20} weight="fill" className="text-red-300" />
+          </Button>
+        </>
+      );
+    }
+
+    return (
+      <Tooltip content="Record">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="min-w-8 h-8"
+          onClick={startVoiceRecording}
+        >
+          <Microphone size={20} weight="bold" />
+        </Button>
+      </Tooltip>
+    );
+  };
+
+  const renderListeningIndicator = () => {
+    if (transcribing) {
+      return (
+        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-4 py-1 h-10 flex flex-row items-center text-sm md:text-base">
+          <AudioWaveSpinner /> <p>Transcribing ...</p>
+        </div>
+      );
+    }
+    if (recording) {
+      return (
+        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-2 pr-4 py-1 h-10 flex flex-row items-center text-sm md:text-base">
+          <AudioWaveSpinner />
+          <p>Listening ...</p>
+        </div>
+      );
+    }
+  };
+
+  return {
+    recording,
+    startRecording,
+    stopRecording,
+    transcribing,
+    text,
+    renderRecordingControls,
+    renderListeningIndicator,
+    startVoiceRecording,
+  };
 };

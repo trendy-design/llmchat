@@ -1,5 +1,5 @@
+import { useSessionsContext } from "@/context/sessions/provider";
 import { useSettings } from "@/context/settings/context";
-import { useChatSession } from "@/hooks/use-chat-session";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import { Flex } from "../ui/flex";
@@ -12,7 +12,7 @@ export const Data = () => {
   const { push } = useRouter();
   const { dismiss } = useSettings();
   const { toast } = useToast();
-  const { clearSessions, createNewSession } = useChatSession();
+  const { clearSessionsMutation, createSession } = useSessionsContext();
 
   const clearAllData = async () => {
     toast({
@@ -24,16 +24,19 @@ export const Data = () => {
           size="sm"
           variant="default"
           onClick={() => {
-            clearSessions().then(() => {
-              createNewSession().then((session) => {
+            clearSessionsMutation.mutate(undefined, {
+              onSuccess: () => {
                 toast({
                   title: "Data Cleared",
                   description: "All chat data has been cleared",
                   variant: "default",
                 });
-                push(`/chat/${session?.id}`);
+                createSession({
+                  redirect: true,
+                });
                 dismiss();
-              });
+                dismiss();
+              },
             });
           }}
         >

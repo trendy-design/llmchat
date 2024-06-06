@@ -2,7 +2,6 @@ import { usePreferenceContext } from "@/context/preferences/provider";
 import { TModelKey, useModelList } from "@/hooks/use-model-list";
 import { defaultPreferences } from "@/hooks/use-preferences";
 import { cn } from "@/lib/utils";
-import { GearSix } from "@phosphor-icons/react";
 import { DropdownMenuSubTrigger } from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
 import { ModelInfo } from "./model-info";
@@ -13,7 +12,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuPortal,
-  DropdownMenuSeparator,
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuTrigger,
@@ -37,7 +35,6 @@ export const ModelSelect = ({
   const [isOpen, setIsOpen] = useState(false);
   const { preferences, updatePreferences } = usePreferenceContext();
 
-  console.log("preferences", preferences);
   const { getModelByKey, models } = useModelList();
 
   const activeModel = preferences?.defaultModel && getModelByKey(selectedModel);
@@ -97,13 +94,6 @@ export const ModelSelect = ({
               </DropdownMenuPortal>
             </DropdownMenuSub>
           ))}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem key={"manage"} onClick={() => {}}>
-            <div className="w-6 flex flex-row justify-center">
-              <GearSix size={16} weight="bold" />
-            </div>
-            Manage Models
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </>

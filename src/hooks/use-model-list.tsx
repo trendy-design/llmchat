@@ -14,7 +14,6 @@ export type TModelKey =
   | "gpt-4-turbo"
   | "gpt-3.5-turbo"
   | "gpt-3.5-turbo-0125"
-  | "gpt-3.5-turbo-instruct"
   | "claude-3-opus-20240229"
   | "claude-3-sonnet-20240229"
   | "claude-3-haiku-20240307"
@@ -141,18 +140,6 @@ export const useModelList = () => {
       key: "gpt-3.5-turbo-0125",
       isNew: false,
       tokens: 16385,
-      plugins: ["web_search", "duckduckgo_search"],
-      icon: () => <ModelIcon size="md" type="gpt3" />,
-      baseModel: "openai",
-      maxOutputTokens: 4095,
-    },
-    {
-      name: "GPT3.5 Turbo Instruct",
-      key: "gpt-3.5-turbo-instruct",
-      isNew: false,
-      tokens: 4000,
-      inputPrice: 1.5,
-      outputPrice: 2,
       plugins: ["web_search", "duckduckgo_search"],
       icon: () => <ModelIcon size="md" type="gpt3" />,
       baseModel: "openai",

@@ -1,6 +1,6 @@
-import { useChatContext } from "@/context/chat/context";
-import { useChatSession } from "@/hooks/use-chat-session";
+import { useSessionsContext } from "@/context/sessions/provider";
 import { useModelList } from "@/hooks/use-model-list";
+import { sortSessions } from "@/lib/helper";
 import { cn } from "@/lib/utils";
 import { Plus, SidebarSimple } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
@@ -10,9 +10,8 @@ import { BotAvatar } from "./ui/bot-avatar";
 import { Button } from "./ui/button";
 
 export const HistorySidebar = () => {
-  const { sessions, createSession, currentSession } = useChatContext();
+  const { sessions, createSession, currentSession } = useSessionsContext();
   const [open, setOpen] = useState(false);
-  const { sortSessions } = useChatSession();
   const router = useRouter();
   const { getModelByKey } = useModelList();
 

@@ -3,11 +3,10 @@ import { BotLibrary } from "@/components/bots/bot-library";
 import { CreateBot } from "@/components/bots/create-bot";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { TBot, useBots } from "@/hooks/use-bots";
-import { useChatSession } from "@/hooks/use-chat-session";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useChatContext } from "../chat/context";
+import { useSessionsContext } from "../sessions/provider";
 import { BotsContext } from "./context";
 
 export type TBotsProvider = {
@@ -24,9 +23,12 @@ export const BotsProvider = ({ children }: TBotsProvider) => {
   const [isBotOpen, setIsBotOpen] = useState(false);
   const [showCreateBot, setShowCreateBot] = useState(false);
   const [tab, setTab] = useState<"public" | "local">("public");
-  const { currentSession, createSession, refetchCurrentSession } =
-    useChatContext();
-  const { updateSession } = useChatSession();
+  const {
+    currentSession,
+    createSession,
+    refetchCurrentSession,
+    updateSessionMutation,
+  } = useSessionsContext();
   const [localBots, setLocalBots] = useState<TBot[]>([]);
   const { getBots } = useBots();
 
@@ -57,9 +59,11 @@ export const BotsProvider = ({ children }: TBotsProvider) => {
   const assignBot = (bot: TBot) => {
     if (!currentSession?.messages?.length) {
       currentSession?.id &&
-        updateSession(currentSession?.id, { bot }).then(() => {
-          refetchCurrentSession();
+        updateSessionMutation.mutate({
+          sessionId: currentSession?.id,
+          session: { bot },
         });
+      refetchCurrentSession?.();
     } else {
       createSession({
         bot,

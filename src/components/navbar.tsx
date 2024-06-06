@@ -1,7 +1,7 @@
 import { useBots } from "@/context/bots/context";
-import { useChatContext } from "@/context/chat/context";
 import { useFilters } from "@/context/filters/context";
 import { usePrompts } from "@/context/prompts/context";
+import { useSessionsContext } from "@/context/sessions/provider";
 import { useSettings } from "@/context/settings/context";
 import {
   Book,
@@ -32,7 +32,7 @@ export const Navbar = () => {
   const { open: openPrompts } = usePrompts();
   const { open: openBots } = useBots();
   const [isOpen, setIsOpen] = useState(false);
-  const { createSession } = useChatContext();
+  const { createSession } = useSessionsContext();
 
   const renderNewSession = () => {
     return (

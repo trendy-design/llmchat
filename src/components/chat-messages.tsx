@@ -1,6 +1,6 @@
 import { useBots } from "@/context/bots/context";
-import { useChatContext } from "@/context/chat/context";
-import { TChatMessage, useChatSession } from "@/hooks/use-chat-session";
+import { useSessionsContext } from "@/context/sessions/provider";
+import { TChatMessage } from "@/hooks/use-chat-session";
 import { TRunModel } from "@/hooks/use-llm";
 import { TModelKey } from "@/hooks/use-model-list";
 import { removeExtraSpaces } from "@/lib/helper";
@@ -27,8 +27,8 @@ export type TRenderMessageProps = {
 export type TMessageListByDate = Record<string, TChatMessage[]>;
 
 export const ChatMessages = () => {
-  const { currentSession, refetchCurrentSession } = useChatContext();
-  const { updateSession } = useChatSession();
+  const { currentSession, updateSessionMutation, refetchCurrentSession } =
+    useSessionsContext();
   const chatContainer = useRef<HTMLDivElement>(null);
   const { open: openBot } = useBots();
 
@@ -123,8 +123,17 @@ export const ChatMessages = () => {
                     variant="outline"
                     size="iconSm"
                     onClick={() => {
-                      updateSession(currentSession.id, { bot: undefined });
-                      refetchCurrentSession();
+                      updateSessionMutation.mutate(
+                        {
+                          sessionId: currentSession.id,
+                          session: { bot: undefined },
+                        },
+                        {
+                          onSuccess: () => {
+                            refetchCurrentSession?.();
+                          },
+                        }
+                      );
                     }}
                   >
                     <TrashSimple size={16} weight="bold" />
