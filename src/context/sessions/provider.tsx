@@ -6,9 +6,7 @@ import {
   useChatSession,
 } from "@/hooks/use-chat-session";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export type TSessionsContext = {
   sessions: TChatSession[];
@@ -50,7 +48,7 @@ export const SessionsProvider = ({ children }: TSessionsProvider) => {
   const [currentSession, setCurrentSession] = useState<
     TChatSession | undefined
   >();
-  const props = useChatSession();
+  const props = useChatSession(sessionId?.toString());
   const {
     sessionsQuery,
     createNewSessionMutation,
@@ -60,7 +58,7 @@ export const SessionsProvider = ({ children }: TSessionsProvider) => {
     getSessionByIdQuery,
   } = props;
 
-  const currentSessionQuery = getSessionByIdQuery(sessionId?.toString());
+  const currentSessionQuery = getSessionByIdQuery;
 
   const { push, refresh } = useRouter();
 
