@@ -50,3 +50,17 @@ export const convertFileToBase64 = (
 
   reader.readAsDataURL(file);
 };
+
+export function generateAndDownloadJson(data: any, filename: string) {
+  const json = JSON.stringify(data);
+  const blob = new Blob([json], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+
+  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+}

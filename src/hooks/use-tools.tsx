@@ -148,11 +148,9 @@ const readWebsiteTool = () => {
   });
 };
 
-export type TToolKey =
-  | "calculator"
-  | "web_search"
-  | "read_website"
-  | "duckduckgo_search";
+export const toolKeys = ["calculator", "web_search", "duckduckgo_search"];
+
+export type TToolKey = (typeof toolKeys)[number];
 export type IconSize = "sm" | "md" | "lg";
 export type TTool = {
   key: TToolKey;

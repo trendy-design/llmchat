@@ -37,7 +37,7 @@ export const ModelSelect = ({
 
   const { getModelByKey, models } = useModelList();
 
-  const activeModel = preferences?.defaultModel && getModelByKey(selectedModel);
+  const activeModel = getModelByKey(selectedModel);
 
   return (
     <>

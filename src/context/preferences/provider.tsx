@@ -18,6 +18,7 @@ export type TPreferenceContext = {
   ) => void;
   apiKeys: TApiKeys;
   updateApiKey: (key: TBaseModel, value: string) => void;
+  updateApiKeys: (newApiKeys: TApiKeys) => void;
 };
 
 export const PreferenceContext = createContext<undefined | TPreferenceContext>(
@@ -73,9 +74,19 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
     setApiKeys({ ...apiKeys, [key]: value });
     setApiKeyMutation.mutate({ key, value });
   };
+
+  const updateApiKeys = (newApiKeys: TApiKeys) => {
+    setApiKeys(newApiKeys);
+  };
   return (
     <PreferenceContext.Provider
-      value={{ preferences, updatePreferences, apiKeys, updateApiKey }}
+      value={{
+        preferences,
+        updatePreferences,
+        apiKeys,
+        updateApiKey,
+        updateApiKeys,
+      }}
     >
       {children}
     </PreferenceContext.Provider>
