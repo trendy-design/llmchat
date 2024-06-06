@@ -7,19 +7,22 @@ export const useTextSelection = () => {
   useEffect(() => {
     const handleMouseUp = () => {
       const selection = window.getSelection();
-      if (selection) {
-        const selectedText = selection.toString().trim();
-        if (selectedText) {
-          setSelectedText(selectedText);
-          setShowPopup(true);
-        } else {
-          setShowPopup(false);
-        }
-      }
-    };
 
-    const handleMouseDown = (event: MouseEvent) => {
-      setShowPopup(false);
+      if (selection && selection?.rangeCount > 0) {
+        var range = selection.getRangeAt(0);
+        var parentDiv = document.getElementById("chat-container");
+        if (parentDiv?.contains(range.commonAncestorContainer)) {
+          const selectedText = range.toString().trim();
+          if (selectedText) {
+            setSelectedText(selectedText);
+            setShowPopup(true);
+          } else {
+            setShowPopup(false);
+          }
+        }
+      } else {
+        setShowPopup(false);
+      }
     };
 
     const chatContainer = document.getElementById("chat-container");
@@ -27,12 +30,11 @@ export const useTextSelection = () => {
     if (!chatContainer) {
       return;
     }
-    chatContainer.addEventListener("mouseup", handleMouseUp);
-    chatContainer.addEventListener("mousedown", handleMouseDown);
+
+    document.addEventListener("selectionchange", handleMouseUp);
 
     return () => {
-      chatContainer.removeEventListener("mouseup", handleMouseUp);
-      chatContainer.removeEventListener("mousedown", handleMouseDown);
+      chatContainer.removeEventListener("selectionchange", handleMouseUp);
     };
   }, [showPopup]);
 

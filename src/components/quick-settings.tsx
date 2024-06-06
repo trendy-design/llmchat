@@ -1,6 +1,5 @@
-import { usePreferenceContext } from "@/context/preferences/context";
+import { usePreferenceContext } from "@/context/preferences/provider";
 import { useModelList } from "@/hooks/use-model-list";
-import { useModelSettings } from "@/hooks/use-model-settings";
 import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
 import { ArrowClockwise, Info, SlidersHorizontal } from "@phosphor-icons/react";
 import { useState } from "react";
@@ -14,11 +13,9 @@ import { Tooltip } from "./ui/tooltip";
 
 export const QuickSettings = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { preferencesQuery } = usePreferenceContext();
+  const { preferences, updatePreferences } = usePreferenceContext();
   const { getModelByKey } = useModelList();
-  const { formik, setPreferences } = useModelSettings({
-    refresh: isOpen,
-  });
+
   const renderResetToDefault = (key: keyof TPreferences) => {
     return (
       <Button
@@ -26,8 +23,7 @@ export const QuickSettings = () => {
         size="iconXS"
         rounded="lg"
         onClick={() => {
-          setPreferences({ [key]: defaultPreferences[key] });
-          formik.setFieldValue(key, defaultPreferences[key]);
+          updatePreferences({ [key]: defaultPreferences[key] });
         }}
       >
         <ArrowClockwise size={14} weight="bold" />
@@ -36,8 +32,7 @@ export const QuickSettings = () => {
   };
 
   const model =
-    preferencesQuery.data?.defaultModel &&
-    getModelByKey(preferencesQuery.data?.defaultModel);
+    preferences?.defaultModel && getModelByKey(preferences?.defaultModel);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -62,19 +57,18 @@ export const QuickSettings = () => {
                 textColor="secondary"
               >
                 MaxTokens <Info weight="regular" size={14} />{" "}
-                {formik.values.maxTokens}
+                {preferences?.maxTokens}
               </Type>
             </Tooltip>
             <Flex items="center" gap="md">
               <Slider
                 className="my-2 w-[80px]"
-                value={[Number(formik.values.maxTokens)]}
+                value={[Number(preferences?.maxTokens)]}
                 step={1}
                 min={0}
                 max={model?.maxOutputTokens}
                 onValueChange={(value: number[]) => {
-                  setPreferences({ maxTokens: value?.[0] });
-                  formik.setFieldValue("maxTokens", value?.[0]);
+                  updatePreferences({ maxTokens: value?.[0] });
                 }}
               />
               {renderResetToDefault("maxTokens")}
@@ -87,19 +81,18 @@ export const QuickSettings = () => {
                 textColor="secondary"
               >
                 Temperature <Info weight="regular" size={14} />
-                {formik.values.temperature}
+                {preferences?.temperature}
               </Type>
             </Tooltip>
             <Flex items="center" gap="md">
               <Slider
                 className="my-2 w-[80px]"
-                value={[Number(formik.values.temperature)]}
+                value={[Number(preferences?.temperature)]}
                 step={0.1}
                 min={0.1}
                 max={1}
                 onValueChange={(value: number[]) => {
-                  setPreferences({ temperature: value?.[0] });
-                  formik.setFieldValue("temperature", value?.[0]);
+                  updatePreferences({ temperature: value?.[0] });
                 }}
               />
               {renderResetToDefault("temperature")}
@@ -111,19 +104,18 @@ export const QuickSettings = () => {
                 className="flex flex-row items-center gap-1"
                 textColor="secondary"
               >
-                TopP <Info weight="regular" size={14} /> {formik.values.topP}
+                TopP <Info weight="regular" size={14} /> {preferences?.topP}
               </Type>
             </Tooltip>
             <Flex items="center" gap="md">
               <Slider
                 className="my-2 w-[80px]"
-                value={[Number(formik.values.topP)]}
+                value={[Number(preferences?.topP)]}
                 step={0.1}
                 min={0.1}
                 max={1}
                 onValueChange={(value: number[]) => {
-                  setPreferences({ topP: value?.[0] });
-                  formik.setFieldValue("topP", value?.[0]);
+                  updatePreferences({ topP: value?.[0] });
                 }}
               />
               {renderResetToDefault("topP")}
@@ -135,19 +127,18 @@ export const QuickSettings = () => {
                 className="flex flex-row items-center gap-1"
                 textColor="secondary"
               >
-                TopK <Info weight="regular" size={14} /> {formik.values.topK}
+                TopK <Info weight="regular" size={14} /> {preferences?.topK}
               </Type>
             </Tooltip>
             <Flex items="center" gap="md">
               <Slider
                 className="my-2 w-[80px]"
-                value={[Number(formik.values.topK)]}
+                value={[Number(preferences?.topK)]}
                 step={0.1}
                 min={0.1}
                 max={1}
                 onValueChange={(value: number[]) => {
-                  setPreferences({ topK: value?.[0] });
-                  formik.setFieldValue("topK", value?.[0]);
+                  updatePreferences({ topK: value?.[0] });
                 }}
               />
               {renderResetToDefault("topK")}

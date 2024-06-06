@@ -3,6 +3,7 @@ import type { Serialized } from "@langchain/core/load/serializable";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { LLMResult } from "@langchain/core/outputs";
 
+import { usePreferenceContext } from "@/context/preferences/provider";
 import {
   BaseMessagePromptTemplateLike,
   ChatPromptTemplate,
@@ -13,7 +14,7 @@ import moment from "moment";
 import { v4 } from "uuid";
 import { TChatMessage, TChatSession, useChatSession } from "./use-chat-session";
 import { TModelKey, useModelList } from "./use-model-list";
-import { defaultPreferences, usePreferences } from "./use-preferences";
+import { defaultPreferences } from "./use-preferences";
 import { useTools } from "./use-tools";
 
 export type TRunModel = {
@@ -32,7 +33,7 @@ export type TUseLLM = {
 export const useLLM = ({ onChange }: TUseLLM) => {
   const { getSessionById, addMessageToSession, sortMessages, updateSession } =
     useChatSession();
-  const { getApiKey, getPreferences } = usePreferences();
+  const { apiKeys, preferences } = usePreferenceContext();
   const { createInstance, getModelByKey } = useModelList();
   const abortController = new AbortController();
   const { toast } = useToast();
@@ -53,7 +54,6 @@ export const useLLM = ({ onChange }: TUseLLM) => {
     history: TChatMessage[];
     bot?: TChatSession["bot"];
   }) => {
-    const preferences = await getPreferences();
     const hasPreviousMessages = history?.length > 0;
     const systemPrompt =
       bot?.prompt ||
@@ -115,7 +115,6 @@ export const useLLM = ({ onChange }: TUseLLM) => {
     }
 
     const newMessageId = messageId || v4();
-    const preferences = await getPreferences();
     const modelKey = model || preferences.defaultModel;
 
     const allPreviousMessages =
@@ -144,7 +143,7 @@ export const useLLM = ({ onChange }: TUseLLM) => {
       throw new Error("Model not found");
     }
 
-    const apiKey = await getApiKey(selectedModelKey?.baseModel);
+    const apiKey = apiKeys[selectedModelKey?.baseModel];
 
     if (!apiKey) {
       onChange?.({
@@ -336,7 +335,6 @@ export const useLLM = ({ onChange }: TUseLLM) => {
 
   const generateTitleForSession = async (sessionId: string) => {
     const session = await getSessionById(sessionId);
-    const preferences = await getPreferences();
     const modelKey = preferences.defaultModel;
     const selectedModelKey = getModelByKey(modelKey);
 
@@ -344,7 +342,7 @@ export const useLLM = ({ onChange }: TUseLLM) => {
       throw new Error("Model not found");
     }
 
-    const apiKey = await getApiKey(selectedModelKey?.baseModel);
+    const apiKey = apiKeys[selectedModelKey?.baseModel];
 
     if (!apiKey) {
       throw new Error("API key not found");

@@ -1,5 +1,6 @@
+import { usePreferenceContext } from "@/context/preferences/provider";
 import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { defaultPreferences, usePreferences } from "@/hooks/use-preferences";
+import { defaultPreferences } from "@/hooks/use-preferences";
 import { cn } from "@/lib/utils";
 import { GearSix } from "@phosphor-icons/react";
 import { DropdownMenuSubTrigger } from "@radix-ui/react-dropdown-menu";
@@ -34,11 +35,12 @@ export const ModelSelect = ({
   className,
 }: TModelSelect) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { preferencesQuery, setPreferencesMutation } = usePreferences();
+  const { preferences, updatePreferences } = usePreferenceContext();
+
+  console.log("preferences", preferences);
   const { getModelByKey, models } = useModelList();
 
-  const activeModel =
-    preferencesQuery?.data?.defaultModel && getModelByKey(selectedModel);
+  const activeModel = preferences?.defaultModel && getModelByKey(selectedModel);
 
   return (
     <>
@@ -72,16 +74,14 @@ export const ModelSelect = ({
                   )}
                   key={model.key}
                   onClick={() => {
-                    setPreferencesMutation.mutate(
+                    updatePreferences(
                       {
                         defaultModel: model.key,
                         maxTokens: defaultPreferences.maxTokens,
                       },
-                      {
-                        onSuccess: () => {
-                          setSelectedModel(model.key);
-                          setIsOpen(false);
-                        },
+                      () => {
+                        setSelectedModel(model.key);
+                        setIsOpen(false);
                       }
                     );
                   }}

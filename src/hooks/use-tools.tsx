@@ -1,5 +1,5 @@
 import { ModelIcon } from "@/components/icons/model-icon";
-import { usePreferenceContext } from "@/context/preferences/context";
+import { usePreferenceContext } from "@/context/preferences/provider";
 import { useSettings } from "@/context/settings/context";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { Globe } from "@phosphor-icons/react";
@@ -169,10 +169,9 @@ export type TTool = {
 };
 
 export const useTools = () => {
-  const { getPreferences, preferencesQuery } = usePreferenceContext();
+  const { preferences, updatePreferences } = usePreferenceContext();
   const { open } = useSettings();
 
-  console.log("preferencesQuery", preferencesQuery);
   const tools: TTool[] = [
     // {
     //   key: "calculator",
@@ -189,12 +188,11 @@ export const useTools = () => {
       tool: webSearchTool,
       name: "Web Search",
       isBeta: true,
-      showInMenu: preferencesQuery.data?.defaultWebSearchEngine === "google",
+      showInMenu: preferences?.defaultWebSearchEngine === "google",
       validate: async () => {
-        const prefrences = await getPreferences();
         if (
-          !prefrences.googleSearchApiKey ||
-          !prefrences.googleSearchEngineId
+          !preferences?.googleSearchApiKey ||
+          !preferences?.googleSearchEngineId
         ) {
           return false;
         }
@@ -213,8 +211,7 @@ export const useTools = () => {
       tool: duckduckGoTool,
       name: "DuckDuckGo Search",
       isBeta: true,
-      showInMenu:
-        preferencesQuery.data?.defaultWebSearchEngine === "duckduckgo",
+      showInMenu: preferences?.defaultWebSearchEngine === "duckduckgo",
       loadingMessage: "Searching on DuckDuckGo...",
       resultMessage: "Results from DuckDuckGo",
       icon: (size: IconSize) => <ModelIcon type="websearch" size={size} />,

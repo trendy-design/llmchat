@@ -1,5 +1,5 @@
+import { usePreferenceContext } from "@/context/preferences/provider";
 import { useLLMTest } from "@/hooks/use-llm-test";
-import { usePreferences } from "@/hooks/use-preferences";
 import { ArrowRight, Info } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
@@ -8,15 +8,11 @@ import { SettingsContainer } from "./settings-container";
 
 export const OpenAISettings = () => {
   const [key, setKey] = useState<string>("");
-  const { getApiKey, setApiKey } = usePreferences();
+  const { apiKeys, updateApiKey } = usePreferenceContext();
   const { renderSaveApiKeyButton } = useLLMTest();
   useEffect(() => {
-    getApiKey("openai").then((key) => {
-      if (key) {
-        setKey(key);
-      }
-    });
-  }, []);
+    setKey(apiKeys.openai || "");
+  }, [apiKeys.openai]);
   return (
     <SettingsContainer title="OpenAI Settings">
       <div className="flex flex-row items-end justify-between">
@@ -34,7 +30,7 @@ export const OpenAISettings = () => {
 
       <div className="flex flex-row items-center gap-2">
         {renderSaveApiKeyButton("openai", key, () => {
-          setApiKey("openai", key);
+          updateApiKey("openai", key);
         })}
 
         <Button

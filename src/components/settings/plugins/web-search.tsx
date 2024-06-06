@@ -3,12 +3,10 @@ import { Flex } from "@/components/ui/flex";
 import { Input } from "@/components/ui/input";
 import { Type } from "@/components/ui/text";
 import { useToast } from "@/components/ui/use-toast";
-import { usePreferenceContext } from "@/context/preferences/context";
-import { useModelSettings } from "@/hooks/use-model-settings";
-import { TPreferences } from "@/hooks/use-preferences";
+import { usePreferenceContext } from "@/context/preferences/provider";
 import { ArrowRight, CaretDown, Info } from "@phosphor-icons/react";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,11 +18,7 @@ import { SettingsContainer } from "../settings-container";
 
 export const WebSearchPlugin = () => {
   const { toast } = useToast();
-  const { setPreferencesMutation } = usePreferenceContext();
-  const { formik, setPreferences } = useModelSettings({});
-
-  const [defaultWebSearchEngine, setDefaultWebSearchEngine] =
-    useState<TPreferences["defaultWebSearchEngine"]>("google");
+  const { preferences, updatePreferences } = usePreferenceContext();
 
   useEffect(() => {}, []);
 
@@ -32,8 +26,8 @@ export const WebSearchPlugin = () => {
     try {
       const url = "https://www.googleapis.com/customsearch/v1";
       const params = {
-        key: formik.values.googleSearchApiKey,
-        cx: formik.values.googleSearchEngineId,
+        key: preferences.googleSearchApiKey,
+        cx: preferences.googleSearchEngineId,
         q: "Latest news",
       };
 
@@ -82,27 +76,21 @@ export const WebSearchPlugin = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="sm" variant="secondary">
-                {formik.values.defaultWebSearchEngine}{" "}
+                {preferences.defaultWebSearchEngine}{" "}
                 <CaretDown size={12} weight="bold" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="w-[200px]" align="end">
               <DropdownMenuItem
                 onClick={() => {
-                  setPreferencesMutation.mutate({
-                    defaultWebSearchEngine: "google",
-                  });
-                  formik.setFieldValue("defaultWebSearchEngine", "google");
+                  updatePreferences({ defaultWebSearchEngine: "google" });
                 }}
               >
                 Google
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
-                  setPreferencesMutation.mutate({
-                    defaultWebSearchEngine: "duckduckgo",
-                  });
-                  formik.setFieldValue("defaultWebSearchEngine", "duckduckgo");
+                  updatePreferences({ defaultWebSearchEngine: "duckduckgo" });
                 }}
               >
                 DuckDuckGo
@@ -111,7 +99,7 @@ export const WebSearchPlugin = () => {
           </DropdownMenu>
         </Flex>
       </SettingCard>
-      {formik.values.defaultWebSearchEngine === "google" && (
+      {preferences.defaultWebSearchEngine === "google" && (
         <SettingCard className="flex flex-col w-full items-start gap-2 py-3">
           <Flex direction="col" gap="sm" className="w-full">
             <Type
@@ -124,13 +112,10 @@ export const WebSearchPlugin = () => {
             <Input
               name="googleSearchEngineId"
               type="text"
-              value={formik.values.googleSearchEngineId}
+              value={preferences.googleSearchEngineId}
               autoComplete="off"
               onChange={(e) => {
-                setPreferencesMutation.mutate({
-                  googleSearchEngineId: e.target.value,
-                });
-                formik.setFieldValue("googleSearchEngineId", e.target.value);
+                updatePreferences({ googleSearchEngineId: e.target.value });
               }}
             />
           </Flex>
@@ -145,13 +130,10 @@ export const WebSearchPlugin = () => {
             <Input
               name="googleSearchApiKey"
               type="text"
-              value={formik.values.googleSearchApiKey}
+              value={preferences.googleSearchApiKey}
               autoComplete="off"
               onChange={(e) => {
-                setPreferencesMutation.mutate({
-                  googleSearchApiKey: e.target.value,
-                });
-                formik.setFieldValue("googleSearchApiKey", e.target.value);
+                updatePreferences({ googleSearchApiKey: e.target.value });
               }}
             />
           </Flex>

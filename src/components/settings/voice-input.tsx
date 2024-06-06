@@ -1,4 +1,4 @@
-import { usePreferenceContext } from "@/context/preferences/context";
+import { usePreferenceContext } from "@/context/preferences/provider";
 import { Flex } from "../ui/flex";
 import { Switch } from "../ui/switch";
 import { Type } from "../ui/text";
@@ -6,7 +6,7 @@ import { SettingCard } from "./setting-card";
 import { SettingsContainer } from "./settings-container";
 
 export const VoiceInput = () => {
-  const { setPreferencesMutation, preferencesQuery } = usePreferenceContext();
+  const { updatePreferences, preferences } = usePreferenceContext();
   return (
     <SettingsContainer title="Speech-to-Text Settings">
       <SettingCard className="justify-center flex flex-col p-3">
@@ -18,11 +18,9 @@ export const VoiceInput = () => {
             </Type>
           </Flex>
           <Switch
-            checked={preferencesQuery?.data?.whisperSpeechToTextEnabled}
+            checked={preferences?.whisperSpeechToTextEnabled}
             onCheckedChange={(checked) => {
-              setPreferencesMutation.mutate({
-                whisperSpeechToTextEnabled: checked,
-              });
+              updatePreferences({ whisperSpeechToTextEnabled: checked });
             }}
           />
         </Flex>

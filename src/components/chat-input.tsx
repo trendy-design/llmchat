@@ -1,7 +1,6 @@
 import { useChatContext } from "@/context/chat/context";
 import { useFilters } from "@/context/filters/context";
 import { TModelKey } from "@/hooks/use-model-list";
-import { usePreferences } from "@/hooks/use-preferences";
 import { useRecordVoice } from "@/hooks/use-record-voice";
 import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
 import { useTextSelection } from "@/hooks/usse-text-selection";
@@ -32,7 +31,7 @@ import { ModelSelect } from "./model-select";
 import { AudioWaveSpinner } from "./ui/audio-wave";
 import { Badge } from "./ui/badge";
 
-import { usePreferenceContext } from "@/context/preferences/context";
+import { usePreferenceContext } from "@/context/preferences/provider";
 import { useSettings } from "@/context/settings/context";
 import { Footer } from "./footer";
 import { PluginSelect } from "./plugin-select";
@@ -64,13 +63,15 @@ export const ChatInput = () => {
     sendMessage,
   } = useChatContext();
   const [contextValue, setContextValue] = useState<string>("");
-  const { getApiKey } = usePreferences();
+  const { apiKeys } = usePreferenceContext();
   const { open: openSettings } = useSettings();
-  const { preferencesQuery } = usePreferenceContext();
+  const { preferences } = usePreferenceContext();
 
   const { showPopup, selectedText, handleClearSelection } = useTextSelection();
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [selectedModel, setSelectedModel] = useState<TModelKey>("gpt-4-turbo");
+  const [selectedModel, setSelectedModel] = useState<TModelKey>(
+    preferences.defaultModel
+  );
 
   const [attachment, setAttachment] = useState<TAttachment>();
 
@@ -160,8 +161,8 @@ export const ChatInput = () => {
   }, [text]);
 
   const startVoiceRecording = async () => {
-    const apiKey = await getApiKey("openai");
-    if (!apiKey) {
+    const openAIAPIKeys = apiKeys.openai;
+    if (!openAIAPIKeys) {
       toast({
         title: "API key missing",
         description:
@@ -172,7 +173,7 @@ export const ChatInput = () => {
       return;
     }
 
-    if (preferencesQuery.data?.whisperSpeechToTextEnabled) {
+    if (preferences?.whisperSpeechToTextEnabled) {
       startRecording();
     } else {
       toast({

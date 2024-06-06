@@ -1,8 +1,9 @@
 import { ModelIcon } from "@/components/icons/model-icon";
+import { usePreferenceContext } from "@/context/preferences/provider";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOpenAI } from "@langchain/openai";
-import { defaultPreferences, usePreferences } from "./use-preferences";
+import { defaultPreferences } from "./use-preferences";
 import { TToolKey } from "./use-tools";
 
 export type TBaseModel = "openai" | "anthropic" | "gemini";
@@ -35,9 +36,8 @@ export type TModel = {
 };
 
 export const useModelList = () => {
-  const { getPreferences } = usePreferences();
+  const { preferences } = usePreferenceContext();
   const createInstance = async (model: TModel, apiKey: string) => {
-    const preferences = await getPreferences();
     const temperature =
       preferences.temperature || defaultPreferences.temperature;
     const topP = preferences.topP || defaultPreferences.topP;

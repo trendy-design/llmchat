@@ -17,11 +17,11 @@ import { ChatContext } from "./context";
 
 import { useToast } from "@/components/ui/use-toast";
 import { useModelList } from "@/hooks/use-model-list";
-import { usePreferences } from "@/hooks/use-preferences";
 import { removeExtraSpaces } from "@/lib/helper";
 import { ShiftEnterToLineBreak } from "@/lib/tiptap-extensions";
 import HardBreak from "@tiptap/extension-hard-break";
 import Text from "@tiptap/extension-text";
+import { usePreferenceContext } from "../preferences/provider";
 import { useSettings } from "../settings/context";
 
 export type TChatProvider = {
@@ -46,7 +46,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     TChatSession | undefined
   >();
   const { push, refresh } = useRouter();
-  const { getPreferences, getApiKey } = usePreferences();
+  const { preferences, apiKeys } = usePreferenceContext();
   const { getModelByKey } = useModelList();
   const { toast } = useToast();
   const { open: openSettings } = useSettings();
@@ -159,7 +159,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     });
   };
 
-  const handleRunModel = (props: TRunModel, clear?: () => void) => {
+  const handleRunModel = async (props: TRunModel, clear?: () => void) => {
     console.log("sessionId", sessionId);
     console.log("currentSession", currentSession);
     console.log("handleRun", props);
@@ -167,53 +167,51 @@ export const ChatProvider = ({ children }: TChatProvider) => {
       return;
     }
 
-    getPreferences().then(async (preference) => {
-      const selectedModel = getModelByKey(
-        props?.model || preference.defaultModel
-      );
-      // if (
-      //   selectedModel?.key &&
-      //   !["gpt-4-turbo", "gpt-4o"].includes(selectedModel?.key) &&
-      //   attachment?.base64
-      // ) {
-      //   toast({
-      //     title: "Ahh!",
-      //     description: "This model does not support image input.",
-      //     variant: "destructive",
-      //   });
-      //   return;
-      // }
+    const selectedModel = getModelByKey(
+      props?.model || preferences.defaultModel
+    );
+    // if (
+    //   selectedModel?.key &&
+    //   !["gpt-4-turbo", "gpt-4o"].includes(selectedModel?.key) &&
+    //   attachment?.base64
+    // ) {
+    //   toast({
+    //     title: "Ahh!",
+    //     description: "This model does not support image input.",
+    //     variant: "destructive",
+    //   });
+    //   return;
+    // }
 
-      if (!selectedModel?.baseModel) {
-        throw new Error("Model not found");
-      }
+    if (!selectedModel?.baseModel) {
+      throw new Error("Model not found");
+    }
 
-      const apiKey = await getApiKey(selectedModel?.baseModel);
+    const apiKey = apiKeys[selectedModel?.baseModel];
 
-      if (!apiKey) {
-        toast({
-          title: "Ahh!",
-          description: "API key is missing. Please check your settings.",
-          variant: "destructive",
-        });
-        openSettings(selectedModel?.baseModel);
-        return;
-      }
-
-      // setAttachment(undefined);
-      setContextValue("");
-      clear?.();
-      console.log(props);
-      await runModel({
-        sessionId: props?.sessionId?.toString(),
-        input: removeExtraSpaces(props?.input),
-        context: removeExtraSpaces(props?.context),
-        image: props?.image,
-        model: selectedModel?.key,
-        messageId: props?.messageId,
+    if (!apiKey) {
+      toast({
+        title: "Ahh!",
+        description: "API key is missing. Please check your settings.",
+        variant: "destructive",
       });
-      await fetchAllSessions();
+      openSettings(selectedModel?.baseModel);
+      return;
+    }
+
+    // setAttachment(undefined);
+    setContextValue("");
+    clear?.();
+    console.log(props);
+    await runModel({
+      sessionId: props?.sessionId?.toString(),
+      input: removeExtraSpaces(props?.input),
+      context: removeExtraSpaces(props?.context),
+      image: props?.image,
+      model: selectedModel?.key,
+      messageId: props?.messageId,
     });
+    await fetchAllSessions();
   };
 
   const editor = useEditor({

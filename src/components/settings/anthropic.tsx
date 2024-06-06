@@ -1,5 +1,5 @@
+import { usePreferenceContext } from "@/context/preferences/provider";
 import { useLLMTest } from "@/hooks/use-llm-test";
-import { usePreferences } from "@/hooks/use-preferences";
 import { ArrowRight, Info } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
@@ -8,16 +8,12 @@ import { SettingsContainer } from "./settings-container";
 
 export const AnthropicSettings = () => {
   const [key, setKey] = useState<string>("");
-  const { getApiKey, setApiKey } = usePreferences();
+  const { apiKeys, updateApiKey } = usePreferenceContext();
   const { renderSaveApiKeyButton } = useLLMTest();
 
   useEffect(() => {
-    getApiKey("anthropic").then((key) => {
-      if (key) {
-        setKey(key);
-      }
-    });
-  }, []);
+    setKey(apiKeys.anthropic || "");
+  }, [apiKeys.anthropic]);
   return (
     <SettingsContainer title="Anthropic Settings">
       <div className="flex flex-row items-end justify-between">
@@ -34,7 +30,7 @@ export const AnthropicSettings = () => {
       />
       <div className="flex flex-row items-center gap-2">
         {renderSaveApiKeyButton("anthropic", key, () => {
-          setApiKey("anthropic", key);
+          updateApiKey("anthropic", key);
         })}
 
         <Button

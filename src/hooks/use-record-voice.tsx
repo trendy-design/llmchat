@@ -1,8 +1,8 @@
 import { useToast } from "@/components/ui/use-toast";
+import { usePreferenceContext } from "@/context/preferences/provider";
 import { blobToBase64 } from "@/lib/record";
 import { OpenAI, toFile } from "openai";
 import { useRef, useState } from "react";
-import { usePreferences } from "./use-preferences";
 
 interface UseRecordVoiceResult {
   recording: boolean;
@@ -18,7 +18,7 @@ export const useRecordVoice = (): UseRecordVoiceResult => {
     null
   );
   const { toast } = useToast();
-  const { getApiKey } = usePreferences();
+  const { apiKeys } = usePreferenceContext();
   const [recording, setRecording] = useState<boolean>(false);
   const [transcribing, setIsTranscribing] = useState<boolean>(false);
   const chunks = useRef<Blob[]>([]);
@@ -64,7 +64,7 @@ export const useRecordVoice = (): UseRecordVoiceResult => {
   const getText = async (base64data: string): Promise<void> => {
     setIsTranscribing(true);
     try {
-      const apiKey = await getApiKey("openai");
+      const apiKey = apiKeys.openai;
       if (!apiKey) throw new Error("API key not found");
       const openai = new OpenAI({
         apiKey,
