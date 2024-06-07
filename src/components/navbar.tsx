@@ -15,7 +15,7 @@ import {
 } from "@phosphor-icons/react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
-import { HistorySidebar } from "./side-bar";
+import { HistorySidebar } from "./history/history-side-bar";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,

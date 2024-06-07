@@ -4,7 +4,8 @@ import { TChatMessage } from "@/hooks/use-chat-session";
 import { TRunModel } from "@/hooks/use-llm";
 import { TModelKey } from "@/hooks/use-model-list";
 import { removeExtraSpaces } from "@/lib/helper";
-import { ArrowElbowDownRight, Info, TrashSimple } from "@phosphor-icons/react";
+import { ArrowElbowDownRight, TrashSimple } from "@phosphor-icons/react";
+import moment from "moment";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { AIMessageBubble } from "./ai-bubble";
@@ -78,6 +79,8 @@ export const ChatMessages = () => {
     );
   };
 
+  console.log("currentSession bot", currentSession);
+
   return (
     <div
       className="flex flex-col w-full items-center h-[100dvh] overflow-y-auto no-scrollbar pt-[60px] pb-[200px]"
@@ -104,11 +107,6 @@ export const ChatMessages = () => {
             </Type>
             {!currentSession?.messages?.length && (
               <div className="flex flex-row gap-1">
-                <Tooltip content="Bot Info">
-                  <Button variant="outline" size="iconSm" onClick={() => {}}>
-                    <Info size={16} weight="bold" />
-                  </Button>
-                </Tooltip>
                 <Button
                   variant="outline"
                   size="sm"
@@ -126,7 +124,10 @@ export const ChatMessages = () => {
                       updateSessionMutation.mutate(
                         {
                           sessionId: currentSession.id,
-                          session: { bot: undefined },
+                          session: {
+                            bot: undefined,
+                            updatedAt: moment().toISOString(),
+                          },
                         },
                         {
                           onSuccess: () => {

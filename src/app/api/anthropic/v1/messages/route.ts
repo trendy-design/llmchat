@@ -12,8 +12,6 @@ export async function POST(req: NextRequest, resp: NextResponse) {
   const requestHeaders = new Headers(req.headers);
   const requestHeadersObject = Object.fromEntries(requestHeaders.entries());
 
-  console.log("requestHeadersObject", requestHeadersObject);
-
   const body = await req.json();
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",

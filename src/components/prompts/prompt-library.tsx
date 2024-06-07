@@ -1,6 +1,13 @@
 import { useChatContext } from "@/context/chat/provider";
 import { TPrompt } from "@/hooks/use-prompts";
-import { BookBookmark, FolderSimple, Plus } from "@phosphor-icons/react";
+import {
+  BookBookmark,
+  DotsThree,
+  FolderSimple,
+  Pencil,
+  Plus,
+  TrashSimple,
+} from "@phosphor-icons/react";
 import { Button } from "../ui/button";
 import {
   Command,
@@ -9,6 +16,12 @@ import {
   CommandItem,
   CommandList,
 } from "../ui/command";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 export type TPromptLibrary = {
   open: boolean;
@@ -16,6 +29,8 @@ export type TPromptLibrary = {
   tab: "public" | "local";
   publicPrompts: TPrompt[];
   localPrompts: TPrompt[];
+  onEdit: (prompt: TPrompt) => void;
+  onDelete: (prompt: TPrompt) => void;
   onTabChange: (tab: "public" | "local") => void;
   onCreate: () => void;
 };
@@ -28,6 +43,8 @@ export const PromptLibrary = ({
   publicPrompts,
   onCreate,
   onTabChange,
+  onEdit,
+  onDelete,
 }: TPromptLibrary) => {
   const { editor } = useChatContext();
 
@@ -87,6 +104,36 @@ export const PromptLibrary = ({
                     {prompt.content}
                   </p>
                 </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="iconSm">
+                      <DotsThree size={24} weight="bold" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="min-w-[200px] text-sm md:text-base"
+                    align="end"
+                  >
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        onEdit(prompt);
+                        e.stopPropagation();
+                      }}
+                    >
+                      <Pencil size={14} weight="bold" />
+                      Edit
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        onDelete(prompt);
+                        e.stopPropagation();
+                      }}
+                    >
+                      <TrashSimple size={14} weight="bold" />
+                      Delete
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             </CommandItem>
           ))}

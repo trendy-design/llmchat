@@ -72,7 +72,7 @@ const botSchema = z.object({
   id: z.string(),
   avatar: z.string().optional(),
   status: z.string().optional(),
-  deafultBaseModel: z.string(),
+  deafultBaseModel: z.string().default("gpt-3.5-turbo"),
 });
 
 const sessionSchema = z.object({
@@ -84,10 +84,14 @@ const sessionSchema = z.object({
   updatedAt: z.string().optional(),
 });
 
+const promptSchema = z.object({});
+
 const importSchema = z.object({
   apiKeys: apiSchema.optional(),
   preferences: preferencesSchema.optional(),
   sessions: sessionSchema.array().optional(),
+  bots: botSchema.array().optional(),
+  prompts: z.array(z.string()).optional(),
 });
 
 export const Data = () => {
@@ -110,11 +114,19 @@ export const Data = () => {
 
     if (file) {
       const reader = new FileReader();
-      reader.onload = function (e) {
+      reader.onload = async function (e) {
         const content = e.target?.result as string;
+
+        console.log(content);
         try {
           const jsonData = JSON.parse(content);
-          const parsedData = importSchema.parse(jsonData);
+          console.log(jsonData);
+          const parsedData = importSchema.parse(jsonData, {
+            errorMap: (issue: any, ctx: any) => {
+              console.log(issue, ctx);
+              return { message: ctx.defaultError };
+            },
+          });
           parsedData?.apiKeys && updateApiKeys(parsedData?.apiKeys);
           parsedData?.preferences &&
             updatePreferences(parsedData?.preferences as TPreferences);
@@ -131,6 +143,7 @@ export const Data = () => {
 
           console.log(parsedData);
         } catch (e) {
+          console.error(e);
           toast({
             title: "Invalid JSON",
             description: "The JSON file you uploaded is invalid",

@@ -5,7 +5,9 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { TBot, useBots } from "@/hooks/use-bots";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import moment from "moment";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useSessionsContext } from "../sessions/provider";
 import { BotsContext } from "./context";
 
@@ -29,8 +31,8 @@ export const BotsProvider = ({ children }: TBotsProvider) => {
     refetchCurrentSession,
     updateSessionMutation,
   } = useSessionsContext();
-  const [localBots, setLocalBots] = useState<TBot[]>([]);
-  const { getBots } = useBots();
+  const { botsQuery, createBotMutation, deleteBotMutation } = useBots();
+  const { push, refresh } = useRouter();
 
   const open = (action?: "public" | "local" | "create") => {
     if (action === "create") {
@@ -43,34 +45,44 @@ export const BotsProvider = ({ children }: TBotsProvider) => {
 
   const dismiss = () => setIsBotOpen(false);
 
-  const query = useQuery<{ bots: TBot[] }>({
+  const localBotsQuery = botsQuery;
+
+  const publicBotsQuery = useQuery<{ bots: TBot[] }>({
     queryKey: ["Bots"],
     queryFn: async () => axios.get("/api/bots").then((res) => res.data),
   });
 
-  useEffect(() => {
-    getBots().then((Bots) => {
-      setLocalBots(Bots);
-    });
-  }, []);
-
-  const allBots = [...localBots, ...(query.data?.bots || [])];
+  const allBots = [
+    ...(localBotsQuery?.data || []),
+    ...(publicBotsQuery.data?.bots || []),
+  ];
 
   const assignBot = (bot: TBot) => {
+    console.log("assign", bot);
     if (!currentSession?.messages?.length) {
+      console.log("currentsession", bot, currentSession);
+
       currentSession?.id &&
-        updateSessionMutation.mutate({
-          sessionId: currentSession?.id,
-          session: { bot },
-        });
-      refetchCurrentSession?.();
+        updateSessionMutation.mutate(
+          {
+            sessionId: currentSession?.id,
+            session: { bot, updatedAt: moment().toISOString() },
+          },
+          {
+            onSuccess: () => {
+              console.log("success");
+              refetchCurrentSession?.();
+              refresh();
+            },
+          }
+        );
     } else {
       createSession({
         bot,
         redirect: true,
       });
     }
-    dismiss();
+    dismiss?.();
   };
 
   return (
@@ -88,15 +100,21 @@ export const BotsProvider = ({ children }: TBotsProvider) => {
                   setTab("local");
                 }
               }}
+              onCreateBot={(bot) => {
+                createBotMutation.mutate(bot);
+              }}
             />
           ) : (
             <BotLibrary
               open={!showCreateBot}
               tab={tab}
-              localBots={localBots}
-              publicBots={query.data?.bots || []}
+              localBots={localBotsQuery.data || []}
+              publicBots={publicBotsQuery.data?.bots || []}
               assignBot={assignBot}
               onTabChange={setTab}
+              onDelete={(bot: TBot) => {
+                deleteBotMutation.mutate(bot.id);
+              }}
               onCreate={() => setShowCreateBot(true)}
             />
           )}

@@ -84,8 +84,9 @@ export const SessionsProvider = ({ children }: TSessionsProvider) => {
       onSuccess: (data) => {
         console.log("new session", data);
         if (redirect) {
+          // window.open(`/chat/${data.id}`, "_self");
           push(`/chat/${data.id}`);
-          refresh();
+          // refresh();
         }
       },
     });

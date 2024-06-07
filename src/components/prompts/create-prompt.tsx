@@ -1,4 +1,4 @@
-import { usePrompts } from "@/hooks/use-prompts";
+import { TPrompt } from "@/hooks/use-prompts";
 import { ArrowLeft } from "@phosphor-icons/react";
 import Document from "@tiptap/extension-document";
 import HardBreak from "@tiptap/extension-hard-break";
@@ -13,13 +13,21 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 
 export type TCreatePrompt = {
+  prompt?: TPrompt;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCreatePrompt: (prompt: Omit<TPrompt, "id">) => void;
+  onUpdatePrompt: (prompt: TPrompt) => void;
 };
 
-export const CreatePrompt = ({ open, onOpenChange }: TCreatePrompt) => {
-  const [promptTitle, setPromptTitle] = useState("");
-  const { setPrompt, getPrompts } = usePrompts();
+export const CreatePrompt = ({
+  prompt,
+  open,
+  onOpenChange,
+  onCreatePrompt,
+  onUpdatePrompt,
+}: TCreatePrompt) => {
+  const [promptTitle, setPromptTitle] = useState(prompt?.name);
   const promptTitleRef = useRef<HTMLInputElement | null>(null);
   const [rawPrompt, setRawPrompt] = useState("");
 
@@ -38,7 +46,7 @@ export const CreatePrompt = ({ open, onOpenChange }: TCreatePrompt) => {
         },
       }),
     ],
-    content: ``,
+    content: prompt?.content || "",
     autofocus: true,
 
     onTransaction(props) {
@@ -75,9 +83,17 @@ export const CreatePrompt = ({ open, onOpenChange }: TCreatePrompt) => {
     if (!content) {
       return;
     }
-    await setPrompt({ name: promptTitle, content });
-    clearPrompt();
+    if (!promptTitle) {
+      return;
+    }
 
+    if (prompt) {
+      onUpdatePrompt({ ...prompt, name: promptTitle, content });
+    } else {
+      onCreatePrompt({ name: promptTitle, content });
+    }
+
+    clearPrompt();
     onOpenChange(false);
   };
 
@@ -93,7 +109,9 @@ export const CreatePrompt = ({ open, onOpenChange }: TCreatePrompt) => {
         >
           <ArrowLeft size={16} weight="bold" />
         </Button>
-        <p className="text-base font-medium">Create New Prompt</p>
+        <p className="text-base font-medium">
+          {prompt ? "Edit Prompt" : "Create New Prompt"}
+        </p>
       </div>
       <div className="flex flex-col w-full flex-1 p-2 overflow-y-auto h-full pb-[80px] no-scrollbar">
         <Input

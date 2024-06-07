@@ -73,6 +73,12 @@ export const ChatInput = () => {
   }, [editor?.isActive]);
 
   useEffect(() => {
+    if (currentSession?.bot?.deafultBaseModel) {
+      setSelectedModel(currentSession.bot.deafultBaseModel);
+    }
+  }, [currentSession]);
+
+  useEffect(() => {
     if (sessionId) {
       inputRef.current?.focus();
     }

@@ -1,19 +1,15 @@
 import { useSessionsContext } from "@/context/sessions/provider";
-import { useModelList } from "@/hooks/use-model-list";
 import { sortSessions } from "@/lib/helper";
 import { cn } from "@/lib/utils";
 import { Plus, SidebarSimple } from "@phosphor-icons/react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Drawer } from "vaul";
-import { BotAvatar } from "./ui/bot-avatar";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
+import { HistoryItem } from "./history-item";
 
 export const HistorySidebar = () => {
   const { sessions, createSession, currentSession } = useSessionsContext();
   const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const { getModelByKey } = useModelList();
 
   return (
     <Drawer.Root direction="left" open={open} onOpenChange={setOpen}>
@@ -48,6 +44,7 @@ export const HistorySidebar = () => {
                     createSession({
                       redirect: true,
                     });
+                    setOpen(false);
                   }}
                 >
                   <Plus size={20} weight="bold" />
@@ -57,32 +54,13 @@ export const HistorySidebar = () => {
                 <p className="text-sm text-zinc-500">Recent History</p>
               </div>
               {sortSessions(sessions, "updatedAt")?.map((session) => (
-                <div
+                <HistoryItem
+                  session={session}
                   key={session.id}
-                  className={cn(
-                    "gap-2 w-full cursor-pointer flex flex-row items-center p-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
-                    currentSession?.id === session.id
-                      ? "bg-black/10 dark:bg-black/30"
-                      : ""
-                  )}
-                  onClick={() => {
-                    router.push(`/chat/${session.id}`);
+                  dismiss={() => {
                     setOpen(false);
                   }}
-                >
-                  {session.bot ? (
-                    <BotAvatar
-                      size="small"
-                      name={session?.bot?.name}
-                      avatar={session?.bot?.avatar}
-                    />
-                  ) : (
-                    getModelByKey(session.messages?.[0]?.model)?.icon()
-                  )}
-                  <span className="w-full truncate text-xs md:text-sm">
-                    {session.title}
-                  </span>
-                </div>
+                />
               ))}
             </div>
             <div className="flex flex-col h-full justify-center items-center absolute right-[-20px] w-4">

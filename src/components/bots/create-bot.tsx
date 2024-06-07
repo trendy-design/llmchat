@@ -1,4 +1,4 @@
-import { TBot, useBots } from "@/hooks/use-bots";
+import { TBot } from "@/hooks/use-bots";
 import { convertFileToBase64 } from "@/lib/helper";
 import { ArrowLeft, Plus } from "@phosphor-icons/react";
 import { useFormik } from "formik";
@@ -14,10 +14,10 @@ import { Textarea } from "../ui/textarea";
 export type TCreateBot = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onCreateBot: (bot: Omit<TBot, "id">) => void;
 };
 
-export const CreateBot = ({ open, onOpenChange }: TCreateBot) => {
-  const { createBot } = useBots();
+export const CreateBot = ({ open, onOpenChange, onCreateBot }: TCreateBot) => {
   const botTitleRef = useRef<HTMLInputElement | null>(null);
 
   const formik = useFormik<Omit<TBot, "id">>({
@@ -30,7 +30,7 @@ export const CreateBot = ({ open, onOpenChange }: TCreateBot) => {
       deafultBaseModel: "gemini-pro",
     },
     onSubmit: (values) => {
-      createBot(values);
+      onCreateBot(values);
       clearBot();
       onOpenChange(false);
     },
