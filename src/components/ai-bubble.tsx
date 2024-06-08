@@ -72,7 +72,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
         direction="col"
         gap="md"
         items="start"
-        className="w-full p-4 rounded-2xl dark:hover:bg-white/5 hover:bg-zinc-50/50"
+        className="w-full p-4 flex-1 rounded-2xl dark:hover:bg-white/5 hover:bg-zinc-50/50 overflow-hidden"
       >
         {toolUsed && (
           <Type

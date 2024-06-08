@@ -96,7 +96,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
 
     const apiKey = apiKeys[selectedModel?.baseModel];
 
-    if (!apiKey) {
+    if (!apiKey || selectedModel?.baseModel !== "ollama") {
       toast({
         title: "Ahh!",
         description: "API key is missing. Please check your settings.",

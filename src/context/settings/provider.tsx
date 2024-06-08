@@ -4,6 +4,7 @@ import { AnthropicSettings } from "@/components/settings/anthropic";
 import { CommonSettings } from "@/components/settings/common";
 import { Data } from "@/components/settings/data";
 import { GeminiSettings } from "@/components/settings/gemini";
+import { OllamaSettings } from "@/components/settings/ollama";
 import { OpenAISettings } from "@/components/settings/openai";
 import { WebSearchPlugin } from "@/components/settings/plugins/web-search";
 import { VoiceInput } from "@/components/settings/voice-input";
@@ -76,6 +77,12 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
       icon: () => <ModelIcon size="md" type="gemini" />,
 
       component: <GeminiSettings />,
+    },
+    {
+      name: "Ollama",
+      key: "ollama",
+      icon: () => <ModelIcon size="md" type="ollama" />,
+      component: <OllamaSettings />,
     },
   ];
   const pluginsMenu: TSettingMenuItem[] = [

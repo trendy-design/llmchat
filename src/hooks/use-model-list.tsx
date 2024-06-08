@@ -1,12 +1,15 @@
 import { ModelIcon } from "@/components/icons/model-icon";
 import { usePreferenceContext } from "@/context/preferences/provider";
 import { ChatAnthropic } from "@langchain/anthropic";
+import { ChatOllama } from "@langchain/community/chat_models/ollama";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOpenAI } from "@langchain/openai";
+import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { defaultPreferences } from "./use-preferences";
 import { TToolKey } from "./use-tools";
 
-export type TBaseModel = "openai" | "anthropic" | "gemini";
+export type TBaseModel = "openai" | "anthropic" | "gemini" | "ollama";
 
 export const models = [
   "gpt-4o",
@@ -20,9 +23,10 @@ export const models = [
   "gemini-pro",
   "gemini-1.5-flash-latest",
   "gemini-1.5-pro-latest",
+  "phi3:latest",
 ];
 
-export type TModelKey = (typeof models)[number];
+export type TModelKey = (typeof models)[number] | string;
 
 export type TModel = {
   name: string;
@@ -39,12 +43,21 @@ export type TModel = {
 
 export const useModelList = () => {
   const { preferences } = usePreferenceContext();
+
+  const ollamaModelsQuery = useQuery({
+    queryKey: ["ollama-models"],
+    queryFn: () =>
+      fetch(`${preferences.ollamaBaseUrl}/api/tags`).then((res) => res.json()),
+    enabled: !!preferences,
+  });
+
   const createInstance = async (model: TModel, apiKey: string) => {
     const temperature =
       preferences.temperature || defaultPreferences.temperature;
     const topP = preferences.topP || defaultPreferences.topP;
     const topK = preferences.topK || defaultPreferences.topK;
     const maxTokens = preferences.maxTokens || model.tokens;
+
     switch (model.baseModel) {
       case "openai":
         return new ChatOpenAI({
@@ -54,6 +67,7 @@ export const useModelList = () => {
           temperature,
           maxTokens,
           topP,
+          maxRetries: 2,
         });
       case "anthropic":
         return new ChatAnthropic({
@@ -65,6 +79,7 @@ export const useModelList = () => {
           temperature,
           topP,
           topK,
+          maxRetries: 2,
         });
       case "gemini":
         return new ChatGoogleGenerativeAI({
@@ -79,6 +94,16 @@ export const useModelList = () => {
           },
           topP,
           topK,
+        });
+      case "ollama":
+        return new ChatOllama({
+          model: model.key,
+          baseUrl: preferences.ollamaBaseUrl,
+          topK,
+          topP,
+          maxRetries: 2,
+          temperature,
+          cache: true,
         });
       default:
         throw new Error("Invalid model");
@@ -224,8 +249,28 @@ export const useModelList = () => {
     },
   ];
 
+  const allModels: TModel[] = useMemo(
+    () => [
+      ...models,
+      ...(ollamaModelsQuery.data?.models?.map(
+        (model: any): TModel => ({
+          name: model.name,
+          key: model.name,
+          tokens: 128000,
+          inputPrice: 0,
+          outputPrice: 0,
+          plugins: [],
+          icon: () => <ModelIcon size="md" type="ollama" />,
+          baseModel: "ollama",
+          maxOutputTokens: 2048,
+        })
+      ) || []),
+    ],
+    [ollamaModelsQuery.data?.models]
+  );
+
   const getModelByKey = (key: TModelKey) => {
-    return models.find((model) => model.key === key);
+    return allModels.find((model) => model.key === key);
   };
 
   const getTestModelKey = (key: TBaseModel): TModelKey => {
@@ -236,8 +281,10 @@ export const useModelList = () => {
         return "claude-3-haiku-20240307";
       case "gemini":
         return "gemini-pro";
+      case "ollama":
+        return "phi3:latest";
     }
   };
 
-  return { models, createInstance, getModelByKey, getTestModelKey };
+  return { models: allModels, createInstance, getModelByKey, getTestModelKey };
 };

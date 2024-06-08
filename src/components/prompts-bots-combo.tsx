@@ -77,38 +77,41 @@ export const PromptsBotsCombo = ({
               <Plus size={14} weight="bold" className="flex-shrink-0" /> Create
               New Bot
             </CommandItem>
-            <CommandGroup heading="Prompts">
-              {allPrompts?.map((prompt, index) => (
-                <CommandItem
-                  key={index}
-                  onSelect={() => {
-                    onPromptSelect(prompt);
-                  }}
-                >
-                  {prompt.name}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-
-            <CommandGroup heading="Bots">
-              {allBots?.map((bot, index) => (
-                <CommandItem
-                  key={index}
-                  onSelect={() => {
-                    assignBot(bot);
-                    onBotSelect && onBotSelect(bot);
-                    onOpenChange(false);
-                  }}
-                >
-                  <BotAvatar
-                    name={bot.name}
-                    size="small"
-                    avatar={bot?.avatar}
-                  />{" "}
-                  {bot.name}
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {!!allPrompts?.length && (
+              <CommandGroup heading="Prompts">
+                {allPrompts?.map((prompt, index) => (
+                  <CommandItem
+                    key={index}
+                    onSelect={() => {
+                      onPromptSelect(prompt);
+                    }}
+                  >
+                    {prompt.name}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
+            {!!allBots?.length && (
+              <CommandGroup heading="Bots">
+                {allBots?.map((bot, index) => (
+                  <CommandItem
+                    key={index}
+                    onSelect={() => {
+                      assignBot(bot);
+                      onBotSelect && onBotSelect(bot);
+                      onOpenChange(false);
+                    }}
+                  >
+                    <BotAvatar
+                      name={bot.name}
+                      size="small"
+                      avatar={bot?.avatar}
+                    />{" "}
+                    {bot.name}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
           </CommandList>
         </CMDKCommand>
       </PopoverContent>

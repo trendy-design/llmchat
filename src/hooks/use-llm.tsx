@@ -346,7 +346,7 @@ export const useLLM = ({ onChange }: TUseLLM) => {
 
     const apiKey = apiKeys[selectedModelKey?.baseModel];
 
-    if (!apiKey) {
+    if (!apiKey || selectedModelKey?.baseModel !== "ollama") {
       throw new Error("API key not found");
     }
 

@@ -13,6 +13,7 @@ export type TPreferences = {
   whisperSpeechToTextEnabled: boolean;
   maxTokens: number;
   defaultWebSearchEngine: "google" | "duckduckgo";
+  ollamaBaseUrl: string;
   topP: number;
   topK: number;
   googleSearchEngineId?: string;
@@ -24,6 +25,7 @@ export const defaultPreferences: TPreferences = {
   systemPrompt: "You are a helpful assistant.",
   messageLimit: 30,
   temperature: 0.5,
+  ollamaBaseUrl: "http://localhost:11434",
   whisperSpeechToTextEnabled: false,
   defaultWebSearchEngine: "duckduckgo",
   defaultPlugins: [],

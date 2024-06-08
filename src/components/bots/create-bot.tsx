@@ -4,6 +4,7 @@ import { ArrowLeft, Plus } from "@phosphor-icons/react";
 import { useFormik } from "formik";
 import { useEffect, useRef } from "react";
 import { ModelSelect } from "../model-select";
+import { Badge } from "../ui/badge";
 import { BotAvatar } from "../ui/bot-avatar";
 import { Button } from "../ui/button";
 import { ComingSoon } from "../ui/coming-soon";
@@ -62,6 +63,7 @@ export const CreateBot = ({ open, onOpenChange, onCreateBot }: TCreateBot) => {
           <ArrowLeft size={16} weight="bold" />
         </Button>
         <p className="text-base font-medium">Create New Bot</p>
+        <Badge>Beta</Badge>
       </div>
       <div className="flex flex-col w-full p-4 gap-8 items-start h-full overflow-y-auto no-scrollbar pb-[100px]">
         <div className="flex flex-col gap-2 w-full">
@@ -174,7 +176,6 @@ export const CreateBot = ({ open, onOpenChange, onCreateBot }: TCreateBot) => {
       </div>
       <div className="w-full absolute bottom-0 left-0 right-0 bg-white dark:bg-zinc-800  px-2 py-2 border-t border-zinc-500/20 flex flex-row gap-3 items-center">
         <Button
-          size="sm"
           variant="default"
           onClick={() => {
             formik.handleSubmit();
@@ -183,7 +184,6 @@ export const CreateBot = ({ open, onOpenChange, onCreateBot }: TCreateBot) => {
           Save
         </Button>
         <Button
-          size="sm"
           variant="ghost"
           onClick={() => {
             onOpenChange(false);

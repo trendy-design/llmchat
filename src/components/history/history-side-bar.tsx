@@ -19,7 +19,7 @@ export const HistorySidebar = () => {
         </Button>
       </Drawer.Trigger>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 z-[900] bg-zinc-500/70 dark:bg-zinc-900/70 backdrop-blur-sm" />
+        <Drawer.Overlay className="fixed inset-0 z-[400] bg-zinc-500/70 dark:bg-zinc-900/70 backdrop-blur-sm" />
         <Drawer.Content
           className={cn(
             "flex flex-col rounded-3xl outline-none h-[98dvh] w-[280px] fixed z-[901] md:bottom-2 left-2 top-2 "

@@ -2,7 +2,7 @@ import { usePreferenceContext } from "@/context/preferences/provider";
 import { useSessionsContext } from "@/context/sessions/provider";
 import { useSettings } from "@/context/settings/context";
 import { models } from "@/hooks/use-model-list";
-import { TPreferences } from "@/hooks/use-preferences";
+import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
 import { generateAndDownloadJson } from "@/lib/helper";
 import { ChangeEvent } from "react";
 import { z } from "zod";
@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { Flex } from "../ui/flex";
 import { Input } from "../ui/input";
 import { Type } from "../ui/text";
+import { PopOverConfirmProvider } from "../ui/use-confirm-popover";
 import { useToast } from "../ui/use-toast";
 import { SettingCard } from "./setting-card";
 import { SettingsContainer } from "./settings-container";
@@ -156,37 +157,69 @@ export const Data = () => {
     }
   }
 
-  const clearAllData = async () => {
-    toast({
-      title: "Clear All Data?",
-      description: "This action cannot be undone.",
-      variant: "destructive",
-      action: (
-        <Button
-          size="sm"
-          variant="default"
-          onClick={() => {
-            clearSessionsMutation.mutate(undefined, {
-              onSuccess: () => {
-                toast({
-                  title: "Data Cleared",
-                  description: "All chat data has been cleared",
-                  variant: "default",
-                });
-                createSession({
-                  redirect: true,
-                });
-                dismiss();
-                dismiss();
-              },
-            });
-          }}
-        >
-          Clear All
-        </Button>
-      ),
-    });
-  };
+  // const clearAllData = async () => {
+  //   toast({
+  //     title: "Clear All Data?",
+  //     description: "This action cannot be undone.",
+  //     variant: "destructive",
+  //     action: (
+  //       <Button
+  //         size="sm"
+  //         variant="default"
+  //         onClick={() => {
+  //           clearSessionsMutation.mutate(undefined, {
+  //             onSuccess: () => {
+  //               toast({
+  //                 title: "Data Cleared",
+  //                 description: "All chat data has been cleared",
+  //                 variant: "default",
+  //               });
+  //               createSession({
+  //                 redirect: true,
+  //               });
+  //               dismiss();
+  //               dismiss();
+  //             },
+  //           });
+  //         }}
+  //       >
+  //         Clear All
+  //       </Button>
+  //     ),
+  //   });
+  // };
+
+  // const clearAllData = async () => {
+  //   toast({
+  //     title: "Clear All Data?",
+  //     description: "This action cannot be undone.",
+  //     variant: "destructive",
+  //     action: (
+  //       <Button
+  //         size="sm"
+  //         variant="default"
+  //         onClick={() => {
+  //           clearSessionsMutation.mutate(undefined, {
+  //             onSuccess: () => {
+  //               toast({
+  //                 title: "Data Cleared",
+  //                 description: "All chat data has been cleared",
+  //                 variant: "default",
+  //               });
+  //               createSession({
+  //                 redirect: true,
+  //               });
+  //               dismiss();
+  //               dismiss();
+  //             },
+  //           });
+  //         }}
+  //       >
+  //         Clear All
+  //       </Button>
+  //     ),
+  //   });
+  // };
 
   return (
     <SettingsContainer title="Manage your Data">
@@ -194,18 +227,59 @@ export const Data = () => {
         <SettingCard className="p-3">
           <Flex items="center" justify="between">
             <Type textColor="secondary">Clear all chat sessions</Type>
-            <Button variant="destructive" size="sm" onClick={clearAllData}>
-              Clear all
-            </Button>
+            <PopOverConfirmProvider
+              title="Are you sure you want to clear all chat sessions? This action cannot be undone."
+              confimBtnText="Clear All"
+              onConfirm={() => {
+                clearSessionsMutation.mutate(undefined, {
+                  onSuccess: () => {
+                    toast({
+                      title: "Data Cleared",
+                      description: "All chat data has been cleared",
+                      variant: "default",
+                    });
+                    createSession({
+                      redirect: true,
+                    });
+                    dismiss();
+                  },
+                });
+              }}
+            >
+              <Button variant="destructive" size="sm">
+                Clear All
+              </Button>
+            </PopOverConfirmProvider>
           </Flex>
           <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
           <Flex items="center" justify="between">
             <Type textColor="secondary">
-              Delete all data and reset all settings
+              Clear all chat sessions and preferences
             </Type>
-            <Button variant="destructive" size="sm" onClick={clearAllData}>
-              Reset
-            </Button>
+            <PopOverConfirmProvider
+              title="Are you sure you want to reset all chat sessions and preferences? This action cannot be undone."
+              confimBtnText="Reset All"
+              onConfirm={() => {
+                clearSessionsMutation.mutate(undefined, {
+                  onSuccess: () => {
+                    updatePreferences(defaultPreferences);
+                    toast({
+                      title: "Reset successful",
+                      description: "All chat data has been reseted",
+                      variant: "default",
+                    });
+                    createSession({
+                      redirect: true,
+                    });
+                    dismiss();
+                  },
+                });
+              }}
+            >
+              <Button variant="destructive" size="sm">
+                Reset All
+              </Button>
+            </PopOverConfirmProvider>
           </Flex>
         </SettingCard>
 

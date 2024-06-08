@@ -74,6 +74,9 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
     setApiKeys({ ...apiKeys, [key]: value });
     setApiKeyMutation.mutate({ key, value });
   };
+  useEffect(() => {
+    updateApiKey("ollama", "kdskdmkmsd");
+  }, []);
 
   const updateApiKeys = (newApiKeys: TApiKeys) => {
     setApiKeys(newApiKeys);
