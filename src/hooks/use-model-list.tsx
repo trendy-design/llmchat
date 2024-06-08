@@ -1,7 +1,5 @@
 import { ModelIcon } from "@/components/icons/model-icon";
-import { useToast } from "@/components/ui/use-toast";
 import { usePreferenceContext } from "@/context/preferences/provider";
-import { useSettings } from "@/context/settings/context";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatOllama } from "@langchain/community/chat_models/ollama";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
@@ -45,8 +43,6 @@ export type TModel = {
 
 export const useModelList = () => {
   const { preferences } = usePreferenceContext();
-  const { toast } = useToast();
-  const { open: openSettings } = useSettings();
 
   const ollamaModelsQuery = useQuery({
     queryKey: ["ollama-models"],
@@ -61,16 +57,6 @@ export const useModelList = () => {
     const topP = preferences.topP || defaultPreferences.topP;
     const topK = preferences.topK || defaultPreferences.topK;
     const maxTokens = preferences.maxTokens || model.tokens;
-
-    if (!apiKey && model.baseModel !== "ollama") {
-      toast({
-        title: "Ahh!",
-        description: "API key is missing. Please check your settings.",
-        variant: "destructive",
-      });
-      openSettings(model?.baseModel);
-      return;
-    }
 
     switch (model.baseModel) {
       case "openai":

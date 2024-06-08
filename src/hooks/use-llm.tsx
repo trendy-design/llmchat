@@ -1,11 +1,10 @@
 import { useToast } from "@/components/ui/use-toast";
-import type { Serialized } from "@langchain/core/load/serializable";
-import { AIMessage, HumanMessage } from "@langchain/core/messages";
-import { LLMResult } from "@langchain/core/outputs";
-
 import { usePreferenceContext } from "@/context/preferences/provider";
 import { useSessionsContext } from "@/context/sessions/provider";
 import { sortMessages } from "@/lib/helper";
+import type { Serialized } from "@langchain/core/load/serializable";
+import { AIMessage, HumanMessage } from "@langchain/core/messages";
+import { LLMResult } from "@langchain/core/outputs";
 import {
   BaseMessagePromptTemplateLike,
   ChatPromptTemplate,
@@ -347,8 +346,6 @@ export const useLLM = ({ onChange }: TUseLLM) => {
     const apiKey = apiKeys[selectedModelKey?.baseModel];
 
     const selectedModel = await createInstance(selectedModelKey, apiKey);
-
-    console.log("title session", session);
 
     const firstMessage = session?.messages?.[0];
 

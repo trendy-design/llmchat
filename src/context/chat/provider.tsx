@@ -96,6 +96,16 @@ export const ChatProvider = ({ children }: TChatProvider) => {
 
     const apiKey = apiKeys[selectedModel?.baseModel];
 
+    if (!apiKey && selectedModel.baseModel !== "ollama") {
+      toast({
+        title: "Ahh!",
+        description: "API key is missing. Please check your settings.",
+        variant: "destructive",
+      });
+      openSettings(selectedModel?.baseModel);
+      return;
+    }
+
     setContextValue("");
     clear?.();
     await runModel({
