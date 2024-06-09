@@ -62,26 +62,26 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
     {
       name: "OpenAI",
       key: "openai",
-      icon: () => <ModelIcon size="md" type="openai" />,
+      icon: () => <ModelIcon size="sm" type="openai" />,
       component: <OpenAISettings />,
     },
     {
       name: "Anthropic",
       key: "anthropic",
-      icon: () => <ModelIcon size="md" type="anthropic" />,
+      icon: () => <ModelIcon size="sm" type="anthropic" />,
       component: <AnthropicSettings />,
     },
     {
       name: "Gemini",
       key: "gemini",
-      icon: () => <ModelIcon size="md" type="gemini" />,
+      icon: () => <ModelIcon size="sm" type="gemini" />,
 
       component: <GeminiSettings />,
     },
     {
       name: "Ollama",
       key: "ollama",
-      icon: () => <ModelIcon size="md" type="ollama" />,
+      icon: () => <ModelIcon size="sm" type="ollama" />,
       component: <OllamaSettings />,
     },
   ];
@@ -89,7 +89,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
     {
       name: "Web Search",
       key: "web-search",
-      icon: () => <ModelIcon size="md" type="websearch" />,
+      icon: () => <ModelIcon size="sm" type="websearch" />,
       component: <WebSearchPlugin />,
     },
   ];
@@ -106,7 +106,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
           <div className="w-full px-4 py-3 border-b border-zinc-500/20">
             <p className="text-md font-medium">Settings</p>
           </div>
-          <div className="flex flex-col md:flex-row w-full md:mt-60 mt-0 relative h-full overflow-hidden">
+          <div className="flex flex-col md:flex-row w-full relative h-full overflow-hidden">
             <div className="w-full md:w-[250px] px-2 md:border-r pt-2 pb-2 md:pb-16 border-zinc-500/10 absolute md:h-full overflow-x-auto md:overflow-y-auto no-scrollbar left-0 top-0 right-0 md:bottom-0 flex flex-row md:flex-col md:gap-0 gap-1">
               <Type
                 size="xxs"
@@ -194,7 +194,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
                 </Button>
               ))}
             </div>
-            <div className="md:ml-[250px] mt-16 md:mt-6 pb-16 w-full h-full overflow-y-auto no-scrollbar">
+            <div className="md:ml-[250px] mt-12 md:mt-0 pb-16 w-full h-full overflow-y-auto no-scrollbar">
               {selectedMenuItem?.component}
             </div>
           </div>
