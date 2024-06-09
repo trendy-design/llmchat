@@ -10,7 +10,6 @@ import {
   ArrowDown,
   ArrowElbowDownRight,
   ArrowUp,
-  ClockClockwise,
   Command,
   Quotes,
   X,
@@ -69,7 +68,7 @@ export const ChatInput = () => {
 
   useEffect(() => {
     setSelectedModel(preferences.defaultModel);
-  }, [models]);
+  }, [models, preferences]);
 
   console.log("selectedModelinput", preferences.defaultModel);
 
@@ -173,7 +172,7 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-8 md:bottom-0 px-2 md:px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-1",
+        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 md:px-4 pb-2 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-1",
         isFreshSession && "top-0"
       )}
     >
@@ -183,7 +182,7 @@ export const ChatInput = () => {
         {renderListeningIndicator()}
       </div>
 
-      <div className="flex flex-col gap-1 w-full md:w-[700px]">
+      <div className="flex flex-col gap-1 w-full md:w-[700px] lg:w-[720px]">
         {renderSelectedContext()}
         {editor && (
           <PromptsBotsCombo
@@ -254,8 +253,7 @@ export const ChatInput = () => {
                   onClick={openFilters}
                   className="px-1.5"
                 >
-                  <ClockClockwise size={16} weight="bold" /> History
-                  <Badge className="hidden md:flex">
+                  <Badge className="flex">
                     <Command size={16} weight="bold" /> K
                   </Badge>
                 </Button>
@@ -263,9 +261,8 @@ export const ChatInput = () => {
             </motion.div>
           </PromptsBotsCombo>
         )}
-
-        <Footer show={isFreshSession} />
       </div>
+      <Footer />
     </div>
   );
 };

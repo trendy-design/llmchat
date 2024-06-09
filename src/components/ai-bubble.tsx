@@ -56,7 +56,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
 
   return (
     <div className="flex flex-col md:flex-row mt-6 w-full">
-      <div className="p-0 md:p-3">
+      <div className="p-0 md:px-3 md:py-4">
         {currentSession?.bot ? (
           <BotAvatar
             size="small"
@@ -64,7 +64,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
             avatar={currentSession?.bot?.avatar}
           />
         ) : (
-          modelForMessage?.icon()
+          modelForMessage?.icon("sm")
         )}
       </div>
       <Flex

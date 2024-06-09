@@ -9,7 +9,7 @@ export const ModelInfo = ({ model, showDetails = true }: TModelInfo) => {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-row gap-2 text-xs md:text-sm items-center">
-        {model.icon()} {model.name}
+        {model.icon("sm")} {model.name}
       </div>
       {showDetails && (
         <>

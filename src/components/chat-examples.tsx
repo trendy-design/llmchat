@@ -10,7 +10,7 @@ export const ChatExamples = ({ onExampleClick, show }: TChatExamples) => {
   if (!show) return null;
   return (
     <div className="flex flex-col gap-3 mb-2">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-1 md:gap-3 md:w-[700px] w-full">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-1 md:gap-3 md:w-[700px] lg:w-[720px] w-full">
         {prompts?.map((example, index) => (
           <motion.div
             initial={{
