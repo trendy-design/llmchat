@@ -100,27 +100,29 @@ export const BotLibrary = ({
                     {bot.description}
                   </p>
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="iconSm">
-                      <DotsThree size={24} weight="bold" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent
-                    className="min-w-[200px] text-sm md:text-base"
-                    align="end"
-                  >
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        onDelete(bot);
-                        e.stopPropagation();
-                      }}
+                {tab === "local" && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="iconSm">
+                        <DotsThree size={24} weight="bold" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                      className="min-w-[200px] text-sm md:text-base"
+                      align="end"
                     >
-                      <TrashSimple size={14} weight="bold" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          onDelete(bot);
+                          e.stopPropagation();
+                        }}
+                      >
+                        <TrashSimple size={14} weight="bold" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
               </div>
             </CommandItem>
           ))}

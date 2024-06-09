@@ -25,6 +25,7 @@ import { Badge } from "./ui/badge";
 import { useChatContext } from "@/context/chat/provider";
 import { usePreferenceContext } from "@/context/preferences/provider";
 import { useSessionsContext } from "@/context/sessions/provider";
+import { ChatExamples } from "./chat-examples";
 import { Footer } from "./footer";
 import { PluginSelect } from "./plugin-select";
 import { PromptsBotsCombo } from "./prompts-bots-combo";
@@ -176,6 +177,7 @@ export const ChatInput = () => {
         isFreshSession && "top-0"
       )}
     >
+      <ChatExamples onExampleClick={(prompt) => {}} show={false} />
       <div className="flex flex-row items-center gap-2">
         {renderScrollToBottom()}
         {renderReplyButton()}
