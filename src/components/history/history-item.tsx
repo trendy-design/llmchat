@@ -92,7 +92,7 @@ export const HistoryItem = ({
               avatar={session?.bot?.avatar}
             />
           ) : (
-            getModelByKey(session.messages?.[0]?.model)?.icon()
+            getModelByKey(session.messages?.[0]?.model)?.icon("sm")
           )}
           <span className="w-full truncate text-xs md:text-sm">
             {session.title}
