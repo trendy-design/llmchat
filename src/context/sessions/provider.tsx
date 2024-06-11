@@ -80,7 +80,7 @@ export const SessionsProvider = ({ children }: TSessionsProvider) => {
 
   const createSession = async (props: { bot?: TBot; redirect?: boolean }) => {
     const { bot, redirect } = props;
-    createNewSessionMutation.mutate(bot, {
+    await createNewSessionMutation.mutateAsync(bot, {
       onSuccess: (data) => {
         console.log("new session", data);
         if (redirect) {
