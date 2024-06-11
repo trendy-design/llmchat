@@ -160,7 +160,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     },
 
     parseOptions: {
-      preserveWhitespace: true,
+      preserveWhitespace: "full",
     },
   });
 
