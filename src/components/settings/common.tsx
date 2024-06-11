@@ -62,8 +62,8 @@ export const CommonSettings = () => {
 
   return (
     <SettingsContainer title="Model Settings">
-      <div className="flex flex-col w-full">
-        <div className="flex flex-row items-center justify-between py-1 w-full">
+      <Flex direction="col" gap="sm" className="w-full" items="start">
+        <Flex className="py-1 w-full" items="end" justify="between">
           <Type
             size="xs"
             textColor="secondary"
@@ -71,7 +71,19 @@ export const CommonSettings = () => {
           >
             System Default Prompt <Info weight="regular" size={14} />
           </Type>
-        </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              updatePreferences({
+                systemPrompt: defaultPreferences.systemPrompt,
+              });
+            }}
+          >
+            Reset to Default
+          </Button>
+        </Flex>
+
         <Textarea
           name="systemPrompt"
           value={preferences.systemPrompt}
@@ -80,7 +92,7 @@ export const CommonSettings = () => {
             updatePreferences({ systemPrompt: e.target.value });
           }}
         />
-      </div>
+      </Flex>
 
       <SettingCard className="p-3 mt-2">
         <Flex justify="between">

@@ -339,6 +339,8 @@ export const useLLM = ({ onChange }: TUseLLM) => {
     const modelKey = preferences.defaultModel;
     const selectedModelKey = getModelByKey(modelKey);
 
+    console.log("generate title for session", session);
+
     if (!selectedModelKey) {
       throw new Error("Model not found");
     }

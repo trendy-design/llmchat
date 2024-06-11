@@ -113,7 +113,7 @@ export const SessionsProvider = ({ children }: TSessionsProvider) => {
     sessionId: string,
     message: TChatMessage
   ) => {
-    addMessageToSessionMutation.mutate({
+    await addMessageToSessionMutation.mutateAsync({
       sessionId,
       message,
     });
