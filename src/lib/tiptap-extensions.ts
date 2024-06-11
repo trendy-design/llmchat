@@ -9,3 +9,11 @@ export const ShiftEnterToLineBreak = Extension.create({
     };
   },
 });
+
+export const DisableEnter = Extension.create({
+  addKeyboardShortcuts() {
+    return {
+      Enter: () => true,
+    };
+  },
+});

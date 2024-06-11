@@ -1,4 +1,3 @@
-import { useConfirm } from "@/context/confirm/provider";
 import { useSessionsContext } from "@/context/sessions/provider";
 import { TChatSession } from "@/hooks/use-chat-session";
 import { useModelList } from "@/hooks/use-model-list";
@@ -38,8 +37,6 @@ export const HistoryItem = ({
       historyInputRef.current?.focus();
     }
   }, [isEditing]);
-
-  const { open: openConfirm, dismiss: dismissConfirm } = useConfirm();
 
   return (
     <div
@@ -141,7 +138,6 @@ export const HistoryItem = ({
                     onClick={(e) => {
                       removeSessionByIdMutation.mutate(session.id, {
                         onSuccess: () => {
-                          dismissConfirm();
                           createSession({
                             redirect: true,
                           });

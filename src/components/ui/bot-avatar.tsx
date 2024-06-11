@@ -12,10 +12,10 @@ export const BotAvatar = ({ name, size, avatar }: TBotAvatar) => {
   return (
     <div
       className={cn(
-        "rounded-full flex-shrink-0 overflow-hidden border dark:border-white/10 border-transparent flex items-center justify-center"
-        // size === "small" && "rounded-lg",
-        // size === "medium" && "rounded-xl",
-        // size === "large" && "rounded-2xl"
+        "flex-shrink-0 overflow-hidden border dark:border-white/10 border-transparent flex items-center justify-center",
+        size === "small" && "rounded-lg",
+        size === "medium" && "rounded-xl",
+        size === "large" && "rounded-2xl"
       )}
     >
       {avatar ? (

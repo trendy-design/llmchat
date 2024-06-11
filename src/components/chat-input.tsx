@@ -25,8 +25,6 @@ import { Badge } from "./ui/badge";
 import { useChatContext } from "@/context/chat/provider";
 import { usePreferenceContext } from "@/context/preferences/provider";
 import { useSessionsContext } from "@/context/sessions/provider";
-import { ChatExamples } from "./chat-examples";
-import { Footer } from "./footer";
 import { PluginSelect } from "./plugin-select";
 import { PromptsBotsCombo } from "./prompts-bots-combo";
 import { QuickSettings } from "./quick-settings";
@@ -173,17 +171,14 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 md:px-4 pb-2 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-1",
-        isFreshSession && "top-0"
+        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 md:px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-1"
       )}
     >
-      <ChatExamples onExampleClick={(prompt) => {}} show={false} />
       <div className="flex flex-row items-center gap-2">
         {renderScrollToBottom()}
         {renderReplyButton()}
         {renderListeningIndicator()}
       </div>
-
       <div className="flex flex-col gap-1 w-full md:w-[700px] lg:w-[720px]">
         {renderSelectedContext()}
         {editor && (
@@ -220,9 +215,6 @@ export const ChatInput = () => {
                     if (e.key === "Enter" && !e.shiftKey) {
                       sendMessage();
                     }
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                    }
                   }}
                   className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
                 />
@@ -231,7 +223,7 @@ export const ChatInput = () => {
 
                 <Button
                   size="icon"
-                  variant={!!editor?.getText() ? "secondary" : "ghost"}
+                  variant={!!editor?.getText() ? "default" : "ghost"}
                   disabled={!editor?.getText()}
                   className="min-w-8 h-8 ml-1"
                   onClick={() => {
@@ -264,7 +256,6 @@ export const ChatInput = () => {
           </PromptsBotsCombo>
         )}
       </div>
-      <Footer />
     </div>
   );
 };

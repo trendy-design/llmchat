@@ -1,9 +1,10 @@
 import { usePreferenceContext } from "@/context/preferences/provider";
 import { useSessionsContext } from "@/context/sessions/provider";
 import { useSettings } from "@/context/settings/context";
+import { TChatSession } from "@/hooks/use-chat-session";
 import { models } from "@/hooks/use-model-list";
 import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
-import { generateAndDownloadJson } from "@/lib/helper";
+import { generateAndDownloadJson, sortMessages } from "@/lib/helper";
 import { ChangeEvent } from "react";
 import { z } from "zod";
 import { Button } from "../ui/button";
@@ -95,11 +96,49 @@ const importSchema = z.object({
   prompts: z.array(z.string()).optional(),
 });
 
+const mergeSessions = (
+  incomingSessions: TChatSession[],
+  existingSessions: TChatSession[]
+) => {
+  const updatedSessions = [...existingSessions];
+
+  incomingSessions.forEach((incomingSession) => {
+    const sessionIndex = existingSessions.findIndex(
+      (s) => s.id === incomingSession.id
+    );
+
+    if (sessionIndex > -1) {
+      // Merge messages from the same session
+      const currentSession = updatedSessions[sessionIndex];
+      const uniqueNewMessages = incomingSession.messages.filter(
+        (im) => !currentSession.messages.some((cm) => cm.id === im.id)
+      );
+
+      // Combine and sort messages
+      currentSession.messages = sortMessages(
+        [...currentSession.messages, ...uniqueNewMessages],
+        "createdAt"
+      );
+    } else {
+      // If session does not exist, add it directly
+      updatedSessions.push(incomingSession);
+    }
+  });
+
+  return updatedSessions;
+};
+
 export const Data = () => {
   const { dismiss } = useSettings();
   const { toast } = useToast();
 
-  const { sessions, addSessionsMutation } = useSessionsContext();
+  const {
+    sessions,
+    addSessionsMutation,
+    clearSessionsMutation,
+    createSession,
+  } = useSessionsContext();
+
   const {
     preferences,
     apiKeys,
@@ -107,7 +146,6 @@ export const Data = () => {
     updateApiKey,
     updateApiKeys,
   } = usePreferenceContext();
-  const { clearSessionsMutation, createSession } = useSessionsContext();
 
   function handleFileSelect(event: ChangeEvent<HTMLInputElement>) {
     const input = event.target as HTMLInputElement;
@@ -131,10 +169,20 @@ export const Data = () => {
           parsedData?.apiKeys && updateApiKeys(parsedData?.apiKeys);
           parsedData?.preferences &&
             updatePreferences(parsedData?.preferences as TPreferences);
-          !!parsedData?.sessions?.length &&
-            addSessionsMutation.mutate(
-              parsedData?.sessions?.filter((s) => !!s.messages.length)
-            );
+
+          const incomingSessions = parsedData?.sessions?.filter(
+            (s) => !!s.messages.length
+          );
+
+          const mergedSessions = mergeSessions(
+            incomingSessions || [],
+            sessions
+          );
+          clearSessionsMutation.mutate(undefined, {
+            onSuccess: () => {
+              addSessionsMutation.mutate(mergedSessions);
+            },
+          });
 
           toast({
             title: "Data Imported",
@@ -253,7 +301,7 @@ export const Data = () => {
           </Flex>
           <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
           <Flex items="center" justify="between">
-            <Type textColor="secondary">
+            <Type textColor="secondary" className="w-full">
               Clear all chat sessions and preferences
             </Type>
             <PopOverConfirmProvider
@@ -285,7 +333,9 @@ export const Data = () => {
 
         <SettingCard className="p-3">
           <Flex items="center" justify="between">
-            <Type textColor="secondary">Import Data</Type>
+            <Type textColor="secondary" className="w-full">
+              Import Data
+            </Type>
             <Input
               type="file"
               onChange={handleFileSelect}
@@ -305,7 +355,7 @@ export const Data = () => {
           </Flex>
           <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
 
-          <Flex items="center" justify="between">
+          <Flex items="center" justify="between" className="w-full">
             <Type textColor="secondary">Export Data</Type>
             <Button
               variant="outline"

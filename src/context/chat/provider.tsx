@@ -4,7 +4,7 @@ import { TChatMessage } from "@/hooks/use-chat-session";
 import { TRunModel, useLLM } from "@/hooks/use-llm";
 import { useModelList } from "@/hooks/use-model-list";
 import { removeExtraSpaces } from "@/lib/helper";
-import { ShiftEnterToLineBreak } from "@/lib/tiptap-extensions";
+import { DisableEnter, ShiftEnterToLineBreak } from "@/lib/tiptap-extensions";
 import { Document } from "@tiptap/extension-document";
 import { HardBreak } from "@tiptap/extension-hard-break";
 import { Highlight } from "@tiptap/extension-highlight";
@@ -134,6 +134,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         },
       }),
       HardBreak,
+      DisableEnter,
     ],
     content: ``,
     autofocus: true,
