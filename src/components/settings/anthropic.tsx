@@ -29,9 +29,23 @@ export const AnthropicSettings = () => {
         }}
       />
       <div className="flex flex-row items-center gap-2">
-        {renderSaveApiKeyButton("anthropic", key, () => {
-          updateApiKey("anthropic", key);
-        })}
+        {key &&
+          key !== apiKeys?.anthropic &&
+          renderSaveApiKeyButton("anthropic", key, () => {
+            updateApiKey("anthropic", key);
+          })}
+        {apiKeys?.anthropic && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setKey("");
+              updateApiKey("anthropic", "");
+            }}
+          >
+            Remove API Key
+          </Button>
+        )}
 
         <Button
           size="sm"

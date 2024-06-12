@@ -29,7 +29,8 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
     rawAI,
     isLoading,
     model,
-    errorMesssage,
+    stop,
+    stopReason,
     isToolRunning,
     toolName,
   } = chatMessage;
@@ -52,6 +53,60 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
 
   const handleCopyContent = () => {
     messageRef?.current && rawAI && copy(rawAI);
+  };
+
+  const renderStopReason = () => {
+    if (stopReason === "error") {
+      return (
+        <Alert variant="destructive">
+          <AlertDescription>
+            Something went wrong. please make sure your api is working properly{" "}
+            <Button
+              variant="link"
+              size="link"
+              onClick={() => {
+                openSettings();
+              }}
+            >
+              Check API Key
+            </Button>
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    if (stopReason === "cancel") {
+      return (
+        <Type size="sm" textColor="tertiary" className="italic">
+          Chat session ended
+        </Type>
+      );
+    }
+    if (stopReason === "apikey") {
+      return (
+        <Alert variant="destructive">
+          <AlertDescription>
+            Invalid API Key{" "}
+            <Button
+              variant="link"
+              size="link"
+              onClick={() => {
+                openSettings();
+              }}
+            >
+              Check API Key
+            </Button>
+          </AlertDescription>
+        </Alert>
+      );
+    }
+    if (stopReason === "recursion") {
+      return (
+        <Alert variant="destructive">
+          {" "}
+          <AlertDescription>Recursion detected</AlertDescription>
+        </Alert>
+      );
+    }
   };
 
   return (
@@ -90,22 +145,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
         )}
 
         {rawAI && renderMarkdown(rawAI, !!isLoading, id)}
-        {errorMesssage && (
-          <Alert variant="destructive">
-            <AlertDescription>
-              Something went wrong. Make sure your API key is working.
-              <Button
-                variant="link"
-                size="link"
-                onClick={() => {
-                  openSettings();
-                }}
-              >
-                Check API Key
-              </Button>
-            </AlertDescription>
-          </Alert>
-        )}
+        {stop && stopReason && renderStopReason()}
 
         <Flex
           justify="between"

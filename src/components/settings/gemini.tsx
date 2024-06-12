@@ -29,10 +29,25 @@ export const GeminiSettings = () => {
           setKey(e.target.value);
         }}
       />
+
       <div className="flex flex-row items-center gap-2">
-        {renderSaveApiKeyButton("gemini", key, () => {
-          updateApiKey("gemini", key);
-        })}
+        {key &&
+          key !== apiKeys?.gemini &&
+          renderSaveApiKeyButton("gemini", key, () => {
+            updateApiKey("gemini", key);
+          })}
+        {apiKeys?.gemini && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setKey("");
+              updateApiKey("gemini", "");
+            }}
+          >
+            Remove API Key
+          </Button>
+        )}
 
         <Button
           size="sm"

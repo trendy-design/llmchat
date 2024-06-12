@@ -24,6 +24,7 @@ export type TChatContext = {
   openPromptsBotCombo: boolean;
   setOpenPromptsBotCombo: (value: boolean) => void;
   contextValue: string;
+  isGenerating: boolean;
   setContextValue: (value: string) => void;
   stopGeneration: () => void;
 };
@@ -51,8 +52,10 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   const [contextValue, setContextValue] = useState("");
   const { open: openSettings } = useSettings();
   const { preferences, apiKeys } = usePreferenceContext();
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const appendToCurrentSession = (props: TChatMessage) => {
+    setIsGenerating(true);
     setCurrentSession?.((session) => {
       if (!session) return undefined;
       const exisingMessage = session.messages.find(
@@ -79,6 +82,9 @@ export const ChatProvider = ({ children }: TChatProvider) => {
   };
   const { runModel, stopGeneration } = useLLM({
     onChange: appendToCurrentSession,
+    onFinish: () => {
+      setIsGenerating(false);
+    },
   });
 
   const handleRunModel = async (props: TRunModel, clear?: () => void) => {
@@ -189,6 +195,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         openPromptsBotCombo,
         setOpenPromptsBotCombo,
         contextValue,
+        isGenerating,
         setContextValue,
         stopGeneration,
       }}

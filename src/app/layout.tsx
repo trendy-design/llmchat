@@ -1,6 +1,4 @@
-import { MainLayout } from "@/components/main-layout";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { FiltersProvider } from "@/context/filters/provider";
 import { SessionsProvider } from "@/context/sessions/provider";
 import { SettingsProvider } from "@/context/settings/provider";
 import { cn } from "@/lib/utils";
@@ -14,11 +12,8 @@ export const metadata: Metadata = {
   description: "Most intutive all-in-one AI chat client",
 };
 
-import { BotsProvider } from "@/context/bots/provider";
-import { ChatProvider } from "@/context/chat/provider";
 import { ConfirmProvider } from "@/context/confirm/provider";
 import { PreferenceProvider } from "@/context/preferences/provider";
-import { PromptsProvider } from "@/context/prompts/provider";
 import { ReactQueryProvider } from "@/context/react-query/provider";
 import type { Viewport } from "next";
 
@@ -48,17 +43,7 @@ export default function RootLayout({
               <ConfirmProvider>
                 <PreferenceProvider>
                   <SessionsProvider>
-                    <SettingsProvider>
-                      <ChatProvider>
-                        <FiltersProvider>
-                          <BotsProvider>
-                            <PromptsProvider>
-                              <MainLayout>{children}</MainLayout>
-                            </PromptsProvider>
-                          </BotsProvider>
-                        </FiltersProvider>
-                      </ChatProvider>
-                    </SettingsProvider>
+                    <SettingsProvider>{children}</SettingsProvider>
                   </SessionsProvider>
                 </PreferenceProvider>
               </ConfirmProvider>

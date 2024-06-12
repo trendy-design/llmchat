@@ -29,9 +29,23 @@ export const OpenAISettings = () => {
       />
 
       <div className="flex flex-row items-center gap-2">
-        {renderSaveApiKeyButton("openai", key, () => {
-          updateApiKey("openai", key);
-        })}
+        {key &&
+          key !== apiKeys?.openai &&
+          renderSaveApiKeyButton("openai", key, () => {
+            updateApiKey("openai", key);
+          })}
+        {apiKeys?.openai && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setKey("");
+              updateApiKey("openai", "");
+            }}
+          >
+            Remove API Key
+          </Button>
+        )}
 
         <Button
           size="sm"
