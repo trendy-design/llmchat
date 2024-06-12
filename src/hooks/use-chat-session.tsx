@@ -28,8 +28,8 @@ export type TChatMessage = {
   toolResult?: string;
   isLoading?: boolean;
   isToolRunning?: boolean;
-  hasError?: boolean;
-  errorMesssage?: string;
+  stop?: boolean;
+  stopReason?: "error" | "cancel" | "apikey" | "recursion";
   createdAt: string;
 };
 
