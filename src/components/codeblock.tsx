@@ -33,10 +33,10 @@ export const CodeBlock = ({ lang, code }: codeBlockProps) => {
       )}
     >
       <div className="p-1 w-full flex justify-between items-center border-b border-zinc-50 dark:border-white/5">
-        <p className="text-xs md:text-sm px-2 text-zinc-500">{language}</p>
+        <p className="text-xs px-2 text-zinc-500">{language}</p>
         <Tooltip content={showCopied ? "Copied!" : "Copy"}>
           <Button
-            className="text-xs"
+            className="!text-xs"
             variant="text"
             size="sm"
             onClick={() => {
@@ -44,9 +44,9 @@ export const CodeBlock = ({ lang, code }: codeBlockProps) => {
             }}
           >
             {showCopied ? (
-              <Check size={16} weight="bold" />
+              <Check size={14} weight="bold" />
             ) : (
-              <Copy size={16} weight="bold" />
+              <Copy size={14} weight="bold" />
             )}{" "}
             Copy Code
           </Button>
