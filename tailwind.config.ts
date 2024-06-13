@@ -72,15 +72,22 @@ const config = {
         },
       },
       fontSize: {
-        xs: "0.78rem",
-        sm: "0.84rem",
-        base: "0.90rem",
+        xs: "0.75rem",
+        sm: "0.875rem",
+        base: "1rem",
+        lg: "1.125rem",
         xl: "1.25rem",
         "2xl": "1.563rem",
         "3xl": "1.953rem",
         "4xl": "2.441rem",
         "5xl": "3.052rem",
       },
+      // fontWeights: {
+      //   normal: 350,
+      //   medium: 450,
+      //   semibold: 550,
+      //   bold: 650,
+      // },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -110,7 +117,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;
 
 export default config;

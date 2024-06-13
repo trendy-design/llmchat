@@ -7,7 +7,6 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { cn } from "@/lib/utils";
 import { ArrowUpRight, Link } from "@phosphor-icons/react";
 import { ReactNode, useState } from "react";
 
@@ -42,23 +41,11 @@ export const useMarkdown = () => {
             {children}
           </motion.span>
         ),
-        paragraph: (children) => (
-          <p className="text-sm md:text-base leading-7 dark:text-zinc-100 text-zinc-700">
-            {children}
-          </p>
-        ),
-        em: (children) => (
-          <em className="italic text-sm md:text-base opacity-50">{children}</em>
-        ),
+        paragraph: (children) => <p>{children}</p>,
+        em: (children) => <em>{children}</em>,
         heading: (children, level) => {
           const Heading = `h${level}` as keyof JSX.IntrinsicElements;
-          return (
-            <Heading
-              className={cn("font-medium", level < 4 ? "text-md" : "text-base")}
-            >
-              {children}
-            </Heading>
-          );
+          return <Heading>{children}</Heading>;
         },
         hr: () => <hr className="my-4 border-gray-100 dark:border-white/10" />,
         link: (href, text) => {
@@ -66,11 +53,7 @@ export const useMarkdown = () => {
             return (
               <HoverCard>
                 <HoverCardTrigger>
-                  <a
-                    href={href}
-                    data-message-id={messageId}
-                    className="underline underline-offset-4 decoration-blue-400/10 hover:decoration-blue-400 text-blue-500 dark:text-blue-300 px-1 py-1 hover:bg-blue-400/10 rounded-md"
-                  >
+                  <a href={href} data-message-id={messageId}>
                     {text}
                   </a>
                 </HoverCardTrigger>
@@ -81,7 +64,7 @@ export const useMarkdown = () => {
                     window.open(href, "_blank");
                   }}
                 >
-                  <p className="flex flex-row text-xs items-center gap-2 text-zinc-200 dark:text-zinc-200 leading-7w-full whitespace-pre-wrap overflow-hidden">
+                  <p className="flex flex-row font-normal text-xs items-center gap-2 text-zinc-200 dark:text-zinc-200 leading-7w-full whitespace-pre-wrap overflow-hidden">
                     <Link
                       size={16}
                       weight="bold"
@@ -101,28 +84,20 @@ export const useMarkdown = () => {
           return <></>;
         },
         blockquote: (children) => (
-          <blockquote className="border-l-4 border-gray-300 pl-4 italic">
-            <p className="text-sm md:text-base leading-7">{children}</p>
+          <blockquote>
+            <p>{children}</p>
           </blockquote>
         ),
         list: (children, ordered) =>
-          ordered ? (
-            <ol className="list-decimal text-sm md:text-base ml-4">
-              {children}
-            </ol>
-          ) : (
-            <ul className="list-disc ml-4">{children}</ul>
-          ),
+          ordered ? <ol>{children}</ol> : <ul>{children}</ul>,
         listItem: (children) => (
-          <li className="my-4">
-            <p className="text-sm md:text-base leading-relaxed">{children}</p>
+          <li>
+            <p>{children}</p>
           </li>
         ),
-        strong: (children) => (
-          <strong className="font-medium">{children}</strong>
-        ),
+        strong: (children) => <strong>{children}</strong>,
         code: (code, lang) => (
-          <div className="my-4 w-full flex-shrink-0">
+          <div className="my-4 w-full flex-shrink-0 not-prose">
             <CodeBlock lang={lang} code={code?.toString()} />
           </div>
         ),

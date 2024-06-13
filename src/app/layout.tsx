@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(inter.className)}>
+      <body className={cn(inter.className, "antialiased")}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

@@ -29,15 +29,16 @@ export const CodeBlock = ({ lang, code }: codeBlockProps) => {
   return (
     <div
       className={cn(
-        "bg-zinc-50/50 border border-transparent dark:border-white/5 text-zinc-600 dark:text-white dark:bg-black/20 rounded-2xl w-full flex-shrink-0"
+        "not-prose bg-zinc-50/30 border overflow-hidden border-zinc-50 dark:border-white/5 text-zinc-600 dark:text-white dark:bg-black/20 rounded-xl w-full flex-shrink-0"
       )}
     >
-      <div className="p-2 w-full flex justify-between items-center">
-        <p className="text-sm md:text-base px-2 text-zinc-500">{language}</p>
+      <div className="p-1 w-full flex justify-between items-center border-b border-zinc-50 dark:border-white/5">
+        <p className="text-xs md:text-sm px-2 text-zinc-500">{language}</p>
         <Tooltip content={showCopied ? "Copied!" : "Copy"}>
           <Button
-            size="iconSm"
-            variant="ghost"
+            className="text-xs"
+            variant="text"
+            size="sm"
             onClick={() => {
               code && copy(code);
             }}
@@ -46,14 +47,15 @@ export const CodeBlock = ({ lang, code }: codeBlockProps) => {
               <Check size={16} weight="bold" />
             ) : (
               <Copy size={16} weight="bold" />
-            )}
+            )}{" "}
+            Copy Code
           </Button>
         </Tooltip>
       </div>
       <pre className="w-full px-6 py-2">
         <code
           style={ibmPlex.style}
-          className={`hljs language-${language} tracking-wide whitespace-pre-wrap break-words overflow-x-auto w-full inline-block pr-[100%] text-sm md:text-base`}
+          className={`hljs language-${language} tracking-wide whitespace-pre-wrap break-words overflow-x-auto w-full inline-block pr-[100%] text-xs md:text-sm`}
           ref={ref}
         ></code>
       </pre>

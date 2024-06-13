@@ -116,8 +116,13 @@ export const ChatInput = () => {
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
         >
-          <Button onClick={scrollToBottom} variant="secondary" size="iconSm">
-            <ArrowDown size={20} weight="bold" />
+          <Button
+            onClick={scrollToBottom}
+            variant="outline"
+            size="iconXS"
+            rounded="full"
+          >
+            <ArrowDown size={16} weight="bold" />
           </Button>
         </motion.span>
       );
@@ -174,7 +179,8 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 md:px-4 pb-4 pt-16 bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0 right-0 gap-1"
+        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 md:px-4 pb-4 pt-16  right-0 gap-1",
+        "bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0"
       )}
     >
       <div className="flex flex-row items-center gap-2">

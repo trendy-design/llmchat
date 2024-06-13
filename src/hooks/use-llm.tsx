@@ -169,11 +169,15 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
       bot: selectedSession?.bot,
     });
 
-    const selectedModel = (await createInstance(selectedModelKey, apiKey)).bind(
-      {
-        signal: currentAbortController?.signal,
-      }
-    );
+    const availableTools =
+      selectedModelKey?.plugins
+        ?.filter((p) => {
+          return plugins.includes(p);
+        })
+        ?.map((p) => getToolByKey(p)?.tool())
+        ?.filter((t): t is any => !!t) || [];
+
+    const selectedModel = await createInstance(selectedModelKey, apiKey);
 
     const previousAllowedChatHistory = chatHistory
       .slice(0, messageLimit)
@@ -188,30 +192,41 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
         []
       );
 
-    const availableTools =
-      selectedModelKey?.plugins
-        ?.filter((p) => {
-          return plugins.includes(p);
-        })
-        ?.map((p) => getToolByKey(p)?.tool())
-        ?.filter((t): t is any => !!t) || [];
-
     let agentExecutor: AgentExecutor | undefined;
+
+    console.log("selectedModelFirst", selectedModel);
+    console.log("selectedModelSecond", Object.create(selectedModel));
+
+    // Creating a copy of the model
+    const modifiedModel = Object.create(Object.getPrototypeOf(selectedModel));
+
+    Object.assign(modifiedModel, selectedModel);
+
+    modifiedModel.bindTools = (tools: any[], options: any) => {
+      return selectedModel.bindTools?.(tools, {
+        ...options,
+        signal: currentAbortController?.signal,
+      });
+    };
 
     if (availableTools?.length) {
       const agentWithTool = await createToolCallingAgent({
-        llm: selectedModel as any,
+        llm: modifiedModel as any,
         tools: availableTools,
         prompt: prompt as any,
         streamRunnable: true,
       });
 
       agentExecutor = new AgentExecutor({
-        agent: agentWithTool,
+        agent: agentWithTool as any,
         tools: availableTools,
       });
     }
-    const chainWithoutTools = prompt.pipe(selectedModel as any);
+    const chainWithoutTools = prompt.pipe(
+      selectedModel.bind({
+        signal: currentAbortController?.signal,
+      }) as any
+    );
 
     let streamedMessage = "";
     let toolName: string | undefined;

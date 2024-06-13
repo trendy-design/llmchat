@@ -111,7 +111,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
 
   return (
     <div className="flex flex-row mt-6 w-full">
-      <div className="p-2 md:px-3 md:py-4">
+      <div className="p-2 md:px-3 md:py-2">
         {currentSession?.bot ? (
           <BotAvatar
             size="small"
@@ -127,7 +127,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
         direction="col"
         gap="md"
         items="start"
-        className="w-full p-2 md:p-4 flex-1 md:rounded-2xl md:dark:hover:bg-white/5 md:hover:bg-zinc-50/50 overflow-hidden"
+        className="w-full p-2 flex-1 overflow-hidden"
       >
         {toolUsed && (
           <Type
@@ -144,7 +144,11 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
           </Type>
         )}
 
-        {rawAI && renderMarkdown(rawAI, !!isLoading, id)}
+        {rawAI && (
+          <article className="prose dark:prose-invert w-full">
+            {renderMarkdown(rawAI, !!isLoading, id)}
+          </article>
+        )}
         {stop && stopReason && renderStopReason()}
 
         <Flex
