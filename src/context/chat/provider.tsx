@@ -177,6 +177,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     handleRunModel(
       {
         input: editor.getText(),
+        context: contextValue,
         sessionId: currentSession?.id?.toString(),
       },
       () => {

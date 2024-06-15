@@ -67,10 +67,6 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
     const system: BaseMessagePromptTemplateLike = [
       "system",
       `${systemPrompt} ${
-        context
-          ? `Answer user's question based on the following context: """{context}"""`
-          : ``
-      } ${
         hasPreviousMessages
           ? `You can also refer to these previous conversations`
           : ``
@@ -79,7 +75,11 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
 
     const messageHolders = new MessagesPlaceholder("chat_history");
 
-    const userContent = `{input}  `;
+    const userContent = `{input}\n\n${
+      context
+        ? `Answer user's question based on the following context: """{context}"""`
+        : ``
+    } `;
 
     const user: BaseMessagePromptTemplateLike = [
       "user",

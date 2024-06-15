@@ -2,7 +2,6 @@ import { useFilters } from "@/context/filters/context";
 import { TModelKey, useModelList } from "@/hooks/use-model-list";
 import { useRecordVoice } from "@/hooks/use-record-voice";
 import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
-import { useTextSelection } from "@/hooks/usse-text-selection";
 import { slideUpVariant } from "@/lib/framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -54,14 +53,14 @@ export const ChatInput = () => {
     setOpenPromptsBotCombo,
     sendMessage,
     isGenerating,
+    contextValue,
+    setContextValue,
     stopGeneration,
   } = useChatContext();
-  const [contextValue, setContextValue] = useState<string>("");
 
   const { preferences } = usePreferenceContext();
   const { models } = useModelList();
 
-  const { showPopup, selectedText, handleClearSelection } = useTextSelection();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [selectedModel, setSelectedModel] = useState<TModelKey>(
     preferences.defaultModel
@@ -108,7 +107,7 @@ export const ChatInput = () => {
   }, [text]);
 
   const renderScrollToBottom = () => {
-    if (showButton && !showPopup && !recording && !transcribing) {
+    if (showButton && !recording && !transcribing) {
       return (
         <motion.span
           initial={{ scale: 0, opacity: 0 }}
@@ -179,20 +178,20 @@ export const ChatInput = () => {
   const renderSelectedContext = () => {
     if (contextValue) {
       return (
-        <div className="flex flex-row items-center bg-black/30 text-zinc-300 rounded-xl h-10 w-[700px] justify-start gap-2 pl-3 pr-1">
-          <ArrowElbowDownRight size={16} weight="fill" />
-          <p className="w-full overflow-hidden truncate ml-2 text-sm md:text-base ">
+        <div className="flex flex-row items-start py-2 bg-white border-zinc-100 dark:bg-zinc-800 border dark:border-white/10 text-zinc-700 dark:text-zinc-200 rounded-xl w-full md:w-[700px] lg:w-[720px]  justify-start gap-2 pl-2 pr-2">
+          <ArrowElbowDownRight size={16} weight="bold" className="mt-1" />
+          <p className="w-full overflow-hidden ml-2 text-sm md:text-base line-clamp-2">
             {contextValue}
           </p>
           <Button
-            size={"iconSm"}
+            size={"iconXS"}
             variant="ghost"
             onClick={() => {
               setContextValue("");
             }}
             className="flex-shrink-0 ml-4"
           >
-            <X size={16} weight="bold" />
+            <X size={14} weight="bold" />
           </Button>
         </div>
       );

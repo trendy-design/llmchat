@@ -6,6 +6,7 @@ import { useClipboard } from "@/hooks/use-clipboard";
 import { useMarkdown } from "@/hooks/use-mdx";
 import { TModelKey, useModelList } from "@/hooks/use-model-list";
 import { TToolKey, useTools } from "@/hooks/use-tools";
+import { useTextSelection } from "@/hooks/usse-text-selection";
 import { Check, Copy, Quotes, TrashSimple } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 import * as Selection from "selection-popover";
@@ -47,8 +48,9 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
   const { renderMarkdown, links } = useMarkdown();
   const { open: openSettings } = useSettings();
   const { removeMessage, currentSession } = useSessionsContext();
-  const { handleRunModel } = useChatContext();
+  const { handleRunModel, setContextValue, editor } = useChatContext();
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
+  const { selectedText } = useTextSelection();
 
   const modelForMessage = getModelByKey(model);
 
@@ -156,9 +158,18 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
               container={document?.getElementById("chat-container")}
             >
               <Selection.Content sticky="always" sideOffset={10}>
-                <Button size="sm">
-                  <Quotes size="16" weight="bold" /> Reply
-                </Button>
+                {selectedText && (
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setContextValue(selectedText);
+                      editor?.commands.clearContent();
+                      editor?.commands.focus("end");
+                    }}
+                  >
+                    <Quotes size="16" weight="bold" /> Reply
+                  </Button>
+                )}
               </Selection.Content>
             </Selection.Portal>
           </Selection.Root>
