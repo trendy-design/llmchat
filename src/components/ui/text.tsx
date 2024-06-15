@@ -7,7 +7,7 @@ import React from "react";
 const typeVariants = cva("text", {
   variants: {
     size: {
-      xxs: "text-[0.7rem]",
+      xxs: "text-xs",
       xs: "text-xs",
       sm: "text-xs md:text-sm",
       base: "text-sm md:text-base",

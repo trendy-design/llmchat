@@ -107,33 +107,33 @@ export const useMarkdown = () => {
           </span>
         ),
         br: () => <br />,
-        table: (children) => (
-          <div className="overflow-x-auto my-3 border border-zinc-100 rounded-xl dark:border-white/10 ">
-            <table className="w-full  overflow-hidden text-sm md:text-base text-left rtl:text-right text-gray-600 dark:text-gray-200">
-              {children}
-            </table>
-          </div>
-        ),
-        tableHeader(children) {
-          return (
-            <thead className="text-sm md:text-base w-full font-medium text-zinc-800 uppercase bg-zinc-50 dark:bg-white/10 dark:text-white/20">
-              {children}
-            </thead>
-          );
-        },
+        // table: (children) => (
+        //   <div className="overflow-x-auto my-3 border border-zinc-100 rounded-xl dark:border-white/10 ">
+        //     <table className="w-full  overflow-hidden text-sm md:text-base text-left rtl:text-right text-gray-600 dark:text-gray-200">
+        //       {children}
+        //     </table>
+        //   </div>
+        // ),
+        // tableHeader(children) {
+        //   return (
+        //     <thead className="text-sm md:text-base w-full font-medium text-zinc-800 uppercase bg-zinc-50 dark:bg-white/10 dark:text-white/20">
+        //       {children}
+        //     </thead>
+        //   );
+        // },
 
-        tableRow(children) {
-          return (
-            <tr className="hover:bg-zinc-50 dark:bg-white/5">{children}</tr>
-          );
-        },
-        tableCell(children, flags) {
-          if (flags.header) {
-            return <th className="p-3 text-sm md:text-base">{children}</th>;
-          }
-          return <td className="p-3 text-sm md:text-base">{children}</td>;
-        },
-        tableBody: (children) => <tbody>{children}</tbody>,
+        // tableRow(children) {
+        //   return (
+        //     <tr className="hover:bg-zinc-50 dark:bg-white/5">{children}</tr>
+        //   );
+        // },
+        // tableCell(children, flags) {
+        //   if (flags.header) {
+        //     return <th className="p-3 text-sm md:text-base">{children}</th>;
+        //   }
+        //   return <td className="p-3 text-sm md:text-base">{children}</td>;
+        // },
+        // tableBody: (children) => <tbody>{children}</tbody>,
       }}
     >
       {message}

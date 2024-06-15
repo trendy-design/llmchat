@@ -16,7 +16,7 @@ export const OpenAISettings = () => {
   return (
     <SettingsContainer title="OpenAI Settings">
       <div className="flex flex-row items-end justify-between">
-        <p className="text-sm md:text-base  text-zinc-500">Open AI API Key</p>
+        <p className="text-xs md:text-sm  text-zinc-500">Open AI API Key</p>
       </div>
       <Input
         placeholder="Sk-xxxxxxxxxxxxxxxxxxxxxxxx"

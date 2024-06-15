@@ -18,6 +18,7 @@
 
 
   :root {
+
     --color-zinc-50: 243 243 243;
     --color-zinc-100: 232 232 232;
     --color-zinc-200: 197 197 197;
@@ -59,6 +60,7 @@
 
     --radius: 0.5rem;
   }
+
 
   .dark {
     --background: 240 10% 3.9%;

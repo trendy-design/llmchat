@@ -120,6 +120,7 @@ export const useRecordVoice = () => {
           <Button
             variant="ghost"
             size="iconSm"
+            rounded="full"
             onClick={() => {
               stopRecording();
             }}
@@ -133,9 +134,9 @@ export const useRecordVoice = () => {
     return (
       <Tooltip content="Record">
         <Button
-          size="icon"
+          size="iconSm"
           variant="ghost"
-          className="min-w-8 h-8"
+          rounded="full"
           onClick={startVoiceRecording}
         >
           <Microphone size={20} weight="bold" />

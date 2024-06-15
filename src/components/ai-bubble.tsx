@@ -6,8 +6,9 @@ import { useClipboard } from "@/hooks/use-clipboard";
 import { useMarkdown } from "@/hooks/use-mdx";
 import { TModelKey, useModelList } from "@/hooks/use-model-list";
 import { TToolKey, useTools } from "@/hooks/use-tools";
-import { Check, Copy, TrashSimple } from "@phosphor-icons/react";
+import { Check, Copy, Quotes, TrashSimple } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
+import * as Selection from "selection-popover";
 import { RegenerateWithModelSelect } from "./regenerate-model-select";
 import { Alert, AlertDescription } from "./ui/alert";
 import { BotAvatar } from "./ui/bot-avatar";
@@ -145,16 +146,29 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
         )}
 
         {rawAI && (
-          <article className="prose dark:prose-invert w-full">
-            {renderMarkdown(rawAI, !!isLoading, id)}
-          </article>
+          <Selection.Root>
+            <Selection.Trigger asChild>
+              <article className="prose dark:prose-invert w-full prose-zinc prose-h3:font-medium prose-h3:text-lg prose-heading:font-medium prose-strong:font-medium prose-headings:text-lg">
+                {renderMarkdown(rawAI, !!isLoading, id)}
+              </article>
+            </Selection.Trigger>
+            <Selection.Portal
+              container={document?.getElementById("chat-container")}
+            >
+              <Selection.Content sticky="always" sideOffset={10}>
+                <Button size="sm">
+                  <Quotes size="16" weight="bold" /> Reply
+                </Button>
+              </Selection.Content>
+            </Selection.Portal>
+          </Selection.Root>
         )}
         {stop && stopReason && renderStopReason()}
 
         <Flex
           justify="between"
           items="center"
-          className="w-full pt-3 opacity-70 hover:opacity-100 transition-opacity"
+          className="w-full pt-3 opacity-70 hover:opacity-100 transition-opacity "
         >
           {isLoading && !isToolRunning && <Spinner />}
           {!isLoading && !isToolRunning && (

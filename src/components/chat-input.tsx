@@ -11,7 +11,6 @@ import {
   ArrowElbowDownRight,
   ArrowUp,
   Command,
-  Quotes,
   Stop,
   X,
 } from "@phosphor-icons/react";
@@ -118,8 +117,8 @@ export const ChatInput = () => {
         >
           <Button
             onClick={scrollToBottom}
+            size="iconSm"
             variant="outline"
-            size="iconXS"
             rounded="full"
           >
             <ArrowDown size={16} weight="bold" />
@@ -129,29 +128,53 @@ export const ChatInput = () => {
     }
   };
 
-  const renderReplyButton = () => {
-    if (showPopup && !recording && !transcribing) {
+  const renderStopGeneration = () => {
+    if (isGenerating) {
       return (
         <motion.span
+          className="mb-2"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
         >
           <Button
+            rounded="full"
+            className="dark:bg-zinc-800 dark:border dark:text-white dark:border-white/10"
             onClick={() => {
-              setContextValue(selectedText);
-              handleClearSelection();
-              inputRef.current?.focus();
+              stopGeneration();
             }}
-            variant="secondary"
-            size="sm"
           >
-            <Quotes size={20} weight="bold" /> Reply
+            <Stop size={16} weight="fill" />
+            Stop generation
           </Button>
         </motion.span>
       );
     }
   };
+
+  // const renderReplyButton = () => {
+  //   if (showPopup && !recording && !transcribing) {
+  //     return (
+  //       <motion.span
+  //         initial={{ scale: 0, opacity: 0 }}
+  //         animate={{ scale: 1, opacity: 1 }}
+  //         exit={{ scale: 0, opacity: 0 }}
+  //       >
+  //         <Button
+  //           onClick={() => {
+  //             setContextValue(selectedText);
+  //             handleClearSelection();
+  //             inputRef.current?.focus();
+  //           }}
+  //           variant="secondary"
+  //           size="sm"
+  //         >
+  //           <Quotes size={20} weight="bold" /> Reply
+  //         </Button>
+  //       </motion.span>
+  //     );
+  //   }
+  // };
 
   const renderSelectedContext = () => {
     if (contextValue) {
@@ -185,7 +208,8 @@ export const ChatInput = () => {
     >
       <div className="flex flex-row items-center gap-2">
         {renderScrollToBottom()}
-        {renderReplyButton()}
+        {/* {renderReplyButton()} */}
+        {renderStopGeneration()}
         {renderListeningIndicator()}
       </div>
       <div className="flex flex-col gap-1 w-full md:w-[700px] lg:w-[720px]">
@@ -229,31 +253,6 @@ export const ChatInput = () => {
                 />
 
                 {!isGenerating && renderRecordingControls()}
-
-                {isGenerating ? (
-                  <Button
-                    size="icon"
-                    className="min-w-8 h-8 ml-1"
-                    variant={isGenerating ? "secondary" : "ghost"}
-                    onClick={() => {
-                      stopGeneration();
-                    }}
-                  >
-                    <Stop size={16} weight="fill" />
-                  </Button>
-                ) : (
-                  <Button
-                    size="icon"
-                    variant={!!editor?.getText() ? "secondary" : "ghost"}
-                    disabled={!editor?.getText()}
-                    className="min-w-8 h-8 ml-1"
-                    onClick={() => {
-                      sendMessage();
-                    }}
-                  >
-                    <ArrowUp size={20} weight="bold" />
-                  </Button>
-                )}
               </div>
               <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 pb-2 px-2">
                 <ModelSelect
@@ -273,6 +272,23 @@ export const ChatInput = () => {
                     <Command size={16} weight="bold" /> K
                   </Badge>
                 </Button>
+                {!isGenerating && (
+                  <Button
+                    size="iconSm"
+                    rounded="full"
+                    variant={!!editor?.getText() ? "default" : "secondary"}
+                    disabled={!editor?.getText()}
+                    className={cn(
+                      !!editor?.getText() &&
+                        "bg-zinc-800 dark:bg-emerald-500/20 text-white dark:text-emerald-400"
+                    )}
+                    onClick={() => {
+                      sendMessage();
+                    }}
+                  >
+                    <ArrowUp size={18} weight="bold" />
+                  </Button>
+                )}
               </div>
             </motion.div>
           </PromptsBotsCombo>

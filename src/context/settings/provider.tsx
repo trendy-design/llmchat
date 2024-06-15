@@ -129,7 +129,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
                   </div>
                   <span
                     className={cn(
-                      "text-xs md:text-sm md:flex",
+                      "text-xs md:text-sm md:flex font-medium",
                       selectedMenu === menu.key ? "flex" : "hidden"
                     )}
                   >
@@ -156,7 +156,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
                   {menu.icon()}
                   <span
                     className={cn(
-                      "text-xs md:text-sm md:flex",
+                      "text-xs md:text-sm md:flex font-medium",
                       selectedMenu === menu.key ? "flex" : "hidden"
                     )}
                   >
@@ -184,7 +184,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
                   {menu.icon()}
                   <span
                     className={cn(
-                      "text-xs md:text-sm md:flex",
+                      "text-xs md:text-sm md:flex font-medium",
                       selectedMenu === menu.key ? "flex" : "hidden"
                     )}
                   >

@@ -67,7 +67,7 @@ export const useModelList = () => {
           temperature,
           maxTokens,
           topP,
-          maxRetries: 2,
+          maxRetries: 2,          
         });
       case "anthropic":
         return new ChatAnthropic({

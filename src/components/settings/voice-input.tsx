@@ -12,7 +12,9 @@ export const VoiceInput = () => {
       <SettingCard className="justify-center flex flex-col p-3">
         <Flex justify="between" items="center">
           <Flex direction="col" items="start">
-            <Type textColor="primary">Enable Whisper Speech-to-Text</Type>
+            <Type textColor="primary" weight="medium">
+              Enable Whisper Speech-to-Text
+            </Type>
             <Type size="xs" textColor="tertiary">
               OpenAI API key required.
             </Type>

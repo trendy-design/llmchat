@@ -4,7 +4,6 @@ import { SettingsProvider } from "@/context/settings/provider";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
-import { inter } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,6 +15,7 @@ import { ConfirmProvider } from "@/context/confirm/provider";
 import { PreferenceProvider } from "@/context/preferences/provider";
 import { ReactQueryProvider } from "@/context/react-query/provider";
 import type { Viewport } from "next";
+import { interVar } from "./fonts";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(inter.className, "antialiased")}>
+      <body className={cn(`${interVar.variable} font-sans`, "antialiased")}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

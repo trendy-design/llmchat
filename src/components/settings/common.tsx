@@ -97,7 +97,7 @@ export const CommonSettings = () => {
       <SettingCard className="p-3 mt-2">
         <Flex justify="between">
           <Flex direction="col" items="start">
-            <Type>Context Length</Type>
+            <Type weight="medium">Context Length</Type>
             <Type size="xxs" textColor="secondary">
               Number of previous messages to use as context
             </Type>
@@ -123,7 +123,7 @@ export const CommonSettings = () => {
 
         <Flex justify="between">
           <Flex direction="col" items="start">
-            <Type>Max output tokens</Type>
+            <Type weight="medium">Max output tokens</Type>
             <Type size="xxs" textColor="secondary">
               Maximum number of tokens to generate
             </Type>
@@ -149,7 +149,7 @@ export const CommonSettings = () => {
 
         <Flex justify="between">
           <Flex direction="col" items="start">
-            <Type>Temprature</Type>
+            <Type weight="medium">Temprature</Type>
             <Type size="xxs" textColor="secondary">
               Maximum number of tokens to generate
             </Type>
@@ -182,7 +182,7 @@ export const CommonSettings = () => {
 
         <Flex justify="between">
           <Flex direction="col" items="start">
-            <Type>TopP</Type>
+            <Type weight="medium">TopP</Type>
             <Type size="xxs" textColor="secondary">
               Maximum number of tokens to generate
             </Type>
@@ -215,7 +215,7 @@ export const CommonSettings = () => {
 
         <Flex justify="between">
           <Flex direction="col" items="start">
-            <Type>TopK</Type>
+            <Type weight="medium">TopK</Type>
             <Type size="xxs" textColor="secondary">
               Maximum number of tokens to generate
             </Type>
