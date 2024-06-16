@@ -6,6 +6,7 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOpenAI } from "@langchain/openai";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { TAssistant } from "./use-chat-session";
 import { defaultPreferences } from "./use-preferences";
 import { TToolKey } from "./use-tools";
 
@@ -67,7 +68,7 @@ export const useModelList = () => {
           temperature,
           maxTokens,
           topP,
-          maxRetries: 2,          
+          maxRetries: 2,
         });
       case "anthropic":
         return new ChatAnthropic({
@@ -286,5 +287,44 @@ export const useModelList = () => {
     }
   };
 
-  return { models: allModels, createInstance, getModelByKey, getTestModelKey };
+  const assistants: TAssistant[] = [
+    ...allModels?.map((model) => ({
+      name: model.name,
+      key: model.key,
+      baseModel: model.key,
+      systemPrompt: "You're helpful assistant",
+    })),
+    {
+      name: "Custom Assistant",
+      baseModel: "gpt-3.5-turbo",
+      key: "custome-assistant",
+      systemPrompt: "Be funny and answer always negatively",
+    },
+  ];
+
+  const getAssistantByKey = (
+    key: string
+  ): { assistant: TAssistant; model: TModel } | undefined => {
+    const assistant = assistants.find((assistant) => assistant.key === key);
+    if (!assistant) {
+      return;
+    }
+    const model = getModelByKey(assistant?.baseModel);
+
+    if (!model) {
+      return;
+    }
+    return {
+      assistant,
+      model,
+    };
+  };
+  return {
+    models: allModels,
+    createInstance,
+    getModelByKey,
+    getTestModelKey,
+    assistants,
+    getAssistantByKey,
+  };
 };

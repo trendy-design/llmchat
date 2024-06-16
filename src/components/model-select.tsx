@@ -2,18 +2,13 @@ import { usePreferenceContext } from "@/context/preferences/provider";
 import { TModelKey, useModelList } from "@/hooks/use-model-list";
 import { defaultPreferences } from "@/hooks/use-preferences";
 import { cn } from "@/lib/utils";
-import { DropdownMenuSubTrigger } from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
-import { ModelInfo } from "./model-info";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuPortal,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
@@ -35,11 +30,10 @@ export const ModelSelect = ({
   const [isOpen, setIsOpen] = useState(false);
   const { preferences, updatePreferences } = usePreferenceContext();
 
-  const { getModelByKey, models } = useModelList();
+  const { getModelByKey, models, assistants, getAssistantByKey } =
+    useModelList();
 
-  const activeModel = getModelByKey(selectedModel);
-
-  console.log("activeModel", activeModel, selectedModel);
+  const activeAssistant = getAssistantByKey(selectedModel);
 
   return (
     <>
@@ -50,7 +44,8 @@ export const ModelSelect = ({
             className={cn("pl-1 pr-3 gap-2 text-xs md:text-sm", className)}
             size="sm"
           >
-            {activeModel?.icon("sm")} {activeModel?.name}
+            {activeAssistant?.model?.icon("sm")}{" "}
+            {activeAssistant?.assistant.name}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
@@ -62,40 +57,35 @@ export const ModelSelect = ({
             fullWidth ? "w-full" : "min-w-[250px]"
           )}
         >
-          {models.map((model) => (
-            <DropdownMenuSub key={model.key}>
-              <DropdownMenuSubTrigger asChild>
-                <DropdownMenuItem
-                  className={cn(
-                    "text-xs md:text-sm font-medium",
-                    activeModel?.key === model.key &&
-                      "dark:bg-black/30 bg-zinc-50"
-                  )}
-                  key={model.key}
-                  onClick={() => {
-                    updatePreferences(
-                      {
-                        defaultModel: model.key,
-                        maxTokens: defaultPreferences.maxTokens,
-                      },
-                      () => {
-                        setSelectedModel(model.key);
-                        setIsOpen(false);
-                      }
-                    );
-                  }}
-                >
-                  {model.icon("sm")} {model.name}{" "}
-                  {model.isNew && <Badge>New</Badge>}
-                </DropdownMenuItem>
-              </DropdownMenuSubTrigger>
-              <DropdownMenuPortal>
-                <DropdownMenuSubContent className="dark bg-zinc-800 p-4 flex flex-col gap-3 tracking-[0.1px] text-sm md:text-base rounded-2xl min-w-[280px]">
-                  <ModelInfo model={model} />
-                </DropdownMenuSubContent>
-              </DropdownMenuPortal>
-            </DropdownMenuSub>
-          ))}
+          {assistants.map((assistant) => {
+            const model = getModelByKey(assistant.baseModel);
+
+            return (
+              <DropdownMenuItem
+                className={cn(
+                  "text-xs md:text-sm font-medium",
+                  activeAssistant?.assistant.key === assistant.key &&
+                    "dark:bg-black/30 bg-zinc-50"
+                )}
+                key={assistant.key}
+                onClick={() => {
+                  updatePreferences(
+                    {
+                      defaultAssistant: assistant.key,
+                      maxTokens: defaultPreferences.maxTokens,
+                    },
+                    () => {
+                      setSelectedModel(assistant.key);
+                      setIsOpen(false);
+                    }
+                  );
+                }}
+              >
+                {model?.icon("sm")} {assistant.name}{" "}
+                {model?.isNew && <Badge>New</Badge>}
+              </DropdownMenuItem>
+            );
+          })}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

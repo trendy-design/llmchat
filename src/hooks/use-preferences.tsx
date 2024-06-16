@@ -1,12 +1,12 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { get, set } from "idb-keyval";
-import { TBaseModel, TModelKey } from "./use-model-list";
+import { TAssistant } from "./use-chat-session";
+import { TBaseModel } from "./use-model-list";
 import { TToolKey } from "./use-tools";
 
 export type TApiKeys = Partial<Record<TBaseModel, string>>;
 export type TPreferences = {
-  defaultModel: TModelKey;
-  systemPrompt: string;
+  defaultAssistant: TAssistant["key"];
   messageLimit: number;
   temperature: number;
   defaultPlugins: TToolKey[];
@@ -21,8 +21,7 @@ export type TPreferences = {
 };
 
 export const defaultPreferences: TPreferences = {
-  defaultModel: "gpt-3.5-turbo",
-  systemPrompt: "You are a helpful assistant.",
+  defaultAssistant: "gpt-3.5-turbo",
   messageLimit: 30,
   temperature: 0.5,
   ollamaBaseUrl: "http://localhost:11434",

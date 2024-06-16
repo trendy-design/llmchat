@@ -64,7 +64,7 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
       {children}
 
       <Dialog open={isPromptOpen} onOpenChange={setIsPromptOpen}>
-        <DialogContent className="w-[96dvw] max-h-[80dvh] rounded-2xl md:min-w-[640px] gap-0 md:max-h-[600px] flex flex-col overflow-hidden border border-white/5 p-0">
+        <DialogContent className="w-[96dvw] max-h-[80dvh] rounded-2xl md:max-w-[450px] gap-0 md:max-h-[600px] flex flex-col overflow-hidden border border-white/5 p-0">
           {showCreatePrompt ? (
             <CreatePrompt
               prompt={editablePrompt}

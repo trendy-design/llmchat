@@ -1,5 +1,5 @@
 import { useFilters } from "@/context/filters/context";
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
+import { useModelList } from "@/hooks/use-model-list";
 import { useRecordVoice } from "@/hooks/use-record-voice";
 import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
 import { slideUpVariant } from "@/lib/framer-motion";
@@ -24,6 +24,7 @@ import { Badge } from "./ui/badge";
 import { useChatContext } from "@/context/chat/provider";
 import { usePreferenceContext } from "@/context/preferences/provider";
 import { useSessionsContext } from "@/context/sessions/provider";
+import { TAssistant } from "@/hooks/use-chat-session";
 import { ChatExamples } from "./chat-examples";
 import { ChatGreeting } from "./chat-greeting";
 import { PluginSelect } from "./plugin-select";
@@ -61,18 +62,18 @@ export const ChatInput = () => {
   } = useChatContext();
 
   const { preferences } = usePreferenceContext();
-  const { models } = useModelList();
+  const { models, getAssistantByKey } = useModelList();
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [selectedModel, setSelectedModel] = useState<TModelKey>(
-    preferences.defaultModel
+  const [selectedModel, setSelectedModel] = useState<TAssistant["key"]>(
+    preferences.defaultAssistant
   );
 
   useEffect(() => {
-    setSelectedModel(preferences.defaultModel);
+    setSelectedModel(preferences.defaultAssistant);
   }, [models, preferences]);
 
-  console.log("selectedModelinput", preferences.defaultModel);
+  console.log("selectedModelinput", preferences.defaultAssistant);
 
   useEffect(() => {
     if (editor?.isActive) {
@@ -92,16 +93,20 @@ export const ChatInput = () => {
     }
   }, [sessionId]);
 
-  const isFreshSession =
-    !currentSession?.messages?.length && !currentSession?.bot;
+  const isFreshSession = !currentSession?.messages?.length;
 
   useEffect(() => {
     if (text) {
       editor?.commands.clearContent();
       editor?.commands.setContent(text);
+      const props = getAssistantByKey(preferences.defaultAssistant);
+      if (!props) {
+        return;
+      }
       handleRunModel({
         input: text,
         sessionId: sessionId.toString(),
+        assistant: props.assistant,
       });
 
       editor?.commands.clearContent();

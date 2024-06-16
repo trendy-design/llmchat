@@ -4,7 +4,7 @@ import { useSettings } from "@/context/settings/context";
 import { TChatMessage } from "@/hooks/use-chat-session";
 import { useClipboard } from "@/hooks/use-clipboard";
 import { useMarkdown } from "@/hooks/use-mdx";
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
+import { useModelList } from "@/hooks/use-model-list";
 import { TToolKey, useTools } from "@/hooks/use-tools";
 import { useTextSelection } from "@/hooks/usse-text-selection";
 import { Check, Copy, Quotes, TrashSimple } from "@phosphor-icons/react";
@@ -12,7 +12,6 @@ import { useRef, useState } from "react";
 import * as Selection from "selection-popover";
 import { RegenerateWithModelSelect } from "./regenerate-model-select";
 import { Alert, AlertDescription } from "./ui/alert";
-import { BotAvatar } from "./ui/bot-avatar";
 import { Button } from "./ui/button";
 import { Flex } from "./ui/flex";
 import Spinner from "./ui/loading-spinner";
@@ -30,11 +29,11 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
     id,
     rawAI,
     isLoading,
-    model,
     stop,
     stopReason,
     isToolRunning,
     toolName,
+    inputProps,
   } = chatMessage;
 
   const { getToolInfoByKey } = useTools();
@@ -44,7 +43,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
     : undefined;
   const messageRef = useRef<HTMLDivElement>(null);
   const { showCopied, copy } = useClipboard();
-  const { getModelByKey } = useModelList();
+  const { getModelByKey, getAssistantByKey } = useModelList();
   const { renderMarkdown, links } = useMarkdown();
   const { open: openSettings } = useSettings();
   const { removeMessage, currentSession } = useSessionsContext();
@@ -52,7 +51,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const { selectedText } = useTextSelection();
 
-  const modelForMessage = getModelByKey(model);
+  const modelForMessage = getModelByKey(inputProps.assistant.baseModel);
 
   const handleCopyContent = () => {
     messageRef?.current && rawAI && copy(rawAI);
@@ -114,17 +113,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
 
   return (
     <div className="flex flex-row mt-6 w-full">
-      <div className="p-2 md:px-3 md:py-2">
-        {currentSession?.bot ? (
-          <BotAvatar
-            size="small"
-            name={currentSession?.bot?.name}
-            avatar={currentSession?.bot?.avatar}
-          />
-        ) : (
-          modelForMessage?.icon("sm")
-        )}
-      </div>
+      <div className="p-2 md:px-3 md:py-2">{modelForMessage?.icon("sm")}</div>
       <Flex
         ref={messageRef}
         direction="col"
@@ -213,11 +202,15 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
               </Tooltip>
               {chatMessage && isLast && (
                 <RegenerateWithModelSelect
-                  onRegenerate={(model: TModelKey) => {
+                  onRegenerate={(assistant: string) => {
+                    const props = getAssistantByKey(assistant);
+                    if (!props?.assistant) {
+                      return;
+                    }
                     handleRunModel({
                       input: chatMessage.rawHuman,
                       messageId: chatMessage.id,
-                      model: model,
+                      assistant: props.assistant,
                       sessionId: chatMessage.sessionId,
                     });
                   }}
