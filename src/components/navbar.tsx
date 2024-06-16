@@ -55,7 +55,6 @@ export const Navbar = () => {
   return (
     <div className="absolute flex justify-between items-center p-2 pb-6 md:p-3 flex-row top-0 left-0 right-0 bg-gradient-to-b from-white dark:from-zinc-800 to-transparent from-70% z-50">
       <div className="flex flex-row gap-2 items-center">
-        <HistorySidebar />
         {renderNewSession()}
 
         {/* <ModelIcon type="aichat" size="md" />
@@ -144,6 +143,7 @@ export const Navbar = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <HistorySidebar />
       </div>
     </div>
   );

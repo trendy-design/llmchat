@@ -138,11 +138,15 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
             className="flex flex-row gap-2 items-center"
             textColor="tertiary"
           >
-            {toolUsed.smallIcon()}
+            {isToolRunning ? <Spinner /> : toolUsed.smallIcon()}
             {isToolRunning ? (
-              <span>{toolUsed.loadingMessage}</span>
+              <Type size="sm" textColor="tertiary">
+                {toolUsed.loadingMessage}
+              </Type>
             ) : (
-              <span>{toolUsed.resultMessage}</span>
+              <Type size="sm" textColor="tertiary">
+                {toolUsed.resultMessage}
+              </Type>
             )}
           </Type>
         )}
@@ -150,7 +154,7 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
         {rawAI && (
           <Selection.Root>
             <Selection.Trigger asChild>
-              <article className="prose dark:prose-invert w-full prose-zinc prose-h3:font-medium prose-h3:text-lg prose-heading:font-medium prose-strong:font-medium prose-headings:text-lg">
+              <article className="prose dark:prose-invert w-full prose-zinc prose-h3:font-medium prose-h3:text-lg prose-heading:font-medium prose-strong:font-medium prose-headings:text-lg prose-th:text-sm">
                 {renderMarkdown(rawAI, !!isLoading, id)}
               </article>
             </Selection.Trigger>
@@ -179,9 +183,18 @@ export const AIMessageBubble = ({ chatMessage, isLast }: TAIMessageBubble) => {
         <Flex
           justify="between"
           items="center"
-          className="w-full pt-3 opacity-70 hover:opacity-100 transition-opacity "
+          className="w-full pt-1 opacity-70 hover:opacity-100 transition-opacity "
         >
-          {isLoading && !isToolRunning && <Spinner />}
+          {isLoading && !isToolRunning && (
+            <Flex gap="sm">
+              <Spinner />
+              {
+                <Type size="sm" textColor="tertiary">
+                  {!!rawAI?.length ? "Typing ..." : "Thinking ..."}
+                </Type>
+              }
+            </Flex>
+          )}
           {!isLoading && !isToolRunning && (
             <div className="flex flex-row gap-1">
               <Tooltip content="Copy">

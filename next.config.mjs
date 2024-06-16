@@ -1,5 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async rewrites() {
+    return [
+      // Wildcard path matching
+      {
+        source: "/",
+        destination: "/chat/new",
+      },
+    ];
+  },
   //   async rewrites() {
   //     return [
   //       {

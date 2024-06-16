@@ -18,7 +18,7 @@ const ChatSessionPage = () => {
 
   const isLoading = isCurrentSessionLoading || isAllSessionLoading;
   return (
-    <div className="w-full h-[100dvh] flex flex-row relative overflow-hidden">
+    <div className="w-full h-[100%] bg-white dark:bg-zinc-800 rounded-xl flex flex-row relative overflow-hidden">
       <Navbar />
       {isLoading && renderLoader()}
       {!isLoading && (

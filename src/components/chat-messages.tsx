@@ -8,7 +8,6 @@ import moment from "moment";
 import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { AIMessageBubble } from "./ai-bubble";
-import { ChatExamples } from "./chat-examples";
 import { GreetingBubble } from "./greeting-bubble";
 import { BotAvatar } from "./ui/bot-avatar";
 import { Button } from "./ui/button";
@@ -86,8 +85,6 @@ export const ChatMessages = () => {
       id="chat-container"
     >
       <div className="w-full md:w-[700px] lg:w-[720px] p-2 flex flex-1 flex-col gap-24">
-        {isFreshSession && <ChatExamples />}
-
         {currentSession?.bot && (
           <div className="flex flex-col gap-2 items-center">
             <BotAvatar
@@ -99,7 +96,7 @@ export const ChatMessages = () => {
               {currentSession.bot.name}
             </Type>
             <Type
-              size="xs"
+              size="sm"
               className="text-center md:max-w-[400px]"
               textColor="tertiary"
             >
