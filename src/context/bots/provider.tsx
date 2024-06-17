@@ -66,7 +66,7 @@ export const BotsProvider = ({ children }: TBotsProvider) => {
         updateSessionMutation.mutate(
           {
             sessionId: currentSession?.id,
-            session: { bot, updatedAt: moment().toISOString() },
+            session: { updatedAt: moment().toISOString() },
           },
           {
             onSuccess: () => {

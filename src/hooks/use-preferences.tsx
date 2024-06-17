@@ -7,6 +7,7 @@ import { TToolKey } from "./use-tools";
 export type TApiKeys = Partial<Record<TBaseModel, string>>;
 export type TPreferences = {
   defaultAssistant: TAssistant["key"];
+  systemPrompt: string;
   messageLimit: number;
   temperature: number;
   defaultPlugins: TToolKey[];
@@ -22,6 +23,7 @@ export type TPreferences = {
 
 export const defaultPreferences: TPreferences = {
   defaultAssistant: "gpt-3.5-turbo",
+  systemPrompt: "You're helpful assistant that can help me with my questions.",
   messageLimit: 30,
   temperature: 0.5,
   ollamaBaseUrl: "http://localhost:11434",

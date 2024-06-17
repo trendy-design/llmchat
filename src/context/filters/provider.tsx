@@ -1,5 +1,4 @@
 "use client";
-import { BotAvatar } from "@/components/ui/bot-avatar";
 import { Button } from "@/components/ui/button";
 import {
   CommandDialog,
@@ -35,7 +34,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
   } = useSessionsContext();
   const { toast, dismiss } = useToast();
   const router = useRouter();
-  const { getModelByKey } = useModelList();
+  const { getModelByKey, getAssistantByKey } = useModelList();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
@@ -138,36 +137,34 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
             ))}
           </CommandGroup>
           <CommandGroup heading="Recent Conversations">
-            {sortSessions(sessions, "updatedAt")?.map((session) => (
-              <CommandItem
-                key={session.id}
-                value={`${session.id}/${session.title}`}
-                className={cn(
-                  "gap-2 w-full",
-                  currentSession?.id === session.id
-                    ? "bg-black/10 dark:bg-black/10"
-                    : ""
-                )}
-                onSelect={(value) => {
-                  router.push(`/chat/${session.id}`);
-                  onClose();
-                }}
-              >
-                {session.bot ? (
-                  <BotAvatar
-                    size="small"
-                    name={session?.bot?.name}
-                    avatar={session?.bot?.avatar}
-                  />
-                ) : (
-                  getModelByKey(session.messages?.[0]?.model)?.icon("sm")
-                )}
-                <span className="w-full truncate">{session.title}</span>
-                <span className="pl-4 text-xs md:text-xs  text-zinc-400 dark:text-zinc-700 flex-shrink-0">
-                  {moment(session.createdAt).fromNow(true)}
-                </span>
-              </CommandItem>
-            ))}
+            {sortSessions(sessions, "updatedAt")?.map((session) => {
+              const assistantProps = getAssistantByKey(
+                session.messages?.[0]?.inputProps?.assistant?.key
+              );
+              return (
+                <CommandItem
+                  key={session.id}
+                  value={`${session.id}/${session.title}`}
+                  className={cn(
+                    "gap-2 w-full",
+                    currentSession?.id === session.id
+                      ? "bg-black/10 dark:bg-black/10"
+                      : ""
+                  )}
+                  onSelect={(value) => {
+                    router.push(`/chat/${session.id}`);
+                    onClose();
+                  }}
+                >
+                  {assistantProps?.model.icon("sm")}
+
+                  <span className="w-full truncate">{session.title}</span>
+                  <span className="pl-4 text-xs md:text-xs  text-zinc-400 dark:text-zinc-700 flex-shrink-0">
+                    {moment(session.createdAt).fromNow(true)}
+                  </span>
+                </CommandItem>
+              );
+            })}
           </CommandGroup>
         </CommandList>
       </CommandDialog>

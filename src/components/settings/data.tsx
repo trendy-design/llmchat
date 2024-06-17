@@ -2,7 +2,6 @@ import { usePreferenceContext } from "@/context/preferences/provider";
 import { useSessionsContext } from "@/context/sessions/provider";
 import { useSettings } from "@/context/settings/context";
 import { TChatSession } from "@/hooks/use-chat-session";
-import { models } from "@/hooks/use-model-list";
 import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
 import { generateAndDownloadJson, sortMessages } from "@/lib/helper";
 import { ChangeEvent } from "react";
@@ -23,7 +22,7 @@ const apiSchema = z.object({
 });
 
 const preferencesSchema = z.object({
-  defaultModel: z.string().refine((val) => models.includes(val)),
+  defaultAssistant: z.string(),
   systemPrompt: z.string().optional(),
   messageLimit: z.number().int().positive().optional(),
   temperature: z.number().optional(),
@@ -38,6 +37,7 @@ const preferencesSchema = z.object({
   topK: z.number().optional(),
   googleSearchEngineId: z.string().optional(),
   googleSearchApiKey: z.string().optional(),
+  ollamaBaseUrl: z.string().optional(),
 });
 
 const runModelPropsSchema = z.object({
@@ -46,17 +46,21 @@ const runModelPropsSchema = z.object({
   image: z.string().optional(),
   sessionId: z.string(),
   messageId: z.string().optional(),
-  model: z.string().optional(),
+  assistant: z.object({
+    key: z.string(),
+    name: z.string(),
+    baseModel: z.string(),
+    systemPrompt: z.string(),
+  }),
 });
 
 const chatMessageSchema = z.object({
   id: z.string(),
-  model: z.string(),
   image: z.string().optional(),
   rawHuman: z.string().optional(),
   rawAI: z.string().optional(),
   sessionId: z.string(),
-  runModelProps: runModelPropsSchema,
+  inputProps: runModelPropsSchema,
   toolName: z.string().optional(),
   toolResult: z.string().optional(),
   isLoading: z.boolean().optional(),
@@ -79,7 +83,6 @@ const botSchema = z.object({
 
 const sessionSchema = z.object({
   messages: z.array(chatMessageSchema),
-  bot: botSchema.optional(),
   title: z.string().optional(),
   id: z.string(),
   createdAt: z.string(),

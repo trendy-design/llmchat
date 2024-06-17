@@ -292,7 +292,7 @@ export const useModelList = () => {
       name: model.name,
       key: model.key,
       baseModel: model.key,
-      systemPrompt: "You're helpful assistant",
+      systemPrompt: preferences.systemPrompt || defaultPreferences.systemPrompt,
     })),
     {
       name: "Custom Assistant",
