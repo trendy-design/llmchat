@@ -89,6 +89,7 @@ export const AssistantsProvider = ({ children }: TAssistantsProvider) => {
       ?.map((assistant) => {
         return (
           <AssistantItem
+            key={assistant.key}
             onDelete={(assistant) => {
               deleteAssistantMutation?.mutate(assistant.key);
             }}
