@@ -1,4 +1,3 @@
-import { useBots } from "@/context/bots/context";
 import { useSessionsContext } from "@/context/sessions/provider";
 import { TChatMessage } from "@/hooks/use-chat-session";
 import { Quotes } from "@phosphor-icons/react";
@@ -12,7 +11,6 @@ export const ChatMessages = () => {
   const { currentSession, updateSessionMutation, refetchCurrentSession } =
     useSessionsContext();
   const chatContainer = useRef<HTMLDivElement>(null);
-  const { open: openBot } = useBots();
 
   useEffect(() => {
     scrollToBottom();

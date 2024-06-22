@@ -1,6 +1,4 @@
-import { useBots } from "@/context/bots/context";
 import { useChatContext } from "@/context/chat/provider";
-import { usePrompts } from "@/context/prompts/context";
 import { ArrowRight } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { Flex } from "./ui/flex";
@@ -8,12 +6,39 @@ import { Type } from "./ui/text";
 
 export type TChatExamples = {};
 export const ChatExamples = () => {
-  const { allPrompts } = usePrompts();
-  const { allBots, open: openBots } = useBots();
   const { editor } = useChatContext();
-  if (!allPrompts?.length) {
-    return null;
-  }
+  const allPropmts = [
+    {
+      id: "621d5e4f-4b56-4302-97cd-5b837b6296ab",
+      created_at: "2024-06-09T07:38:30.220026+00:00",
+      name: "Craft Engaging Marketing Email Copy",
+      content:
+        "Write marketing copy to make my marketing emails more engaging. The copy must be about our {{{{product, service, or company}}}} ",
+      category: "Marketing",
+    },
+    {
+      id: "779820b7-f900-4b8b-a03b-1f01bddf2980",
+      created_at: "2024-06-11T08:38:00.996295+00:00",
+      name: "Generate a SQL query",
+      content:
+        "Generate a SQL query to {{{{count and sort unique logins in the last month}}}}",
+      category: "coding",
+    },
+    {
+      id: "2a502ea1-88fe-4bbf-946e-e78a08eee0d3",
+      created_at: "2024-06-11T10:47:30.506062+00:00",
+      name: "Suggest python library to solve a problem",
+      content: "Suggest python library to solve {{{{a problem}}}}",
+      category: "coding",
+    },
+    {
+      id: "83b98019-5885-4d59-becc-827a8587e0bb",
+      created_at: "2024-06-11T10:50:02.82221+00:00",
+      name: "Design a fun coding game",
+      content: "Design a fun {{{{snake paper}}}} coding game",
+      category: "coding",
+    },
+  ];
   return (
     <Flex direction="col" gap="md" justify="center" items="center">
       <div className="flex flex-col gap-3 p-4">
@@ -21,7 +46,7 @@ export const ChatExamples = () => {
           Try Prompts
         </Type>
         <div className="flex flex-col gap-1 md:gap-3 md:w-[700px] lg:w-[720px] w-full">
-          {allPrompts.slice(0, 3)?.map((example, index) => (
+          {allPropmts?.slice(0, 3)?.map((example, index) => (
             <motion.div
               initial={{
                 opacity: 0,
@@ -43,37 +68,6 @@ export const ChatExamples = () => {
               </p>
             </motion.div>
           ))}
-          {/* <motion.div
-            initial={{
-              opacity: 0,
-            }}
-            className="flex bg-white dark:bg-zinc-800 flex-col gap-4 items-start text-sm md:text-base py-2 px-3 md:py-3 md:px-4  border border-black/10 dark:border-white/5 text-zinc-600 dark:text-zinc-400 w-full rounded-2xl hover:bg-zinc-50 dark:hover:bg-black/20 cursor-pointer relative"
-            animate={{
-              opacity: 1,
-            }}
-            onClick={() => {
-              openBots();
-            }}
-          >
-            <p className="text-sm md:text-base text-zinc-800 dark:text-white font-medium w-full">
-              Popular bots
-            </p>
-            <Flex gap="sm">
-              {allBots?.map((bot) => (
-                <Tooltip content={bot.name} key={bot.id}>
-                  <BotAvatar name={bot.name} avatar={bot.avatar} size="small" />
-                </Tooltip>
-              ))}
-            </Flex>
-            <Button
-              size="iconXS"
-              rounded="full"
-              variant="secondary"
-              className="absolute right-4 bottom-4"
-            >
-              <ArrowRight size={15} weight="bold" />
-            </Button>
-          </motion.div> */}
         </div>
       </div>
     </Flex>

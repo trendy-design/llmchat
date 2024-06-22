@@ -1,10 +1,7 @@
-import { useBots } from "@/context/bots/context";
 import { usePrompts } from "@/context/prompts/context";
-import { TBot } from "@/hooks/use-bots";
 import { TPrompt } from "@/hooks/use-prompts";
 import { Plus } from "@phosphor-icons/react";
 import { useState } from "react";
-import { BotAvatar } from "./ui/bot-avatar";
 import {
   Command as CMDKCommand,
   CommandEmpty,
@@ -20,7 +17,7 @@ export type TPromptsBotsCombo = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onPromptSelect: (prompt: TPrompt) => void;
-  onBotSelect?: (prompt: TBot) => void;
+
   onBack: () => void;
 };
 export const PromptsBotsCombo = ({
@@ -28,12 +25,10 @@ export const PromptsBotsCombo = ({
   children,
   onOpenChange,
   onBack,
-  onBotSelect,
   onPromptSelect,
 }: TPromptsBotsCombo) => {
   const [commandInput, setCommandInput] = useState("");
   const { open: openPrompts, allPrompts } = usePrompts();
-  const { open: openBot, allBots, assignBot } = useBots();
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
@@ -69,14 +64,7 @@ export const PromptsBotsCombo = ({
               <Plus size={14} weight="bold" className="flex-shrink-0" /> Create
               New Prompt
             </CommandItem>
-            <CommandItem
-              onSelect={() => {
-                openBot("create");
-              }}
-            >
-              <Plus size={14} weight="bold" className="flex-shrink-0" /> Create
-              New Bot
-            </CommandItem>
+
             {!!allPrompts?.length && (
               <CommandGroup heading="Prompts">
                 {allPrompts?.map((prompt, index) => (
@@ -87,27 +75,6 @@ export const PromptsBotsCombo = ({
                     }}
                   >
                     {prompt.name}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            )}
-            {!!allBots?.length && (
-              <CommandGroup heading="Bots">
-                {allBots?.map((bot, index) => (
-                  <CommandItem
-                    key={index}
-                    onSelect={() => {
-                      assignBot(bot);
-                      onBotSelect && onBotSelect(bot);
-                      onOpenChange(false);
-                    }}
-                  >
-                    <BotAvatar
-                      name={bot.name}
-                      size="small"
-                      avatar={bot?.avatar}
-                    />{" "}
-                    {bot.name}
                   </CommandItem>
                 ))}
               </CommandGroup>

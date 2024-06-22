@@ -133,12 +133,7 @@ export const useRecordVoice = () => {
 
     return (
       <Tooltip content="Record">
-        <Button
-          size="iconSm"
-          variant="ghost"
-          rounded="full"
-          onClick={startVoiceRecording}
-        >
+        <Button size="iconSm" variant="ghost" onClick={startVoiceRecording}>
           <Microphone size={20} weight="bold" />
         </Button>
       </Tooltip>

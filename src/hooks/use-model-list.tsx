@@ -6,6 +6,7 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOpenAI } from "@langchain/openai";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { useAssistants } from "./use-bots";
 import { TAssistant } from "./use-chat-session";
 import { defaultPreferences } from "./use-preferences";
 import { TToolKey } from "./use-tools";
@@ -43,6 +44,7 @@ export type TModel = {
 };
 
 export const useModelList = () => {
+  const assistantsProps = useAssistants();
   const { preferences } = usePreferenceContext();
 
   const ollamaModelsQuery = useQuery({
@@ -288,18 +290,17 @@ export const useModelList = () => {
   };
 
   const assistants: TAssistant[] = [
-    ...allModels?.map((model) => ({
-      name: model.name,
-      key: model.key,
-      baseModel: model.key,
-      systemPrompt: preferences.systemPrompt || defaultPreferences.systemPrompt,
-    })),
-    {
-      name: "Custom Assistant",
-      baseModel: "gpt-3.5-turbo",
-      key: "custome-assistant",
-      systemPrompt: "Be funny and answer always negatively",
-    },
+    ...allModels?.map(
+      (model): TAssistant => ({
+        name: model.name,
+        key: model.key,
+        baseModel: model.key,
+        type: "base",
+        systemPrompt:
+          preferences.systemPrompt || defaultPreferences.systemPrompt,
+      })
+    ),
+    ...(assistantsProps?.assistantsQuery?.data || []),
   ];
 
   const getAssistantByKey = (
@@ -326,5 +327,6 @@ export const useModelList = () => {
     getTestModelKey,
     assistants,
     getAssistantByKey,
+    ...assistantsProps,
   };
 };

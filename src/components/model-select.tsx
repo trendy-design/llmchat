@@ -1,6 +1,4 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
 import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { defaultPreferences } from "@/hooks/use-preferences";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Badge } from "./ui/badge";
@@ -28,7 +26,6 @@ export const ModelSelect = ({
   className,
 }: TModelSelect) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { preferences, updatePreferences } = usePreferenceContext();
 
   const { getModelByKey, models, assistants, getAssistantByKey } =
     useModelList();
@@ -53,7 +50,7 @@ export const ModelSelect = ({
           align="start"
           sideOffset={4}
           className={cn(
-            "text-xs md:text-sm max-h-[260px] overflow-y-auto no-scrollbar",
+            "text-xs z-[600] md:text-sm max-h-[260px] overflow-y-auto no-scrollbar",
             fullWidth ? "w-full" : "min-w-[250px]"
           )}
         >
@@ -69,16 +66,8 @@ export const ModelSelect = ({
                 )}
                 key={assistant.key}
                 onClick={() => {
-                  updatePreferences(
-                    {
-                      defaultAssistant: assistant.key,
-                      maxTokens: defaultPreferences.maxTokens,
-                    },
-                    () => {
-                      setSelectedModel(assistant.key);
-                      setIsOpen(false);
-                    }
-                  );
+                  setSelectedModel(assistant.key);
+                  setIsOpen(false);
                 }}
               >
                 {model?.icon("sm")} {assistant.name}{" "}

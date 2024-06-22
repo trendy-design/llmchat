@@ -5,11 +5,14 @@ import moment from "moment";
 import { v4 } from "uuid";
 import { TModelKey } from "./use-model-list";
 
+export type TAssistantType = "base" | "custom";
+
 export type TAssistant = {
   name: string;
   systemPrompt: string;
   baseModel: TModelKey;
   key: TModelKey | string;
+  type: TAssistantType;
 };
 
 export type TLLMInputProps = {

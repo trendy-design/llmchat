@@ -9,7 +9,6 @@ import {
   ArrowDown,
   ArrowElbowDownRight,
   ArrowUp,
-  Command,
   Stop,
   X,
 } from "@phosphor-icons/react";
@@ -18,9 +17,8 @@ import { EditorContent } from "@tiptap/react";
 import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ModelSelect } from "./model-select";
-import { Badge } from "./ui/badge";
 
+import { useAssistantContext } from "@/context/assistants/provider";
 import { useChatContext } from "@/context/chat/provider";
 import { usePreferenceContext } from "@/context/preferences/provider";
 import { useSessionsContext } from "@/context/sessions/provider";
@@ -49,6 +47,7 @@ export const ChatInput = () => {
     transcribing,
   } = useRecordVoice();
   const { currentSession } = useSessionsContext();
+  const { selectedAssistant, open: openAssistants } = useAssistantContext();
   const {
     editor,
     handleRunModel,
@@ -236,10 +235,6 @@ export const ChatInput = () => {
               setOpenPromptsBotCombo(false);
             }}
             onOpenChange={setOpenPromptsBotCombo}
-            onBotSelect={(bot) => {
-              editor?.commands?.clearContent();
-              editor?.commands.focus("end");
-            }}
           >
             <motion.div
               variants={slideUpVariant}
@@ -263,23 +258,19 @@ export const ChatInput = () => {
                 {!isGenerating && renderRecordingControls()}
               </div>
               <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 pb-2 px-2">
-                <ModelSelect
-                  selectedModel={selectedModel}
-                  setSelectedModel={setSelectedModel}
-                />
+                <Button
+                  variant={"ghost"}
+                  onClick={openAssistants}
+                  className={cn("pl-1 pr-3 gap-2 text-xs md:text-sm")}
+                  size="sm"
+                >
+                  {selectedAssistant?.model?.icon("sm")}
+                  {selectedAssistant?.assistant.name}
+                </Button>
                 <PluginSelect selectedModel={selectedModel} />
                 <QuickSettings />
                 <div className="flex-1"></div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={openFilters}
-                  className="px-1.5"
-                >
-                  <Badge className="flex">
-                    <Command size={16} weight="bold" /> K
-                  </Badge>
-                </Button>
+
                 {!isGenerating && (
                   <Button
                     size="iconSm"

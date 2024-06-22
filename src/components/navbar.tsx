@@ -1,4 +1,3 @@
-import { useBots } from "@/context/bots/context";
 import { useFilters } from "@/context/filters/context";
 import { usePrompts } from "@/context/prompts/context";
 import { useSessionsContext } from "@/context/sessions/provider";
@@ -9,7 +8,6 @@ import {
   GearSix,
   Moon,
   Plus,
-  Robot,
   Sun,
 } from "@phosphor-icons/react";
 import { useTheme } from "next-themes";
@@ -29,7 +27,7 @@ export const Navbar = () => {
   const { open: openSettings } = useSettings();
   const { open: openFilters } = useFilters();
   const { open: openPrompts } = usePrompts();
-  const { open: openBots } = useBots();
+  // const { open: openBots } = useBots();
   const [isOpen, setIsOpen] = useState(false);
   const { createSession } = useSessionsContext();
 
@@ -98,14 +96,6 @@ export const Navbar = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
           <DropdownMenuContent className="min-w-[250px] text-sm md:text-base mr-2">
-            <DropdownMenuItem
-              onClick={() => {
-                openBots();
-              }}
-            >
-              <Robot size={14} weight="bold" />
-              Bots
-            </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
                 openPrompts();

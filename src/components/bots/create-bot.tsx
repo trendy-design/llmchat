@@ -1,39 +1,46 @@
-import { TBot } from "@/hooks/use-bots";
-import { convertFileToBase64 } from "@/lib/helper";
-import { ArrowLeft, Plus } from "@phosphor-icons/react";
+import { TAssistant } from "@/hooks/use-chat-session";
+import { Plus } from "@phosphor-icons/react";
 import { useFormik } from "formik";
 import { useEffect, useRef } from "react";
 import { ModelSelect } from "../model-select";
 import { Badge } from "../ui/badge";
-import { BotAvatar } from "../ui/bot-avatar";
 import { Button } from "../ui/button";
 import { ComingSoon } from "../ui/coming-soon";
 import { FormLabel } from "../ui/form-label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
-export type TCreateBot = {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onCreateBot: (bot: Omit<TBot, "id">) => void;
+export type TCreateAssistant = {
+  assistant?: TAssistant;
+  onCreateAssistant: (assistant: Omit<TAssistant, "key">) => void;
+  onUpdateAssistant: (assistant: TAssistant) => void;
+  onCancel: () => void;
 };
 
-export const CreateBot = ({ open, onOpenChange, onCreateBot }: TCreateBot) => {
+export const CreateAssistant = ({
+  assistant,
+  onCreateAssistant,
+  onUpdateAssistant,
+  onCancel,
+}: TCreateAssistant) => {
   const botTitleRef = useRef<HTMLInputElement | null>(null);
 
-  const formik = useFormik<Omit<TBot, "id">>({
+  const formik = useFormik<Omit<TAssistant, "key">>({
     initialValues: {
-      name: "",
-      description: "",
-      prompt: "",
-      avatar: undefined,
-      status: undefined,
-      deafultBaseModel: "gemini-pro",
+      name: assistant?.name || "",
+      systemPrompt: assistant?.systemPrompt || "",
+      baseModel: assistant?.baseModel || "gpt-3.5-turbo",
+      type: "custom",
     },
+    enableReinitialize: true,
     onSubmit: (values) => {
-      onCreateBot(values);
-      clearBot();
-      onOpenChange(false);
+      if (assistant?.key) {
+        onUpdateAssistant({ ...values, key: assistant?.key });
+      } else {
+        onCreateAssistant(values);
+      }
+      clearAssistant();
+      onCancel();
     },
   });
 
@@ -41,79 +48,38 @@ export const CreateBot = ({ open, onOpenChange, onCreateBot }: TCreateBot) => {
     botTitleRef?.current?.focus();
   }, [open]);
 
-  const clearBot = () => {
+  const clearAssistant = () => {
     formik.resetForm();
   };
 
-  const uploadFile = (file: File) => {
-    convertFileToBase64(file, (base64) => {
-      formik.setFieldValue("avatar", base64);
-    });
-  };
   return (
-    <div className="flex flex-col items-start w-full relative h-full overflow-hidden">
-      <div className="w-full px-2 py-2 border-b border-zinc-500/20 flex flex-row gap-3 items-center">
-        <Button
-          size="iconSm"
-          variant="ghost"
-          onClick={() => {
-            onOpenChange(false);
-          }}
-        >
-          <ArrowLeft size={16} weight="bold" />
-        </Button>
-        <p className="text-base font-medium">Create New Bot</p>
+    <div className="flex flex-col items-start w-full relative h-full overflow-hidden bg-white rounded-2xl">
+      <div className="w-full px-4 py-3 border-b  border-zinc-500/20 flex flex-row gap-3 items-center">
+        <p className="text-base font-medium">
+          {assistant?.key ? "Edit Assistant" : "Add New Assistant"}
+        </p>
         <Badge>Beta</Badge>
       </div>
-      <div className="flex flex-col w-full p-4 gap-8 items-start h-full overflow-y-auto no-scrollbar pb-[100px]">
-        <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col w-full p-4 gap-6 items-start h-full overflow-y-auto no-scrollbar pb-[100px]">
+        <div className="flex flex-row items-center justify-between gap-2 w-full">
           <FormLabel label="Base Model" />
           <ModelSelect
             variant="secondary"
             fullWidth
             className="w-full justify-start p-2 h-10"
-            selectedModel={formik.values.deafultBaseModel}
+            selectedModel={formik.values.baseModel}
             setSelectedModel={(model) => {
-              formik.setFieldValue("deafultBaseModel", model);
+              formik.setFieldValue("baseModel", model);
             }}
           />
         </div>
-        <div className="flex flex-col gap-2 w-full">
-          <FormLabel label="Bot Avatar" />
-
-          <div className="flex flex-row justify-start items-center gap-2 w-full">
-            <BotAvatar
-              name={formik.values.name}
-              size="large"
-              avatar={formik.values.avatar}
-            />
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                document.getElementById("avatar")?.click();
-              }}
-            >
-              Upload Avatar
-            </Button>
-            <input
-              type="file"
-              id="avatar"
-              hidden
-              onChange={(e) => {
-                e.target.files?.[0] && uploadFile(e.target.files?.[0]);
-              }}
-            />
-          </div>
-        </div>
 
         <div className="flex flex-col gap-2 w-full">
-          <FormLabel label="Bot Name" />
+          <FormLabel label="Assistant Name" />
           <Input
             type="text"
             name="name"
-            placeholder="Bot Title"
+            placeholder="Assistant Name"
             value={formik.values.name}
             ref={botTitleRef}
             onChange={formik.handleChange}
@@ -122,18 +88,17 @@ export const CreateBot = ({ open, onOpenChange, onCreateBot }: TCreateBot) => {
         </div>
 
         <div className="flex flex-col gap-2 w-full">
-          <FormLabel label="Bot Bio">
-            A short description of your bot. This will be displayed in the bot
+          <FormLabel label="System Prompt">
+            Assign bot a role to help users understand what the bot can do.
           </FormLabel>
           <Textarea
-            name="description"
-            placeholder="This is a bot that can help you with anything."
-            value={formik.values.description}
+            name="systemPrompt"
+            placeholder="You're a helpful Assistant. Your role is to help users with their queries."
+            value={formik.values.systemPrompt}
             onChange={formik.handleChange}
             className="w-full"
           />
         </div>
-
         <div className="flex flex-col gap-2 w-full">
           <FormLabel label="Knowledge">
             Provide custom knowledge that your bot will access to inform its
@@ -146,35 +111,11 @@ export const CreateBot = ({ open, onOpenChange, onCreateBot }: TCreateBot) => {
             <Plus size={20} weight="bold" /> Add Knowledge <ComingSoon />
           </Button>
         </div>
-
-        <div className="flex flex-col gap-2 w-full">
-          <FormLabel label="Greeting Message">
-            The bot will send this message at the beginning of every
-            conversation.
-          </FormLabel>
-          <Textarea
-            name="greetingMessage"
-            placeholder="Hello I'm a bot! Ask me anything."
-            value={formik.values.greetingMessage}
-            onChange={formik.handleChange}
-            className="w-full h-12"
-          />
-        </div>
-
-        <div className="flex flex-col gap-2 w-full">
-          <FormLabel label="System Prompt">
-            Assign bot a role to help users understand what the bot can do.
-          </FormLabel>
-          <Textarea
-            name="prompt"
-            placeholder="You're a helpful Assistant. Your role is to help users with their queries."
-            value={formik.values.prompt}
-            onChange={formik.handleChange}
-            className="w-full"
-          />
-        </div>
       </div>
-      <div className="w-full absolute bottom-0 left-0 right-0 bg-white dark:bg-zinc-800  px-2 py-2 border-t border-zinc-500/20 flex flex-row gap-3 items-center">
+      <div className="w-full p-2 border-t justify-between border-zinc-500/20 flex flex-row gap-1 items-center">
+        <Button variant="ghost" onClick={onCancel}>
+          Back
+        </Button>
         <Button
           variant="default"
           onClick={() => {
@@ -182,24 +123,6 @@ export const CreateBot = ({ open, onOpenChange, onCreateBot }: TCreateBot) => {
           }}
         >
           Save
-        </Button>
-        <Button
-          variant="ghost"
-          onClick={() => {
-            onOpenChange(false);
-          }}
-        >
-          Cancel
-        </Button>
-        <div className="flex-1"></div>
-
-        <Button
-          size="sm"
-          variant="default"
-          disabled={true}
-          className="opacity-20"
-        >
-          Publish <ComingSoon />
         </Button>
       </div>
     </div>
