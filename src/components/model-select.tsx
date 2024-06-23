@@ -46,35 +46,37 @@ export const ModelSelect = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent
-          side="top"
-          align="start"
+          side="bottom"
+          align="end"
           sideOffset={4}
           className={cn(
-            "text-xs z-[600] md:text-sm max-h-[260px] overflow-y-auto no-scrollbar",
+            "text-xs z-[610] md:text-sm max-h-[260px] overflow-y-auto no-scrollbar",
             fullWidth ? "w-full" : "min-w-[250px]"
           )}
         >
-          {assistants.map((assistant) => {
-            const model = getModelByKey(assistant.baseModel);
+          {assistants
+            ?.filter((a) => a.type === "base")
+            .map((assistant) => {
+              const model = getModelByKey(assistant.baseModel);
 
-            return (
-              <DropdownMenuItem
-                className={cn(
-                  "text-xs md:text-sm font-medium",
-                  activeAssistant?.assistant.key === assistant.key &&
-                    "dark:bg-black/30 bg-zinc-50"
-                )}
-                key={assistant.key}
-                onClick={() => {
-                  setSelectedModel(assistant.key);
-                  setIsOpen(false);
-                }}
-              >
-                {model?.icon("sm")} {assistant.name}{" "}
-                {model?.isNew && <Badge>New</Badge>}
-              </DropdownMenuItem>
-            );
-          })}
+              return (
+                <DropdownMenuItem
+                  className={cn(
+                    "text-xs md:text-sm font-medium",
+                    activeAssistant?.assistant.key === assistant.key &&
+                      "dark:bg-black/30 bg-zinc-50"
+                  )}
+                  key={assistant.key}
+                  onClick={() => {
+                    setSelectedModel(assistant.key);
+                    setIsOpen(false);
+                  }}
+                >
+                  {model?.icon("sm")} {assistant.name}{" "}
+                  {model?.isNew && <Badge>New</Badge>}
+                </DropdownMenuItem>
+              );
+            })}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

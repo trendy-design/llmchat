@@ -1,10 +1,3 @@
-import { useFilters } from "@/context/filters/context";
-import { useModelList } from "@/hooks/use-model-list";
-import { useRecordVoice } from "@/hooks/use-record-voice";
-import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
-import { slideUpVariant } from "@/lib/framer-motion";
-import { cn } from "@/lib/utils";
-
 import {
   ArrowDown,
   ArrowElbowDownRight,
@@ -12,17 +5,26 @@ import {
   Stop,
   X,
 } from "@phosphor-icons/react";
-
 import { EditorContent } from "@tiptap/react";
 import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-import { useAssistantContext } from "@/context/assistants/provider";
-import { useChatContext } from "@/context/chat/provider";
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { useSessionsContext } from "@/context/sessions/provider";
+import {
+  useAssistantContext,
+  useChatContext,
+  usePreferenceContext,
+  useSessionsContext,
+} from "@/context";
+import {
+  defaultPreferences,
+  useModelList,
+  useRecordVoice,
+  useScrollToBottom,
+} from "@/hooks";
 import { TAssistant } from "@/hooks/use-chat-session";
+import { slideUpVariant } from "@/lib/framer-motion";
+import { cn } from "@/lib/utils";
 import { ChatExamples } from "./chat-examples";
 import { ChatGreeting } from "./chat-greeting";
 import { PluginSelect } from "./plugin-select";
@@ -37,7 +39,6 @@ export type TAttachment = {
 
 export const ChatInput = () => {
   const { sessionId } = useParams();
-  const { open: openFilters } = useFilters();
   const { showButton, scrollToBottom } = useScrollToBottom();
   const {
     renderListeningIndicator,
@@ -60,31 +61,30 @@ export const ChatInput = () => {
     stopGeneration,
   } = useChatContext();
 
-  const { preferences } = usePreferenceContext();
+  const { preferences, updatePreferences } = usePreferenceContext();
   const { models, getAssistantByKey } = useModelList();
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [selectedModel, setSelectedModel] = useState<TAssistant["key"]>(
-    preferences.defaultAssistant
-  );
+  const [selectedAssistantKey, setSelectedAssistantKey] = useState<
+    TAssistant["key"]
+  >(preferences.defaultAssistant);
 
   useEffect(() => {
-    setSelectedModel(preferences.defaultAssistant);
+    const assistantProps = getAssistantByKey(preferences.defaultAssistant);
+    if (assistantProps?.model) {
+      setSelectedAssistantKey(preferences.defaultAssistant);
+    } else {
+      updatePreferences({
+        defaultAssistant: defaultPreferences.defaultAssistant,
+      });
+    }
   }, [models, preferences]);
-
-  console.log("selectedModelinput", preferences.defaultAssistant);
 
   useEffect(() => {
     if (editor?.isActive) {
       editor.commands.focus("end");
     }
   }, [editor?.isActive]);
-
-  // useEffect(() => {
-  //   if (currentSession?.bot?.deafultBaseModel) {
-  //     setSelectedModel(currentSession.bot.deafultBaseModel);
-  //   }
-  // }, [currentSession]);
 
   useEffect(() => {
     if (sessionId) {
@@ -157,7 +157,6 @@ export const ChatInput = () => {
     }
   };
 
-  // const renderReplyButton = () => {
   //   if (showPopup && !recording && !transcribing) {
   //     return (
   //       <motion.span
@@ -215,7 +214,6 @@ export const ChatInput = () => {
       {isFreshSession && <ChatGreeting />}
       <div className="flex flex-row items-center gap-2">
         {renderScrollToBottom()}
-        {/* {renderReplyButton()} */}
         {renderStopGeneration()}
         {renderListeningIndicator()}
       </div>
@@ -267,7 +265,7 @@ export const ChatInput = () => {
                   {selectedAssistant?.model?.icon("sm")}
                   {selectedAssistant?.assistant.name}
                 </Button>
-                <PluginSelect selectedModel={selectedModel} />
+                <PluginSelect selectedAssistantKey={selectedAssistantKey} />
                 <QuickSettings />
                 <div className="flex-1"></div>
 
@@ -279,7 +277,7 @@ export const ChatInput = () => {
                     disabled={!editor?.getText()}
                     className={cn(
                       !!editor?.getText() &&
-                        "bg-zinc-800 dark:bg-emerald-500/20 text-white dark:text-emerald-400"
+                        "bg-zinc-800 dark:bg-emerald-500/20 text-white dark:text-emerald-400 dark:outline-emerald-400"
                     )}
                     onClick={() => {
                       sendMessage();

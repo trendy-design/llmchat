@@ -1,4 +1,4 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
+import { usePreferenceContext } from "@/context/preferences";
 import { useModelList } from "@/hooks/use-model-list";
 import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
 import { ArrowClockwise, Info, SlidersHorizontal } from "@phosphor-icons/react";

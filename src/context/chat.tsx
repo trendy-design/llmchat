@@ -13,9 +13,9 @@ import { Placeholder } from "@tiptap/extension-placeholder";
 import { Text } from "@tiptap/extension-text";
 import { useEditor } from "@tiptap/react";
 import { createContext, useContext, useState } from "react";
-import { usePreferenceContext } from "../preferences/provider";
-import { useSessionsContext } from "../sessions/provider";
-import { useSettings } from "../settings/context";
+import { usePreferenceContext } from "./preferences";
+import { useSessionsContext } from "./sessions";
+import { useSettingsContext } from "./settings";
 
 export type TChatContext = {
   editor: ReturnType<typeof useEditor>;
@@ -46,11 +46,11 @@ export type TChatProvider = {
 export const ChatProvider = ({ children }: TChatProvider) => {
   const { setCurrentSession, refetchSessions, currentSession } =
     useSessionsContext();
-  const { getModelByKey, getAssistantByKey } = useModelList();
+  const { getAssistantByKey } = useModelList();
   const { toast } = useToast();
   const [openPromptsBotCombo, setOpenPromptsBotCombo] = useState(false);
   const [contextValue, setContextValue] = useState("");
-  const { open: openSettings } = useSettings();
+  const { open: openSettings } = useSettingsContext();
   const { preferences, apiKeys } = usePreferenceContext();
   const [isGenerating, setIsGenerating] = useState(false);
 

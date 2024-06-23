@@ -5,9 +5,25 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { TPrompt, usePrompts } from "@/hooks/use-prompts";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useState } from "react";
-import { useChatContext } from "../chat/provider";
-import { PromptsContext } from "./context";
+import { createContext, useContext, useState } from "react";
+import { useChatContext } from "./chat";
+
+export type TPromptsContext = {
+  open: (action?: "public" | "local" | "create") => void;
+  dismiss: () => void;
+  allPrompts: TPrompt[];
+};
+export const PromptsContext = createContext<undefined | TPromptsContext>(
+  undefined
+);
+
+export const usePromptsContext = () => {
+  const context = useContext(PromptsContext);
+  if (context === undefined) {
+    throw new Error("usePrompts must be used within a PromptssProvider");
+  }
+  return context;
+};
 
 export type TPromptsProvider = {
   children: React.ReactNode;

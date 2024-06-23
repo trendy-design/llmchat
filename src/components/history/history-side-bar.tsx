@@ -1,4 +1,4 @@
-import { useSessionsContext } from "@/context/sessions/provider";
+import { useSessionsContext } from "@/context/sessions";
 import { sortSessions } from "@/lib/helper";
 import { cn } from "@/lib/utils";
 import { ClockCounterClockwise, SidebarSimple, X } from "@phosphor-icons/react";
@@ -23,7 +23,7 @@ export const HistorySidebar = () => {
         <Drawer.Overlay className="fixed inset-0 z-[400] bg-zinc-500/70 dark:bg-zinc-900/70 backdrop-blur-sm" />
         <Drawer.Content
           className={cn(
-            "flex flex-col rounded-3xl outline-none h-[99dvh] w-[280px] fixed z-[901] md:bottom-1 right-1 top-1 "
+            "flex flex-col rounded-3xl outline-none h-[98dvh] w-[320px] fixed z-[901] md:bottom-2 right-2 top-2 "
           )}
         >
           <div className="bg-white dark:bg-zinc-800 h-[98dvh] dark:border dark:border-white/5 flex flex-row rounded-2xl flex-1 p-2 relative">

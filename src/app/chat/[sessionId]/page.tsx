@@ -1,9 +1,9 @@
 "use client";
 import { ChatInput } from "@/components/chat-input";
-import { ChatMessages } from "@/components/chat-messages";
-import { Navbar } from "@/components/navbar";
+import { Navbar } from "@/components/layout/navbar";
+import { ChatMessages } from "@/components/messages/chat-messages";
 import Spinner from "@/components/ui/loading-spinner";
-import { useSessionsContext } from "@/context/sessions/provider";
+import { useSessionsContext } from "@/context";
 
 const ChatSessionPage = () => {
   const { isCurrentSessionLoading, isAllSessionLoading } = useSessionsContext();

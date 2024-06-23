@@ -1,4 +1,4 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
+import { usePreferenceContext } from "@/context/preferences";
 import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
 import { ArrowClockwise, Info } from "@phosphor-icons/react";
 import { ChangeEvent } from "react";

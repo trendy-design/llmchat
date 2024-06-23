@@ -3,7 +3,7 @@ import { Flex } from "@/components/ui/flex";
 import { Input } from "@/components/ui/input";
 import { Type } from "@/components/ui/text";
 import { useToast } from "@/components/ui/use-toast";
-import { usePreferenceContext } from "@/context/preferences/provider";
+import { usePreferenceContext } from "@/context/preferences";
 import { ArrowRight, CaretDown, Info } from "@phosphor-icons/react";
 import axios from "axios";
 import { useEffect } from "react";

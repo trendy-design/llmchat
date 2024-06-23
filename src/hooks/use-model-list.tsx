@@ -1,5 +1,5 @@
-import { ModelIcon } from "@/components/icons/model-icon";
-import { usePreferenceContext } from "@/context/preferences/provider";
+import { ModelIcon } from "@/components/model-icon";
+import { usePreferenceContext } from "@/context";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatOllama } from "@langchain/community/chat_models/ollama";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
@@ -325,7 +325,9 @@ export const useModelList = () => {
     createInstance,
     getModelByKey,
     getTestModelKey,
-    assistants,
+    assistants: assistants?.filter(
+      (a) => !!allModels.find((m) => m.key === a.baseModel)
+    ),
     getAssistantByKey,
     ...assistantsProps,
   };

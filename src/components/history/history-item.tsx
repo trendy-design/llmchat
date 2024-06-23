@@ -1,14 +1,16 @@
-import { useSessionsContext } from "@/context/sessions/provider";
+import { useSessionsContext } from "@/context/sessions";
 import { TChatSession } from "@/hooks/use-chat-session";
 import { useModelList } from "@/hooks/use-model-list";
 import { cn } from "@/lib/utils";
 import { PencilSimple, TrashSimple } from "@phosphor-icons/react";
+import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { Flex } from "../ui/flex";
 import { Input } from "../ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Type } from "../ui/text";
 import { Tooltip } from "../ui/tooltip";
 
 export const HistoryItem = ({
@@ -35,6 +37,10 @@ export const HistoryItem = ({
     session.messages?.[0]?.inputProps?.assistant?.key
   );
 
+  const modelProps = getModelByKey(
+    session.messages?.[0]?.inputProps?.assistant?.baseModel
+  );
+
   useEffect(() => {
     if (isEditing) {
       historyInputRef.current?.focus();
@@ -45,7 +51,7 @@ export const HistoryItem = ({
     <div
       key={session.id}
       className={cn(
-        "gap-2 group w-full h-10 cursor-pointer flex flex-row items-center p-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
+        "gap-2 group w-full cursor-pointer flex flex-row items-start p-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
         currentSession?.id === session.id || isEditing
           ? "bg-black/10 dark:bg-black/30"
           : ""
@@ -60,7 +66,7 @@ export const HistoryItem = ({
       {isEditing ? (
         <Input
           variant="ghost"
-          className="h-6"
+          className="h-6 text-sm"
           ref={historyInputRef}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -85,11 +91,15 @@ export const HistoryItem = ({
         />
       ) : (
         <>
-          {assistantProps?.model.icon("sm")}
-
-          <span className="w-full truncate text-xs md:text-sm">
-            {session.title}
-          </span>
+          {modelProps?.icon?.("sm")}
+          <Flex direction="col" items="start" className="w-full">
+            <Type className="line-clamp-1" size="sm" textColor="primary">
+              {session.title}
+            </Type>
+            <Type className="line-clamp-1" size="xs" textColor="tertiary">
+              {moment(session.updatedAt).fromNow()}
+            </Type>
+          </Flex>
         </>
       )}
       {(!isEditing || openDeleteConfirm) && (

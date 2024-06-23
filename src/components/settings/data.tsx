@@ -1,6 +1,6 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { useSessionsContext } from "@/context/sessions/provider";
-import { useSettings } from "@/context/settings/context";
+import { useSettingsContext } from "@/context";
+import { usePreferenceContext } from "@/context/preferences";
+import { useSessionsContext } from "@/context/sessions";
 import { TChatSession } from "@/hooks/use-chat-session";
 import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
 import { generateAndDownloadJson, sortMessages } from "@/lib/helper";
@@ -132,7 +132,7 @@ const mergeSessions = (
 };
 
 export const Data = () => {
-  const { dismiss } = useSettings();
+  const { dismiss } = useSettingsContext();
   const { toast } = useToast();
 
   const {

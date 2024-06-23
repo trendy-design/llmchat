@@ -1,6 +1,5 @@
-import { ModelIcon } from "@/components/icons/model-icon";
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { useSettings } from "@/context/settings/context";
+import { ModelIcon } from "@/components/model-icon";
+import { usePreferenceContext, useSettingsContext } from "@/context";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { Globe } from "@phosphor-icons/react";
 import axios from "axios";
@@ -167,8 +166,8 @@ export type TTool = {
 };
 
 export const useTools = () => {
-  const { preferences, updatePreferences } = usePreferenceContext();
-  const { open } = useSettings();
+  const { preferences } = usePreferenceContext();
+  const { open } = useSettingsContext();
 
   const tools: TTool[] = [
     // {

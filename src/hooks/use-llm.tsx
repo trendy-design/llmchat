@@ -1,6 +1,6 @@
 import { useToast } from "@/components/ui/use-toast";
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { useSessionsContext } from "@/context/sessions/provider";
+import { usePreferenceContext } from "@/context/preferences";
+import { useSessionsContext } from "@/context/sessions";
 import { sortMessages } from "@/lib/helper";
 import type { Serialized } from "@langchain/core/load/serializable";
 import { AIMessage, HumanMessage } from "@langchain/core/messages";

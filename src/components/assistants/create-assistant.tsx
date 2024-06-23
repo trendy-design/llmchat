@@ -53,7 +53,7 @@ export const CreateAssistant = ({
   };
 
   return (
-    <div className="flex flex-col items-start w-full relative h-full overflow-hidden bg-white rounded-2xl">
+    <div className="flex flex-col items-start w-full bg-white dark:bg-zinc-800 dark:border dark:border-white/10 relative h-full overflow-hidden rounded-2xl">
       <div className="w-full px-4 py-3 border-b  border-zinc-500/20 flex flex-row gap-3 items-center">
         <p className="text-base font-medium">
           {assistant?.key ? "Edit Assistant" : "Add New Assistant"}

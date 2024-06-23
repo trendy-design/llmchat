@@ -1,5 +1,5 @@
 "use client";
-import { ModelIcon } from "@/components/icons/model-icon";
+import { ModelIcon } from "@/components/model-icon";
 import { AnthropicSettings } from "@/components/settings/anthropic";
 import { CommonSettings } from "@/components/settings/common";
 import { Data } from "@/components/settings/data";
@@ -14,7 +14,24 @@ import { Type } from "@/components/ui/text";
 import { cn } from "@/lib/utils";
 import { Database, GearSix, Microphone } from "@phosphor-icons/react";
 import { useState } from "react";
-import { SettingsContext } from "./context";
+
+import { createContext, useContext } from "react";
+
+export type TSettingsContext = {
+  open: (menu?: string) => void;
+  dismiss: () => void;
+};
+export const SettingsContext = createContext<undefined | TSettingsContext>(
+  undefined
+);
+
+export const useSettingsContext = () => {
+  const context = useContext(SettingsContext);
+  if (context === undefined) {
+    throw new Error("useSettings must be used within a SettingssProvider");
+  }
+  return context;
+};
 
 export type TSettingsProvider = {
   children: React.ReactNode;

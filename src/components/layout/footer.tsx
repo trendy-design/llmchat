@@ -1,4 +1,3 @@
-export type TFooter = {};
 export const Footer = () => {
   return (
     <div className=" w-full p-1 text-xs flex flex-row justify-center">

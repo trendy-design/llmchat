@@ -13,7 +13,7 @@ import { useModelList } from "@/hooks/use-model-list";
 import { defaultPreferences } from "@/hooks/use-preferences";
 import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
 import { useState } from "react";
-import { usePreferenceContext } from "../preferences/provider";
+import { usePreferenceContext } from "../../context/preferences";
 
 export type TAssistantItem = {
   assistant: TAssistant;

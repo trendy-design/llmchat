@@ -1,4 +1,4 @@
-import { useChatContext } from "@/context/chat/provider";
+import { useChatContext } from "@/context";
 import { ArrowRight } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import { Flex } from "./ui/flex";

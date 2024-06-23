@@ -17,8 +17,25 @@ import moment from "moment";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSessionsContext } from "../sessions/provider";
-import { FiltersContext } from "./context";
+import { useSessionsContext } from "./sessions";
+
+import { createContext, useContext } from "react";
+
+export type TFilterContext = {
+  open: () => void;
+  dismiss: () => void;
+};
+export const FiltersContext = createContext<undefined | TFilterContext>(
+  undefined
+);
+
+export const useFilterContext = () => {
+  const context = useContext(FiltersContext);
+  if (context === undefined) {
+    throw new Error("useFilters must be used within a FiltersProvider");
+  }
+  return context;
+};
 
 export type TFiltersProvider = {
   children: React.ReactNode;

@@ -1,4 +1,4 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
+import { usePreferenceContext } from "@/context/preferences";
 import { useLLMTest } from "@/hooks/use-llm-test";
 import { ArrowRight, Info } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";

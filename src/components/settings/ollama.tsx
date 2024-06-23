@@ -1,4 +1,4 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
+import { usePreferenceContext } from "@/context/preferences";
 import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";

@@ -2,8 +2,7 @@ import { AudioWaveSpinner } from "@/components/ui/audio-wave";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { useSettings } from "@/context/settings/context";
+import { usePreferenceContext, useSettingsContext } from "@/context";
 import { blobToBase64 } from "@/lib/record";
 import { Microphone, StopCircle } from "@phosphor-icons/react";
 import { OpenAI, toFile } from "openai";
@@ -19,7 +18,7 @@ export const useRecordVoice = () => {
   const [recording, setRecording] = useState<boolean>(false);
   const [transcribing, setIsTranscribing] = useState<boolean>(false);
   const { preferences } = usePreferenceContext();
-  const { open: openSettings } = useSettings();
+  const { open: openSettings } = useSettingsContext();
   const chunks = useRef<Blob[]>([]);
 
   const startRecording = async (): Promise<void> => {

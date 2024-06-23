@@ -1,5 +1,5 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
+import { usePreferenceContext } from "@/context/preferences";
+import { useModelList } from "@/hooks/use-model-list";
 import { TToolKey, useTools } from "@/hooks/use-tools";
 import { Plug } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
@@ -9,13 +9,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Switch } from "./ui/switch";
 import { Tooltip } from "./ui/tooltip";
 export type TPluginSelect = {
-  selectedModel: TModelKey;
+  selectedAssistantKey: string;
 };
 
-export const PluginSelect = ({ selectedModel }: TPluginSelect) => {
+export const PluginSelect = ({ selectedAssistantKey }: TPluginSelect) => {
   const [isOpen, setIsOpen] = useState(false);
   const { tools } = useTools();
-  const { getModelByKey } = useModelList();
+  const { getAssistantByKey } = useModelList();
   const { preferences, updatePreferences } = usePreferenceContext();
   const availableTools = tools.filter((tool) => tool.showInMenu);
   const availableToolsKey = availableTools.map((tool) => tool.key);
@@ -28,9 +28,9 @@ export const PluginSelect = ({ selectedModel }: TPluginSelect) => {
     );
   }, [isOpen, preferences]);
 
-  const model = getModelByKey(selectedModel);
+  const assistantProps = getAssistantByKey(selectedAssistantKey);
 
-  if (!model?.plugins?.length) {
+  if (!assistantProps?.model?.plugins?.length) {
     return null;
   }
 

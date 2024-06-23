@@ -1,9 +1,10 @@
-import { MainLayout } from "@/components/main-layout";
-import { FiltersProvider } from "@/context/filters/provider";
-
-import { AssistantsProvider } from "@/context/assistants/provider";
-import { ChatProvider } from "@/context/chat/provider";
-import { PromptsProvider } from "@/context/prompts/provider";
+import { MainLayout } from "@/components/layout/main-layout";
+import {
+  AssistantsProvider,
+  ChatProvider,
+  FiltersProvider,
+  PromptsProvider,
+} from "@/context";
 
 export default function ChatLayout({
   children,
