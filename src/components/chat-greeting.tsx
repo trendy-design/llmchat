@@ -1,3 +1,4 @@
+import { WavingHand02Icon } from "@hugeicons/react";
 import { motion } from "framer-motion";
 import moment from "moment";
 
@@ -22,10 +23,10 @@ export const ChatGreeting = () => {
           },
         }}
       >
-        <span className="text-zinc-300 dark:text-zinc-500">
-          {renderGreeting("Deep")}
+        <span className="text-zinc-300 dark:text-zinc-500 flex items-center flex-row gap-1">
+          <WavingHand02Icon size={32} variant="stroke" strokeWidth="2" />
+          Hello,
         </span>
-        <br />
         How can I help you today?
       </motion.h1>
     </div>

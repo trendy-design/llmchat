@@ -12,13 +12,18 @@ import { useToast } from "@/components/ui/use-toast";
 import { useModelList } from "@/hooks/use-model-list";
 import { sortSessions } from "@/lib/helper";
 import { cn } from "@/lib/utils";
-import { Moon, Plus, Sun, TrashSimple } from "@phosphor-icons/react";
 import moment from "moment";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSessionsContext } from "./sessions";
 
+import {
+  CommentAdd01Icon,
+  Delete01Icon,
+  Moon02Icon,
+  Sun03Icon,
+} from "@hugeicons/react";
 import { createContext, useContext } from "react";
 
 export type TFilterContext = {
@@ -76,7 +81,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
   const actions = [
     {
       name: "New session",
-      icon: Plus,
+      icon: CommentAdd01Icon,
       action: () => {
         createSession({
           redirect: true,
@@ -86,7 +91,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
     },
     {
       name: `Switch to ${theme === "light" ? "dark" : "light"} mode`,
-      icon: theme === "light" ? Moon : Sun,
+      icon: theme === "light" ? Moon02Icon : Sun03Icon,
       action: () => {
         setTheme(theme === "light" ? "dark" : "light");
         onClose();
@@ -94,7 +99,7 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
     },
     {
       name: "Delete current session",
-      icon: TrashSimple,
+      icon: Delete01Icon,
       action: () => {
         onClose();
         toast({
@@ -132,9 +137,9 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
       <CommandDialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
         <CommandInput placeholder="Search..." />
 
-        <CommandList className="border-t border-zinc-500/20">
+        <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          <CommandGroup heading="Quick Actions">
+          <CommandGroup>
             {actions.map((action) => (
               <CommandItem
                 key={action.name}
@@ -144,8 +149,8 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
               >
                 <div className="w-6 h-6 items-center justify-center flex">
                   <action.icon
-                    size={16}
-                    weight="bold"
+                    size={18}
+                    strokeWidth="2"
                     className="flex-shrink-0"
                   />
                 </div>

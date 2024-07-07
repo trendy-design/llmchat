@@ -1,26 +1,25 @@
+import { Flex } from "@/components/ui/flex";
 import { usePreferenceContext } from "@/context/preferences";
 import { useLLMTest } from "@/hooks/use-llm-test";
 import { ArrowRight, Info } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { SettingsContainer } from "./settings-container";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
 
-export const AnthropicSettings = () => {
+export const OpenAISettings = () => {
   const [key, setKey] = useState<string>("");
   const { apiKeys, updateApiKey } = usePreferenceContext();
   const { renderSaveApiKeyButton } = useLLMTest();
-
   useEffect(() => {
-    setKey(apiKeys.anthropic || "");
-  }, [apiKeys.anthropic]);
+    setKey(apiKeys.openai || "");
+  }, [apiKeys.openai]);
   return (
-    <SettingsContainer title="Anthropic Settings">
+    <Flex direction="col" gap="sm">
       <div className="flex flex-row items-end justify-between">
-        <p className="text-xs md:text-sm  text-zinc-500">Anthropic API Key</p>
+        <p className="text-xs md:text-sm  text-zinc-500">Open AI API Key</p>
       </div>
       <Input
-        placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+        placeholder="Sk-xxxxxxxxxxxxxxxxxxxxxxxx"
         value={key}
         type="password"
         autoComplete="off"
@@ -28,19 +27,20 @@ export const AnthropicSettings = () => {
           setKey(e.target.value);
         }}
       />
+
       <div className="flex flex-row items-center gap-2">
         {key &&
-          key !== apiKeys?.anthropic &&
-          renderSaveApiKeyButton("anthropic", key, () => {
-            updateApiKey("anthropic", key);
+          key !== apiKeys?.openai &&
+          renderSaveApiKeyButton("openai", key, () => {
+            updateApiKey("openai", key);
           })}
-        {apiKeys?.anthropic && (
+        {apiKeys?.openai && (
           <Button
             variant="outline"
             size="sm"
             onClick={() => {
               setKey("");
-              updateApiKey("anthropic", "");
+              updateApiKey("openai", "");
             }}
           >
             Remove API Key
@@ -52,7 +52,7 @@ export const AnthropicSettings = () => {
           variant="secondary"
           onClick={() => {
             window.open(
-              "https://console.anthropic.com/settings/keys",
+              "https://platform.openai.com/account/api-keys",
               "_blank"
             );
           }}
@@ -68,6 +68,6 @@ export const AnthropicSettings = () => {
           else.
         </p>
       </div>
-    </SettingsContainer>
+    </Flex>
   );
 };

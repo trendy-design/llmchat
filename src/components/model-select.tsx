@@ -1,6 +1,7 @@
 import { TModelKey, useModelList } from "@/hooks/use-model-list";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { ModelIcon } from "./model-icon";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import {
@@ -72,7 +73,11 @@ export const ModelSelect = ({
                     setIsOpen(false);
                   }}
                 >
-                  {model?.icon("sm")} {assistant.name}{" "}
+                  {assistant.type === "base" ? (
+                    model?.icon("sm")
+                  ) : (
+                    <ModelIcon type="custom" size="sm" />
+                  )}
                   {model?.isNew && <Badge>New</Badge>}
                 </DropdownMenuItem>
               );

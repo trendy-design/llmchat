@@ -1,17 +1,16 @@
 import {
-  useFilterContext,
   usePromptsContext,
   useSessionsContext,
   useSettingsContext,
 } from "@/context";
 import {
-  Book,
-  DotsThree,
-  GearSix,
-  Moon,
-  Plus,
-  Sun,
-} from "@phosphor-icons/react";
+  Moon02Icon,
+  MoreHorizontalIcon,
+  NoteIcon,
+  PlusSignIcon,
+  Settings03Icon,
+  Sun01Icon,
+} from "@hugeicons/react";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { HistorySidebar } from "../history/history-side-bar";
@@ -22,19 +21,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Flex } from "../ui/flex";
 import { Tooltip } from "../ui/tooltip";
 
 export const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const { open: openSettings } = useSettingsContext();
-  const { open: openFilters } = useFilterContext();
   const { open: openPrompts } = usePromptsContext();
   const [isOpen, setIsOpen] = useState(false);
   const { createSession } = useSessionsContext();
 
   const renderNewSession = () => {
     return (
-      <Tooltip content="New Session">
+      <Tooltip content="New Session" side="left" sideOffset={4}>
         <Button
           size="icon"
           variant={"ghost"}
@@ -45,92 +44,102 @@ export const Navbar = () => {
             });
           }}
         >
-          <Plus size={20} weight="bold" />
+          <PlusSignIcon size={20} variant="stroke" strokeWidth="2" />{" "}
         </Button>
       </Tooltip>
     );
   };
 
   return (
-    <div className="absolute flex justify-between items-center p-2 pb-6 md:p-3 flex-row top-0 left-0 right-0 bg-gradient-to-b from-white dark:from-zinc-800 to-transparent from-70% z-50">
+    <div className="absolute z-[50] flex flex-col  justify-center items-center gap-3 pb-6 md:p-3 top-0 bottom-0 left-0 border-r border-zinc-50 dark:border-white/5">
       <div className="flex flex-row gap-2 items-center">
         {renderNewSession()}
       </div>
-      <div className="flex flex-row gap-2 items-center">
-        <DropdownMenu
-          open={isOpen}
-          onOpenChange={(open) => {
-            document.body.style.pointerEvents = "auto";
-            setIsOpen(open);
-          }}
-        >
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="iconSm">
-              <DotsThree size={24} weight="bold" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="min-w-[250px] text-sm md:text-base mr-2">
-            <DropdownMenuItem
-              onClick={() => {
-                openSettings();
-              }}
-            >
-              <GearSix size={14} weight="bold" />
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                setTheme(theme === "light" ? "dark" : "light");
-              }}
-            >
-              {theme === "light" ? (
-                <Moon size={14} weight="bold" />
-              ) : (
-                <Sun size={14} weight="bold" />
-              )}
-              Switch to {theme === "light" ? "dark" : "light"} mode
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-          <DropdownMenuContent className="min-w-[250px] text-sm md:text-base mr-2">
-            <DropdownMenuItem
-              onClick={() => {
-                openPrompts();
-              }}
-            >
-              <Book size={14} weight="bold" />
-              Prompts
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                openSettings();
-              }}
-            >
-              <GearSix size={14} weight="bold" />
-              Settings
-            </DropdownMenuItem>
 
-            <div className="my-1 h-[1px] bg-black/10 dark:bg-white/10 w-full" />
-            <DropdownMenuItem onClick={() => {}}>About</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {}}>Feedback</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => {}}>Support</DropdownMenuItem>
-            <div className="my-1 h-[1px] bg-black/10 dark:bg-white/10 w-full" />
-
-            <DropdownMenuItem
-              onClick={() => {
-                setTheme(theme === "light" ? "dark" : "light");
-              }}
-            >
-              {theme === "light" ? (
-                <Moon size={14} weight="bold" />
-              ) : (
-                <Sun size={14} weight="bold" />
-              )}
-              Switch to {theme === "light" ? "dark" : "light"} mode
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex flex-col gap-2 items-center">
         <HistorySidebar />
       </div>
+      <Tooltip content="Prompts" side="left" sideOffset={4}>
+        <Button
+          size="iconSm"
+          variant="ghost"
+          onClick={() => {
+            openPrompts();
+          }}
+        >
+          <NoteIcon size={20} variant="stroke" strokeWidth="2" />
+        </Button>
+      </Tooltip>
+      <Tooltip content="Preferences" side="left" sideOffset={4}>
+        <Button
+          size="iconSm"
+          variant="ghost"
+          onClick={() => {
+            openSettings();
+          }}
+        >
+          <Settings03Icon size={20} variant="stroke" strokeWidth="2" />
+        </Button>
+      </Tooltip>
+      <DropdownMenu
+        open={isOpen}
+        onOpenChange={(open) => {
+          document.body.style.pointerEvents = "auto";
+          setIsOpen(open);
+        }}
+      >
+        <Tooltip content="More" side="left" sideOffset={4}>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="iconSm">
+              <MoreHorizontalIcon size={20} variant="solid" />
+            </Button>
+          </DropdownMenuTrigger>
+        </Tooltip>
+        <DropdownMenuContent
+          className="min-w-[250px] text-sm md:text-base mr-2"
+          align="end"
+          side="left"
+          sideOffset={4}
+        >
+          <DropdownMenuItem onClick={() => {}}>About</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => {}}>Feedback</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => {}}>Support</DropdownMenuItem>
+          <div className="my-1 h-[1px] bg-black/10 dark:bg-white/10 w-full" />
+
+          <DropdownMenuItem
+            onClick={() => {
+              setTheme(theme === "light" ? "dark" : "light");
+            }}
+          >
+            {theme === "light" ? (
+              <Moon02Icon size={18} variant="stroke" strokeWidth="2" />
+            ) : (
+              <Sun01Icon size={18} variant="stroke" strokeWidth="2" />
+            )}
+            Switch to {theme === "light" ? "dark" : "light"} mode
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Flex className="flex-1" />
+      <Tooltip
+        content={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+        side="left"
+        sideOffset={4}
+      >
+        <Button
+          size="iconSm"
+          variant="ghost"
+          onClick={() => {
+            setTheme(theme === "light" ? "dark" : "light");
+          }}
+        >
+          {theme === "light" ? (
+            <Moon02Icon size={20} variant="stroke" strokeWidth="2" />
+          ) : (
+            <Sun01Icon size={20} variant="stroke" strokeWidth="2" />
+          )}
+        </Button>
+      </Tooltip>
     </div>
   );
 };

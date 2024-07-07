@@ -31,10 +31,10 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
   const { createInstance, getModelByKey, getAssistantByKey } = useModelList();
   const { toast } = useToast();
   const { getToolByKey } = useTools();
+
   const [abortController, setAbortController] = useState<AbortController>();
 
   const stopGeneration = () => {
-    console.log("stop generation");
     abortController?.abort("cancel");
   };
 
@@ -102,8 +102,6 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
 
     const selectedSession = await getSessionById(sessionId);
 
-    console.log("selected props", props);
-
     if (!input) {
       return;
     }
@@ -161,7 +159,19 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
         ?.filter((p) => {
           return plugins.includes(p);
         })
-        ?.map((p) => getToolByKey(p)?.tool())
+        ?.map((p) =>
+          getToolByKey(p)?.tool({
+            preferences,
+            apiKeys,
+            toolResponse: (arg) => {
+              console.log("toolMeta", arg, onChange);
+              onChange?.({
+                ...defaultChangeProps,
+                toolMeta: arg,
+              });
+            },
+          })
+        )
         ?.filter((t): t is any => !!t) || [];
 
     const selectedModel = await createInstance(selectedModelKey, apiKey);
@@ -180,9 +190,6 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
       );
 
     let agentExecutor: AgentExecutor | undefined;
-
-    console.log("selectedModelFirst", selectedModel);
-    console.log("selectedModelSecond", Object.create(selectedModel));
 
     // Creating a copy of the model
     const modifiedModel = Object.create(Object.getPrototypeOf(selectedModel));
@@ -218,8 +225,6 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
     let streamedMessage = "";
     let toolName: string | undefined;
 
-    console.log("available tools", availableTools);
-
     const executor =
       !!availableTools?.length && agentExecutor
         ? agentExecutor
@@ -236,8 +241,7 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
           callbacks: [
             {
               handleLLMStart: async (llm: Serialized, prompts: string[]) => {
-                console.log("llm start");
-
+                console.log("handleLLMStart", llm);
                 onChange?.({
                   ...defaultChangeProps,
                   rawAI: streamedMessage,
@@ -260,7 +264,7 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
                 name
               ) {
                 console.log(
-                  "tool start",
+                  "handleToolStart",
                   tool,
                   input,
                   runId,
@@ -269,6 +273,7 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
                   metadata,
                   name
                 );
+
                 toolName = name;
                 onChange?.({
                   ...defaultChangeProps,
@@ -277,39 +282,32 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
                 });
               },
               handleToolEnd(output, runId, parentRunId, tags) {
+                console.log("handleToolEnd", output, runId, parentRunId, tags);
+
                 onChange?.({
                   ...defaultChangeProps,
                   isToolRunning: false,
-                  toolName,
-                  toolResult: output,
                 });
-              },
-              handleAgentAction(action, runId, parentRunId, tags) {
-                console.log("agent action", action);
               },
 
               handleLLMEnd: async (output: LLMResult) => {
-                console.log("llm end", output);
+                console.log("handleLLMEnd", output);
               },
               handleLLMNewToken: async (token: string) => {
-                console.log("token", token);
-
                 streamedMessage += token;
                 onChange?.({
                   ...defaultChangeProps,
                   isLoading: true,
                   rawAI: streamedMessage,
                   toolName,
+
                   stop: false,
                   stopReason: undefined,
                 });
               },
-              handleChainEnd: async (output: LLMResult) => {
-                console.log("chain end", output);
-              },
-
+              handleChainEnd: async (output: any) => {},
               handleLLMError: async (err: Error) => {
-                console.error(err);
+                console.error("handleLLMError", err);
                 if (!currentAbortController?.signal.aborted) {
                   toast({
                     title: "Error",
@@ -352,8 +350,6 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
       //   }
       // );
 
-      console.log("stream", stream);
-
       const chatMessage: TChatMessage = {
         ...defaultChangeProps,
         rawHuman: input,
@@ -366,7 +362,6 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
         createdAt: moment().toISOString(),
       };
 
-      console.log("chat message hh", chatMessage);
       await addMessageToSession(sessionId, chatMessage);
       await generateTitleForSession(sessionId);
       await onChange?.(chatMessage);
@@ -389,8 +384,6 @@ export const useLLM = ({ onChange, onFinish }: TUseLLM) => {
     if (!assistant) {
       return;
     }
-
-    console.log("generate title for session", session);
 
     const apiKey = apiKeys[assistant.model.baseModel];
 

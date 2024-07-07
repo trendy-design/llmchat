@@ -1,10 +1,4 @@
-import {
-  ArrowDown,
-  ArrowElbowDownRight,
-  ArrowUp,
-  Stop,
-  X,
-} from "@phosphor-icons/react";
+import { ArrowElbowDownRight, Stop, X } from "@phosphor-icons/react";
 import { EditorContent } from "@tiptap/react";
 import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
@@ -25,6 +19,7 @@ import {
 import { TAssistant } from "@/hooks/use-chat-session";
 import { slideUpVariant } from "@/lib/framer-motion";
 import { cn } from "@/lib/utils";
+import { ArrowDown02Icon, Navigation03Icon } from "@hugeicons/react";
 import { ChatExamples } from "./chat-examples";
 import { ChatGreeting } from "./chat-greeting";
 import { PluginSelect } from "./plugin-select";
@@ -62,7 +57,7 @@ export const ChatInput = () => {
   } = useChatContext();
 
   const { preferences, updatePreferences } = usePreferenceContext();
-  const { models, getAssistantByKey } = useModelList();
+  const { models, getAssistantByKey, getAssistantIcon } = useModelList();
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [selectedAssistantKey, setSelectedAssistantKey] = useState<
@@ -126,7 +121,7 @@ export const ChatInput = () => {
             variant="outline"
             rounded="full"
           >
-            <ArrowDown size={16} weight="bold" />
+            <ArrowDown02Icon size={16} strokeWidth="2" />
           </Button>
         </motion.span>
       );
@@ -262,7 +257,9 @@ export const ChatInput = () => {
                   className={cn("pl-1 pr-3 gap-2 text-xs md:text-sm")}
                   size="sm"
                 >
-                  {selectedAssistant?.model?.icon("sm")}
+                  {selectedAssistant?.assistant.key &&
+                    getAssistantIcon(selectedAssistant?.assistant.key)}
+
                   {selectedAssistant?.assistant.name}
                 </Button>
                 <PluginSelect selectedAssistantKey={selectedAssistantKey} />
@@ -283,7 +280,11 @@ export const ChatInput = () => {
                       sendMessage();
                     }}
                   >
-                    <ArrowUp size={18} weight="bold" />
+                    <Navigation03Icon
+                      size={18}
+                      variant="stroke"
+                      strokeWidth="2"
+                    />
                   </Button>
                 )}
               </div>

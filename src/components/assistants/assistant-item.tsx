@@ -29,7 +29,7 @@ export const AssistantItem = ({
   onEdit,
 }: TAssistantItem) => {
   const { updatePreferences } = usePreferenceContext();
-  const { getAssistantByKey } = useModelList();
+  const { getAssistantByKey, getAssistantIcon } = useModelList();
   const assistantProps = getAssistantByKey(assistant.key);
   const model = assistantProps?.model;
   const [open, setOpen] = useState(false);
@@ -51,8 +51,8 @@ export const AssistantItem = ({
       }}
     >
       <Flex gap="sm" items="center" key={assistant.key} className="w-full">
-        {model?.icon("md")} {assistant.name}{" "}
-        {model?.isNew && <Badge>New</Badge>}
+        {getAssistantIcon(assistant.key)}
+        {assistant.name} {model?.isNew && <Badge>New</Badge>}
         <div className="flex flex-1"></div>
         {assistant.type === "custom" && (
           <DropdownMenu open={open} onOpenChange={setOpen}>
