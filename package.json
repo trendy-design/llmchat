@@ -9,12 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hugeicons/react": "^0.5.2",
     "@langchain/anthropic": "^0.1.17",
     "@langchain/community": "^0.2.1",
     "@langchain/core": "^0.1.62",
     "@langchain/google-genai": "^0.0.12",
     "@langchain/openai": "^0.0.28",
     "@phosphor-icons/react": "^2.1.5",
+    "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-hover-card": "^1.0.7",
@@ -45,6 +47,8 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "duck-duck-scrape": "^2.2.5",
+    "expo": "^51.0.14",
+    "expo-dev-client": "^4.0.18",
     "formik": "^2.4.6",
     "framer-motion": "^11.1.9",
     "highlight.js": "^11.9.0",

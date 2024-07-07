@@ -31,10 +31,16 @@ export type TChatMessage = {
   rawAI?: string;
   sessionId: string;
   inputProps: TLLMInputProps;
+  tool?: {
+    toolName?: string;
+    toolArgs?: any;
+    toolResult?: any;
+  };
   toolName?: string;
   toolResult?: string;
   isLoading?: boolean;
   isToolRunning?: boolean;
+  toolMeta?: any;
   stop?: boolean;
   stopReason?: "error" | "cancel" | "apikey" | "recursion";
   createdAt: string;

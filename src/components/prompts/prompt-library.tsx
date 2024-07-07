@@ -1,18 +1,12 @@
 import { useChatContext } from "@/context/chat";
 import { TPrompt } from "@/hooks/use-prompts";
-import {
-  ArrowDown,
-  BookBookmark,
-  DotsThree,
-  FolderSimple,
-  Pencil,
-  Plus,
-  TrashSimple,
-} from "@phosphor-icons/react";
+import { Edit02Icon, NoteIcon } from "@hugeicons/react";
+import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
 import { Button } from "../ui/button";
 import {
   Command,
   CommandEmpty,
+  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
@@ -55,57 +49,35 @@ export const PromptLibrary = ({
         <CommandInput placeholder="Search Prompts" />
       </div>
 
-      <div className="flex flex-col w-full border-t border-zinc-500/20 relative h-full">
-        <div className="w-full flex flex-row justify-between px-3 pt-3 pb-3">
-          <div className="flex flex-row gap-2 items-center">
-            <Button
-              size="sm"
-              variant={tab === "public" ? "secondary" : "ghost"}
-              onClick={() => {
-                onTabChange("public");
-              }}
-            >
-              <BookBookmark size={16} weight="bold" /> Prompt Library
-            </Button>
-
-            <Button
-              size="sm"
-              variant={tab === "local" ? "secondary" : "ghost"}
-              onClick={() => {
-                onTabChange("local");
-              }}
-            >
-              <FolderSimple size={16} weight="bold" /> Your prompts
-            </Button>
-          </div>
-          <Button size="sm" onClick={onCreate}>
-            <Plus size={16} weight="bold" /> Create Prompt
-          </Button>
-        </div>
+      <div className="flex flex-col w-full relative h-full">
         <CommandEmpty className="text-sm text-zinc-500 w-full flex flex-col items-center justify-center gap-2 p-4">
-          No prompts found{" "}
+          No prompts found
           <Button variant="outline" size="sm" onClick={onCreate}>
             Create new prompt
           </Button>
         </CommandEmpty>
-        <CommandList className="px-2 py-2">
-          {(tab === "local" ? localPrompts : publicPrompts)?.map((prompt) => (
-            <CommandItem
-              value={prompt.name}
-              key={prompt.id}
-              className="w-full"
-              onSelect={() => {
-                onPromptSelect(prompt);
-              }}
-            >
-              <div className="flex flex-row gap-2 px-2 items-center justify-start w-full overflow-hidden">
-                <div className="flex flex-col items-start gap-0 py-2 w-full">
-                  <p className="text-base font-medium">{prompt.name}</p>
-                  <p className="text-xs text-zinc-500 w-full line-clamp-1">
-                    {prompt.content}
-                  </p>
-                </div>
-                <ArrowDown size={16} weight="bold" />
+
+        <CommandList className="px-2 pb-2">
+          <CommandItem
+            value={"Create prompt"}
+            className="w-full"
+            onSelect={onCreate}
+          >
+            <Edit02Icon size={18} variant="stroke" strokeWidth="2" />
+            Create Prompt
+          </CommandItem>
+          <CommandGroup heading="Prompts Collections">
+            {[...localPrompts, ...publicPrompts]?.map((prompt) => (
+              <CommandItem
+                value={prompt.name}
+                key={prompt.id}
+                className="w-full"
+                onSelect={() => {
+                  onPromptSelect(prompt);
+                }}
+              >
+                <NoteIcon size={20} variant="stroke" strokeWidth="2" />
+                {prompt.name}
                 {tab === "local" && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -138,9 +110,9 @@ export const PromptLibrary = ({
                     </DropdownMenuContent>
                   </DropdownMenu>
                 )}
-              </div>
-            </CommandItem>
-          ))}
+              </CommandItem>
+            ))}
+          </CommandGroup>
         </CommandList>
       </div>
     </Command>

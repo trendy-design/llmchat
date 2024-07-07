@@ -1,10 +1,10 @@
+import { Flex } from "@/components/ui/flex";
 import { usePreferenceContext } from "@/context/preferences";
 import { useLLMTest } from "@/hooks/use-llm-test";
 import { ArrowRight, Info } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { SettingsContainer } from "./settings-container";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
 
 export const GeminiSettings = () => {
   const [key, setKey] = useState<string>("");
@@ -14,7 +14,7 @@ export const GeminiSettings = () => {
     setKey(apiKeys.gemini || "");
   }, [apiKeys.gemini]);
   return (
-    <SettingsContainer title="Gemini Settings">
+    <Flex direction="col" gap="sm">
       <div className="flex flex-row items-end justify-between">
         <p className="text-xs md:text-sm  text-zinc-500">
           Google Gemini API Key
@@ -67,6 +67,6 @@ export const GeminiSettings = () => {
           else.
         </p>
       </div>
-    </SettingsContainer>
+    </Flex>
   );
 };

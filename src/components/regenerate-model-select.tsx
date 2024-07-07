@@ -1,5 +1,6 @@
+import { TAssistant } from "@/hooks";
 import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { ArrowClockwise } from "@phosphor-icons/react";
+import { ArrowDown01Icon, SparklesIcon } from "@hugeicons/react";
 import { useState } from "react";
 import { Button } from "./ui/button";
 import {
@@ -11,14 +12,18 @@ import {
 import { Tooltip } from "./ui/tooltip";
 
 export type TRegenerateModelSelect = {
+  assistant: TAssistant;
   onRegenerate: (modelKey: TModelKey) => void;
 };
 
 export const RegenerateWithModelSelect = ({
+  assistant,
   onRegenerate,
 }: TRegenerateModelSelect) => {
   const { assistants, getAssistantByKey } = useModelList();
   const [isOpen, setIsOpen] = useState(false);
+
+  const messageAssistantProps = getAssistantByKey(assistant.key);
 
   return (
     <>
@@ -26,8 +31,11 @@ export const RegenerateWithModelSelect = ({
         <Tooltip content="Regenerate">
           <DropdownMenuTrigger asChild>
             {
-              <Button variant="ghost" size="iconSm" rounded="lg">
-                <ArrowClockwise size={16} weight="bold" />
+              <Button variant="ghost" size="sm" rounded="lg">
+                <SparklesIcon size={18} variant="stroke" strokeWidth="2" />
+
+                {messageAssistantProps?.model?.name}
+                <ArrowDown01Icon size={16} variant="stroke" strokeWidth="2" />
               </Button>
             }
           </DropdownMenuTrigger>

@@ -69,7 +69,6 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
     queryFn: async () => axios.get("/api/prompts").then((res) => res.data),
   });
 
-  console.log(publicPromptsQuery.data);
   const allPrompts = [
     ...(localPromptsQuery.data || []),
     ...(publicPromptsQuery.data?.prompts || []),
@@ -80,7 +79,7 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
       {children}
 
       <Dialog open={isPromptOpen} onOpenChange={setIsPromptOpen}>
-        <DialogContent className="w-[96dvw] max-h-[80dvh] rounded-2xl md:max-w-[450px] gap-0 md:max-h-[600px] flex flex-col overflow-hidden border border-white/5 p-0">
+        <DialogContent className="w-[96dvw] max-h-[80dvh] rounded-2xl md:w-[600px] gap-0 md:max-h-[600px] flex flex-col overflow-hidden border border-white/5 p-0">
           {showCreatePrompt ? (
             <CreatePrompt
               prompt={editablePrompt}

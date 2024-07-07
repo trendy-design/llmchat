@@ -2,7 +2,7 @@ import { useSessionsContext } from "@/context/sessions";
 import { TChatSession } from "@/hooks/use-chat-session";
 import { useModelList } from "@/hooks/use-model-list";
 import { cn } from "@/lib/utils";
-import { PencilSimple, TrashSimple } from "@phosphor-icons/react";
+import { Delete01Icon, Edit02Icon } from "@hugeicons/react";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -93,7 +93,12 @@ export const HistoryItem = ({
         <>
           {modelProps?.icon?.("sm")}
           <Flex direction="col" items="start" className="w-full">
-            <Type className="line-clamp-1" size="sm" textColor="primary">
+            <Type
+              className="line-clamp-1"
+              size="sm"
+              textColor="primary"
+              weight="medium"
+            >
               {session.title}
             </Type>
             <Type className="line-clamp-1" size="xs" textColor="tertiary">
@@ -114,7 +119,7 @@ export const HistoryItem = ({
               e.stopPropagation();
             }}
           >
-            <PencilSimple size={14} weight="bold" />
+            <Edit02Icon size={14} variant="stroke" strokeWidth="2" />
           </Button>
           <Tooltip content="Delete">
             <Popover
@@ -130,7 +135,7 @@ export const HistoryItem = ({
                     e.stopPropagation();
                   }}
                 >
-                  <TrashSimple size={14} weight="bold" />
+                  <Delete01Icon size={14} variant="stroke" strokeWidth="2" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="z-[1000]" side="bottom">

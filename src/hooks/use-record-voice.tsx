@@ -4,7 +4,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { usePreferenceContext, useSettingsContext } from "@/context";
 import { blobToBase64 } from "@/lib/record";
-import { Microphone, StopCircle } from "@phosphor-icons/react";
+import { RecordIcon, StopIcon } from "@hugeicons/react";
 import { OpenAI, toFile } from "openai";
 import { useRef, useState } from "react";
 
@@ -124,7 +124,12 @@ export const useRecordVoice = () => {
               stopRecording();
             }}
           >
-            <StopCircle size={20} weight="fill" className="text-red-300" />
+            <StopIcon
+              size={18}
+              variant="solid"
+              strokeWidth="2"
+              className="text-red-300"
+            />
           </Button>
         </>
       );
@@ -133,7 +138,7 @@ export const useRecordVoice = () => {
     return (
       <Tooltip content="Record">
         <Button size="iconSm" variant="ghost" onClick={startVoiceRecording}>
-          <Microphone size={20} weight="bold" />
+          <RecordIcon size={18} variant="stroke" strokeWidth="2" />
         </Button>
       </Tooltip>
     );

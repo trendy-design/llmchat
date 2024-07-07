@@ -1,13 +1,16 @@
 import { usePreferenceContext } from "@/context/preferences";
 import { useModelList } from "@/hooks/use-model-list";
 import { TToolKey, useTools } from "@/hooks/use-tools";
-import { Plug } from "@phosphor-icons/react";
+import { ConnectIcon } from "@hugeicons/react";
 import { useEffect, useState } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { Flex } from "./ui/flex";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { Switch } from "./ui/switch";
+import { Type } from "./ui/text";
 import { Tooltip } from "./ui/tooltip";
+
 export type TPluginSelect = {
   selectedAssistantKey: string;
 };
@@ -40,54 +43,68 @@ export const PluginSelect = ({ selectedAssistantKey }: TPluginSelect) => {
         <Tooltip content="Plugins">
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm">
-              <Plug size={16} weight="bold" />
+              <ConnectIcon size={16} variant="stroke" strokeWidth="2" />
               <Badge>{selectedPlugins.length}</Badge>
             </Button>
           </PopoverTrigger>
         </Tooltip>
         <PopoverContent
-          className="p-0 w-[300px] dark:bg-zinc-700 mr-8 roundex-2xl"
+          className="p-0 w-[340px] dark:bg-zinc-700 mr-8 roundex-2xl"
           side="top"
         >
           <p className="flex flex-row gap-2 py-2 px-3 text-sm font-medium border-b border-zinc-500/20">
             Plugins <Badge>Beta</Badge>
           </p>
           <div className="flex flex-col p-1">
-            {availableTools.map((tool) => (
-              <div
-                key={tool.key}
-                className="flex text-xs md:text-sm gap-2 flex-row items-center w-full p-2 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl"
-              >
-                {tool.icon("md")} {tool.name} <span className="flex-1" />
-                <Switch
-                  checked={selectedPlugins.includes(tool.key)}
-                  onCheckedChange={async (checked) => {
-                    const defaultPlugins = preferences.defaultPlugins || [];
-                    const isValidated = await tool?.validate?.();
+            {availableTools.map((tool) => {
+              const Icon = tool.icon;
+              return (
+                <div
+                  key={tool.key}
+                  className="flex text-xs md:text-sm gap-3 flex-row items-center w-full py-2 px-3 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl"
+                >
+                  <Icon size={20} strokeWidth={1.5} />
+                  <Flex direction="col" gap="none" items="start">
+                    <Type size="sm" weight="medium">
+                      {tool.name}
+                    </Type>
+                    <Type size="xs" textColor="tertiary">
+                      {tool.description}
+                    </Type>
+                  </Flex>
+                  <span className="flex-1" />
+                  <Switch
+                    checked={selectedPlugins.includes(tool.key)}
+                    onCheckedChange={async (checked) => {
+                      const defaultPlugins = preferences.defaultPlugins || [];
+                      const isValidated = await tool?.validate?.();
 
-                    if (checked) {
-                      if (tool?.validate === undefined || isValidated) {
-                        updatePreferences({
-                          defaultPlugins: [...defaultPlugins, tool.key],
-                        });
-                        setSelectedPlugins([...selectedPlugins, tool.key]);
+                      if (checked) {
+                        if (tool?.validate === undefined || isValidated) {
+                          updatePreferences({
+                            defaultPlugins: [...defaultPlugins, tool.key],
+                          });
+                          setSelectedPlugins([...selectedPlugins, tool.key]);
+                        } else {
+                          tool?.validationFailedAction?.();
+                        }
                       } else {
-                        tool?.validationFailedAction?.();
+                        updatePreferences({
+                          defaultPlugins: defaultPlugins.filter(
+                            (plugin) => plugin !== tool.key
+                          ),
+                        });
+                        setSelectedPlugins(
+                          selectedPlugins.filter(
+                            (plugin) => plugin !== tool.key
+                          )
+                        );
                       }
-                    } else {
-                      updatePreferences({
-                        defaultPlugins: defaultPlugins.filter(
-                          (plugin) => plugin !== tool.key
-                        ),
-                      });
-                      setSelectedPlugins(
-                        selectedPlugins.filter((plugin) => plugin !== tool.key)
-                      );
-                    }
-                  }}
-                />
-              </div>
-            ))}
+                    }}
+                  />
+                </div>
+              );
+            })}
           </div>
         </PopoverContent>
       </Popover>

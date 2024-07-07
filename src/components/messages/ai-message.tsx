@@ -1,4 +1,4 @@
-import { Check, Copy, Quotes, TrashSimple } from "@phosphor-icons/react";
+import { Quotes } from "@phosphor-icons/react";
 import { useRef, useState } from "react";
 import * as Selection from "selection-popover";
 
@@ -16,6 +16,12 @@ import {
   useTextSelection,
   useTools,
 } from "@/hooks";
+import {
+  Copy01Icon,
+  Delete01Icon,
+  ThumbsDownIcon,
+  Tick01Icon,
+} from "@hugeicons/react";
 import { RegenerateWithModelSelect } from "../regenerate-model-select";
 import { Alert, AlertDescription } from "../ui/alert";
 import { Button } from "../ui/button";
@@ -38,6 +44,7 @@ export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
     stopReason,
     isToolRunning,
     toolName,
+    toolMeta,
     inputProps,
   } = chatMessage;
 
@@ -45,7 +52,7 @@ export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
   const toolUsed = toolName ? getToolInfoByKey(toolName) : undefined;
   const messageRef = useRef<HTMLDivElement>(null);
   const { showCopied, copy } = useClipboard();
-  const { getModelByKey, getAssistantByKey } = useModelList();
+  const { getModelByKey, getAssistantByKey, getAssistantIcon } = useModelList();
   const { renderMarkdown } = useMarkdown();
   const { open: openSettings } = useSettingsContext();
   const { removeMessage } = useSessionsContext();
@@ -105,7 +112,11 @@ export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
 
   return (
     <div className="flex flex-row mt-6 w-full">
-      <div className="p-2 md:px-3 md:py-2">{modelForMessage?.icon("sm")}</div>
+      <div className="p-2 md:px-3 md:py-2">
+        <Tooltip content={inputProps.assistant.name}>
+          {getAssistantIcon(inputProps.assistant.key)}
+        </Tooltip>
+      </div>
       <Flex
         ref={messageRef}
         direction="col"
@@ -125,6 +136,8 @@ export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
             </Type>
           </Type>
         )}
+
+        {toolUsed && toolMeta && toolUsed?.renderUI?.(toolMeta)}
 
         {rawAI && (
           <Selection.Root>
@@ -158,7 +171,7 @@ export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
         <Flex
           justify="between"
           items="center"
-          className="w-full pt-1 opacity-70 hover:opacity-100 transition-opacity"
+          className="w-full pt-1 opacity-100 transition-opacity"
         >
           {isLoading && !isToolRunning && (
             <Flex gap="sm">
@@ -178,28 +191,23 @@ export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
                   onClick={handleCopyContent}
                 >
                   {showCopied ? (
-                    <Check size={16} weight="bold" />
+                    <Tick01Icon size={18} variant="stroke" strokeWidth="2" />
                   ) : (
-                    <Copy size={16} weight="bold" />
+                    <Copy01Icon size={18} variant="stroke" strokeWidth="2" />
                   )}
                 </Button>
               </Tooltip>
-              {chatMessage && isLast && (
-                <RegenerateWithModelSelect
-                  onRegenerate={(assistant: string) => {
-                    const props = getAssistantByKey(assistant);
-                    if (!props?.assistant) {
-                      return;
-                    }
-                    handleRunModel({
-                      input: chatMessage.rawHuman,
-                      messageId: chatMessage.id,
-                      assistant: props.assistant,
-                      sessionId: chatMessage.sessionId,
-                    });
-                  }}
-                />
-              )}
+              <Tooltip content="Copy">
+                <Button
+                  variant="ghost"
+                  size="iconSm"
+                  rounded="lg"
+                  onClick={handleCopyContent}
+                >
+                  <ThumbsDownIcon size={18} variant="stroke" strokeWidth="2" />
+                </Button>
+              </Tooltip>
+
               <Tooltip content="Delete">
                 <Popover
                   open={openDeleteConfirm}
@@ -207,7 +215,11 @@ export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
                 >
                   <PopoverTrigger asChild>
                     <Button variant="ghost" size="iconSm" rounded="lg">
-                      <TrashSimple size={16} weight="bold" />
+                      <Delete01Icon
+                        size={18}
+                        variant="stroke"
+                        strokeWidth="2"
+                      />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent>
@@ -231,11 +243,23 @@ export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
                   </PopoverContent>
                 </Popover>
               </Tooltip>
-            </div>
-          )}
-          {!isLoading && !isToolRunning && (
-            <div className="flex flex-row gap-2 items-center text-xs text-zinc-500">
-              {modelForMessage?.name}
+              {chatMessage && isLast && (
+                <RegenerateWithModelSelect
+                  assistant={inputProps?.assistant}
+                  onRegenerate={(assistant: string) => {
+                    const props = getAssistantByKey(assistant);
+                    if (!props?.assistant) {
+                      return;
+                    }
+                    handleRunModel({
+                      input: chatMessage.rawHuman,
+                      messageId: chatMessage.id,
+                      assistant: props.assistant,
+                      sessionId: chatMessage.sessionId,
+                    });
+                  }}
+                />
+              )}
             </div>
           )}
         </Flex>

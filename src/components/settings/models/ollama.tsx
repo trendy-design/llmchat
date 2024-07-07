@@ -1,9 +1,9 @@
+import { Flex } from "@/components/ui/flex";
 import { usePreferenceContext } from "@/context/preferences";
 import { useEffect, useState } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { useToast } from "../ui/use-toast";
-import { SettingsContainer } from "./settings-container";
+import { Button } from "../../ui/button";
+import { Input } from "../../ui/input";
+import { useToast } from "../../ui/use-toast";
 
 export const OllamaSettings = () => {
   const [url, setURL] = useState<string>("");
@@ -42,7 +42,7 @@ export const OllamaSettings = () => {
   };
 
   return (
-    <SettingsContainer title="Ollama Settings">
+    <Flex direction="col" gap="sm">
       <div className="flex flex-row items-end justify-between">
         <p className="text-xs md:text-sm text-zinc-500">
           Ollama local server URL
@@ -60,6 +60,6 @@ export const OllamaSettings = () => {
         </Button>
       </div>
       {/* TODO: Add FAQ Section with q and a here you can use Type Component */}
-    </SettingsContainer>
+    </Flex>
   );
 };
