@@ -14,13 +14,10 @@ import { TApiKeys, TPreferences, TToolResponse } from ".";
 
 export const toolKeys = ["calculator", "web_search"];
 
-export type TToolResponseArgs = {
-  toolName: string;
-  toolArgs: any;
-  toolResult: any;
-};
-
 export type TToolArg = {
+  updatePreferences: ReturnType<
+    typeof usePreferenceContext
+  >["updatePreferences"];
   preferences: TPreferences;
   apiKeys: TApiKeys;
   sendToolResponse: (response: TToolResponse) => void;
