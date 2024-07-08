@@ -10,6 +10,7 @@ import {
 import { TChatMessage } from "@/hooks/use-chat-session";
 
 import {
+  TToolResponse,
   useClipboard,
   useMarkdown,
   useModelList,
@@ -36,20 +37,10 @@ export type TAIMessage = {
 };
 
 export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
-  const {
-    id,
-    rawAI,
-    isLoading,
-    stop,
-    stopReason,
-    isToolRunning,
-    toolName,
-    toolMeta,
-    inputProps,
-  } = chatMessage;
+  const { id, rawAI, isLoading, stop, stopReason, tools, inputProps } =
+    chatMessage;
 
   const { getToolInfoByKey } = useTools();
-  const toolUsed = toolName ? getToolInfoByKey(toolName) : undefined;
   const messageRef = useRef<HTMLDivElement>(null);
   const { showCopied, copy } = useClipboard();
   const { getModelByKey, getAssistantByKey, getAssistantIcon } = useModelList();
@@ -59,6 +50,47 @@ export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
   const { handleRunModel, setContextValue, editor } = useChatContext();
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const { selectedText } = useTextSelection();
+
+  const isToolRunning = !!tools?.filter((t) => !!t?.toolLoading)?.length;
+
+  const renderTool = (tool: TToolResponse) => {
+    const toolUsed = tool?.toolName
+      ? getToolInfoByKey(tool?.toolName)
+      : undefined;
+
+    if (!toolUsed) {
+      return null;
+    }
+
+    const Icon = toolUsed.smallIcon;
+
+    return (
+      <>
+        {toolUsed && (
+          <Type
+            size="xs"
+            className="flex flex-row gap-2 items-center"
+            textColor="tertiary"
+          >
+            {tool?.toolLoading ? (
+              <Spinner />
+            ) : (
+              <Icon size={20} strokeWidth={1.5} />
+            )}
+            <Type size="sm" textColor="tertiary">
+              {tool?.toolLoading
+                ? toolUsed.loadingMessage
+                : toolUsed.resultMessage}
+            </Type>
+          </Type>
+        )}
+
+        {toolUsed &&
+          tool?.toolRenderArgs &&
+          toolUsed?.renderUI?.(tool?.toolRenderArgs)}
+      </>
+    );
+  };
 
   const modelForMessage = getModelByKey(inputProps.assistant.baseModel);
 
@@ -124,20 +156,7 @@ export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
         items="start"
         className="w-full p-2 flex-1 overflow-hidden"
       >
-        {toolUsed && (
-          <Type
-            size="xs"
-            className="flex flex-row gap-2 items-center"
-            textColor="tertiary"
-          >
-            {isToolRunning ? <Spinner /> : toolUsed.smallIcon()}
-            <Type size="sm" textColor="tertiary">
-              {isToolRunning ? toolUsed.loadingMessage : toolUsed.resultMessage}
-            </Type>
-          </Type>
-        )}
-
-        {toolUsed && toolMeta && toolUsed?.renderUI?.(toolMeta)}
+        {tools?.map(renderTool)}
 
         {rawAI && (
           <Selection.Root>
@@ -181,7 +200,7 @@ export const AIMessage = ({ chatMessage, isLast }: TAIMessage) => {
               </Type>
             </Flex>
           )}
-          {!isLoading && !isToolRunning && (
+          {!isLoading && (
             <div className="flex flex-row gap-1">
               <Tooltip content="Copy">
                 <Button

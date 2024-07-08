@@ -2,14 +2,15 @@ import { usePreferenceContext, useSettingsContext } from "@/context";
 import { dalleTool } from "@/tools/dalle";
 import { duckduckGoTool } from "@/tools/duckduckgo";
 import { googleSearchTool } from "@/tools/google";
+import { memoryTool } from "@/tools/memory";
 import {
+  BrainIcon,
   GlobalSearchIcon,
   HugeiconsProps,
   Image01Icon,
 } from "@hugeicons/react";
-import { Globe } from "@phosphor-icons/react";
 import { FC, ReactNode, RefAttributes } from "react";
-import { TApiKeys, TPreferences } from ".";
+import { TApiKeys, TPreferences, TToolResponse } from ".";
 
 export const toolKeys = ["calculator", "web_search"];
 
@@ -22,7 +23,7 @@ export type TToolResponseArgs = {
 export type TToolArg = {
   preferences: TPreferences;
   apiKeys: TApiKeys;
-  toolResponse: (response: TToolResponseArgs) => void;
+  sendToolResponse: (response: TToolResponse) => void;
 };
 
 export type TToolKey = (typeof toolKeys)[number];
@@ -40,7 +41,7 @@ export type TTool = {
   validationFailedAction?: () => void;
   tool: (args: TToolArg) => any;
   icon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
-  smallIcon: () => ReactNode;
+  smallIcon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
 };
 
 export const useTools = () => {
@@ -80,13 +81,13 @@ export const useTools = () => {
           ? "Results from Google search"
           : "Result from DuckDuckGo search",
       icon: GlobalSearchIcon,
-      smallIcon: () => <Globe size={16} weight="bold" />,
+      smallIcon: GlobalSearchIcon,
     },
     {
-      key: "image",
+      key: "image_generation",
       description: "Generate images",
       tool: dalleTool,
-      name: "Dalle",
+      name: "Image Generation",
       isBeta: true,
       showInMenu: true,
       validate: async () => {
@@ -95,10 +96,46 @@ export const useTools = () => {
       validationFailedAction: () => {
         open("web-search");
       },
-      loadingMessage: "Generating Image",
+      renderUI: ({ image }) => {
+        return (
+          <img
+            src={image}
+            alt=""
+            className="w-[400px] h-[400px] rounded-2xl border"
+          />
+        );
+      },
+      loadingMessage: "Generating Image ...",
       resultMessage: "Generated Image",
       icon: Image01Icon,
-      smallIcon: () => <Globe size={16} weight="bold" />,
+      smallIcon: Image01Icon,
+    },
+    {
+      key: "memory",
+      description: "AI will remeber things about you",
+      tool: memoryTool,
+      name: "Memory",
+      isBeta: true,
+      showInMenu: true,
+      validate: async () => {
+        return true;
+      },
+      validationFailedAction: () => {
+        open("web-search");
+      },
+      renderUI: ({ image }) => {
+        return (
+          <img
+            src={image}
+            alt=""
+            className="w-[400px] h-[400px] rounded-2xl border"
+          />
+        );
+      },
+      loadingMessage: "Saving to the memory...",
+      resultMessage: "Updated memory",
+      icon: BrainIcon,
+      smallIcon: BrainIcon,
     },
   ];
 

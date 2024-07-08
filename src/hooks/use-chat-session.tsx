@@ -24,6 +24,14 @@ export type TLLMInputProps = {
   assistant: TAssistant;
 };
 
+export type TToolResponse = {
+  toolName: string;
+  toolLoading?: boolean;
+  toolArgs?: any;
+  toolResponse?: any;
+  toolRenderArgs?: any;
+};
+
 export type TChatMessage = {
   id: string;
   image?: string;
@@ -31,18 +39,10 @@ export type TChatMessage = {
   rawAI?: string;
   sessionId: string;
   inputProps: TLLMInputProps;
-  tool?: {
-    toolName?: string;
-    toolArgs?: any;
-    toolResult?: any;
-  };
-  toolName?: string;
-  toolResult?: string;
+  tools?: TToolResponse[];
   isLoading?: boolean;
-  isToolRunning?: boolean;
-  toolMeta?: any;
   stop?: boolean;
-  stopReason?: "error" | "cancel" | "apikey" | "recursion";
+  stopReason?: "error" | "cancel" | "apikey" | "recursion" | "finish";
   createdAt: string;
 };
 

@@ -10,6 +10,7 @@ export type TPreferences = {
   systemPrompt: string;
   messageLimit: number;
   temperature: number;
+  memories: string[];
   defaultPlugins: TToolKey[];
   whisperSpeechToTextEnabled: boolean;
   maxTokens: number;
@@ -26,6 +27,7 @@ export const defaultPreferences: TPreferences = {
   systemPrompt: "You're helpful assistant that can help me with my questions.",
   messageLimit: 30,
   temperature: 0.5,
+  memories: [],
   ollamaBaseUrl: "http://localhost:11434",
   whisperSpeechToTextEnabled: false,
   defaultWebSearchEngine: "duckduckgo",
