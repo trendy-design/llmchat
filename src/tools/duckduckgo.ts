@@ -4,7 +4,7 @@ import axios from "axios";
 import { z } from "zod";
 
 const duckduckGoTool = (args: TToolArg) => {
-  const { toolResponse } = args;
+  const { sendToolResponse } = args;
   const webSearchSchema = z.object({
     input: z.string(),
   });
@@ -23,12 +23,15 @@ const duckduckGoTool = (args: TToolArg) => {
           throw new Error("Invalid response");
         }
         const searchPrompt = `Information: \n\n ${result} \n\n Based on snippet please answer the given question with proper citations without using duckduckgo_search function again. Must Remove XML tags if any. Question: ${input}`;
-        toolResponse({
+        sendToolResponse({
           toolName: "web_search",
           toolArgs: {
             input,
           },
-          toolResult: result,
+          toolRenderArgs: {
+            searchResult: result,
+          },
+          toolResponse: result,
         });
         return searchPrompt;
       } catch (error) {
