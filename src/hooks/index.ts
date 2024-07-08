@@ -3,7 +3,6 @@ export * from "./use-chat-session";
 export * from "./use-clipboard";
 export * from "./use-editor-extensions";
 export * from "./use-image-attachment";
-export * from "./use-llm";
 export * from "./use-llm-test";
 export * from "./use-mdx";
 export * from "./use-model-list";
