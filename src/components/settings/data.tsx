@@ -1,9 +1,8 @@
 import { useSettingsContext } from "@/context";
 import { usePreferenceContext } from "@/context/preferences";
 import { useSessionsContext } from "@/context/sessions";
-import { TChatSession } from "@/hooks/use-chat-session";
 import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
-import { generateAndDownloadJson, sortMessages } from "@/lib/helper";
+import { generateAndDownloadJson } from "@/lib/helper";
 import { ChangeEvent } from "react";
 import { z } from "zod";
 import { Button } from "../ui/button";
@@ -24,6 +23,7 @@ const apiSchema = z.object({
 const preferencesSchema = z.object({
   defaultAssistant: z.string(),
   systemPrompt: z.string().optional(),
+  memories: z.array(z.string()).optional(),
   messageLimit: z.number().int().positive().optional(),
   temperature: z.number().optional(),
   defaultPlugins: z.array(z.string()).optional(),
@@ -99,37 +99,37 @@ const importSchema = z.object({
   prompts: z.array(z.string()).optional(),
 });
 
-const mergeSessions = (
-  incomingSessions: TChatSession[],
-  existingSessions: TChatSession[]
-) => {
-  const updatedSessions = [...existingSessions];
+// const mergeSessions = (
+//   incomingSessions: TChatSession[],
+//   existingSessions: TChatSession[]
+// ) => {
+//   const updatedSessions = [...existingSessions];
 
-  incomingSessions.forEach((incomingSession) => {
-    const sessionIndex = existingSessions.findIndex(
-      (s) => s.id === incomingSession.id
-    );
+//   incomingSessions.forEach((incomingSession) => {
+//     const sessionIndex = existingSessions.findIndex(
+//       (s) => s.id === incomingSession.id
+//     );
 
-    if (sessionIndex > -1) {
-      // Merge messages from the same session
-      const currentSession = updatedSessions[sessionIndex];
-      const uniqueNewMessages = incomingSession.messages.filter(
-        (im) => !currentSession.messages.some((cm) => cm.id === im.id)
-      );
+//     if (sessionIndex > -1) {
+//       // Merge messages from the same session
+//       const currentSession = updatedSessions[sessionIndex];
+//       const uniqueNewMessages = incomingSession.messages.filter(
+//         (im) => !currentSession.messages.some((cm) => cm.id === im.id)
+//       );
 
-      // Combine and sort messages
-      currentSession.messages = sortMessages(
-        [...currentSession.messages, ...uniqueNewMessages],
-        "createdAt"
-      );
-    } else {
-      // If session does not exist, add it directly
-      updatedSessions.push(incomingSession);
-    }
-  });
+//       // Combine and sort messages
+//       currentSession.messages = sortMessages(
+//         [...currentSession.messages, ...uniqueNewMessages],
+//         "createdAt"
+//       );
+//     } else {
+//       // If session does not exist, add it directly
+//       updatedSessions.push(incomingSession);
+//     }
+//   });
 
-  return updatedSessions;
-};
+//   return updatedSessions;
+// };
 
 export const Data = () => {
   const { dismiss } = useSettingsContext();
@@ -177,15 +177,15 @@ export const Data = () => {
             (s) => !!s.messages.length
           );
 
-          const mergedSessions = mergeSessions(
-            (incomingSessions as any) || [],
-            sessions
-          );
-          clearSessionsMutation.mutate(undefined, {
-            onSuccess: () => {
-              addSessionsMutation.mutate(mergedSessions);
-            },
-          });
+          // const mergedSessions = mergeSessions(
+          //   (incomingSessions as any) || [],
+          //   sessions
+          // );
+          // clearSessionsMutation.mutate(undefined, {
+          //   onSuccess: () => {
+          //     addSessionsMutation.mutate(mergedSessions);
+          //   },
+          // });
 
           toast({
             title: "Data Imported",
