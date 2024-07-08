@@ -1,6 +1,7 @@
 "use client";
 import { CommonSettings } from "@/components/settings/common";
 import { Data } from "@/components/settings/data";
+import { MemorySettings } from "@/components/settings/memory";
 import { ModelSettings } from "@/components/settings/models";
 import { PulginSettings } from "@/components/settings/plugins";
 import { VoiceInput } from "@/components/settings/voice-input";
@@ -8,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import {
+  BrainIcon,
   DashboardCircleIcon,
   Database02Icon,
   Settings03Icon,
@@ -73,6 +75,12 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
       icon: () => <DashboardCircleIcon size={18} strokeWidth="2" />,
       key: "plugins",
       component: <PulginSettings />,
+    },
+    {
+      name: "Memory",
+      icon: () => <BrainIcon size={18} strokeWidth="2" />,
+      key: "memory",
+      component: <MemorySettings />,
     },
     {
       name: "Voice Input",
