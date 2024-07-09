@@ -77,7 +77,9 @@ export const useModelList = () => {
         return new ChatAnthropic({
           model: model.key,
           streaming: true,
-          anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
+          // anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
+          anthropicApiUrl:
+            "https://gateway.ai.cloudflare.com/v1/1ef794c7214877a37a48eb2fe95b5b0b/aichat/anthropic",
           apiKey,
           maxTokens,
           temperature,

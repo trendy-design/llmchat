@@ -12,6 +12,7 @@ import {
 } from "@/context";
 import {
   defaultPreferences,
+  useImageAttachment,
   useModelList,
   useRecordVoice,
   useScrollToBottom,
@@ -43,6 +44,8 @@ export const ChatInput = () => {
     transcribing,
   } = useRecordVoice();
   const { currentSession } = useSessionsContext();
+  const { renderFileUpload, renderAttachedImage, attachment } =
+    useImageAttachment();
   const { selectedAssistant, open: openAssistants } = useAssistantContext();
   const {
     editor,
@@ -99,6 +102,7 @@ export const ChatInput = () => {
       }
       handleRunModel({
         input: text,
+        image: attachment?.base64,
         sessionId: sessionId.toString(),
         assistant: props.assistant,
       });
@@ -236,20 +240,27 @@ export const ChatInput = () => {
               animate={editor.isEditable ? "animate" : "initial"}
               className="flex flex-col items-start gap-0 focus-within:ring-2 ring-zinc-100 dark:ring-zinc-700 ring-offset-2 dark:ring-offset-zinc-800 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
             >
-              <div className="flex flex-row items-end pl-2 md:pl-3 pr-2 py-2 w-full gap-0">
-                <EditorContent
-                  editor={editor}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    console.log("keydown", e.key);
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      sendMessage();
-                    }
-                  }}
-                  className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
-                />
+              <div className="flex flex-col items-start justify-start w-full">
+                {attachment && (
+                  <div className="pl-2 md:pl-3 pr-2 pt-2">
+                    {renderAttachedImage()}
+                  </div>
+                )}
+                <div className="flex flex-row pl-2 md:pl-3 pr-2 py-2 w-full gap-0 items-end">
+                  <EditorContent
+                    editor={editor}
+                    autoFocus
+                    onKeyDown={(e) => {
+                      console.log("keydown", e.key);
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        sendMessage();
+                      }
+                    }}
+                    className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
+                  />
 
-                {!isGenerating && renderRecordingControls()}
+                  {!isGenerating && renderRecordingControls()}
+                </div>
               </div>
               <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 pb-2 px-2">
                 <Button
@@ -263,7 +274,9 @@ export const ChatInput = () => {
 
                   {selectedAssistant?.assistant.name}
                 </Button>
+
                 <PluginSelect selectedAssistantKey={selectedAssistantKey} />
+                {renderFileUpload()}
                 <QuickSettings />
                 <div className="flex-1"></div>
 
@@ -278,7 +291,7 @@ export const ChatInput = () => {
                         "bg-zinc-800 dark:bg-emerald-500/20 text-white dark:text-emerald-400 dark:outline-emerald-400"
                     )}
                     onClick={() => {
-                      sendMessage();
+                      sendMessage(attachment?.base64);
                     }}
                   >
                     <Navigation03Icon
