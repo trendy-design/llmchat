@@ -24,14 +24,16 @@ export const HumanMessage = ({ chatMessage, isLast }: THumanMessage) => {
         </div>
       )}
       {inputProps?.image && (
-        <Image
-          src={inputProps?.image}
-          alt="uploaded image"
-          className="rounded-2xl min-w-[120px] h-[120px] border dark:border-white/10 border-black/10 shadow-sm object-cover"
-          width={0}
-          sizes="50vw"
-          height={0}
-        />
+        <div className="rounded-2xl relative min-w-[120px] h-[120px] border border-white/5  shadow-md">
+          <Image
+            src={inputProps?.image}
+            alt="uploaded image"
+            className="w-full h-full object-cover rounded-2xl overflow-hidden"
+            width={0}
+            sizes="50vw"
+            height={0}
+          />
+        </div>
       )}
       <Flex className="ml-16 md:ml-32" gap="xs" items="center">
         {isLast && (
