@@ -1,12 +1,15 @@
 import { TChatMessage } from "@/hooks";
+import { Edit02Icon } from "@hugeicons/react";
 import { Quotes } from "@phosphor-icons/react";
 import Image from "next/image";
+import { Button } from "../ui/button";
+import { Flex } from "../ui/flex";
 
 export type THumanMessage = {
   chatMessage: TChatMessage;
   isLast: boolean;
 };
-export const HumanMessage = ({ chatMessage }: THumanMessage) => {
+export const HumanMessage = ({ chatMessage, isLast }: THumanMessage) => {
   const { rawHuman, inputProps } = chatMessage;
 
   return (
@@ -30,11 +33,18 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
           height={0}
         />
       )}
-      <div className="bg-zinc-50 text-zinc-600 dark:text-zinc-100 dark:bg-black/30 ml-16 md:ml-32 rounded-2xl text-sm md:text-base flex flex-row gap-2 px-3 py-2">
-        <span className="pt-[0.20em] pb-[0.15em] leading-6 whitespace-pre-wrap">
-          {rawHuman}
-        </span>
-      </div>
+      <Flex className="ml-16 md:ml-32" gap="xs" items="center">
+        {isLast && (
+          <Button variant="ghost" size="iconSm">
+            <Edit02Icon size={16} strokeWidth={2} />
+          </Button>
+        )}
+        <div className="bg-zinc-50 text-zinc-600 dark:text-zinc-100 dark:bg-black/30  rounded-2xl text-sm md:text-base flex flex-row gap-2 px-3 py-2">
+          <span className="pt-[0.20em] pb-[0.15em] leading-6 whitespace-pre-wrap">
+            {rawHuman}
+          </span>
+        </div>
+      </Flex>
     </>
   );
 };

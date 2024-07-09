@@ -21,8 +21,9 @@ import { useState } from "react";
 import { createContext, useContext } from "react";
 
 export type TSettingsContext = {
-  open: (menu?: string) => void;
+  open: (route?: TSettingRoutes) => void;
   dismiss: () => void;
+  selected: TSettingRoutes;
 };
 export const SettingsContext = createContext<undefined | TSettingsContext>(
   undefined
@@ -46,13 +47,27 @@ export type TSettingMenuItem = {
   icon: () => React.ReactNode;
   component: React.ReactNode;
 };
+
+export type TSettingRoutes =
+  | "common"
+  | "models"
+  | "models/anthropic"
+  | "models/openai"
+  | "models/gemini"
+  | "models/ollama"
+  | "plugins"
+  | "plugins/web-search"
+  | "memory"
+  | "voice-input"
+  | "data";
+
 export const SettingsProvider = ({ children }: TSettingsProvider) => {
   const [isSettingOpen, setIsSettingOpen] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState("common");
+  const [selectedMenu, setSelectedMenu] = useState<TSettingRoutes>("common");
 
-  const open = (key?: string) => {
+  const open = (route?: TSettingRoutes) => {
     setIsSettingOpen(true);
-    setSelectedMenu(key || "common");
+    setSelectedMenu(route || "common");
   };
 
   const dismiss = () => setIsSettingOpen(false);
@@ -91,17 +106,17 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
     {
       name: "Data",
       icon: () => <Database02Icon size={18} strokeWidth="2" />,
-      key: "Your Data",
+      key: "data",
       component: <Data />,
     },
   ];
 
-  const selectedMenuItem = settingMenu.find(
-    (menu) => menu.key === selectedMenu
+  const selectedMenuItem = settingMenu.find((menu) =>
+    selectedMenu.startsWith(menu.key)
   );
 
   return (
-    <SettingsContext.Provider value={{ open, dismiss }}>
+    <SettingsContext.Provider value={{ open, dismiss, selected: selectedMenu }}>
       {children}
 
       <Dialog open={isSettingOpen} onOpenChange={setIsSettingOpen}>
@@ -115,7 +130,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
                 <Button
                   variant={selectedMenu === menu.key ? "secondary" : "ghost"}
                   key={menu.key}
-                  onClick={() => setSelectedMenu(menu.key)}
+                  onClick={() => setSelectedMenu(menu.key as TSettingRoutes)}
                   className="justify-start gap-2 px-2"
                   size="default"
                 >

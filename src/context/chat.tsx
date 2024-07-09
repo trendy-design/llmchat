@@ -25,6 +25,8 @@ import { Placeholder } from "@tiptap/extension-placeholder";
 import { Text } from "@tiptap/extension-text";
 import { useEditor } from "@tiptap/react";
 import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
+
+import { XMLOutputParser } from "@langchain/core/output_parsers";
 import moment from "moment";
 import { createContext, useContext, useEffect, useState } from "react";
 import { v4 } from "uuid";
@@ -295,13 +297,15 @@ export const ChatProvider = ({ children }: TChatProvider) => {
 
     let agentExecutor: AgentExecutor | undefined;
 
+    const parser = new XMLOutputParser();
+
     // Creating a copy of the model
     const modifiedModel = Object.create(Object.getPrototypeOf(selectedModel));
 
     Object.assign(modifiedModel, selectedModel);
 
     modifiedModel.bindTools = (tools: any[], options: any) => {
-      return selectedModel.bindTools?.(tools, {
+      return selectedModel?.bindTools?.(tools, {
         ...options,
         signal: currentAbortController?.signal,
       });
@@ -378,6 +382,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
               },
               handleLLMNewToken: async (token: string) => {
                 streamedMessage += token;
+
                 updateCurrentMessage({
                   isLoading: true,
                   rawAI: streamedMessage,
@@ -497,7 +502,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         description: "API key is missing. Please check your settings.",
         variant: "destructive",
       });
-      openSettings(assitantprops.model.baseModel);
+      openSettings(`models/${assitantprops.model.baseModel}`);
       return;
     }
 
