@@ -95,7 +95,7 @@ export const useRecordVoice = () => {
           "Recordings require OpenAI API key. Please check settings.",
         variant: "destructive",
       });
-      openSettings("openai");
+      openSettings("models/openai");
       return;
     }
 

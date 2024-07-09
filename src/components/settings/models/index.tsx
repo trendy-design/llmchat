@@ -6,16 +6,27 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Flex } from "@/components/ui/flex";
-import { usePreferenceContext } from "@/context";
+import { usePreferenceContext, useSettingsContext } from "@/context";
+import { TBaseModel } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { AlertCircleIcon, CheckmarkCircle02Icon } from "@hugeicons/react";
+import { useEffect, useState } from "react";
 import { AnthropicSettings } from "./anthropic";
 import { GeminiSettings } from "./gemini";
 import { OllamaSettings } from "./ollama";
 import { OpenAISettings } from "./openai";
 
 export const ModelSettings = () => {
+  const { selected } = useSettingsContext();
   const { apiKeys } = usePreferenceContext();
+  const [selectedModel, setSelectedModel] = useState<TBaseModel>("openai");
+
+  useEffect(() => {
+    if (selected.startsWith("models/")) {
+      const model = selected?.split("/")?.[1];
+      setSelectedModel(model as TBaseModel);
+    }
+  }, [selected]);
   const modelSettingsData = [
     {
       value: "openai",
@@ -50,7 +61,15 @@ export const ModelSettings = () => {
   ];
   return (
     <Flex direction="col" gap="lg" className="p-2">
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion
+        type="single"
+        value={selectedModel}
+        collapsible
+        className="w-full"
+        onValueChange={(value) => {
+          setSelectedModel(value as TBaseModel);
+        }}
+      >
         {modelSettingsData.map((model) => (
           <AccordionItem key={model.value} value={model.value}>
             <AccordionTrigger>

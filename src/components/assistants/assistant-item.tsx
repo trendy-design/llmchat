@@ -11,6 +11,7 @@ import { Flex } from "@/components/ui/flex";
 import { TAssistant } from "@/hooks/use-chat-session";
 import { useModelList } from "@/hooks/use-model-list";
 import { defaultPreferences } from "@/hooks/use-preferences";
+import { ConnectIcon } from "@hugeicons/react";
 import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
 import { useState } from "react";
 import { usePreferenceContext } from "../../context/preferences";
@@ -54,6 +55,9 @@ export const AssistantItem = ({
         {getAssistantIcon(assistant.key)}
         {assistant.name} {model?.isNew && <Badge>New</Badge>}
         <div className="flex flex-1"></div>
+        {!!model?.plugins?.length && (
+          <ConnectIcon size={16} strokeWidth={2} className="text-zinc-500" />
+        )}
         {assistant.type === "custom" && (
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger
