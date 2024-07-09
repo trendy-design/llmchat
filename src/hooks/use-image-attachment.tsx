@@ -27,6 +27,10 @@ export const useImageAttachment = () => {
       );
     });
 
+  const clearAttachment = () => {
+    setAttachment(undefined);
+  };
+
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
@@ -80,7 +84,7 @@ export const useImageAttachment = () => {
           <Button
             size={"iconXS"}
             variant="default"
-            onClick={() => {}}
+            onClick={clearAttachment}
             className="flex-shrink-0 w-4 h-4 z-10 absolute top-[-4px] right-[-4px]"
           >
             <X size={12} weight="bold" />
@@ -115,6 +119,7 @@ export const useImageAttachment = () => {
     attachment,
     handleImageUpload,
     handleFileSelect,
+    clearAttachment,
     renderAttachedImage,
     renderFileUpload,
   };
