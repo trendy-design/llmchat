@@ -41,6 +41,34 @@ export type TTool = {
   smallIcon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
 };
 
+interface DataEntry {
+  label: string;
+  name: string;
+  values: number;
+}
+
+interface GroupedData {
+  [key: string]: DataEntry[];
+}
+
+const getLabels = (data: DataEntry[]): string[] => {
+  return data.reduce((acc: string[], entry: DataEntry) => {
+    if (!acc.includes(entry.label)) {
+      return [...acc, entry.label];
+    }
+    return acc;
+  }, []);
+};
+
+const getData = (data: DataEntry[], labels: string[]): string[] => {
+  return data.reduce((acc: string[], entry: DataEntry) => {
+    if (!acc.includes(entry.name)) {
+      return [...acc, entry.name];
+    }
+    return acc;
+  }, []);
+};
+
 export const useTools = () => {
   const { preferences, apiKeys } = usePreferenceContext();
   const { open } = useSettingsContext();
@@ -134,6 +162,26 @@ export const useTools = () => {
       icon: BrainIcon,
       smallIcon: BrainIcon,
     },
+    // {
+    //   key: "chart",
+    //   description: "Genrate Chart",
+    //   tool: chartTool,
+    //   name: "Chart",
+    //   isBeta: true,
+    //   showInMenu: true,
+
+    //   validate: async () => {
+    //     return true;
+    //   },
+    //   validationFailedAction: () => {
+    //     open("web-search");
+    //   },
+
+    //   loadingMessage: "Generating chart...",
+    //   resultMessage: "Generated Chart",
+    //   icon: PieChartIcon,
+    //   smallIcon: PieChartIcon,
+    // },
   ];
 
   const getToolByKey = (key: TToolKey) => {

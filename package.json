@@ -72,6 +72,7 @@
     "react-dom": "^18",
     "react-image-file-resizer": "^0.4.8",
     "react-textarea-autosize": "^8.5.3",
+    "recharts": "^2.12.7",
     "selection-popover": "^0.3.0",
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",
