@@ -36,7 +36,7 @@ import { useSettingsContext } from "./settings";
 
 export type TChatContext = {
   editor: ReturnType<typeof useEditor>;
-  sendMessage: () => void;
+  sendMessage: (image?: string) => void;
   handleRunModel: (props: TLLMInputProps, clear?: () => void) => void;
   openPromptsBotCombo: boolean;
   setOpenPromptsBotCombo: (value: boolean) => void;
@@ -169,20 +169,24 @@ export const ChatProvider = ({ children }: TChatProvider) => {
         : ``
     } `;
 
+    const assiatntProps = getAssistantByKey(assistant.key);
+
+    const base64ImageMessage = new HumanMessage({
+      content: [
+        {
+          type: "text",
+          text: `${userContent}`,
+        },
+        {
+          type: "image_url",
+          image_url: image,
+        },
+      ],
+    });
+
     const user: BaseMessagePromptTemplateLike = [
       "user",
-      image
-        ? [
-            {
-              type: "text",
-              content: userContent,
-            },
-            {
-              type: "image_url",
-              image_url: image,
-            },
-          ]
-        : userContent,
+      image ? base64ImageMessage.content : userContent,
     ];
 
     const prompt = ChatPromptTemplate.fromMessages([
@@ -564,7 +568,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     },
   });
 
-  const sendMessage = async () => {
+  const sendMessage = async (image?: string) => {
     if (!editor || !currentSession?.id) {
       return;
     }
@@ -575,6 +579,7 @@ export const ChatProvider = ({ children }: TChatProvider) => {
     handleRunModel(
       {
         input: editor.getText(),
+        image,
         context: contextValue,
         sessionId: currentSession?.id?.toString(),
         assistant: props.assistant,
