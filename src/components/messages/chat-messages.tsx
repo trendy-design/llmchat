@@ -7,12 +7,29 @@ import { HumanMessage } from "./human-message";
 export type TMessageListByDate = Record<string, TChatMessage[]>;
 
 export const ChatMessages = () => {
-  const { currentSession } = useSessionsContext();
+  const { currentSession, isGenerating } = useSessionsContext();
   const chatContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollToBottom();
+    if (isUserNearBottom()) {
+      scrollToBottom();
+    }
   }, [currentSession?.messages]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [currentSession?.messages?.length]);
+
+  function isUserNearBottom() {
+    var scrollThreshold = 200;
+    if (chatContainer.current) {
+      // Adjust this value as needed
+      return (
+        chatContainer.current.scrollHeight - chatContainer.current.scrollTop <=
+        chatContainer.current.clientHeight + scrollThreshold
+      );
+    }
+  }
 
   const scrollToBottom = () => {
     if (chatContainer.current) {

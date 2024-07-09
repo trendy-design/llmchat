@@ -118,6 +118,7 @@ export const ChatInput = () => {
           <Button
             onClick={scrollToBottom}
             size="iconSm"
+            className="dark:bg-zinc-800 dark:border dark:text-white dark:border-white/10"
             variant="outline"
             rounded="full"
           >
@@ -132,13 +133,13 @@ export const ChatInput = () => {
     if (isGenerating) {
       return (
         <motion.span
-          className="mb-2"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
         >
           <Button
             rounded="full"
+            size="sm"
             className="dark:bg-zinc-800 dark:border dark:text-white dark:border-white/10"
             onClick={() => {
               stopGeneration();
@@ -207,7 +208,7 @@ export const ChatInput = () => {
       )}
     >
       {isFreshSession && <ChatGreeting />}
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row items-center justify-center gap-2 mb-2">
         {renderScrollToBottom()}
         {renderStopGeneration()}
         {renderListeningIndicator()}

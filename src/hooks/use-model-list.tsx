@@ -120,7 +120,7 @@ export const useModelList = () => {
       isNew: true,
       inputPrice: 5,
       outputPrice: 15,
-      plugins: ["web_search", "image_generation", "memory"],
+      plugins: ["web_search", "image_generation", "memory", "chart"],
       icon: (size) => <ModelIcon size={size} type="gpt4" />,
       baseModel: "openai",
       maxOutputTokens: 2048,
