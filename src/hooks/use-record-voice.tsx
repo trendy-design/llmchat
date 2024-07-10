@@ -2,10 +2,9 @@ import { AudioWaveSpinner } from "@/components/ui/audio-wave";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { useSettings } from "@/context/settings/context";
+import { usePreferenceContext, useSettingsContext } from "@/context";
 import { blobToBase64 } from "@/lib/record";
-import { Microphone, StopCircle } from "@phosphor-icons/react";
+import { RecordIcon, StopIcon } from "@hugeicons/react";
 import { OpenAI, toFile } from "openai";
 import { useRef, useState } from "react";
 
@@ -19,7 +18,7 @@ export const useRecordVoice = () => {
   const [recording, setRecording] = useState<boolean>(false);
   const [transcribing, setIsTranscribing] = useState<boolean>(false);
   const { preferences } = usePreferenceContext();
-  const { open: openSettings } = useSettings();
+  const { open: openSettings } = useSettingsContext();
   const chunks = useRef<Blob[]>([]);
 
   const startRecording = async (): Promise<void> => {
@@ -96,7 +95,7 @@ export const useRecordVoice = () => {
           "Recordings require OpenAI API key. Please check settings.",
         variant: "destructive",
       });
-      openSettings("openai");
+      openSettings("models/openai");
       return;
     }
 
@@ -125,7 +124,12 @@ export const useRecordVoice = () => {
               stopRecording();
             }}
           >
-            <StopCircle size={20} weight="fill" className="text-red-300" />
+            <StopIcon
+              size={18}
+              variant="solid"
+              strokeWidth="2"
+              className="text-red-300"
+            />
           </Button>
         </>
       );
@@ -133,13 +137,8 @@ export const useRecordVoice = () => {
 
     return (
       <Tooltip content="Record">
-        <Button
-          size="iconSm"
-          variant="ghost"
-          rounded="full"
-          onClick={startVoiceRecording}
-        >
-          <Microphone size={20} weight="bold" />
+        <Button size="iconSm" variant="ghost" onClick={startVoiceRecording}>
+          <RecordIcon size={18} variant="stroke" strokeWidth="2" />
         </Button>
       </Tooltip>
     );

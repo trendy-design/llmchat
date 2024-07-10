@@ -1,21 +1,21 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SessionsProvider } from "@/context/sessions/provider";
-import { SettingsProvider } from "@/context/settings/provider";
+import {
+  ConfirmProvider,
+  PreferenceProvider,
+  ReactQueryProvider,
+  SessionsProvider,
+  SettingsProvider,
+} from "@/context"; // Consolidated context imports
 import { cn } from "@/lib/utils";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next"; // Combined type imports
 import { ThemeProvider } from "next-themes";
+import { interVar } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "AI Chat",
   description: "Most intutive all-in-one AI chat client",
 };
-
-import { ConfirmProvider } from "@/context/confirm/provider";
-import { PreferenceProvider } from "@/context/preferences/provider";
-import { ReactQueryProvider } from "@/context/react-query/provider";
-import type { Viewport } from "next";
-import { interVar } from "./fonts";
 
 export const viewport: Viewport = {
   width: "device-width",

@@ -1,41 +1,53 @@
 import { sortSessions } from "@/lib/helper";
-import { PromptType, RoleType } from "@/lib/prompts";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { get, set } from "idb-keyval";
 import moment from "moment";
 import { v4 } from "uuid";
-import { TBot } from "./use-bots";
-import { TRunModel } from "./use-llm";
 import { TModelKey } from "./use-model-list";
 
-export type InputProps = {
-  type: PromptType;
+export type TAssistantType = "base" | "custom";
+
+export type TAssistant = {
+  name: string;
+  systemPrompt: string;
+  baseModel: TModelKey;
+  key: TModelKey | string;
+  type: TAssistantType;
+};
+
+export type TLLMInputProps = {
   context?: string;
-  role: RoleType;
-  query?: string;
+  input?: string;
   image?: string;
+  sessionId: string;
+  messageId?: string;
+  assistant: TAssistant;
+};
+
+export type TToolResponse = {
+  toolName: string;
+  toolLoading?: boolean;
+  toolArgs?: any;
+  toolResponse?: any;
+  toolRenderArgs?: any;
 };
 
 export type TChatMessage = {
   id: string;
-  model: TModelKey;
   image?: string;
   rawHuman?: string;
   rawAI?: string;
   sessionId: string;
-  runModelProps: TRunModel;
-  toolName?: string;
-  toolResult?: string;
+  inputProps: TLLMInputProps;
+  tools?: TToolResponse[];
   isLoading?: boolean;
-  isToolRunning?: boolean;
   stop?: boolean;
-  stopReason?: "error" | "cancel" | "apikey" | "recursion";
+  stopReason?: "error" | "cancel" | "apikey" | "recursion" | "finish";
   createdAt: string;
 };
 
 export type TChatSession = {
   messages: TChatMessage[];
-  bot?: TBot;
   title?: string;
   id: string;
   createdAt: string;
@@ -60,6 +72,7 @@ export const useChatSession = (id?: string) => {
     const sessions = await getSessions();
     const newSessions = sessions.map((session) => {
       if (session.id === sessionId) {
+        console.log("session add message", session);
         if (!!session?.messages?.length) {
           const isExisingMessage = session.messages.find(
             (m) => m.id === chatMessage.id
@@ -77,6 +90,7 @@ export const useChatSession = (id?: string) => {
             updatedAt: moment().toISOString(),
           };
         }
+        console.log("session add message 2", session);
 
         return {
           ...session,
@@ -87,6 +101,8 @@ export const useChatSession = (id?: string) => {
       }
       return session;
     });
+
+    console.log("new add message", newSessions);
 
     await set("chat-sessions", newSessions);
   };
@@ -140,14 +156,10 @@ export const useChatSession = (id?: string) => {
     return newFilteredSessions;
   };
 
-  const createNewSession = async (bot?: TBot) => {
+  const createNewSession = async () => {
     const sessions = (await getSessions()) || [];
     const latestSession = sortSessions(sessions, "createdAt")?.[0];
     if (latestSession && !latestSession?.messages?.length) {
-      if (latestSession.bot) {
-        await updateSession(latestSession.id, { bot: undefined });
-        return { ...latestSession, bot: undefined };
-      }
       return latestSession;
     }
 
@@ -155,7 +167,6 @@ export const useChatSession = (id?: string) => {
       id: v4(),
       messages: [],
       title: "Untitled",
-      bot,
       createdAt: moment().toISOString(),
     };
 
@@ -237,7 +248,7 @@ export const useChatSession = (id?: string) => {
   });
 
   const createNewSessionMutation = useMutation({
-    mutationFn: async (bot?: TBot) => await createNewSession(bot),
+    mutationFn: async () => await createNewSession(),
     onSuccess: () => {
       sessionsQuery.refetch();
     },

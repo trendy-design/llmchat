@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const useScrollToBottom = () => {
+export const useScrollToBottom = () => {
   const [showButton, setShowButton] = useState(false);
 
   useEffect(() => {
@@ -44,5 +44,3 @@ const useScrollToBottom = () => {
     scrollToBottom,
   };
 };
-
-export default useScrollToBottom;

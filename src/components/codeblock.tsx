@@ -4,8 +4,7 @@ import { useEffect, useRef } from "react";
 import { ibmPlex } from "@/app/fonts";
 import { useClipboard } from "@/hooks/use-clipboard";
 import { cn } from "@/lib/utils";
-import { Copy } from "@phosphor-icons/react";
-import { Check } from "@phosphor-icons/react/dist/ssr";
+import { Copy01Icon, Tick01Icon } from "@hugeicons/react";
 import { Button } from "./ui/button";
 import { Tooltip } from "./ui/tooltip";
 
@@ -16,7 +15,7 @@ export type codeBlockProps = {
 
 export const CodeBlock = ({ lang, code }: codeBlockProps) => {
   const ref = useRef<HTMLElement>(null);
-  const { copiedText, copy, showCopied } = useClipboard();
+  const { copy, showCopied } = useClipboard();
   const language = lang && hljs.getLanguage(lang) ? lang : "plaintext";
 
   useEffect(() => {
@@ -44,10 +43,10 @@ export const CodeBlock = ({ lang, code }: codeBlockProps) => {
             }}
           >
             {showCopied ? (
-              <Check size={14} weight="bold" />
+              <Tick01Icon size={14} variant="stroke" strokeWidth="2" />
             ) : (
-              <Copy size={14} weight="bold" />
-            )}{" "}
+              <Copy01Icon size={14} variant="stroke" strokeWidth="2" />
+            )}
             Copy Code
           </Button>
         </Tooltip>

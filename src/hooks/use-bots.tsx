@@ -1,85 +1,78 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { get, set } from "idb-keyval";
 import { v4 } from "uuid";
-import { TModelKey } from "./use-model-list";
+import { TAssistant } from "./use-chat-session";
 
-export type TBot = {
-  prompt: string;
-  name: string;
-  description: string;
-  greetingMessage?: string;
-  id: string;
-  avatar?: string;
-  status?: string;
-  deafultBaseModel: TModelKey;
-};
-
-export const useBots = () => {
-  const getBots = async (): Promise<TBot[]> => {
-    return (await get("bots")) || [];
+export const useAssistants = () => {
+  const getAssistants = async (): Promise<TAssistant[]> => {
+    return (await get("assistants")) || [];
   };
 
-  const createBot = async (bot: Omit<TBot, "id">) => {
-    const bots = await getBots();
-    const newBots = [...bots, { ...bot, id: v4() }];
-    set("bots", newBots);
+  const createAssistant = async (assistant: Omit<TAssistant, "key">) => {
+    const assistants = await getAssistants();
+    const newAssistants = [...assistants, { ...assistant, key: v4() }];
+    set("assistants", newAssistants);
   };
 
-  const deleteBot = async (id: string) => {
-    const bots = await getBots();
-    const newBots = bots?.filter((bot) => bot.id !== id) || [];
-    set("bots", newBots);
+  const deleteAssistant = async (key: string) => {
+    const assistants = await getAssistants();
+    const newAssistants =
+      assistants?.filter((assistant) => assistant.key !== key) || [];
+    set("assistants", newAssistants);
   };
 
-  const updateBot = async (botId: string, newBot: Omit<TBot, "id">) => {
-    const bots = await getBots();
-    const newBots = bots.map((bot) => {
-      if (bot.id === botId) {
-        return { ...bot, ...newBot };
+  const updateAssistant = async (
+    assistantKey: string,
+    newAssistant: Omit<TAssistant, "key">
+  ) => {
+    const assistants = await getAssistants();
+    const newAssistants = assistants.map((assistant) => {
+      if (assistant.key === assistantKey) {
+        return { ...assistant, ...newAssistant };
       }
-      return bot;
+      return assistant;
     });
-    set("bots", newBots);
+    set("assistants", newAssistants);
   };
 
-  const botsQuery = useQuery({
-    queryKey: ["bots"],
-    queryFn: getBots,
+  const assistantsQuery = useQuery({
+    queryKey: ["assistants"],
+    queryFn: getAssistants,
   });
 
-  const createBotMutation = useMutation({
-    mutationFn: createBot,
+  const createAssistantMutation = useMutation({
+    mutationFn: createAssistant,
     onSuccess: () => {
-      botsQuery.refetch();
+      assistantsQuery.refetch();
     },
   });
 
-  const deleteBotMutation = useMutation({
-    mutationFn: deleteBot,
+  const deleteAssistantMutation = useMutation({
+    mutationFn: deleteAssistant,
     onSuccess: () => {
-      botsQuery.refetch();
+      assistantsQuery.refetch();
     },
   });
 
-  const updateBotMutation = useMutation({
+  const updateAssistantMutation = useMutation({
     mutationFn: ({
-      botId,
-      newBot,
+      assistantKey,
+      newAssistant,
     }: {
-      botId: string;
-      newBot: Omit<TBot, "id">;
-    }) => updateBot(botId, newBot),
+      assistantKey: string;
+      newAssistant: Omit<TAssistant, "key">;
+    }) => updateAssistant(assistantKey, newAssistant),
     onSuccess: () => {
-      botsQuery.refetch();
+      assistantsQuery.refetch();
     },
   });
   return {
-    getBots,
-    createBot,
-    updateBot,
-    botsQuery,
-    createBotMutation,
-    updateBotMutation,
-    deleteBotMutation,
+    getAssistants,
+    createAssistant,
+    updateAssistant,
+    assistantsQuery,
+    createAssistantMutation,
+    updateAssistantMutation,
+    deleteAssistantMutation,
   };
 };

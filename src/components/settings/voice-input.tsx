@@ -1,4 +1,4 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
+import { usePreferenceContext } from "@/context/preferences";
 import { Flex } from "../ui/flex";
 import { Switch } from "../ui/switch";
 import { Type } from "../ui/text";

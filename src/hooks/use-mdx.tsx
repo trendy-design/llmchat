@@ -83,6 +83,9 @@ export const useMarkdown = () => {
           }
           return <></>;
         },
+        image: () => {
+          return <></>;
+        },
         blockquote: (children) => (
           <blockquote>
             <p>{children}</p>

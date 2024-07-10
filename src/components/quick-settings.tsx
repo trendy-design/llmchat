@@ -1,7 +1,8 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
+import { usePreferenceContext } from "@/context/preferences";
 import { useModelList } from "@/hooks/use-model-list";
 import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
-import { ArrowClockwise, Info, SlidersHorizontal } from "@phosphor-icons/react";
+import { Settings03Icon } from "@hugeicons/react";
+import { ArrowClockwise, Info } from "@phosphor-icons/react";
 import { useState } from "react";
 import { ModelInfo } from "./model-info";
 import { Button } from "./ui/button";
@@ -14,7 +15,7 @@ import { Tooltip } from "./ui/tooltip";
 export const QuickSettings = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { preferences, updatePreferences } = usePreferenceContext();
-  const { getModelByKey } = useModelList();
+  const { getModelByKey, getAssistantByKey } = useModelList();
 
   const renderResetToDefault = (key: keyof TPreferences) => {
     return (
@@ -31,21 +32,21 @@ export const QuickSettings = () => {
     );
   };
 
-  const model = getModelByKey(preferences?.defaultModel);
+  const assistant = getAssistantByKey(preferences?.defaultAssistant);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <Tooltip content="Configure Model">
         <PopoverTrigger asChild>
           <Button variant="ghost" size="iconSm">
-            <SlidersHorizontal size={16} weight="bold" />
+            <Settings03Icon size={16} variant="stroke" strokeWidth="2" />
           </Button>
         </PopoverTrigger>
       </Tooltip>
       <PopoverContent className="p-0 dark:bg-zinc-700 mr-8 roundex-2xl w-[300px]">
-        {model && (
+        {assistant && (
           <div className="border-b dark:border-white/10 border-black/10 p-2">
-            <ModelInfo model={model} showDetails={false} />
+            <ModelInfo model={assistant.model} showDetails={false} />
           </div>
         )}
         <Flex direction="col" className="w-full px-3 py-1">
@@ -65,7 +66,7 @@ export const QuickSettings = () => {
                 value={[Number(preferences?.maxTokens)]}
                 step={1}
                 min={0}
-                max={model?.maxOutputTokens}
+                max={assistant?.model?.maxOutputTokens}
                 onValueChange={(value: number[]) => {
                   updatePreferences({ maxTokens: value?.[0] });
                 }}

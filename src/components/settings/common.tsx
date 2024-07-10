@@ -1,4 +1,4 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
+import { usePreferenceContext } from "@/context/preferences";
 import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
 import { ArrowClockwise, Info } from "@phosphor-icons/react";
 import { ChangeEvent } from "react";
@@ -63,26 +63,13 @@ export const CommonSettings = () => {
   return (
     <SettingsContainer title="Model Settings">
       <Flex direction="col" gap="sm" className="w-full" items="start">
-        <Flex className="py-1 w-full" items="end" justify="between">
-          <Type
-            size="xs"
-            textColor="secondary"
-            className="flex flex-row items-center gap-1"
-          >
-            System Default Prompt <Info weight="regular" size={14} />
-          </Type>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              updatePreferences({
-                systemPrompt: defaultPreferences.systemPrompt,
-              });
-            }}
-          >
-            Reset to Default
-          </Button>
-        </Flex>
+        <Type
+          size="xs"
+          textColor="secondary"
+          className="flex flex-row items-center gap-1"
+        >
+          System Default Prompt <Info weight="regular" size={14} />
+        </Type>
 
         <Textarea
           name="systemPrompt"
@@ -92,6 +79,17 @@ export const CommonSettings = () => {
             updatePreferences({ systemPrompt: e.target.value });
           }}
         />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            updatePreferences({
+              systemPrompt: defaultPreferences.systemPrompt,
+            });
+          }}
+        >
+          Reset System Prompt
+        </Button>
       </Flex>
 
       <SettingCard className="p-3 mt-2">

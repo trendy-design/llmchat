@@ -1,29 +1,26 @@
-import { useFilters } from "@/context/filters/context";
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { useRecordVoice } from "@/hooks/use-record-voice";
-import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
-import { slideUpVariant } from "@/lib/framer-motion";
-import { cn } from "@/lib/utils";
-
-import {
-  ArrowDown,
-  ArrowElbowDownRight,
-  ArrowUp,
-  Command,
-  Stop,
-  X,
-} from "@phosphor-icons/react";
-
+import { ArrowElbowDownRight, Stop, X } from "@phosphor-icons/react";
 import { EditorContent } from "@tiptap/react";
 import { motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ModelSelect } from "./model-select";
-import { Badge } from "./ui/badge";
 
-import { useChatContext } from "@/context/chat/provider";
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { useSessionsContext } from "@/context/sessions/provider";
+import {
+  useAssistantContext,
+  useChatContext,
+  usePreferenceContext,
+  useSessionsContext,
+} from "@/context";
+import {
+  defaultPreferences,
+  useImageAttachment,
+  useModelList,
+  useRecordVoice,
+  useScrollToBottom,
+} from "@/hooks";
+import { TAssistant } from "@/hooks/use-chat-session";
+import { slideUpVariant } from "@/lib/framer-motion";
+import { cn } from "@/lib/utils";
+import { ArrowDown02Icon, Navigation03Icon } from "@hugeicons/react";
 import { ChatExamples } from "./chat-examples";
 import { ChatGreeting } from "./chat-greeting";
 import { PluginSelect } from "./plugin-select";
@@ -38,7 +35,6 @@ export type TAttachment = {
 
 export const ChatInput = () => {
   const { sessionId } = useParams();
-  const { open: openFilters } = useFilters();
   const { showButton, scrollToBottom } = useScrollToBottom();
   const {
     renderListeningIndicator,
@@ -48,6 +44,9 @@ export const ChatInput = () => {
     transcribing,
   } = useRecordVoice();
   const { currentSession } = useSessionsContext();
+  const { renderFileUpload, renderAttachedImage, attachment, clearAttachment } =
+    useImageAttachment();
+  const { selectedAssistant, open: openAssistants } = useAssistantContext();
   const {
     editor,
     handleRunModel,
@@ -60,19 +59,24 @@ export const ChatInput = () => {
     stopGeneration,
   } = useChatContext();
 
-  const { preferences } = usePreferenceContext();
-  const { models } = useModelList();
+  const { preferences, updatePreferences } = usePreferenceContext();
+  const { models, getAssistantByKey, getAssistantIcon } = useModelList();
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [selectedModel, setSelectedModel] = useState<TModelKey>(
-    preferences.defaultModel
-  );
+  const [selectedAssistantKey, setSelectedAssistantKey] = useState<
+    TAssistant["key"]
+  >(preferences.defaultAssistant);
 
   useEffect(() => {
-    setSelectedModel(preferences.defaultModel);
+    const assistantProps = getAssistantByKey(preferences.defaultAssistant);
+    if (assistantProps?.model) {
+      setSelectedAssistantKey(preferences.defaultAssistant);
+    } else {
+      updatePreferences({
+        defaultAssistant: defaultPreferences.defaultAssistant,
+      });
+    }
   }, [models, preferences]);
-
-  console.log("selectedModelinput", preferences.defaultModel);
 
   useEffect(() => {
     if (editor?.isActive) {
@@ -80,29 +84,29 @@ export const ChatInput = () => {
     }
   }, [editor?.isActive]);
 
-  // useEffect(() => {
-  //   if (currentSession?.bot?.deafultBaseModel) {
-  //     setSelectedModel(currentSession.bot.deafultBaseModel);
-  //   }
-  // }, [currentSession]);
-
   useEffect(() => {
     if (sessionId) {
       inputRef.current?.focus();
     }
   }, [sessionId]);
 
-  const isFreshSession =
-    !currentSession?.messages?.length && !currentSession?.bot;
+  const isFreshSession = !currentSession?.messages?.length;
 
   useEffect(() => {
     if (text) {
       editor?.commands.clearContent();
       editor?.commands.setContent(text);
+      const props = getAssistantByKey(preferences.defaultAssistant);
+      if (!props) {
+        return;
+      }
       handleRunModel({
         input: text,
+        image: attachment?.base64,
         sessionId: sessionId.toString(),
+        assistant: props.assistant,
       });
+      clearAttachment();
 
       editor?.commands.clearContent();
     }
@@ -119,10 +123,11 @@ export const ChatInput = () => {
           <Button
             onClick={scrollToBottom}
             size="iconSm"
+            className="dark:bg-zinc-800 dark:border dark:text-white dark:border-white/10"
             variant="outline"
             rounded="full"
           >
-            <ArrowDown size={16} weight="bold" />
+            <ArrowDown02Icon size={16} strokeWidth="2" />
           </Button>
         </motion.span>
       );
@@ -133,13 +138,13 @@ export const ChatInput = () => {
     if (isGenerating) {
       return (
         <motion.span
-          className="mb-2"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0, opacity: 0 }}
         >
           <Button
             rounded="full"
+            size="sm"
             className="dark:bg-zinc-800 dark:border dark:text-white dark:border-white/10"
             onClick={() => {
               stopGeneration();
@@ -153,7 +158,6 @@ export const ChatInput = () => {
     }
   };
 
-  // const renderReplyButton = () => {
   //   if (showPopup && !recording && !transcribing) {
   //     return (
   //       <motion.span
@@ -209,9 +213,8 @@ export const ChatInput = () => {
       )}
     >
       {isFreshSession && <ChatGreeting />}
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row items-center justify-center gap-2 mb-2">
         {renderScrollToBottom()}
-        {/* {renderReplyButton()} */}
         {renderStopGeneration()}
         {renderListeningIndicator()}
       </div>
@@ -231,10 +234,6 @@ export const ChatInput = () => {
               setOpenPromptsBotCombo(false);
             }}
             onOpenChange={setOpenPromptsBotCombo}
-            onBotSelect={(bot) => {
-              editor?.commands?.clearContent();
-              editor?.commands.focus("end");
-            }}
           >
             <motion.div
               variants={slideUpVariant}
@@ -242,39 +241,47 @@ export const ChatInput = () => {
               animate={editor.isEditable ? "animate" : "initial"}
               className="flex flex-col items-start gap-0 focus-within:ring-2 ring-zinc-100 dark:ring-zinc-700 ring-offset-2 dark:ring-offset-zinc-800 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
             >
-              <div className="flex flex-row items-end pl-2 md:pl-3 pr-2 py-2 w-full gap-0">
-                <EditorContent
-                  editor={editor}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    console.log("keydown", e.key);
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      sendMessage();
-                    }
-                  }}
-                  className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
-                />
+              <div className="flex flex-col items-start justify-start w-full">
+                {attachment && (
+                  <div className="pl-2 md:pl-3 pr-2 pt-2">
+                    {renderAttachedImage()}
+                  </div>
+                )}
+                <div className="flex flex-row pl-2 md:pl-3 pr-2 py-2 w-full gap-0 items-end">
+                  <EditorContent
+                    editor={editor}
+                    autoFocus
+                    onKeyDown={(e) => {
+                      console.log("keydown", e.key);
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        sendMessage(attachment?.base64);
+                        clearAttachment();
+                      }
+                    }}
+                    className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
+                  />
 
-                {!isGenerating && renderRecordingControls()}
+                  {!isGenerating && renderRecordingControls()}
+                </div>
               </div>
               <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 pb-2 px-2">
-                <ModelSelect
-                  selectedModel={selectedModel}
-                  setSelectedModel={setSelectedModel}
-                />
-                <PluginSelect selectedModel={selectedModel} />
+                <Button
+                  variant={"ghost"}
+                  onClick={openAssistants}
+                  className={cn("pl-1 pr-3 gap-2 text-xs md:text-sm")}
+                  size="sm"
+                >
+                  {selectedAssistant?.assistant.key &&
+                    getAssistantIcon(selectedAssistant?.assistant.key)}
+
+                  {selectedAssistant?.assistant.name}
+                </Button>
+
+                <PluginSelect selectedAssistantKey={selectedAssistantKey} />
+                {renderFileUpload()}
                 <QuickSettings />
                 <div className="flex-1"></div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={openFilters}
-                  className="px-1.5"
-                >
-                  <Badge className="flex">
-                    <Command size={16} weight="bold" /> K
-                  </Badge>
-                </Button>
+
                 {!isGenerating && (
                   <Button
                     size="iconSm"
@@ -283,13 +290,18 @@ export const ChatInput = () => {
                     disabled={!editor?.getText()}
                     className={cn(
                       !!editor?.getText() &&
-                        "bg-zinc-800 dark:bg-emerald-500/20 text-white dark:text-emerald-400"
+                        "bg-zinc-800 dark:bg-emerald-500/20 text-white dark:text-emerald-400 dark:outline-emerald-400"
                     )}
                     onClick={() => {
-                      sendMessage();
+                      sendMessage(attachment?.base64);
+                      clearAttachment();
                     }}
                   >
-                    <ArrowUp size={18} weight="bold" />
+                    <Navigation03Icon
+                      size={18}
+                      variant="stroke"
+                      strokeWidth="2"
+                    />
                   </Button>
                 )}
               </div>
