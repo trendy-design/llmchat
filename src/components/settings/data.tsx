@@ -1,10 +1,8 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { useSessionsContext } from "@/context/sessions/provider";
-import { useSettings } from "@/context/settings/context";
-import { TChatSession } from "@/hooks/use-chat-session";
-import { models } from "@/hooks/use-model-list";
+import { useSettingsContext } from "@/context";
+import { usePreferenceContext } from "@/context/preferences";
+import { useSessionsContext } from "@/context/sessions";
 import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
-import { generateAndDownloadJson, sortMessages } from "@/lib/helper";
+import { generateAndDownloadJson } from "@/lib/helper";
 import { ChangeEvent } from "react";
 import { z } from "zod";
 import { Button } from "../ui/button";
@@ -23,8 +21,9 @@ const apiSchema = z.object({
 });
 
 const preferencesSchema = z.object({
-  defaultModel: z.string().refine((val) => models.includes(val)),
+  defaultAssistant: z.string(),
   systemPrompt: z.string().optional(),
+  memories: z.array(z.string()).optional(),
   messageLimit: z.number().int().positive().optional(),
   temperature: z.number().optional(),
   defaultPlugins: z.array(z.string()).optional(),
@@ -38,6 +37,7 @@ const preferencesSchema = z.object({
   topK: z.number().optional(),
   googleSearchEngineId: z.string().optional(),
   googleSearchApiKey: z.string().optional(),
+  ollamaBaseUrl: z.string().optional(),
 });
 
 const runModelPropsSchema = z.object({
@@ -46,17 +46,22 @@ const runModelPropsSchema = z.object({
   image: z.string().optional(),
   sessionId: z.string(),
   messageId: z.string().optional(),
-  model: z.string().optional(),
+  assistant: z.object({
+    key: z.string(),
+    name: z.string(),
+    baseModel: z.string(),
+    systemPrompt: z.string(),
+    type: z.string().refine((val) => ["custom", "base"].includes(val)),
+  }),
 });
 
 const chatMessageSchema = z.object({
   id: z.string(),
-  model: z.string(),
   image: z.string().optional(),
   rawHuman: z.string().optional(),
   rawAI: z.string().optional(),
   sessionId: z.string(),
-  runModelProps: runModelPropsSchema,
+  inputProps: runModelPropsSchema,
   toolName: z.string().optional(),
   toolResult: z.string().optional(),
   isLoading: z.boolean().optional(),
@@ -79,7 +84,6 @@ const botSchema = z.object({
 
 const sessionSchema = z.object({
   messages: z.array(chatMessageSchema),
-  bot: botSchema.optional(),
   title: z.string().optional(),
   id: z.string(),
   createdAt: z.string(),
@@ -92,44 +96,43 @@ const importSchema = z.object({
   apiKeys: apiSchema.optional(),
   preferences: preferencesSchema.optional(),
   sessions: sessionSchema.array().optional(),
-  bots: botSchema.array().optional(),
   prompts: z.array(z.string()).optional(),
 });
 
-const mergeSessions = (
-  incomingSessions: TChatSession[],
-  existingSessions: TChatSession[]
-) => {
-  const updatedSessions = [...existingSessions];
+// const mergeSessions = (
+//   incomingSessions: TChatSession[],
+//   existingSessions: TChatSession[]
+// ) => {
+//   const updatedSessions = [...existingSessions];
 
-  incomingSessions.forEach((incomingSession) => {
-    const sessionIndex = existingSessions.findIndex(
-      (s) => s.id === incomingSession.id
-    );
+//   incomingSessions.forEach((incomingSession) => {
+//     const sessionIndex = existingSessions.findIndex(
+//       (s) => s.id === incomingSession.id
+//     );
 
-    if (sessionIndex > -1) {
-      // Merge messages from the same session
-      const currentSession = updatedSessions[sessionIndex];
-      const uniqueNewMessages = incomingSession.messages.filter(
-        (im) => !currentSession.messages.some((cm) => cm.id === im.id)
-      );
+//     if (sessionIndex > -1) {
+//       // Merge messages from the same session
+//       const currentSession = updatedSessions[sessionIndex];
+//       const uniqueNewMessages = incomingSession.messages.filter(
+//         (im) => !currentSession.messages.some((cm) => cm.id === im.id)
+//       );
 
-      // Combine and sort messages
-      currentSession.messages = sortMessages(
-        [...currentSession.messages, ...uniqueNewMessages],
-        "createdAt"
-      );
-    } else {
-      // If session does not exist, add it directly
-      updatedSessions.push(incomingSession);
-    }
-  });
+//       // Combine and sort messages
+//       currentSession.messages = sortMessages(
+//         [...currentSession.messages, ...uniqueNewMessages],
+//         "createdAt"
+//       );
+//     } else {
+//       // If session does not exist, add it directly
+//       updatedSessions.push(incomingSession);
+//     }
+//   });
 
-  return updatedSessions;
-};
+//   return updatedSessions;
+// };
 
 export const Data = () => {
-  const { dismiss } = useSettings();
+  const { dismiss } = useSettingsContext();
   const { toast } = useToast();
 
   const {
@@ -174,15 +177,15 @@ export const Data = () => {
             (s) => !!s.messages.length
           );
 
-          const mergedSessions = mergeSessions(
-            incomingSessions || [],
-            sessions
-          );
-          clearSessionsMutation.mutate(undefined, {
-            onSuccess: () => {
-              addSessionsMutation.mutate(mergedSessions);
-            },
-          });
+          // const mergedSessions = mergeSessions(
+          //   (incomingSessions as any) || [],
+          //   sessions
+          // );
+          // clearSessionsMutation.mutate(undefined, {
+          //   onSuccess: () => {
+          //     addSessionsMutation.mutate(mergedSessions);
+          //   },
+          // });
 
           toast({
             title: "Data Imported",

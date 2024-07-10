@@ -1,11 +1,13 @@
-import { ModelIcon } from "@/components/icons/model-icon";
-import { usePreferenceContext } from "@/context/preferences/provider";
+import { ModelIcon } from "@/components/model-icon";
+import { usePreferenceContext } from "@/context";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatOllama } from "@langchain/community/chat_models/ollama";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOpenAI } from "@langchain/openai";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
+import { useAssistants } from "./use-bots";
+import { TAssistant } from "./use-chat-session";
 import { defaultPreferences } from "./use-preferences";
 import { TToolKey } from "./use-tools";
 
@@ -19,6 +21,7 @@ export const models = [
   "gpt-3.5-turbo-0125",
   "claude-3-opus-20240229",
   "claude-3-sonnet-20240229",
+  "claude-3-5-sonnet-20240620",
   "claude-3-haiku-20240307",
   "gemini-pro",
   "gemini-1.5-flash-latest",
@@ -42,6 +45,7 @@ export type TModel = {
 };
 
 export const useModelList = () => {
+  const assistantsProps = useAssistants();
   const { preferences } = usePreferenceContext();
 
   const ollamaModelsQuery = useQuery({
@@ -67,13 +71,15 @@ export const useModelList = () => {
           temperature,
           maxTokens,
           topP,
-          maxRetries: 2,          
+          maxRetries: 2,
         });
       case "anthropic":
         return new ChatAnthropic({
           model: model.key,
           streaming: true,
-          anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
+          // anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
+          anthropicApiUrl:
+            "https://gateway.ai.cloudflare.com/v1/1ef794c7214877a37a48eb2fe95b5b0b/aichat/anthropic",
           apiKey,
           maxTokens,
           temperature,
@@ -117,7 +123,7 @@ export const useModelList = () => {
       isNew: true,
       inputPrice: 5,
       outputPrice: 15,
-      plugins: ["web_search", "duckduckgo_search"],
+      plugins: ["web_search", "image_generation", "memory", "chart"],
       icon: (size) => <ModelIcon size={size} type="gpt4" />,
       baseModel: "openai",
       maxOutputTokens: 2048,
@@ -127,7 +133,7 @@ export const useModelList = () => {
       key: "gpt-4-turbo",
       tokens: 128000,
       isNew: false,
-      plugins: ["web_search", "duckduckgo_search"],
+      plugins: ["web_search", "image_generation", "memory"],
       inputPrice: 10,
       outputPrice: 30,
       icon: (size) => <ModelIcon size={size} type="gpt4" />,
@@ -139,7 +145,7 @@ export const useModelList = () => {
       key: "gpt-4",
       tokens: 128000,
       isNew: false,
-      plugins: ["web_search", "duckduckgo_search"],
+      plugins: ["web_search", "image_generation", "memory"],
       inputPrice: 30,
       outputPrice: 60,
       icon: (size) => <ModelIcon size={size} type="gpt4" />,
@@ -152,12 +158,7 @@ export const useModelList = () => {
       isNew: false,
       inputPrice: 0.5,
       outputPrice: 1.5,
-      plugins: [
-        "web_search",
-        "calculator",
-        "read_website",
-        "duckduckgo_search",
-      ],
+      plugins: ["web_search", "image_generation", "memory"],
       tokens: 16385,
       icon: (size) => <ModelIcon size={size} type="gpt3" />,
       baseModel: "openai",
@@ -168,7 +169,7 @@ export const useModelList = () => {
       key: "gpt-3.5-turbo-0125",
       isNew: false,
       tokens: 16385,
-      plugins: ["web_search", "duckduckgo_search"],
+      plugins: ["web_search", "image_generation", "memory"],
       icon: (size) => <ModelIcon size={size} type="gpt3" />,
       baseModel: "openai",
       maxOutputTokens: 4095,
@@ -180,9 +181,21 @@ export const useModelList = () => {
       inputPrice: 15,
       outputPrice: 75,
       tokens: 200000,
-      plugins: [],
+      plugins: ["web_search", "image_generation", "memory"],
       icon: (size) => <ModelIcon size={size} type="anthropic" />,
       maxOutputTokens: 4095,
+      baseModel: "anthropic",
+    },
+    {
+      name: "Claude 3.5 Sonnet",
+      inputPrice: 3,
+      outputPrice: 15,
+      plugins: [],
+      key: "claude-3-5-sonnet-20240620",
+      isNew: false,
+      maxOutputTokens: 4095,
+      tokens: 200000,
+      icon: (size) => <ModelIcon size={size} type="anthropic" />,
 
       baseModel: "anthropic",
     },
@@ -190,7 +203,7 @@ export const useModelList = () => {
       name: "Claude 3 Sonnet",
       inputPrice: 3,
       outputPrice: 15,
-      plugins: [],
+      plugins: ["web_search", "image_generation", "memory"],
       key: "claude-3-sonnet-20240229",
       isNew: false,
       maxOutputTokens: 4095,
@@ -286,5 +299,57 @@ export const useModelList = () => {
     }
   };
 
-  return { models: allModels, createInstance, getModelByKey, getTestModelKey };
+  const assistants: TAssistant[] = [
+    ...allModels?.map(
+      (model): TAssistant => ({
+        name: model.name,
+        key: model.key,
+        baseModel: model.key,
+        type: "base",
+        systemPrompt:
+          preferences.systemPrompt || defaultPreferences.systemPrompt,
+      })
+    ),
+    ...(assistantsProps?.assistantsQuery?.data || []),
+  ];
+
+  const getAssistantByKey = (
+    key: string
+  ): { assistant: TAssistant; model: TModel } | undefined => {
+    const assistant = assistants.find((assistant) => assistant.key === key);
+    if (!assistant) {
+      return;
+    }
+    const model = getModelByKey(assistant?.baseModel);
+
+    if (!model) {
+      return;
+    }
+    return {
+      assistant,
+      model,
+    };
+  };
+
+  const getAssistantIcon = (assistantKey: string) => {
+    const assistant = getAssistantByKey(assistantKey);
+    return assistant?.assistant.type === "base" ? (
+      assistant?.model?.icon("sm")
+    ) : (
+      <ModelIcon type="custom" size="sm" />
+    );
+  };
+
+  return {
+    models: allModels,
+    createInstance,
+    getModelByKey,
+    getAssistantIcon,
+    getTestModelKey,
+    assistants: assistants?.filter(
+      (a) => !!allModels.find((m) => m.key === a.baseModel)
+    ),
+    getAssistantByKey,
+    ...assistantsProps,
+  };
 };

@@ -1,15 +1,16 @@
-import { useSessionsContext } from "@/context/sessions/provider";
+import { useSessionsContext } from "@/context/sessions";
 import { TChatSession } from "@/hooks/use-chat-session";
 import { useModelList } from "@/hooks/use-model-list";
 import { cn } from "@/lib/utils";
-import { PencilSimple, TrashSimple } from "@phosphor-icons/react";
+import { Delete01Icon, Edit02Icon } from "@hugeicons/react";
+import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { BotAvatar } from "../ui/bot-avatar";
 import { Button } from "../ui/button";
 import { Flex } from "../ui/flex";
 import { Input } from "../ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Type } from "../ui/text";
 import { Tooltip } from "../ui/tooltip";
 
 export const HistoryItem = ({
@@ -25,12 +26,20 @@ export const HistoryItem = ({
     removeSessionByIdMutation,
     createSession,
   } = useSessionsContext();
-  const { getModelByKey } = useModelList();
+  const { getModelByKey, getAssistantByKey } = useModelList();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(session.title);
   const router = useRouter();
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const historyInputRef = useRef<HTMLInputElement>(null);
+
+  const assistantProps = getAssistantByKey(
+    session.messages?.[0]?.inputProps?.assistant?.key
+  );
+
+  const modelProps = getModelByKey(
+    session.messages?.[0]?.inputProps?.assistant?.baseModel
+  );
 
   useEffect(() => {
     if (isEditing) {
@@ -42,7 +51,7 @@ export const HistoryItem = ({
     <div
       key={session.id}
       className={cn(
-        "gap-2 group w-full h-10 cursor-pointer flex flex-row items-center p-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
+        "gap-2 group w-full cursor-pointer flex flex-row items-start p-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
         currentSession?.id === session.id || isEditing
           ? "bg-black/10 dark:bg-black/30"
           : ""
@@ -57,7 +66,7 @@ export const HistoryItem = ({
       {isEditing ? (
         <Input
           variant="ghost"
-          className="h-6"
+          className="h-6 text-sm"
           ref={historyInputRef}
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -82,18 +91,20 @@ export const HistoryItem = ({
         />
       ) : (
         <>
-          {session.bot ? (
-            <BotAvatar
-              size="small"
-              name={session?.bot?.name}
-              avatar={session?.bot?.avatar}
-            />
-          ) : (
-            getModelByKey(session.messages?.[0]?.model)?.icon("sm")
-          )}
-          <span className="w-full truncate text-xs md:text-sm">
-            {session.title}
-          </span>
+          {modelProps?.icon?.("sm")}
+          <Flex direction="col" items="start" className="w-full">
+            <Type
+              className="line-clamp-1"
+              size="sm"
+              textColor="primary"
+              weight="medium"
+            >
+              {session.title}
+            </Type>
+            <Type className="line-clamp-1" size="xs" textColor="tertiary">
+              {moment(session.updatedAt).fromNow()}
+            </Type>
+          </Flex>
         </>
       )}
       {(!isEditing || openDeleteConfirm) && (
@@ -108,7 +119,7 @@ export const HistoryItem = ({
               e.stopPropagation();
             }}
           >
-            <PencilSimple size={14} weight="bold" />
+            <Edit02Icon size={14} variant="stroke" strokeWidth="2" />
           </Button>
           <Tooltip content="Delete">
             <Popover
@@ -124,7 +135,7 @@ export const HistoryItem = ({
                     e.stopPropagation();
                   }}
                 >
-                  <TrashSimple size={14} weight="bold" />
+                  <Delete01Icon size={14} variant="stroke" strokeWidth="2" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="z-[1000]" side="bottom">

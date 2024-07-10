@@ -3,7 +3,7 @@ import { Flex } from "@/components/ui/flex";
 import { Input } from "@/components/ui/input";
 import { Type } from "@/components/ui/text";
 import { useToast } from "@/components/ui/use-toast";
-import { usePreferenceContext } from "@/context/preferences/provider";
+import { usePreferenceContext } from "@/context/preferences";
 import { ArrowRight, CaretDown, Info } from "@phosphor-icons/react";
 import axios from "axios";
 import { useEffect } from "react";
@@ -14,7 +14,6 @@ import {
   DropdownMenuTrigger,
 } from "../../ui/dropdown-menu";
 import { SettingCard } from "../setting-card";
-import { SettingsContainer } from "../settings-container";
 
 export const WebSearchPlugin = () => {
   const { toast } = useToast();
@@ -67,38 +66,36 @@ export const WebSearchPlugin = () => {
     );
   };
   return (
-    <SettingsContainer title="Web search plugin">
-      <SettingCard className="flex flex-row items-center justify-between">
-        <Flex className="w-full" justify="between" items="center">
-          <Type size="sm" textColor="secondary">
-            Default Search Engine
-          </Type>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="secondary">
-                {preferences.defaultWebSearchEngine}{" "}
-                <CaretDown size={12} weight="bold" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-[200px]" align="end">
-              <DropdownMenuItem
-                onClick={() => {
-                  updatePreferences({ defaultWebSearchEngine: "google" });
-                }}
-              >
-                Google
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => {
-                  updatePreferences({ defaultWebSearchEngine: "duckduckgo" });
-                }}
-              >
-                DuckDuckGo
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </Flex>
-      </SettingCard>
+    <Flex direction="col" gap="sm" className="border-t pt-2 border-white/10">
+      <Flex className="w-full" justify="between" items="center">
+        <Type size="sm" textColor="secondary">
+          Default Search Engine
+        </Type>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button size="sm" variant="secondary">
+              {preferences.defaultWebSearchEngine}{" "}
+              <CaretDown size={12} weight="bold" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-[200px]" align="end">
+            <DropdownMenuItem
+              onClick={() => {
+                updatePreferences({ defaultWebSearchEngine: "google" });
+              }}
+            >
+              Google
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                updatePreferences({ defaultWebSearchEngine: "duckduckgo" });
+              }}
+            >
+              DuckDuckGo
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </Flex>
       {preferences.defaultWebSearchEngine === "google" && (
         <SettingCard className="flex flex-col w-full items-start gap-2 py-3">
           <Flex direction="col" gap="sm" className="w-full">
@@ -156,6 +153,6 @@ export const WebSearchPlugin = () => {
           </Flex>
         </SettingCard>
       )}
-    </SettingsContainer>
+    </Flex>
   );
 };
