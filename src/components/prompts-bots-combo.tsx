@@ -1,7 +1,3 @@
-import { usePromptsContext } from "@/context";
-import { TPrompt } from "@/hooks/use-prompts";
-import { Plus } from "@phosphor-icons/react";
-import { useState } from "react";
 import {
   Command as CMDKCommand,
   CommandEmpty,
@@ -9,8 +5,16 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "./ui/command";
-import { Popover, PopoverAnchor, PopoverContent } from "./ui/popover";
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverAnchor,
+  PopoverContent,
+} from "@/components/ui/popover";
+import { usePromptsContext } from "@/context";
+import { TPrompt } from "@/hooks/use-prompts";
+import { Plus } from "@phosphor-icons/react";
+import { useState } from "react";
 
 export type TPromptsBotsCombo = {
   children: React.ReactNode;
@@ -58,7 +62,7 @@ export const PromptsBotsCombo = ({
           <CommandList className="p-2 max-h-[160px]">
             <CommandItem
               onSelect={() => {
-                openPrompts("create");
+                openPrompts(true);
               }}
             >
               <Plus size={14} weight="bold" className="flex-shrink-0" /> Create

@@ -7,8 +7,8 @@ import {
 } from "@/components/ui/accordion";
 import { Flex } from "@/components/ui/flex";
 import { usePreferenceContext, useSettingsContext } from "@/context";
-import { TBaseModel } from "@/hooks";
 import { cn } from "@/lib/utils";
+import { TBaseModel } from "@/types";
 import { AlertCircleIcon, CheckmarkCircle02Icon } from "@hugeicons/react";
 import { useEffect, useState } from "react";
 import { AnthropicSettings } from "./anthropic";

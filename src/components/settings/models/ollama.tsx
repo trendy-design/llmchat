@@ -1,9 +1,9 @@
 import { Flex } from "@/components/ui/flex";
 import { usePreferenceContext } from "@/context/preferences";
 import { useEffect, useState } from "react";
-import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
-import { useToast } from "../../ui/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/components/ui/use-toast";
 
 export const OllamaSettings = () => {
   const [url, setURL] = useState<string>("");

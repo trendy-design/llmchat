@@ -1,6 +1,5 @@
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
-  ConfirmProvider,
   PreferenceProvider,
   ReactQueryProvider,
   SessionsProvider,
@@ -40,13 +39,11 @@ export default function RootLayout({
         >
           <ReactQueryProvider>
             <TooltipProvider>
-              <ConfirmProvider>
-                <PreferenceProvider>
-                  <SessionsProvider>
-                    <SettingsProvider>{children}</SettingsProvider>
-                  </SessionsProvider>
-                </PreferenceProvider>
-              </ConfirmProvider>
+              <PreferenceProvider>
+                <SessionsProvider>
+                  <SettingsProvider>{children}</SettingsProvider>
+                </SessionsProvider>
+              </PreferenceProvider>
             </TooltipProvider>
           </ReactQueryProvider>
         </ThemeProvider>

@@ -1,12 +1,13 @@
+import { Flex } from "@/components/ui/flex";
+import { Type } from "@/components/ui/text";
 import { useChatContext } from "@/context";
 import { ArrowRight02Icon } from "@hugeicons/react";
 import { motion } from "framer-motion";
-import { Flex } from "./ui/flex";
-import { Type } from "./ui/text";
 
 export type TChatExamples = {};
 export const ChatExamples = () => {
-  const { editor } = useChatContext();
+  const { store } = useChatContext();
+  const editor = store((state) => state.editor);
   const allPropmts = [
     {
       id: "621d5e4f-4b56-4302-97cd-5b837b6296ab",

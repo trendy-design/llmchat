@@ -5,8 +5,8 @@ import { ibmPlex } from "@/app/fonts";
 import { useClipboard } from "@/hooks/use-clipboard";
 import { cn } from "@/lib/utils";
 import { Copy01Icon, Tick01Icon } from "@hugeicons/react";
-import { Button } from "./ui/button";
-import { Tooltip } from "./ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 
 export type codeBlockProps = {
   lang?: string;

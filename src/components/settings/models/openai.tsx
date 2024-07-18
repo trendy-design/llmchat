@@ -3,8 +3,8 @@ import { usePreferenceContext } from "@/context/preferences";
 import { useLLMTest } from "@/hooks/use-llm-test";
 import { ArrowRight, Info } from "@phosphor-icons/react";
 import { useEffect, useState } from "react";
-import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export const OpenAISettings = () => {
   const [key, setKey] = useState<string>("");

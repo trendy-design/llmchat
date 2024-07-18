@@ -1,8 +1,8 @@
-import { TModel } from "@/hooks/use-model-list";
 import { formatNumber } from "@/lib/helper";
+import { TModelItem } from "@/types";
 
 export type TModelInfo = {
-  model: TModel;
+  model: TModelItem;
   showDetails?: boolean;
 };
 export const ModelInfo = ({ model, showDetails = true }: TModelInfo) => {

@@ -8,9 +8,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Flex } from "@/components/ui/flex";
-import { TAssistant } from "@/hooks/use-chat-session";
+import { defaultPreferences } from "@/config";
 import { useModelList } from "@/hooks/use-model-list";
-import { defaultPreferences } from "@/hooks/use-preferences";
+import { TAssistant } from "@/types";
 import { ConnectIcon } from "@hugeicons/react";
 import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
 import { useState } from "react";

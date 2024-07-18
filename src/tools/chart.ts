@@ -1,4 +1,4 @@
-import { TToolArg } from "@/hooks";
+import { TToolArg } from "@/types";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { z } from "zod";
 

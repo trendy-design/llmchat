@@ -37,7 +37,6 @@
     "@tiptap/starter-kit": "^2.4.0",
     "@types/jsdom": "^21.1.7",
     "@types/lodash": "^4.17.1",
-    "@types/puppeteer": "^7.0.4",
     "@types/turndown": "^5.0.4",
     "add": "^2.0.6",
     "axios": "^1.7.2",
@@ -47,8 +46,6 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "duck-duck-scrape": "^2.2.5",
-    "expo": "^51.0.14",
-    "expo-dev-client": "^4.0.18",
     "formik": "^2.4.6",
     "framer-motion": "^11.1.9",
     "highlight.js": "^11.9.0",
@@ -66,8 +63,6 @@
     "next-themes": "^0.3.0",
     "open-graph-scraper": "^6.5.1",
     "openai": "^4.47.1",
-    "puppeteer": "^22.10.0",
-    "puppeteer-core": "^22.10.0",
     "react": "^18",
     "react-dom": "^18",
     "react-image-file-resizer": "^0.4.8",
@@ -84,7 +79,8 @@
     "vaul": "^0.9.1",
     "vector-storage": "^1.0.55",
     "yarn": "^1.22.22",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.13",

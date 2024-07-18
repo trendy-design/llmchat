@@ -1,4 +1,4 @@
-import { TToolArg } from "@/hooks";
+import { TToolArg } from "@/types";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { DallEAPIWrapper } from "@langchain/openai";
 import { z } from "zod";
@@ -36,6 +36,7 @@ const dalleTool = (args: TToolArg) => {
             image: result,
           },
           toolResponse: result,
+          toolLoading: false,
         });
         const searchPrompt = "";
         return searchPrompt;

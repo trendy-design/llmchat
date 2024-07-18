@@ -8,9 +8,9 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Text from "@tiptap/extension-text";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export type TCreatePrompt = {
   prompt?: TPrompt;

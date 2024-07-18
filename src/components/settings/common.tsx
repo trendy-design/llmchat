@@ -1,13 +1,14 @@
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Type } from "@/components/ui/text";
+import { Textarea } from "@/components/ui/textarea";
+import { defaultPreferences } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
-import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
+import { TPreferences } from "@/types";
 import { ArrowClockwise, Info } from "@phosphor-icons/react";
 import { ChangeEvent } from "react";
-import { Button } from "../ui/button";
-import { Flex } from "../ui/flex";
-import { Input } from "../ui/input";
-import { Slider } from "../ui/slider";
-import { Type } from "../ui/text";
-import { Textarea } from "../ui/textarea";
 import { SettingCard } from "./setting-card";
 import { SettingsContainer } from "./settings-container";
 

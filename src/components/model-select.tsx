@@ -1,15 +1,16 @@
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { ModelIcon } from "./model-icon";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
+import { useModelList } from "@/hooks/use-model-list";
+import { cn } from "@/lib/utils";
+import { TModelKey } from "@/types";
+import { FC, useState } from "react";
+import { ModelIcon } from "./model-icon";
 
 export type TModelSelect = {
   selectedModel: TModelKey;
@@ -19,13 +20,13 @@ export type TModelSelect = {
   className?: string;
 };
 
-export const ModelSelect = ({
+export const ModelSelect: FC<TModelSelect> = ({
   selectedModel,
   variant,
   fullWidth,
   setSelectedModel,
   className,
-}: TModelSelect) => {
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const { getModelByKey, models, assistants, getAssistantByKey } =

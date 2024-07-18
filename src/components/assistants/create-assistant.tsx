@@ -1,14 +1,14 @@
-import { TAssistant } from "@/hooks/use-chat-session";
 import { Plus } from "@phosphor-icons/react";
 import { useFormik } from "formik";
 import { useEffect, useRef } from "react";
 import { ModelSelect } from "../model-select";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { ComingSoon } from "../ui/coming-soon";
-import { FormLabel } from "../ui/form-label";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ComingSoon } from "@/components/ui/coming-soon";
+import { FormLabel } from "@/components/ui/form-label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { TAssistant } from "@/types";
 
 export type TCreateAssistant = {
   assistant?: TAssistant;

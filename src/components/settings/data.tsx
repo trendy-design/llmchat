@@ -1,16 +1,16 @@
-import { useSettingsContext } from "@/context";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { Input } from "@/components/ui/input";
+import { Type } from "@/components/ui/text";
+import { PopOverConfirmProvider } from "@/components/ui/use-confirm-popover";
+import { useToast } from "@/components/ui/use-toast";
+import { defaultPreferences } from "@/config";
+import { useSessions, useSettingsContext } from "@/context";
 import { usePreferenceContext } from "@/context/preferences";
-import { useSessionsContext } from "@/context/sessions";
-import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
 import { generateAndDownloadJson } from "@/lib/helper";
+import { TPreferences } from "@/types";
 import { ChangeEvent } from "react";
 import { z } from "zod";
-import { Button } from "../ui/button";
-import { Flex } from "../ui/flex";
-import { Input } from "../ui/input";
-import { Type } from "../ui/text";
-import { PopOverConfirmProvider } from "../ui/use-confirm-popover";
-import { useToast } from "../ui/use-toast";
 import { SettingCard } from "./setting-card";
 import { SettingsContainer } from "./settings-container";
 
@@ -140,7 +140,7 @@ export const Data = () => {
     addSessionsMutation,
     clearSessionsMutation,
     createSession,
-  } = useSessionsContext();
+  } = useSessions();
 
   const {
     preferences,

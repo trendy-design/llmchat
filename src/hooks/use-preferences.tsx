@@ -1,41 +1,7 @@
+import { defaultPreferences } from "@/config";
+import { TApiKeys, TBaseModel, TPreferences } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { get, set } from "idb-keyval";
-import { TAssistant } from "./use-chat-session";
-import { TBaseModel } from "./use-model-list";
-import { TToolKey } from "./use-tools";
-
-export type TApiKeys = Partial<Record<TBaseModel, string>>;
-export type TPreferences = {
-  defaultAssistant: TAssistant["key"];
-  systemPrompt: string;
-  messageLimit: number;
-  temperature: number;
-  memories: string[];
-  defaultPlugins: TToolKey[];
-  whisperSpeechToTextEnabled: boolean;
-  maxTokens: number;
-  defaultWebSearchEngine: "google" | "duckduckgo";
-  ollamaBaseUrl: string;
-  topP: number;
-  topK: number;
-  googleSearchEngineId?: string;
-  googleSearchApiKey?: string;
-};
-
-export const defaultPreferences: TPreferences = {
-  defaultAssistant: "gpt-3.5-turbo",
-  systemPrompt: "You're helpful assistant that can help me with my questions.",
-  messageLimit: 30,
-  temperature: 0.5,
-  memories: [],
-  ollamaBaseUrl: "http://localhost:11434",
-  whisperSpeechToTextEnabled: false,
-  defaultWebSearchEngine: "duckduckgo",
-  defaultPlugins: [],
-  maxTokens: 1000,
-  topP: 1.0,
-  topK: 5,
-};
 
 export const usePreferences = () => {
   const preferencesQuery = useQuery({

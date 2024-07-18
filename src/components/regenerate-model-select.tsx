@@ -1,15 +1,15 @@
-import { TAssistant } from "@/hooks";
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { ArrowDown01Icon, SparklesIcon } from "@hugeicons/react";
-import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Tooltip } from "./ui/tooltip";
+} from "@/components/ui/dropdown-menu";
+import { Tooltip } from "@/components/ui/tooltip";
+import { useModelList } from "@/hooks/use-model-list";
+import { TAssistant, TModelKey } from "@/types";
+import { ArrowDown01Icon, SparklesIcon } from "@hugeicons/react";
+import { useState } from "react";
 
 export type TRegenerateModelSelect = {
   assistant: TAssistant;

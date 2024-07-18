@@ -1,51 +1,17 @@
 import { ModelIcon } from "@/components/model-icon";
+import { defaultPreferences } from "@/config";
 import { usePreferenceContext } from "@/context";
+import { useAssistantsQueries } from "@/services/assistants";
+import { TAssistant, TBaseModel, TModelItem, TModelKey } from "@/types";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatOllama } from "@langchain/community/chat_models/ollama";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOpenAI } from "@langchain/openai";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
-import { useAssistants } from "./use-bots";
-import { TAssistant } from "./use-chat-session";
-import { defaultPreferences } from "./use-preferences";
-import { TToolKey } from "./use-tools";
-
-export type TBaseModel = "openai" | "anthropic" | "gemini" | "ollama";
-
-export const models = [
-  "gpt-4o",
-  "gpt-4",
-  "gpt-4-turbo",
-  "gpt-3.5-turbo",
-  "gpt-3.5-turbo-0125",
-  "claude-3-opus-20240229",
-  "claude-3-sonnet-20240229",
-  "claude-3-5-sonnet-20240620",
-  "claude-3-haiku-20240307",
-  "gemini-pro",
-  "gemini-1.5-flash-latest",
-  "gemini-1.5-pro-latest",
-  "phi3:latest",
-];
-
-export type TModelKey = (typeof models)[number] | string;
-
-export type TModel = {
-  name: string;
-  key: TModelKey;
-  isNew?: boolean;
-  icon: (size: "sm" | "md" | "lg") => JSX.Element;
-  inputPrice?: number;
-  outputPrice?: number;
-  tokens: number;
-  plugins: TToolKey[];
-  baseModel: TBaseModel;
-  maxOutputTokens: number;
-};
 
 export const useModelList = () => {
-  const assistantsProps = useAssistants();
+  const assistantQueries = useAssistantsQueries();
   const { preferences } = usePreferenceContext();
 
   const ollamaModelsQuery = useQuery({
@@ -55,7 +21,7 @@ export const useModelList = () => {
     enabled: !!preferences,
   });
 
-  const createInstance = async (model: TModel, apiKey?: string) => {
+  const createInstance = async (model: TModelItem, apiKey?: string) => {
     const temperature =
       preferences.temperature || defaultPreferences.temperature;
     const topP = preferences.topP || defaultPreferences.topP;
@@ -115,7 +81,7 @@ export const useModelList = () => {
         throw new Error("Invalid model");
     }
   };
-  const models: TModel[] = [
+  const models: TModelItem[] = [
     {
       name: "GPT 4o",
       key: "gpt-4o",
@@ -262,11 +228,11 @@ export const useModelList = () => {
     },
   ];
 
-  const allModels: TModel[] = useMemo(
+  const allModels: TModelItem[] = useMemo(
     () => [
       ...models,
       ...(ollamaModelsQuery.data?.models?.map(
-        (model: any): TModel => ({
+        (model: any): TModelItem => ({
           name: model.name,
           key: model.name,
           tokens: 128000,
@@ -310,12 +276,12 @@ export const useModelList = () => {
           preferences.systemPrompt || defaultPreferences.systemPrompt,
       })
     ),
-    ...(assistantsProps?.assistantsQuery?.data || []),
+    ...(assistantQueries?.assistantsQuery.data || []),
   ];
 
   const getAssistantByKey = (
     key: string
-  ): { assistant: TAssistant; model: TModel } | undefined => {
+  ): { assistant: TAssistant; model: TModelItem } | undefined => {
     const assistant = assistants.find((assistant) => assistant.key === key);
     if (!assistant) {
       return;
@@ -350,6 +316,6 @@ export const useModelList = () => {
       (a) => !!allModels.find((m) => m.key === a.baseModel)
     ),
     getAssistantByKey,
-    ...assistantsProps,
+    ...assistantQueries,
   };
 };

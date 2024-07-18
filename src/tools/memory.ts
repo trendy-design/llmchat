@@ -1,4 +1,4 @@
-import { TToolArg } from "@/hooks";
+import { TToolArg } from "@/types";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { DynamicStructuredTool } from "@langchain/core/tools";
@@ -20,7 +20,7 @@ const memoryTool = (args: TToolArg) => {
     memory: z
       .string()
       .describe(
-        "key information about the user, any user preference to personalize future interactions. It must be short and concise"
+        "key informations about the user, any user preference to personalize future interactions. It must be short and concise"
       ),
     question: z.string().describe("question user asked"),
   });
@@ -68,6 +68,7 @@ const memoryTool = (args: TToolArg) => {
             memory,
           },
           toolResponse: response,
+          toolLoading: false,
         });
         return question;
       } catch (error) {

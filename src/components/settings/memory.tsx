@@ -1,7 +1,7 @@
 import { usePreferenceContext } from "@/context/preferences";
 import { Delete01Icon } from "@hugeicons/react";
-import { Button } from "../ui/button";
-import { Type } from "../ui/text";
+import { Button } from "@/components/ui/button";
+import { Type } from "@/components/ui/text";
 import { SettingCard } from "./setting-card";
 import { SettingsContainer } from "./settings-container";
 

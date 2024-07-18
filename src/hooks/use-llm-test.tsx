@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { TBaseModel } from "@/types";
 import { useState } from "react";
-import { TBaseModel, useModelList } from "./use-model-list";
+import { useModelList } from "./use-model-list";
 
 export const useLLMTest = () => {
   const { getTestModelKey, getModelByKey, createInstance } = useModelList();

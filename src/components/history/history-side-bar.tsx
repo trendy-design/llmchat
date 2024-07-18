@@ -1,17 +1,15 @@
-import { useSessionsContext } from "@/context/sessions";
+import { Button, Flex, Tooltip } from "@/components/ui";
+import { useSessions } from "@/context/sessions";
 import { sortSessions } from "@/lib/helper";
 import { cn } from "@/lib/utils";
 import { SidebarLeftIcon } from "@hugeicons/react";
 import { ClockCounterClockwise, X } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Drawer } from "vaul";
-import { Button } from "../ui/button";
-import { Flex } from "../ui/flex";
-import { Tooltip } from "../ui/tooltip";
 import { HistoryItem } from "./history-item";
 
 export const HistorySidebar = () => {
-  const { sessions, createSession, currentSession } = useSessionsContext();
+  const { sessions } = useSessions();
   const [open, setOpen] = useState(false);
 
   return (

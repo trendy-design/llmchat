@@ -9,14 +9,12 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useToast } from "@/components/ui/use-toast";
-import { useModelList } from "@/hooks/use-model-list";
 import { sortSessions } from "@/lib/helper";
 import { cn } from "@/lib/utils";
 import moment from "moment";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSessionsContext } from "./sessions";
 
 import {
   CommentAdd01Icon,
@@ -25,53 +23,46 @@ import {
   Sun03Icon,
 } from "@hugeicons/react";
 import { createContext, useContext } from "react";
+import { useSessions } from "./sessions";
 
-export type TFilterContext = {
+export type TCommandContext = {
   open: () => void;
   dismiss: () => void;
 };
-export const FiltersContext = createContext<undefined | TFilterContext>(
+export const CommandsContext = createContext<undefined | TCommandContext>(
   undefined
 );
 
-export const useFilterContext = () => {
-  const context = useContext(FiltersContext);
+export const useCommandContext = () => {
+  const context = useContext(CommandsContext);
   if (context === undefined) {
-    throw new Error("useFilters must be used within a FiltersProvider");
+    throw new Error("useCommands must be used within a CommandsProvider");
   }
   return context;
 };
 
-export type TFiltersProvider = {
+export type TCommandsProvider = {
   children: React.ReactNode;
 };
-export const FiltersProvider = ({ children }: TFiltersProvider) => {
-  const {
-    sessions,
-    createSession,
-    removeSessionMutation,
-    clearSessionsMutation,
-    currentSession,
-    refetchSessions,
-  } = useSessionsContext();
-  const { toast, dismiss } = useToast();
+export const CommandsProvider = ({ children }: TCommandsProvider) => {
+  const { sessions, createSession, refetchSessions } = useSessions();
+  const { toast } = useToast();
   const router = useRouter();
-  const { getModelByKey, getAssistantByKey } = useModelList();
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isCommandOpen, setIsCommandOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
   const open = () => {
     refetchSessions?.();
-    setIsFilterOpen(true);
+    setIsCommandOpen(true);
   };
 
-  const onClose = () => setIsFilterOpen(false);
+  const onClose = () => setIsCommandOpen(false);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
       if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        setIsFilterOpen((open) => !open);
+        setIsCommandOpen((open) => !open);
       }
     };
     document.addEventListener("keydown", down);
@@ -111,15 +102,15 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
               size="sm"
               variant="default"
               onClick={() => {
-                currentSession?.id &&
-                  removeSessionMutation.mutate(currentSession?.id, {
-                    onSuccess() {
-                      createSession({
-                        redirect: true,
-                      });
-                      dismiss();
-                    },
-                  });
+                // currentSession?.id &&
+                //   removeSessionMutation.mutate(currentSession?.id, {
+                //     onSuccess() {
+                //       createSession({
+                //         redirect: true,
+                //       });
+                //       dismiss();
+                //     },
+                //   });
               }}
             >
               Delete
@@ -131,10 +122,10 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
   ];
 
   return (
-    <FiltersContext.Provider value={{ open, dismiss: onClose }}>
+    <CommandsContext.Provider value={{ open, dismiss: onClose }}>
       {children}
 
-      <CommandDialog open={isFilterOpen} onOpenChange={setIsFilterOpen}>
+      <CommandDialog open={isCommandOpen} onOpenChange={setIsCommandOpen}>
         <CommandInput placeholder="Search..." />
 
         <CommandList>
@@ -160,26 +151,16 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
           </CommandGroup>
           <CommandGroup heading="Recent Conversations">
             {sortSessions(sessions, "updatedAt")?.map((session) => {
-              const assistantProps = getAssistantByKey(
-                session.messages?.[0]?.inputProps?.assistant?.key
-              );
               return (
                 <CommandItem
                   key={session.id}
                   value={`${session.id}/${session.title}`}
-                  className={cn(
-                    "gap-2 w-full",
-                    currentSession?.id === session.id
-                      ? "bg-black/10 dark:bg-black/10"
-                      : ""
-                  )}
+                  className={cn("gap-2 w-full")}
                   onSelect={(value) => {
                     router.push(`/chat/${session.id}`);
                     onClose();
                   }}
                 >
-                  {assistantProps?.model.icon("sm")}
-
                   <span className="w-full truncate">{session.title}</span>
                   <span className="pl-4 text-xs md:text-xs  text-zinc-400 dark:text-zinc-700 flex-shrink-0">
                     {moment(session.createdAt).fromNow(true)}
@@ -190,6 +171,6 @@ export const FiltersProvider = ({ children }: TFiltersProvider) => {
           </CommandGroup>
         </CommandList>
       </CommandDialog>
-    </FiltersContext.Provider>
+    </CommandsContext.Provider>
   );
 };

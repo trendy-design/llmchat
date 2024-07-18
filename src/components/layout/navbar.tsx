@@ -1,6 +1,6 @@
 import {
   usePromptsContext,
-  useSessionsContext,
+  useSessions,
   useSettingsContext,
 } from "@/context";
 import {
@@ -14,22 +14,14 @@ import {
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { HistorySidebar } from "../history/history-side-bar";
-import { Button } from "../ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
-import { Flex } from "../ui/flex";
-import { Tooltip } from "../ui/tooltip";
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Flex, Tooltip } from "@/components/ui";
 
 export const Navbar = () => {
   const { theme, setTheme } = useTheme();
   const { open: openSettings } = useSettingsContext();
   const { open: openPrompts } = usePromptsContext();
   const [isOpen, setIsOpen] = useState(false);
-  const { createSession } = useSessionsContext();
+  const { createSession } = useSessions();
 
   const renderNewSession = () => {
     return (

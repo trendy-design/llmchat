@@ -2,7 +2,7 @@ import { MainLayout } from "@/components/layout/main-layout";
 import {
   AssistantsProvider,
   ChatProvider,
-  FiltersProvider,
+  CommandsProvider,
   PromptsProvider,
 } from "@/context";
 
@@ -13,13 +13,13 @@ export default function ChatLayout({
 }>) {
   return (
     <ChatProvider>
-      <FiltersProvider>
+      <CommandsProvider>
         <AssistantsProvider>
           <PromptsProvider>
             <MainLayout>{children}</MainLayout>
           </PromptsProvider>
         </AssistantsProvider>
-      </FiltersProvider>
+      </CommandsProvider>
     </ChatProvider>
   );
 }

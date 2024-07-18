@@ -1,11 +1,7 @@
 "use client";
-import { TBaseModel } from "@/hooks/use-model-list";
-import {
-  TApiKeys,
-  TPreferences,
-  defaultPreferences,
-  usePreferences,
-} from "@/hooks/use-preferences";
+import { defaultPreferences } from "@/config";
+import { usePreferences } from "@/hooks/use-preferences";
+import { TApiKeys, TBaseModel, TPreferences } from "@/types";
 import { useEffect, useState } from "react";
 
 import { createContext, useContext } from "react";

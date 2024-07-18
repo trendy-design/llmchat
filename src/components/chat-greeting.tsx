@@ -1,16 +1,7 @@
 import { WavingHand02Icon } from "@hugeicons/react";
 import { motion } from "framer-motion";
-import moment from "moment";
 
 export const ChatGreeting = () => {
-  const renderGreeting = (name: string) => {
-    const date = moment();
-    const hours = date.get("hour");
-    if (hours < 12) return `Good Morning,`;
-    if (hours < 18) return `Good Afternoon,`;
-    return `Good Evening,`;
-  };
-
   return (
     <div className="flex flex-row items-start justify-start w-[720px] gap-2">
       <motion.h1

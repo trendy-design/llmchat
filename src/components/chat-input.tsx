@@ -1,32 +1,25 @@
-import { ArrowElbowDownRight, Stop, X } from "@phosphor-icons/react";
-import { EditorContent } from "@tiptap/react";
-import { motion } from "framer-motion";
-import { useParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-
+import { Button } from "@/components/ui/button";
+import { defaultPreferences } from "@/config";
+import { useAssistants, useChatContext, usePreferenceContext } from "@/context";
 import {
-  useAssistantContext,
-  useChatContext,
-  usePreferenceContext,
-  useSessionsContext,
-} from "@/context";
-import {
-  defaultPreferences,
   useImageAttachment,
   useModelList,
   useRecordVoice,
   useScrollToBottom,
 } from "@/hooks";
-import { TAssistant } from "@/hooks/use-chat-session";
+import { useChatEditor } from "@/hooks/use-editor";
+import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { slideUpVariant } from "@/lib/framer-motion";
 import { cn } from "@/lib/utils";
+import { TAssistant } from "@/types";
 import { ArrowDown02Icon, Navigation03Icon } from "@hugeicons/react";
+import { ArrowElbowDownRight, Stop, X } from "@phosphor-icons/react";
+import { EditorContent } from "@tiptap/react";
+import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { ChatExamples } from "./chat-examples";
 import { ChatGreeting } from "./chat-greeting";
 import { PluginSelect } from "./plugin-select";
-import { PromptsBotsCombo } from "./prompts-bots-combo";
-import { QuickSettings } from "./quick-settings";
-import { Button } from "./ui/button";
 
 export type TAttachment = {
   file?: File;
@@ -34,7 +27,13 @@ export type TAttachment = {
 };
 
 export const ChatInput = () => {
-  const { sessionId } = useParams();
+  const { store } = useChatContext();
+  const session = store((state) => state.session);
+  const messages = store((state) => state.messages);
+  const contextValue = store((state) => state.context);
+  const setContextValue = store((state) => state.setContext);
+  const stopGeneration = store((state) => state.stopGeneration);
+  const isGenerating = store((state) => state.isGenerating);
   const { showButton, scrollToBottom } = useScrollToBottom();
   const {
     renderListeningIndicator,
@@ -43,21 +42,14 @@ export const ChatInput = () => {
     text,
     transcribing,
   } = useRecordVoice();
-  const { currentSession } = useSessionsContext();
   const { renderFileUpload, renderAttachedImage, attachment, clearAttachment } =
     useImageAttachment();
-  const { selectedAssistant, open: openAssistants } = useAssistantContext();
-  const {
-    editor,
-    handleRunModel,
-    openPromptsBotCombo,
-    setOpenPromptsBotCombo,
-    sendMessage,
-    isGenerating,
-    contextValue,
-    setContextValue,
-    stopGeneration,
-  } = useChatContext();
+  const { selectedAssistant, open: openAssistants } = useAssistants();
+  const { invokeModel } = useLLMRunner();
+
+  console.log("sssss", session);
+
+  const { editor } = useChatEditor();
 
   const { preferences, updatePreferences } = usePreferenceContext();
   const { models, getAssistantByKey, getAssistantIcon } = useModelList();
@@ -79,36 +71,33 @@ export const ChatInput = () => {
   }, [models, preferences]);
 
   useEffect(() => {
-    if (editor?.isActive) {
-      editor.commands.focus("end");
-    }
-  }, [editor?.isActive]);
-
-  useEffect(() => {
-    if (sessionId) {
+    if (session?.id) {
       inputRef.current?.focus();
     }
-  }, [sessionId]);
+  }, [session?.id]);
 
-  const isFreshSession = !currentSession?.messages?.length;
+  const isFreshSession = !messages?.length;
+
+  const sendMessage = (input: string) => {
+    const props = getAssistantByKey(preferences.defaultAssistant);
+    if (!props || !session) {
+      return;
+    }
+    invokeModel({
+      input,
+      image: attachment?.base64,
+      sessionId: session.id,
+      assistant: props.assistant,
+    });
+    clearAttachment();
+    editor?.commands.clearContent();
+  };
 
   useEffect(() => {
-    if (text) {
+    if (text && session) {
       editor?.commands.clearContent();
       editor?.commands.setContent(text);
-      const props = getAssistantByKey(preferences.defaultAssistant);
-      if (!props) {
-        return;
-      }
-      handleRunModel({
-        input: text,
-        image: attachment?.base64,
-        sessionId: sessionId.toString(),
-        assistant: props.assistant,
-      });
-      clearAttachment();
-
-      editor?.commands.clearContent();
+      sendMessage(text);
     }
   }, [text]);
 
@@ -158,29 +147,6 @@ export const ChatInput = () => {
     }
   };
 
-  //   if (showPopup && !recording && !transcribing) {
-  //     return (
-  //       <motion.span
-  //         initial={{ scale: 0, opacity: 0 }}
-  //         animate={{ scale: 1, opacity: 1 }}
-  //         exit={{ scale: 0, opacity: 0 }}
-  //       >
-  //         <Button
-  //           onClick={() => {
-  //             setContextValue(selectedText);
-  //             handleClearSelection();
-  //             inputRef.current?.focus();
-  //           }}
-  //           variant="secondary"
-  //           size="sm"
-  //         >
-  //           <Quotes size={20} weight="bold" /> Reply
-  //         </Button>
-  //       </motion.span>
-  //     );
-  //   }
-  // };
-
   const renderSelectedContext = () => {
     if (contextValue) {
       return (
@@ -221,92 +187,89 @@ export const ChatInput = () => {
       <div className="flex flex-col gap-3 w-full md:w-[700px] lg:w-[720px]">
         {renderSelectedContext()}
         {editor && (
-          <PromptsBotsCombo
-            open={openPromptsBotCombo}
-            onBack={() => {
-              editor?.commands.clearContent();
-              editor?.commands.focus("end");
-            }}
-            onPromptSelect={(prompt) => {
-              editor?.commands.setContent(prompt.content);
-              editor?.commands.insertContent("");
-              editor?.commands.focus("end");
-              setOpenPromptsBotCombo(false);
-            }}
-            onOpenChange={setOpenPromptsBotCombo}
+          // <PromptsBotsCombo
+          //   open={openPromptsBotCombo}
+          //   onBack={() => {
+          //     editor?.commands.clearContent();
+          //     editor?.commands.focus("end");
+          //   }}
+          //   onPromptSelect={(prompt) => {
+          //     editor?.commands.setContent(prompt.content);
+          //     editor?.commands.insertContent("");
+          //     editor?.commands.focus("end");
+          //     setOpenPromptsBotCombo(false);
+          //   }}
+          //   onOpenChange={setOpenPromptsBotCombo}
+          // >
+          <motion.div
+            variants={slideUpVariant}
+            initial={"initial"}
+            animate={editor.isEditable ? "animate" : "initial"}
+            className="flex flex-col items-start gap-0 focus-within:ring-2 ring-zinc-100 dark:ring-zinc-700 ring-offset-2 dark:ring-offset-zinc-800 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
           >
-            <motion.div
-              variants={slideUpVariant}
-              initial={"initial"}
-              animate={editor.isEditable ? "animate" : "initial"}
-              className="flex flex-col items-start gap-0 focus-within:ring-2 ring-zinc-100 dark:ring-zinc-700 ring-offset-2 dark:ring-offset-zinc-800 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
-            >
-              <div className="flex flex-col items-start justify-start w-full">
-                {attachment && (
-                  <div className="pl-2 md:pl-3 pr-2 pt-2">
-                    {renderAttachedImage()}
-                  </div>
-                )}
-                <div className="flex flex-row pl-2 md:pl-3 pr-2 py-2 w-full gap-0 items-end">
-                  <EditorContent
-                    editor={editor}
-                    autoFocus
-                    onKeyDown={(e) => {
-                      console.log("keydown", e.key);
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        sendMessage(attachment?.base64);
-                        clearAttachment();
-                      }
-                    }}
-                    className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
-                  />
-
-                  {!isGenerating && renderRecordingControls()}
+            <div className="flex flex-col items-start justify-start w-full">
+              {attachment && (
+                <div className="pl-2 md:pl-3 pr-2 pt-2">
+                  {renderAttachedImage()}
                 </div>
+              )}
+              <div className="flex flex-row pl-2 md:pl-3 pr-2 py-2 w-full gap-0 items-end">
+                <EditorContent
+                  editor={editor}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    console.log("keydown", e.key);
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      sendMessage(editor.getText());
+                    }
+                  }}
+                  className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
+                />
+
+                {!isGenerating && renderRecordingControls()}
               </div>
-              <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 pb-2 px-2">
+            </div>
+            <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 pb-2 px-2">
+              <Button
+                variant={"ghost"}
+                onClick={openAssistants}
+                className={cn("pl-1 pr-3 gap-2 text-xs md:text-sm")}
+                size="sm"
+              >
+                {selectedAssistant?.assistant.key &&
+                  getAssistantIcon(selectedAssistant?.assistant.key)}
+
+                {selectedAssistant?.assistant.name}
+              </Button>
+
+              <PluginSelect selectedAssistantKey={selectedAssistantKey} />
+              {renderFileUpload()}
+              <div className="flex-1"></div>
+
+              {!isGenerating && (
                 <Button
-                  variant={"ghost"}
-                  onClick={openAssistants}
-                  className={cn("pl-1 pr-3 gap-2 text-xs md:text-sm")}
-                  size="sm"
+                  size="iconSm"
+                  rounded="full"
+                  variant={!!editor?.getText() ? "default" : "secondary"}
+                  disabled={!editor?.getText()}
+                  className={cn(
+                    !!editor?.getText() &&
+                      "bg-zinc-800 dark:bg-emerald-500/20 text-white dark:text-emerald-400 dark:outline-emerald-400"
+                  )}
+                  onClick={() => {
+                    sendMessage(editor.getText());
+                  }}
                 >
-                  {selectedAssistant?.assistant.key &&
-                    getAssistantIcon(selectedAssistant?.assistant.key)}
-
-                  {selectedAssistant?.assistant.name}
+                  <Navigation03Icon
+                    size={18}
+                    variant="stroke"
+                    strokeWidth="2"
+                  />
                 </Button>
-
-                <PluginSelect selectedAssistantKey={selectedAssistantKey} />
-                {renderFileUpload()}
-                <QuickSettings />
-                <div className="flex-1"></div>
-
-                {!isGenerating && (
-                  <Button
-                    size="iconSm"
-                    rounded="full"
-                    variant={!!editor?.getText() ? "default" : "secondary"}
-                    disabled={!editor?.getText()}
-                    className={cn(
-                      !!editor?.getText() &&
-                        "bg-zinc-800 dark:bg-emerald-500/20 text-white dark:text-emerald-400 dark:outline-emerald-400"
-                    )}
-                    onClick={() => {
-                      sendMessage(attachment?.base64);
-                      clearAttachment();
-                    }}
-                  >
-                    <Navigation03Icon
-                      size={18}
-                      variant="stroke"
-                      strokeWidth="2"
-                    />
-                  </Button>
-                )}
-              </div>
-            </motion.div>
-          </PromptsBotsCombo>
+              )}
+            </div>
+          </motion.div>
+          // </PromptsBotsCombo>
         )}
       </div>
       {isFreshSession && <ChatExamples />}

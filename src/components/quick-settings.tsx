@@ -1,16 +1,21 @@
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
+import { Type } from "@/components/ui/text";
+import { Tooltip } from "@/components/ui/tooltip";
+import { defaultPreferences } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
 import { useModelList } from "@/hooks/use-model-list";
-import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
+import { TPreferences } from "@/types";
 import { Settings03Icon } from "@hugeicons/react";
 import { ArrowClockwise, Info } from "@phosphor-icons/react";
 import { useState } from "react";
 import { ModelInfo } from "./model-info";
-import { Button } from "./ui/button";
-import { Flex } from "./ui/flex";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Slider } from "./ui/slider";
-import { Type } from "./ui/text";
-import { Tooltip } from "./ui/tooltip";
 
 export const QuickSettings = () => {
   const [isOpen, setIsOpen] = useState(false);

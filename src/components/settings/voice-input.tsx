@@ -1,7 +1,7 @@
 import { usePreferenceContext } from "@/context/preferences";
-import { Flex } from "../ui/flex";
-import { Switch } from "../ui/switch";
-import { Type } from "../ui/text";
+import { Flex } from "@/components/ui/flex";
+import { Switch } from "@/components/ui/switch";
+import { Type } from "@/components/ui/text";
 import { SettingCard } from "./setting-card";
 import { SettingsContainer } from "./settings-container";
 
