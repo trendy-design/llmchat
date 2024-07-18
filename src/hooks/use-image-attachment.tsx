@@ -1,7 +1,7 @@
 import { TAttachment } from "@/components/chat-input";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { ImageUpload01Icon } from "@hugeicons/react";
+import { ImageAdd01Icon } from "@hugeicons/react";
 import { X } from "@phosphor-icons/react";
 import Image from "next/image";
 import { ChangeEvent, useState } from "react";
@@ -109,7 +109,7 @@ export const useImageAttachment = () => {
           onClick={handleFileSelect}
           className="px-1.5"
         >
-          <ImageUpload01Icon size={18} strokeWidth={1.5} />
+          <ImageAdd01Icon size={18} strokeWidth={1.5} />
         </Button>
       </>
     );

@@ -13,7 +13,7 @@ import { usePreferenceContext } from "@/context/preferences";
 import { useModelList } from "@/hooks/use-model-list";
 import { useTools } from "@/hooks/use-tools";
 import { TToolKey } from "@/types";
-import { ConnectIcon } from "@hugeicons/react";
+import { ElectricPlugsIcon } from "@hugeicons/react";
 import { FC, useEffect, useState } from "react";
 
 export type TPluginSelect = {
@@ -48,7 +48,7 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
         <Tooltip content="Plugins">
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm">
-              <ConnectIcon size={16} variant="stroke" strokeWidth="2" />
+              <ElectricPlugsIcon size={18} variant="stroke" strokeWidth="2" />
               <Badge>{selectedPlugins.length}</Badge>
             </Button>
           </PopoverTrigger>

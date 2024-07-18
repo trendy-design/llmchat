@@ -83,10 +83,22 @@ export const useModelList = () => {
 
   const models: TModelItem[] = [
     {
+      name: "GPT 4o Mini",
+      key: "gpt-4o-mini",
+      tokens: 128000,
+      isNew: true,
+      inputPrice: 5,
+      outputPrice: 15,
+      plugins: ["web_search", "image_generation", "memory", "chart"],
+      icon: (size) => <ModelIcon size={size} type="gpt4" />,
+      baseModel: "openai",
+      maxOutputTokens: 2048,
+    },
+    {
       name: "GPT 4o",
       key: "gpt-4o",
       tokens: 128000,
-      isNew: true,
+      isNew: false,
       inputPrice: 5,
       outputPrice: 15,
       plugins: ["web_search", "image_generation", "memory", "chart"],

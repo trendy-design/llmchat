@@ -157,7 +157,7 @@ export const useLLMRunner = () => {
           chat_history: previousAllowedChatHistory || [],
           context,
           input,
-        },
+        }, 
         {
           callbacks: [
             {
