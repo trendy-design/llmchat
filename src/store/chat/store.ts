@@ -1,17 +1,22 @@
 import { TChatState } from "@/types/chat";
 import { create } from "zustand";
 
+const initialState = {
+  session: undefined,
+  messages: [],
+  currentMessage: undefined,
+  currentTools: [],
+  context: undefined,
+  editor: undefined,
+  isGenerating: false,
+  abortController: undefined,
+};
+
 export const createChatStore = () =>
   create<TChatState>((set, get) => ({
-    session: undefined,
+    ...initialState,
     setSession: (session) => set({ session }),
-    messages: [],
     setMessages: (messages) => set({ messages }),
-    currentMessage: undefined,
-    currentTools: [],
-    context: undefined,
-    editor: undefined,
-    isGenerating: false,
     updateCurrentMessage: (message) => {
       const { currentMessage } = get();
       if (currentMessage) {
@@ -49,7 +54,6 @@ export const createChatStore = () =>
         isGenerating: false,
         abortController: undefined,
       }),
-    abortController: undefined,
     setAbortController: (abortController) => set({ abortController }),
     stopGeneration: () => {
       const { abortController } = get();

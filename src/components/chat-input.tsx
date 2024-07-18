@@ -47,8 +47,6 @@ export const ChatInput = () => {
   const { selectedAssistant, open: openAssistants } = useAssistants();
   const { invokeModel } = useLLMRunner();
 
-  console.log("sssss", session);
-
   const { editor } = useChatEditor();
 
   const { preferences, updatePreferences } = usePreferenceContext();
@@ -187,25 +185,11 @@ export const ChatInput = () => {
       <div className="flex flex-col gap-3 w-full md:w-[700px] lg:w-[720px]">
         {renderSelectedContext()}
         {editor && (
-          // <PromptsBotsCombo
-          //   open={openPromptsBotCombo}
-          //   onBack={() => {
-          //     editor?.commands.clearContent();
-          //     editor?.commands.focus("end");
-          //   }}
-          //   onPromptSelect={(prompt) => {
-          //     editor?.commands.setContent(prompt.content);
-          //     editor?.commands.insertContent("");
-          //     editor?.commands.focus("end");
-          //     setOpenPromptsBotCombo(false);
-          //   }}
-          //   onOpenChange={setOpenPromptsBotCombo}
-          // >
           <motion.div
             variants={slideUpVariant}
             initial={"initial"}
             animate={editor.isEditable ? "animate" : "initial"}
-            className="flex flex-col items-start gap-0 focus-within:ring-2 ring-zinc-100 dark:ring-zinc-700 ring-offset-2 dark:ring-offset-zinc-800 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
+            className="flex flex-col items-start gap-0  border bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
           >
             <div className="flex flex-col items-start justify-start w-full">
               {attachment && (
@@ -218,14 +202,12 @@ export const ChatInput = () => {
                   editor={editor}
                   autoFocus
                   onKeyDown={(e) => {
-                    console.log("keydown", e.key);
                     if (e.key === "Enter" && !e.shiftKey) {
                       sendMessage(editor.getText());
                     }
                   }}
                   className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
                 />
-
                 {!isGenerating && renderRecordingControls()}
               </div>
             </div>
@@ -269,7 +251,6 @@ export const ChatInput = () => {
               )}
             </div>
           </motion.div>
-          // </PromptsBotsCombo>
         )}
       </div>
       {isFreshSession && <ChatExamples />}

@@ -60,7 +60,7 @@ export const ModelSettings = () => {
     },
   ];
   return (
-    <Flex direction="col" gap="lg" className="p-2">
+    <Flex direction="col" gap="sm" className="p-4">
       <Accordion
         type="single"
         value={selectedModel}

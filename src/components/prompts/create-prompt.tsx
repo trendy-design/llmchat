@@ -1,3 +1,6 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { TPrompt } from "@/hooks/use-prompts";
 import { ArrowLeft } from "@phosphor-icons/react";
 import Document from "@tiptap/extension-document";
@@ -8,9 +11,6 @@ import Placeholder from "@tiptap/extension-placeholder";
 import Text from "@tiptap/extension-text";
 import { EditorContent, useEditor } from "@tiptap/react";
 import { useEffect, useRef, useState } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 
 export type TCreatePrompt = {
   prompt?: TPrompt;
@@ -129,7 +129,7 @@ export const CreatePrompt = ({
           className="w-full p-3 [&>*]:leading-7 text-sm md:text-base outline-none focus:outline-none  [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar cursor-text"
         />
         <p className="text-xs text-zinc-500 py-2 px-3 flex flex-row gap-2 items-center">
-          Use <Badge>{`{{{{ input }}}}`}</Badge> for user input
+          Use <Badge>{`{{ input }}`}</Badge> for user input
         </p>
       </div>
       <div className="w-full px-2 py-2 border-t bg-white dark:bg-zinc-800 absolute bottom-0 left-0 right-0 border-zinc-500/20 flex flex-row gap-3 items-center">

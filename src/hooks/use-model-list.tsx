@@ -22,11 +22,12 @@ export const useModelList = () => {
   });
 
   const createInstance = async (model: TModelItem, apiKey?: string) => {
-    const temperature =
-      preferences.temperature || defaultPreferences.temperature;
-    const topP = preferences.topP || defaultPreferences.topP;
-    const topK = preferences.topK || defaultPreferences.topK;
-    const maxTokens = preferences.maxTokens || model.tokens;
+    const {
+      temperature = defaultPreferences.temperature,
+      topP = defaultPreferences.topP,
+      topK = defaultPreferences.topK,
+      maxTokens = model.tokens,
+    } = preferences;
 
     switch (model.baseModel) {
       case "openai":
@@ -43,9 +44,7 @@ export const useModelList = () => {
         return new ChatAnthropic({
           model: model.key,
           streaming: true,
-          // anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
-          anthropicApiUrl:
-            "https://gateway.ai.cloudflare.com/v1/1ef794c7214877a37a48eb2fe95b5b0b/aichat/anthropic",
+          anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
           apiKey,
           maxTokens,
           temperature,
@@ -81,6 +80,7 @@ export const useModelList = () => {
         throw new Error("Invalid model");
     }
   };
+
   const models: TModelItem[] = [
     {
       name: "GPT 4o",
@@ -162,7 +162,6 @@ export const useModelList = () => {
       maxOutputTokens: 4095,
       tokens: 200000,
       icon: (size) => <ModelIcon size={size} type="anthropic" />,
-
       baseModel: "anthropic",
     },
     {
@@ -175,7 +174,6 @@ export const useModelList = () => {
       maxOutputTokens: 4095,
       tokens: 200000,
       icon: (size) => <ModelIcon size={size} type="anthropic" />,
-
       baseModel: "anthropic",
     },
     {
@@ -262,11 +260,13 @@ export const useModelList = () => {
         return "gemini-pro";
       case "ollama":
         return "phi3:latest";
+      default:
+        throw new Error("Invalid base model");
     }
   };
 
   const assistants: TAssistant[] = [
-    ...allModels?.map(
+    ...allModels.map(
       (model): TAssistant => ({
         name: model.name,
         key: model.key,
@@ -283,18 +283,12 @@ export const useModelList = () => {
     key: string
   ): { assistant: TAssistant; model: TModelItem } | undefined => {
     const assistant = assistants.find((assistant) => assistant.key === key);
-    if (!assistant) {
-      return;
-    }
-    const model = getModelByKey(assistant?.baseModel);
+    if (!assistant) return;
 
-    if (!model) {
-      return;
-    }
-    return {
-      assistant,
-      model,
-    };
+    const model = getModelByKey(assistant.baseModel);
+    if (!model) return;
+
+    return { assistant, model };
   };
 
   const getAssistantIcon = (assistantKey: string) => {
@@ -312,8 +306,8 @@ export const useModelList = () => {
     getModelByKey,
     getAssistantIcon,
     getTestModelKey,
-    assistants: assistants?.filter(
-      (a) => !!allModels.find((m) => m.key === a.baseModel)
+    assistants: assistants.filter((a) =>
+      allModels.some((m) => m.key === a.baseModel)
     ),
     getAssistantByKey,
     ...assistantQueries,

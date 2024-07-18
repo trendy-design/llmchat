@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { TBaseModel } from "@/types";
 import { useState } from "react";
@@ -6,7 +5,7 @@ import { useModelList } from "./use-model-list";
 
 export const useLLMTest = () => {
   const { getTestModelKey, getModelByKey, createInstance } = useModelList();
-  const [isTestRunning, setIsTestRunning] = useState(false);
+  const [isCheckingApiKey, setIsCheckingApiKey] = useState(false);
   const { toast } = useToast();
   const testLLM = async (model: TBaseModel, apiKey?: string) => {
     try {
@@ -56,38 +55,40 @@ export const useLLMTest = () => {
     }
   };
 
-  const renderSaveApiKeyButton = (
-    model: TBaseModel,
-    key: string,
-    onValidated: () => void
-  ) => {
+  const checkApiKey = async ({
+    model,
+    key,
+    onValidated,
+    onError,
+  }: {
+    model: TBaseModel;
+    key: string;
+    onValidated: () => void;
+    onError: () => void;
+  }) => {
+    setIsCheckingApiKey(true);
+    const isWorking = await testLLM(model, key);
+    if (isWorking) {
+      onValidated();
+      toast({
+        title: "API Key saved successfully",
+        description: "Model is working as expected",
+        variant: "default",
+      });
+    } else {
+      onError();
+      toast({
+        title: "API Key Invalid",
+        description: "Please check your API key and try again.",
+        variant: "destructive",
+      });
+    }
+    setIsCheckingApiKey(false);
+
     return (
-      <Button
-        size="sm"
-        onClick={async () => {
-          setIsTestRunning(true);
-          const isWorking = await testLLM(model, key);
-          if (isWorking) {
-            onValidated();
-            toast({
-              title: "API Key saved successfully",
-              description: "Model is working as expected",
-              variant: "default",
-            });
-          } else {
-            toast({
-              title: "API Key Invalid",
-              description: "Please check your API key and try again.",
-              variant: "destructive",
-            });
-          }
-          setIsTestRunning(false);
-        }}
-      >
-        {isTestRunning ? "Validating..." : "Save API Key"}
-      </Button>
+      
     );
   };
 
-  return { testLLM, renderSaveApiKeyButton };
+  return { testLLM, checkApiKey, isCheckingApiKey };
 };

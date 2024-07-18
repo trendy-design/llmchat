@@ -1,9 +1,10 @@
-import { Flex } from "@/components/ui/flex";
-import { usePreferenceContext } from "@/context/preferences";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
+import { usePreferenceContext } from "@/context/preferences";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export const OllamaSettings = () => {
   const [url, setURL] = useState<string>("");
@@ -43,11 +44,17 @@ export const OllamaSettings = () => {
 
   return (
     <Flex direction="col" gap="sm">
-      <div className="flex flex-row items-end justify-between">
+      <Flex items="center" gap="sm">
         <p className="text-xs md:text-sm text-zinc-500">
           Ollama local server URL
         </p>
-      </div>
+        <Link
+          href="https://aistudio.google.com/app/apikey"
+          className="text-blue-400 font-medium"
+        >
+          (Configuration guide)
+        </Link>
+      </Flex>
       <Input
         placeholder="http://localhost:11434"
         value={url}
@@ -55,11 +62,10 @@ export const OllamaSettings = () => {
         onChange={handleURLChange}
       />
       <div className="flex flex-row items-center gap-2">
-        <Button size="sm" onClick={verifyAndSaveURL}>
-          Save & Check Connection
+        <Button size="sm" variant="outline" onClick={verifyAndSaveURL}>
+          Check Connection
         </Button>
       </div>
-      {/* TODO: Add FAQ Section with q and a here you can use Type Component */}
     </Flex>
   );
 };
