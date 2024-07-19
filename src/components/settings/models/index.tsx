@@ -81,7 +81,7 @@ export const ModelSettings = () => {
               <div
                 className={cn(
                   "px-2 !rotate-0",
-                  model.connected ? "text-emerald-600" : "text-zinc-500"
+                  model.connected ? "text-emerald-400" : "text-zinc-500"
                 )}
               >
                 {model.connected ? (

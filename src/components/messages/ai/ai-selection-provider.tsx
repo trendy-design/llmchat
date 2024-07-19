@@ -16,11 +16,17 @@ export const AISelectionProvider: FC<TAISelectionProvider> = ({
 }) => {
   const { selectedText } = useTextSelection();
 
+  console.log(selectedText);
+
   return (
-    <Selection.Root>
+    <Selection.Root
+      onOpenChange={(open) => {
+        console.log(open);
+      }}
+    >
       <Selection.Trigger asChild>{children}</Selection.Trigger>
       <Selection.Portal container={document?.getElementById("chat-container")}>
-        <Selection.Content sticky="always" sideOffset={10}>
+        <Selection.Content sticky="always" sideOffset={10} id="chat-reply">
           {selectedText && (
             <Button size="sm" onClick={() => onSelect(selectedText)}>
               <Quotes size="16" weight="bold" /> Reply
