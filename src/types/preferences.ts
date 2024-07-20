@@ -12,6 +12,13 @@ export type TPreferences = {
   memories: string[];
   defaultPlugins: TToolKey[];
   whisperSpeechToTextEnabled: boolean;
+  dalleImageQuality: "standard" | "hd";
+  dalleImageSize:
+    | "1024x1024"
+    | "512x512"
+    | "256x256"
+    | "1792x1024"
+    | "1024x1792";
   maxTokens: number;
   defaultWebSearchEngine: "google" | "duckduckgo";
   ollamaBaseUrl: string;

@@ -16,15 +16,9 @@ export const AISelectionProvider: FC<TAISelectionProvider> = ({
 }) => {
   const { selectedText } = useTextSelection();
 
-  console.log(selectedText);
-
   return (
-    <Selection.Root
-      onOpenChange={(open) => {
-        console.log(open);
-      }}
-    >
-      <Selection.Trigger asChild>{children}</Selection.Trigger>
+    <Selection.Root>
+      <Selection.Trigger>{children}</Selection.Trigger>
       <Selection.Portal container={document?.getElementById("chat-container")}>
         <Selection.Content sticky="always" sideOffset={10} id="chat-reply">
           {selectedText && (

@@ -6,6 +6,8 @@ export const defaultPreferences: TPreferences = {
   messageLimit: 30,
   temperature: 0.5,
   memories: [],
+  dalleImageQuality: "standard",
+  dalleImageSize: "1024x1024",
   ollamaBaseUrl: "http://localhost:11434",
   whisperSpeechToTextEnabled: false,
   defaultWebSearchEngine: "duckduckgo",

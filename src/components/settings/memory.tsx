@@ -1,7 +1,7 @@
-import { usePreferenceContext } from "@/context/preferences";
-import { Delete01Icon } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
 import { Type } from "@/components/ui/text";
+import { usePreferenceContext } from "@/context/preferences";
+import { Delete01Icon } from "@hugeicons/react";
 import { SettingCard } from "./setting-card";
 import { SettingsContainer } from "./settings-container";
 
@@ -14,7 +14,15 @@ export const MemorySettings = () => {
         <Type size="sm" className="flex-1">
           {memory}
         </Type>
-        <Button variant="ghost" size="iconXS">
+        <Button
+          variant="ghost"
+          size="iconXS"
+          onClick={() => {
+            updatePreferences({
+              memories: preferences?.memories?.filter((m) => m !== memory),
+            });
+          }}
+        >
           <Delete01Icon size={16} strokeWidth={1.2} />
         </Button>
       </SettingCard>
