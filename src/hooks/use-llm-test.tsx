@@ -1,10 +1,12 @@
 import { useToast } from "@/components/ui/use-toast";
+import { getTestModelKey } from "@/helper/models";
+import { modelService } from "@/services/models";
 import { TBaseModel } from "@/types";
 import { useState } from "react";
 import { useModelList } from "./use-model-list";
 
 export const useLLMTest = () => {
-  const { getTestModelKey, getModelByKey, createInstance } = useModelList();
+  const { getModelByKey } = useModelList();
   const [isCheckingApiKey, setIsCheckingApiKey] = useState(false);
   const { toast } = useToast();
   const testLLM = async (model: TBaseModel, apiKey?: string) => {
@@ -21,7 +23,10 @@ export const useLLMTest = () => {
         return false;
       }
 
-      const selectedModel = await createInstance(selectedModelKey, apiKey);
+      const selectedModel = await modelService.createInstance({
+        model: selectedModelKey,
+        apiKey,
+      });
 
       const data = await selectedModel
         .withListeners({

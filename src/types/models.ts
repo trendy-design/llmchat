@@ -1,3 +1,5 @@
+import { ModelIcon } from "@/components/model-icon";
+import { ComponentProps } from "react";
 import { TToolKey } from "./tools";
 
 export type TBaseModel = "openai" | "anthropic" | "gemini" | "ollama";
@@ -24,7 +26,7 @@ export type TModelItem = {
   name: string;
   key: TModelKey;
   isNew?: boolean;
-  icon: (size: "sm" | "md" | "lg") => JSX.Element;
+  icon: ComponentProps<typeof ModelIcon>["type"];
   vision?: boolean;
   tokens: number;
   plugins: TToolKey[];

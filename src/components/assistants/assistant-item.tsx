@@ -54,7 +54,7 @@ export const AssistantItem = ({
       }}
     >
       <Flex gap="sm" items="center" key={assistant.key} className="w-full">
-        {getAssistantIcon(assistant.key)}
+        {getAssistantIcon(assistant.key, "sm")}
         {assistant.name} {model?.isNew && <Badge>New</Badge>}
         <div className="flex flex-1"></div>
         <Flex gap="md" items="center">

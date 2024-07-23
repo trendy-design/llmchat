@@ -275,9 +275,11 @@ export const Data = () => {
   return (
     <SettingsContainer title="Manage your Data">
       <Flex direction="col" gap="md" className="w-full">
-        <SettingCard className="p-3">
+        <SettingCard className="p-5">
           <Flex items="center" justify="between">
-            <Type textColor="secondary">Clear all chat sessions</Type>
+            <Type textColor="primary" weight="medium">
+              Clear all chat sessions
+            </Type>
             <PopOverConfirmProvider
               title="Are you sure you want to clear all chat sessions? This action cannot be undone."
               confimBtnText="Clear All"
@@ -302,9 +304,9 @@ export const Data = () => {
               </Button>
             </PopOverConfirmProvider>
           </Flex>
-          <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
+          <div className="my-4 h-[1px] bg-zinc-500/10 w-full" />
           <Flex items="center" justify="between">
-            <Type textColor="secondary" className="w-full">
+            <Type textColor="primary" weight="medium">
               Clear all chat sessions and preferences
             </Type>
             <PopOverConfirmProvider
@@ -334,9 +336,9 @@ export const Data = () => {
           </Flex>
         </SettingCard>
 
-        <SettingCard className="p-3">
+        <SettingCard className="p-5">
           <Flex items="center" justify="between">
-            <Type textColor="secondary" className="w-full">
+            <Type textColor="primary" weight="medium">
               Import Data
             </Type>
             <Input
@@ -356,10 +358,12 @@ export const Data = () => {
               Import
             </Button>
           </Flex>
-          <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
+          <div className="my-4 h-[1px] bg-zinc-500/10 w-full" />
 
           <Flex items="center" justify="between" className="w-full">
-            <Type textColor="secondary">Export Data</Type>
+            <Type textColor="primary" weight="medium">
+              Export Data
+            </Type>
             <Button
               variant="outline"
               size="sm"

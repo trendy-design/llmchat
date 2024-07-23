@@ -20,7 +20,7 @@ export const RegenerateWithModelSelect = ({
   assistant,
   onRegenerate,
 }: TRegenerateModelSelect) => {
-  const { assistants, getAssistantByKey } = useModelList();
+  const { assistants, getAssistantByKey, getAssistantIcon } = useModelList();
   const [isOpen, setIsOpen] = useState(false);
 
   const messageAssistantProps = getAssistantByKey(assistant.key);
@@ -52,8 +52,8 @@ export const RegenerateWithModelSelect = ({
                   onRegenerate(assistant.key);
                 }}
               >
-                {assistantProps?.model.icon("sm")}{" "}
-                {assistantProps?.assistant.name}{" "}
+                {getAssistantIcon(assistant.key, "sm")}
+                {assistantProps?.assistant.name}
               </DropdownMenuItem>
             );
           })}

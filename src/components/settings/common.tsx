@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { defaultPreferences } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
 import { TPreferences } from "@/types";
-import { ArrowClockwise, Info } from "@phosphor-icons/react";
+import { ArrowClockwise } from "@phosphor-icons/react";
 import { ChangeEvent } from "react";
 import { SettingCard } from "./setting-card";
 import { SettingsContainer } from "./settings-container";
@@ -62,188 +62,193 @@ export const CommonSettings = () => {
   };
 
   return (
-    <SettingsContainer title="Model Settings">
-      <Flex direction="col" gap="sm" className="w-full" items="start">
-        <Type
-          size="xs"
-          textColor="secondary"
-          className="flex flex-row items-center gap-1"
-        >
-          System Default Prompt <Info weight="regular" size={14} />
-        </Type>
+    <>
+      <SettingsContainer title="Default Assistant Settings">
+        <Flex direction="col" gap="sm" className="w-full" items="start">
+          <Flex justify="between" items="center" className="w-full">
+            <Flex direction="col" items="start">
+              <Type weight="medium"> System Prompt</Type>
 
-        <Textarea
-          name="systemPrompt"
-          value={preferences.systemPrompt}
-          autoComplete="off"
-          onChange={(e) => {
-            updatePreferences({ systemPrompt: e.target.value });
-          }}
-        />
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            updatePreferences({
-              systemPrompt: defaultPreferences.systemPrompt,
-            });
-          }}
-        >
-          Reset System Prompt
-        </Button>
-      </Flex>
-
-      <SettingCard className="p-3 mt-2">
-        <Flex justify="between">
-          <Flex direction="col" items="start">
-            <Type weight="medium">Context Length</Type>
-            <Type size="xxs" textColor="secondary">
-              Number of previous messages to use as context
-            </Type>
-          </Flex>
-          <Flex items="center" gap="sm">
-            <Input
-              name="messageLimit"
-              type="number"
+              <Type size="xxs" textColor="secondary">
+                Default instructions for the model.
+              </Type>
+            </Flex>{" "}
+            <Button
+              variant="outline"
               size="sm"
-              className="w-[100px]"
-              value={preferences?.messageLimit}
-              autoComplete="off"
-              onChange={(e) => {
+              onClick={() => {
                 updatePreferences({
-                  messageLimit: Number(e.target.value),
+                  systemPrompt: defaultPreferences.systemPrompt,
                 });
               }}
-            />
-            {renderResetToDefault("messageLimit")}
+            >
+              Reset
+            </Button>
           </Flex>
+          <Textarea
+            name="systemPrompt"
+            value={preferences.systemPrompt}
+            autoComplete="off"
+            onChange={(e) => {
+              updatePreferences({ systemPrompt: e.target.value });
+            }}
+          />
         </Flex>
-        <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
+      </SettingsContainer>
 
-        <Flex justify="between">
-          <Flex direction="col" items="start">
-            <Type weight="medium">Max output tokens</Type>
-            <Type size="xxs" textColor="secondary">
-              Maximum number of tokens to generate
-            </Type>
+      <SettingsContainer title="Model Settings">
+        <SettingCard className="p-5 mt-2">
+          <Flex justify="between" items="center">
+            <Flex direction="col" items="start">
+              <Type weight="medium">Context Length</Type>
+              <Type size="xxs" textColor="secondary">
+                Number of previous messages to consider.
+              </Type>
+            </Flex>
+            <Flex items="center" gap="sm">
+              <Input
+                name="messageLimit"
+                type="number"
+                size="sm"
+                className="w-[100px]"
+                value={preferences?.messageLimit}
+                autoComplete="off"
+                onChange={(e) => {
+                  updatePreferences({
+                    messageLimit: Number(e.target.value),
+                  });
+                }}
+              />
+              {renderResetToDefault("messageLimit")}
+            </Flex>
           </Flex>
-          <Flex items="center" gap="sm">
-            <Input
-              name="maxTokens"
-              type="number"
-              size="sm"
-              className="w-[100px]"
-              value={preferences?.maxTokens}
-              autoComplete="off"
-              onChange={(e) => {
-                updatePreferences({
-                  maxTokens: Number(e.target.value),
-                });
-              }}
-            />
-            {renderResetToDefault("maxTokens")}
-          </Flex>
-        </Flex>
-        <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
+          <div className="my-4 h-[1px] bg-zinc-500/10 w-full" />
 
-        <Flex justify="between">
-          <Flex direction="col" items="start">
-            <Type weight="medium">Temprature</Type>
-            <Type size="xxs" textColor="secondary">
-              Maximum number of tokens to generate
-            </Type>
+          <Flex justify="between" items="center">
+            <Flex direction="col" items="start">
+              <Type weight="medium">Max Tokens</Type>
+              <Type size="xxs" textColor="secondary">
+                Maximum tokens in a single response.
+              </Type>
+            </Flex>
+            <Flex items="center" gap="sm">
+              <Input
+                name="maxTokens"
+                type="number"
+                size="sm"
+                className="w-[100px]"
+                value={preferences?.maxTokens}
+                autoComplete="off"
+                onChange={(e) => {
+                  updatePreferences({
+                    maxTokens: Number(e.target.value),
+                  });
+                }}
+              />
+              {renderResetToDefault("maxTokens")}
+            </Flex>
           </Flex>
-          <Flex items="center" gap="sm">
-            <Slider
-              className="my-2 w-[80px]"
-              value={[Number(preferences?.temperature)]}
-              min={0}
-              step={0.1}
-              max={1}
-              onValueChange={onSliderChange(0, 1, "temperature")}
-            />
-            <Input
-              name="temperature"
-              type="number"
-              size="sm"
-              className="w-[80px]"
-              value={preferences?.temperature}
-              min={0}
-              step={1}
-              max={100}
-              autoComplete="off"
-              onChange={onInputChange(0, 1, "temperature")}
-            />
-            {renderResetToDefault("temperature")}
-          </Flex>
-        </Flex>
-        <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
+          <div className="my-4 h-[1px] bg-zinc-500/10 w-full" />
 
-        <Flex justify="between">
-          <Flex direction="col" items="start">
-            <Type weight="medium">TopP</Type>
-            <Type size="xxs" textColor="secondary">
-              Maximum number of tokens to generate
-            </Type>
+          <Flex justify="between" items="center">
+            <Flex direction="col" items="start">
+              <Type weight="medium">Temperature</Type>
+              <Type size="xxs" textColor="secondary">
+                Adjust randomness of responses.
+              </Type>
+            </Flex>
+            <Flex items="center" gap="sm">
+              <Slider
+                className="my-2 w-[80px]"
+                value={[Number(preferences?.temperature)]}
+                min={0}
+                step={0.1}
+                max={1}
+                onValueChange={onSliderChange(0, 1, "temperature")}
+              />
+              <Input
+                name="temperature"
+                type="number"
+                size="sm"
+                className="w-[80px]"
+                value={preferences?.temperature}
+                min={0}
+                step={1}
+                max={100}
+                autoComplete="off"
+                onChange={onInputChange(0, 1, "temperature")}
+              />
+              {renderResetToDefault("temperature")}
+            </Flex>
           </Flex>
-          <Flex items="center" gap="sm">
-            <Slider
-              className="my-2 w-[80px]"
-              value={[Number(preferences.topP)]}
-              min={0}
-              step={0.01}
-              max={1}
-              onValueChange={onSliderChange(0, 1, "topP")}
-            />
-            <Input
-              name="topP"
-              type="number"
-              size="sm"
-              className="w-[80px]"
-              value={preferences.topP}
-              min={0}
-              step={1}
-              max={1}
-              autoComplete="off"
-              onChange={onInputChange(0, 1, "topP")}
-            />
-            {renderResetToDefault("topP")}
-          </Flex>
-        </Flex>
-        <div className="my-3 h-[1px] bg-zinc-500/10 w-full" />
+          <div className="my-4 h-[1px] bg-zinc-500/10 w-full" />
 
-        <Flex justify="between">
-          <Flex direction="col" items="start">
-            <Type weight="medium">TopK</Type>
-            <Type size="xxs" textColor="secondary">
-              Maximum number of tokens to generate
-            </Type>
+          <Flex justify="between" items="center">
+            <Flex direction="col" items="start">
+              <Type weight="medium">TopP</Type>
+              <Type size="xxs" textColor="secondary">
+                Control text diversity.
+              </Type>
+            </Flex>
+            <Flex items="center" gap="sm">
+              <Slider
+                className="my-2 w-[80px]"
+                value={[Number(preferences.topP)]}
+                min={0}
+                step={0.01}
+                max={1}
+                onValueChange={onSliderChange(0, 1, "topP")}
+              />
+              <Input
+                name="topP"
+                type="number"
+                size="sm"
+                className="w-[80px]"
+                value={preferences.topP}
+                min={0}
+                step={1}
+                max={1}
+                autoComplete="off"
+                onChange={onInputChange(0, 1, "topP")}
+              />
+              {renderResetToDefault("topP")}
+            </Flex>
           </Flex>
-          <Flex items="center" gap="sm">
-            <Slider
-              className="my-2 w-[80px]"
-              value={[Number(preferences.topK)]}
-              min={1}
-              step={1}
-              max={100}
-              onValueChange={onSliderChange(1, 100, "topK")}
-            />
-            <Input
-              name="topK"
-              type="number"
-              size="sm"
-              className="w-[80px]"
-              value={preferences.topK}
-              min={0}
-              step={1}
-              max={100}
-              autoComplete="off"
-              onChange={onInputChange(1, 100, "topK")}
-            />
-            {renderResetToDefault("topK")}
+          <div className="my-4 h-[1px] bg-zinc-500/10 w-full" />
+
+          <Flex justify="between" items="center">
+            <Flex direction="col" items="start">
+              <Type weight="medium">TopK</Type>
+              <Type size="xxs" textColor="secondary">
+                Limit highest probability tokens.
+              </Type>
+            </Flex>
+            <Flex items="center" gap="sm">
+              <Slider
+                className="my-2 w-[80px]"
+                value={[Number(preferences.topK)]}
+                min={1}
+                step={1}
+                max={100}
+                onValueChange={onSliderChange(1, 100, "topK")}
+              />
+              <Input
+                name="topK"
+                type="number"
+                size="sm"
+                className="w-[80px]"
+                value={preferences.topK}
+                min={0}
+                step={1}
+                max={100}
+                autoComplete="off"
+                onChange={onInputChange(1, 100, "topK")}
+              />
+              {renderResetToDefault("topK")}
+            </Flex>
           </Flex>
-        </Flex>
-      </SettingCard>
-    </SettingsContainer>
+        </SettingCard>
+      </SettingsContainer>
+    </>
   );
 };

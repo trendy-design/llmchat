@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
-import { Input } from "@/components/ui/input";
 import { usePreferenceContext } from "@/context/preferences";
 import { useLLMTest } from "@/hooks/use-llm-test";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ApiKeyInfo } from "./api-key-info";
+import ApiKeyInput from "./api-key-input";
 
 export const GeminiSettings = () => {
   const [key, setKey] = useState<string>("");
@@ -29,14 +29,12 @@ export const GeminiSettings = () => {
           (Get API key here)
         </Link>
       </Flex>
-      <Input
-        placeholder="xxxxxxxxxxxxxxxxxxxxxxxx"
-        type="password"
-        autoComplete="off"
+      <ApiKeyInput
         value={key}
-        onChange={(e) => {
-          setKey(e.target.value);
-        }}
+        setValue={setKey}
+        isDisabled={!!apiKeys.gemini}
+        placeholder="xxxxxxxxxxxxxxxxxxxxxxxx"
+        isLocked={!!apiKeys.gemini}
       />
 
       <div className="flex flex-row items-center gap-1">

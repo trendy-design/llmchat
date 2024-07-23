@@ -1,12 +1,14 @@
+import { Flex } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ViewIcon, ViewOffIcon } from "@hugeicons/react";
+import { SquareLock02Icon, ViewIcon, ViewOffIcon } from "@hugeicons/react";
 import { FC, useState } from "react";
 export type TApiKeyInput = {
   value: string;
   setValue: (key: string) => void;
   isDisabled: boolean;
   placeholder: string;
+  isLocked: boolean;
 };
 
 const ApiKeyInput: FC<TApiKeyInput> = ({
@@ -14,6 +16,7 @@ const ApiKeyInput: FC<TApiKeyInput> = ({
   setValue,
   isDisabled,
   placeholder,
+  isLocked,
 }) => {
   const [showKey, setShowKey] = useState<boolean>(false);
 
@@ -25,23 +28,31 @@ const ApiKeyInput: FC<TApiKeyInput> = ({
         disabled={isDisabled}
         type={showKey ? "text" : "password"}
         autoComplete="off"
-        className="w-full pr-10"
+        className="w-full pr-16"
         onChange={(e) => {
           setValue(e.target.value);
         }}
       />
-      <Button
-        variant="ghost"
-        size="iconXS"
-        className="absolute right-2"
-        onClick={() => setShowKey(!showKey)}
-      >
-        {showKey ? (
-          <ViewOffIcon size={16} variant="solid" />
-        ) : (
-          <ViewIcon size={16} variant="solid" />
+      <Flex items="center" gap="sm" className="absolute right-2">
+        {isLocked && (
+          <SquareLock02Icon
+            size={16}
+            variant="solid"
+            className="text-zinc-500"
+          />
         )}
-      </Button>
+        <Button
+          variant="ghost"
+          size="iconXS"
+          onClick={() => setShowKey(!showKey)}
+        >
+          {showKey ? (
+            <ViewOffIcon size={16} variant="solid" />
+          ) : (
+            <ViewIcon size={16} variant="solid" />
+          )}
+        </Button>
+      </Flex>
     </div>
   );
 };

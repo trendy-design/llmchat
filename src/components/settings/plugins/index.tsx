@@ -7,6 +7,7 @@ import {
 import { Flex } from "@/components/ui/flex";
 import { usePreferenceContext } from "@/context";
 import { GlobalSearchIcon, Image01Icon } from "@hugeicons/react";
+import { SettingsContainer } from "../settings-container";
 import { ImageGenerationPlugin } from "./image-generation";
 import { WebSearchPlugin } from "./web-search";
 
@@ -27,7 +28,7 @@ export const PulginSettings = () => {
     },
   ];
   return (
-    <Flex direction="col" gap="lg" className="p-2">
+    <SettingsContainer title="Plugins">
       <Accordion type="single" collapsible className="w-full">
         {pluginSettingsData.map((plugin) => {
           const Icon = plugin.icon;
@@ -46,6 +47,6 @@ export const PulginSettings = () => {
           );
         })}
       </Accordion>
-    </Flex>
+    </SettingsContainer>
   );
 };

@@ -1,11 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
-import { Input } from "@/components/ui/input";
 import { usePreferenceContext } from "@/context/preferences";
 import { useLLMTest } from "@/hooks/use-llm-test";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ApiKeyInfo } from "./api-key-info";
+import ApiKeyInput from "./api-key-input";
 
 export const AnthropicSettings = () => {
   const [key, setKey] = useState<string>("");
@@ -29,14 +29,12 @@ export const AnthropicSettings = () => {
           (Get API key here)
         </Link>
       </Flex>
-      <Input
-        placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+      <ApiKeyInput
         value={key}
-        type="password"
-        autoComplete="off"
-        onChange={(e) => {
-          setKey(e.target.value);
-        }}
+        setValue={setKey}
+        isDisabled={!!apiKeys.anthropic}
+        placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+        isLocked={!!apiKeys.anthropic}
       />
 
       <div className="flex flex-row items-center gap-1">

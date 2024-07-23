@@ -1,144 +1,16 @@
-import { ModelIcon } from "@/components/model-icon";
-import { TModelItem } from "@/types";
+import { TBaseModel, TModelKey } from "@/types";
 
-export const models: TModelItem[] = [
-  {
-    name: "GPT 4o Mini",
-    key: "gpt-4o-mini",
-    isNew: true,
-    tokens: 128000,
-    maxOutputTokens: 2048,
-    vision: true,
-    plugins: ["web_search", "image_generation", "memory", "chart"],
-    icon: (size) => <ModelIcon size={size} type="gpt4" />,
-    provider: "openai",
-  },
-  {
-    name: "GPT 4o",
-    key: "gpt-4o",
-    isNew: false,
-    tokens: 128000,
-    maxOutputTokens: 2048,
-    vision: true,
-    plugins: ["web_search", "image_generation", "memory", "chart"],
-    icon: (size) => <ModelIcon size={size} type="gpt4" />,
-    provider: "openai",
-  },
-  {
-    name: "GPT4 Turbo",
-    key: "gpt-4-turbo",
-    isNew: false,
-    tokens: 128000,
-    maxOutputTokens: 4095,
-    vision: true,
-    plugins: ["web_search", "image_generation", "memory"],
-    icon: (size) => <ModelIcon size={size} type="gpt4" />,
-    provider: "openai",
-  },
-  {
-    name: "GPT4",
-    key: "gpt-4",
-    isNew: false,
-    tokens: 128000,
-    maxOutputTokens: 4095,
-    vision: true,
-    plugins: ["web_search", "image_generation", "memory"],
-    icon: (size) => <ModelIcon size={size} type="gpt4" />,
-    provider: "openai",
-  },
-  {
-    name: "GPT3.5 Turbo",
-    key: "gpt-3.5-turbo",
-    isNew: false,
-    tokens: 16385,
-    maxOutputTokens: 4095,
-    plugins: ["web_search", "image_generation", "memory"],
-    icon: (size) => <ModelIcon size={size} type="gpt3" />,
-    provider: "openai",
-  },
-  {
-    name: "GPT3.5 Turbo 0125",
-    key: "gpt-3.5-turbo-0125",
-    isNew: false,
-    tokens: 16385,
-    maxOutputTokens: 4095,
-    plugins: ["web_search", "image_generation", "memory"],
-    icon: (size) => <ModelIcon size={size} type="gpt3" />,
-    provider: "openai",
-  },
-  {
-    name: "Claude 3 Opus",
-    key: "claude-3-opus-20240229",
-    isNew: false,
-    tokens: 200000,
-    maxOutputTokens: 4095,
-    plugins: ["web_search", "image_generation", "memory"],
-    icon: (size) => <ModelIcon size={size} type="anthropic" />,
-    provider: "anthropic",
-  },
-  {
-    name: "Claude 3.5 Sonnet",
-    key: "claude-3-5-sonnet-20240620",
-    isNew: false,
-    tokens: 200000,
-    vision: true,
-    maxOutputTokens: 4095,
-    plugins: [],
-    icon: (size) => <ModelIcon size={size} type="anthropic" />,
-    provider: "anthropic",
-  },
-  {
-    name: "Claude 3 Sonnet",
-    key: "claude-3-sonnet-20240229",
-    isNew: false,
-    tokens: 200000,
-    vision: true,
-    maxOutputTokens: 4095,
-    plugins: ["web_search", "image_generation", "memory"],
-    icon: (size) => <ModelIcon size={size} type="anthropic" />,
-    provider: "anthropic",
-  },
-  {
-    name: "Claude 3 Haiku",
-    key: "claude-3-haiku-20240307",
-    isNew: false,
-    tokens: 200000,
-    vision: true,
-    maxOutputTokens: 4095,
-    plugins: [],
-    icon: (size) => <ModelIcon size={size} type="anthropic" />,
-    provider: "anthropic",
-  },
-  {
-    name: "Gemini Pro 1.5",
-    key: "gemini-1.5-pro-latest",
-    isNew: true,
-    tokens: 200000,
-    vision: true,
-    maxOutputTokens: 8190,
-    plugins: [],
-    icon: (size) => <ModelIcon size={size} type="gemini" />,
-    provider: "gemini",
-  },
-  {
-    name: "Gemini Flash 1.5",
-    key: "gemini-1.5-flash-latest",
-    isNew: true,
-    tokens: 200000,
-    vision: true,
-    maxOutputTokens: 8190,
-    plugins: [],
-    icon: (size) => <ModelIcon size={size} type="gemini" />,
-    provider: "gemini",
-  },
-  {
-    name: "Gemini Pro",
-    key: "gemini-pro",
-    isNew: false,
-    tokens: 200000,
-    maxOutputTokens: 4095,
-    plugins: [],
-    icon: (size) => <ModelIcon size={size} type="gemini" />,
-    provider: "gemini",
-  },
-];
+export const getTestModelKey = (key: TBaseModel): TModelKey => {
+  switch (key) {
+    case "openai":
+      return "gpt-3.5-turbo";
+    case "anthropic":
+      return "claude-3-haiku-20240307";
+    case "gemini":
+      return "gemini-pro";
+    case "ollama":
+      return "phi3:latest";
+    default:
+      throw new Error("Invalid base model");
+  }
+};

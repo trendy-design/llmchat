@@ -35,6 +35,7 @@ export const OpenAISettings = () => {
         setValue={setKey}
         isDisabled={!!apiKeys.openai}
         placeholder="Sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+        isLocked={!!apiKeys.openai}
       />
 
       <div className="flex flex-row items-center gap-1">

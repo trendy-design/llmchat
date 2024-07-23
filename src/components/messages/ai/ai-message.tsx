@@ -34,7 +34,7 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
     <div className="flex flex-row mt-6 w-full">
       <div className="p-2 md:px-3 md:py-2">
         <Tooltip content={runConfig.assistant.name}>
-          {getAssistantIcon(runConfig.assistant.key)}
+          {getAssistantIcon(runConfig.assistant.key, "sm")}
         </Tooltip>
       </div>
       <Flex

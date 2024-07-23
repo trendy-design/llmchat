@@ -222,7 +222,7 @@ export const ChatInput = () => {
                 size="sm"
               >
                 {selectedAssistant?.assistant.key &&
-                  getAssistantIcon(selectedAssistant?.assistant.key)}
+                  getAssistantIcon(selectedAssistant?.assistant.key, "sm")}
 
                 {selectedAssistant?.assistant.name}
               </Button>

@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { TBaseModel } from "@/types";
 import { AlertCircleIcon, CheckmarkCircle02Icon } from "@hugeicons/react";
 import { useEffect, useState } from "react";
+import { SettingsContainer } from "../settings-container";
 import { AnthropicSettings } from "./anthropic";
 import { GeminiSettings } from "./gemini";
 import { OllamaSettings } from "./ollama";
@@ -75,7 +76,7 @@ export const ModelSettings = () => {
     },
   ];
   return (
-    <Flex direction="col" gap="sm" className="p-4">
+    <SettingsContainer title="Providers">
       <Accordion
         type="single"
         value={selectedModel}
@@ -120,6 +121,6 @@ export const ModelSettings = () => {
           </AccordionItem>
         ))}
       </Accordion>
-    </Flex>
+    </SettingsContainer>
   );
 };

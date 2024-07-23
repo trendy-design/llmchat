@@ -1,13 +1,9 @@
 import { ModelIcon } from "@/components/model-icon";
 import { defaultPreferences } from "@/config";
+import { models } from "@/config/models";
 import { usePreferenceContext } from "@/context";
-import { models } from "@/helper/models";
 import { useAssistantsQueries } from "@/services/assistants";
-import { TAssistant, TBaseModel, TModelItem, TModelKey } from "@/types";
-import { ChatAnthropic } from "@langchain/anthropic";
-import { ChatOllama } from "@langchain/community/chat_models/ollama";
-import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { ChatOpenAI } from "@langchain/openai";
+import { TAssistant, TModelItem, TModelKey } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -22,66 +18,6 @@ export const useModelList = () => {
     enabled: !!preferences,
   });
 
-  const createInstance = async (model: TModelItem, apiKey?: string) => {
-    const {
-      temperature = defaultPreferences.temperature,
-      topP = defaultPreferences.topP,
-      topK = defaultPreferences.topK,
-      maxTokens = model.tokens,
-    } = preferences;
-
-    switch (model.provider) {
-      case "openai":
-        return new ChatOpenAI({
-          model: model.key,
-          streaming: true,
-          apiKey,
-          temperature,
-          maxTokens,
-          topP,
-          maxRetries: 2,
-        });
-      case "anthropic":
-        return new ChatAnthropic({
-          model: model.key,
-          streaming: true,
-          anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
-          apiKey,
-          maxTokens,
-          temperature,
-          topP,
-          topK,
-          maxRetries: 2,
-        });
-      case "gemini":
-        return new ChatGoogleGenerativeAI({
-          model: model.key,
-          apiKey,
-          maxOutputTokens: maxTokens,
-          streaming: true,
-          temperature,
-          maxRetries: 1,
-          onFailedAttempt: (error) => {
-            console.error("Failed attempt", error);
-          },
-          topP,
-          topK,
-        });
-      case "ollama":
-        return new ChatOllama({
-          model: model.key,
-          baseUrl: preferences.ollamaBaseUrl,
-          numPredict: maxTokens,
-          topK,
-          topP,
-          maxRetries: 2,
-          temperature,
-        });
-      default:
-        throw new Error("Invalid model");
-    }
-  };
-
   const allModels: TModelItem[] = useMemo(
     () => [
       ...models,
@@ -91,7 +27,7 @@ export const useModelList = () => {
           key: model.name,
           tokens: 128000,
           plugins: [],
-          icon: (size) => <ModelIcon size={size} type="ollama" />,
+          icon: "ollama",
           provider: "ollama",
           maxOutputTokens: 2048,
         })
@@ -102,21 +38,6 @@ export const useModelList = () => {
 
   const getModelByKey = (key: TModelKey) => {
     return allModels.find((model) => model.key === key);
-  };
-
-  const getTestModelKey = (key: TBaseModel): TModelKey => {
-    switch (key) {
-      case "openai":
-        return "gpt-3.5-turbo";
-      case "anthropic":
-        return "claude-3-haiku-20240307";
-      case "gemini":
-        return "gemini-pro";
-      case "ollama":
-        return "phi3:latest";
-      default:
-        throw new Error("Invalid base model");
-    }
   };
 
   const assistants: TAssistant[] = [
@@ -145,21 +66,19 @@ export const useModelList = () => {
     return { assistant, model };
   };
 
-  const getAssistantIcon = (assistantKey: string) => {
+  const getAssistantIcon = (assistantKey: string, size: "sm" | "md" | "lg") => {
     const assistant = getAssistantByKey(assistantKey);
     return assistant?.assistant.type === "base" ? (
-      assistant?.model?.icon("sm")
+      <ModelIcon size={size} type={assistant?.model?.icon} />
     ) : (
-      <ModelIcon type="custom" size="sm" />
+      <ModelIcon type="custom" size={size} />
     );
   };
 
   return {
     models: allModels,
-    createInstance,
     getModelByKey,
     getAssistantIcon,
-    getTestModelKey,
     assistants: assistants.filter((a) =>
       allModels.some((m) => m.key === a.baseModel)
     ),
