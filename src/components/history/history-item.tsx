@@ -9,7 +9,6 @@ import {
 import { Type } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useSessions } from "@/context";
-import { useModelList } from "@/hooks/use-model-list";
 import { cn } from "@/lib/utils";
 import { TChatSession } from "@/types";
 import { Delete01Icon, Edit02Icon } from "@hugeicons/react";
@@ -25,9 +24,12 @@ export const HistoryItem = ({
   dismiss: () => void;
 }) => {
   const { sessionId } = useParams();
-  const { updateSessionMutation, removeSessionMutation, createSession } =
-    useSessions();
-  const { getModelByKey, getAssistantByKey } = useModelList();
+  const {
+    updateSessionMutation,
+    removeSessionMutation,
+    refetchSessions,
+    createSession,
+  } = useSessions();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(session.title);
   const router = useRouter();
@@ -40,57 +42,75 @@ export const HistoryItem = ({
     }
   }, [isEditing]);
 
-  const handleDelete = () => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
+
+  const handleInputBlur = () => {
+    setIsEditing(false);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setIsEditing(false);
+      updateSessionMutation.mutate({
+        sessionId: session.id,
+        session: {
+          title: title?.trim() || session?.title || "Untitled",
+        },
+      });
+    }
+  };
+
+  const handleOnClick = () => {
+    if (!isEditing) {
+      router.push(`/chat/${session.id}`);
+      dismiss();
+    }
+  };
+
+  const containerClasses = cn(
+    "gap-2 group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
+    sessionId?.toString() === session.id || isEditing
+      ? "bg-black/10 dark:bg-black/30"
+      : ""
+  );
+
+  const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setIsEditing(true);
+    e.stopPropagation();
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setOpenDeleteConfirm(true);
+    e.stopPropagation();
+  };
+
+  const handleDeleteConfirm = (e: React.MouseEvent<HTMLButtonElement>) => {
     removeSessionMutation.mutate(session.id, {
       onSuccess: () => {
-        createSession({
-          redirect: true,
-        });
+        if (sessionId === session.id) {
+          createSession({
+            redirect: true,
+          });
+        }
+        refetchSessions?.();
       },
     });
+    e.stopPropagation();
   };
 
   return (
-    <div
-      key={session.id}
-      className={cn(
-        "gap-2 group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
-        sessionId?.toString() === session.id || isEditing
-          ? "bg-black/10 dark:bg-black/30"
-          : ""
-      )}
-      onClick={() => {
-        if (!isEditing) {
-          router.push(`/chat/${session.id}`);
-          dismiss();
-        }
-      }}
-    >
+    <div key={session.id} className={containerClasses} onClick={handleOnClick}>
       {isEditing ? (
         <Input
           variant="ghost"
           className="h-6 text-sm"
           ref={historyInputRef}
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              setIsEditing(false);
-              updateSessionMutation.mutate({
-                sessionId: session.id,
-                session: {
-                  title: title?.trim() || session?.title || "Untitled",
-                },
-              });
-            }
-          }}
-          onBlur={() => {
-            setIsEditing(false);
-            updateSessionMutation.mutate({
-              sessionId: session.id,
-              session: { title: title?.trim() || session?.title || "Untitled" },
-            });
-          }}
+          onChange={handleInputChange}
+          onKeyDown={handleInputKeyDown}
+          onBlur={handleInputBlur}
         />
       ) : (
         <>
@@ -113,14 +133,7 @@ export const HistoryItem = ({
         <Flex
           className={cn("group-hover:flex hidden", openDeleteConfirm && "flex")}
         >
-          <Button
-            variant="ghost"
-            size="iconXS"
-            onClick={(e) => {
-              setIsEditing(true);
-              e.stopPropagation();
-            }}
-          >
+          <Button variant="ghost" size="iconXS" onClick={handleEditClick}>
             <Edit02Icon size={14} variant="stroke" strokeWidth="2" />
           </Button>
           <Tooltip content="Delete">
@@ -132,10 +145,7 @@ export const HistoryItem = ({
                 <Button
                   variant={openDeleteConfirm ? "secondary" : "ghost"}
                   size="iconXS"
-                  onClick={(e) => {
-                    setOpenDeleteConfirm(true);
-                    e.stopPropagation();
-                  }}
+                  onClick={handleDeleteClick}
                 >
                   <Delete01Icon size={14} variant="stroke" strokeWidth="2" />
                 </Button>
@@ -148,16 +158,7 @@ export const HistoryItem = ({
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={(e) => {
-                      removeSessionMutation.mutate(session.id, {
-                        onSuccess: () => {
-                          createSession({
-                            redirect: true,
-                          });
-                        },
-                      });
-                      e.stopPropagation();
-                    }}
+                    onClick={handleDeleteConfirm}
                   >
                     Delete Message
                   </Button>
