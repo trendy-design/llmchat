@@ -85,6 +85,8 @@ export const ModelSelect: FC<TModelSelect> = ({
                   ) : (
                     <ModelIcon type="custom" size="sm" />
                   )}
+                  {assistant.name}
+
                   {model?.isNew && <Badge>New</Badge>}
                 </DropdownMenuItem>
               );
