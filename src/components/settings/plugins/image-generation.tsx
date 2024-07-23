@@ -35,6 +35,7 @@ export const ImageGenerationPlugin = () => {
           <DropdownMenuContent className="w-[200px]" align="end">
             {Object.keys(dalleImageQualities).map((quality) => (
               <DropdownMenuItem
+                key={quality}
                 onClick={() => {
                   updatePreferences({
                     dalleImageQuality:
@@ -67,6 +68,7 @@ export const ImageGenerationPlugin = () => {
           <DropdownMenuContent className="w-[200px]" align="end">
             {dalleImageSizes.map((size) => (
               <DropdownMenuItem
+                key={size}
                 onClick={() => {
                   updatePreferences({
                     dalleImageSize: size as TPreferences["dalleImageSize"],

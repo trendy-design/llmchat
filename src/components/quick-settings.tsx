@@ -15,7 +15,6 @@ import { TPreferences } from "@/types";
 import { Settings03Icon } from "@hugeicons/react";
 import { ArrowClockwise, Info } from "@phosphor-icons/react";
 import { useState } from "react";
-import { ModelInfo } from "./model-info";
 
 export const QuickSettings = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,11 +48,6 @@ export const QuickSettings = () => {
         </PopoverTrigger>
       </Tooltip>
       <PopoverContent className="p-0 dark:bg-zinc-700 mr-8 roundex-2xl w-[300px]">
-        {assistant && (
-          <div className="border-b dark:border-white/10 border-black/10 p-2">
-            <ModelInfo model={assistant.model} showDetails={false} />
-          </div>
-        )}
         <Flex direction="col" className="w-full px-3 py-1">
           <Flex items="center" justify="between" className="w-full">
             <Tooltip content="Temprature">
