@@ -17,7 +17,8 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
   message,
   canRegenerate,
 }) => {
-  const { refetch } = useChatContext();
+  const { refetch, store } = useChatContext();
+  const messages = store((state) => state.messages);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const { getAssistantByKey } = useModelList();
   const { invokeModel } = useLLMRunner();
@@ -85,7 +86,13 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
                     messageId: message.id,
                   },
                   {
-                    onSuccess: refetch,
+                    onSuccess: () => {
+                      if (messages?.length <= 1) {
+                        window?.location?.reload();
+                      } else {
+                        refetch();
+                      }
+                    },
                   }
                 );
               }}

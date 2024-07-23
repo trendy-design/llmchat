@@ -1,6 +1,7 @@
 import { useToast } from "@/components/ui";
 import { defaultPreferences } from "@/config";
 import { useChatContext, usePreferenceContext, useSessions } from "@/context";
+import { injectPresetValues } from "@/helper/preset-prompt-values";
 import { constructPrompt } from "@/helper/promptUtil";
 import { sortMessages } from "@/lib/helper";
 import { modelService } from "@/services/models";
@@ -26,8 +27,7 @@ export const useLLMRunner = () => {
   const resetState = store((state) => state.resetState);
   const setAbortController = store((state) => state.setAbortController);
   const { getAssistantByKey, getModelByKey } = useModelList();
-  const { preferences, apiKeys, updatePreferences, injectPresetValues } =
-    usePreferenceContext();
+  const { preferences, apiKeys, updatePreferences } = usePreferenceContext();
   const { getToolByKey } = useTools();
   const { toast } = useToast();
   const { updateSessionMutation } = useSessions();
