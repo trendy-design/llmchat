@@ -1,7 +1,7 @@
 "use client";
 import { defaultPreferences } from "@/config";
 import { usePreferences } from "@/hooks/use-preferences";
-import { TApiKeys, TBaseModel, TPreferences } from "@/types";
+import { TApiKeys, TPreferences, TProvider } from "@/types";
 import { useEffect, useState } from "react";
 
 import { createContext, useContext } from "react";
@@ -13,7 +13,7 @@ export type TPreferenceContext = {
     onSuccess?: (preference: TPreferences) => void
   ) => void;
   apiKeys: TApiKeys;
-  updateApiKey: (key: TBaseModel, value: string) => void;
+  updateApiKey: (key: TProvider, value: string) => void;
   updateApiKeys: (newApiKeys: TApiKeys) => void;
 };
 
@@ -66,7 +66,7 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
     });
   };
 
-  const updateApiKey = async (key: TBaseModel, value: string) => {
+  const updateApiKey = async (key: TProvider, value: string) => {
     setApiKeys({ ...apiKeys, [key]: value });
     setApiKeyMutation.mutate({ key, value });
   };

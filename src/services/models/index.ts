@@ -1,5 +1,5 @@
 import { defaultPreferences } from "@/config";
-import { TBaseModel, TModelItem, TModelKey, TPreferences } from "@/types";
+import { TModelItem, TModelKey, TPreferences, TProvider } from "@/types";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatOllama } from "@langchain/community/chat_models/ollama";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
@@ -70,7 +70,7 @@ export class ModelService {
     }
   }
 
-  getTestModelKey(key: TBaseModel): TModelKey {
+  getTestModelKey(key: TProvider): TModelKey {
     switch (key) {
       case "openai":
         return "gpt-3.5-turbo";

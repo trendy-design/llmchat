@@ -1,3 +1,6 @@
+"use client";
+import { SettingCard } from "@/components/settings/setting-card";
+import { SettingsContainer } from "@/components/settings/settings-container";
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
 import { Input } from "@/components/ui/input";
@@ -5,14 +8,12 @@ import { Type } from "@/components/ui/text";
 import { PopOverConfirmProvider } from "@/components/ui/use-confirm-popover";
 import { useToast } from "@/components/ui/use-toast";
 import { defaultPreferences } from "@/config";
-import { useSessions, useSettingsContext } from "@/context";
+import { useSessions } from "@/context";
 import { usePreferenceContext } from "@/context/preferences";
 import { generateAndDownloadJson } from "@/lib/helper";
 import { TPreferences } from "@/types";
 import { ChangeEvent } from "react";
 import { z } from "zod";
-import { SettingCard } from "./setting-card";
-import { SettingsContainer } from "./settings-container";
 
 const apiSchema = z.object({
   openai: z.string().optional(),
@@ -131,8 +132,7 @@ const importSchema = z.object({
 //   return updatedSessions;
 // };
 
-export const Data = () => {
-  const { dismiss } = useSettingsContext();
+export default function DataSettings() {
   const { toast } = useToast();
 
   const {
@@ -294,7 +294,7 @@ export const Data = () => {
                     createSession({
                       redirect: true,
                     });
-                    dismiss();
+                    //     dismiss();
                   },
                 });
               }}
@@ -324,7 +324,7 @@ export const Data = () => {
                     createSession({
                       redirect: true,
                     });
-                    dismiss();
+                    //     dismiss();
                   },
                 });
               }}
@@ -385,4 +385,4 @@ export const Data = () => {
       </Flex>
     </SettingsContainer>
   );
-};
+}

@@ -1,4 +1,10 @@
+"use client";
 import { ModelIcon, ModelIconType } from "@/components/model-icon";
+import { AnthropicSettings } from "@/components/settings/models/anthropic";
+import { GeminiSettings } from "@/components/settings/models/gemini";
+import { OllamaSettings } from "@/components/settings/models/ollama";
+import { OpenAISettings } from "@/components/settings/models/openai";
+import { SettingsContainer } from "@/components/settings/settings-container";
 import {
   Accordion,
   AccordionContent,
@@ -6,21 +12,19 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Flex } from "@/components/ui/flex";
-import { usePreferenceContext, useSettingsContext } from "@/context";
+import { providers } from "@/config/models";
+import { usePreferenceContext } from "@/context";
 import { cn } from "@/lib/utils";
-import { TBaseModel } from "@/types";
+import { TProvider } from "@/types";
 import { AlertCircleIcon, CheckmarkCircle02Icon } from "@hugeicons/react";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { SettingsContainer } from "../settings-container";
-import { AnthropicSettings } from "./anthropic";
-import { GeminiSettings } from "./gemini";
-import { OllamaSettings } from "./ollama";
-import { OpenAISettings } from "./openai";
 
-export const ModelSettings = () => {
-  const { selected } = useSettingsContext();
-  const { apiKeys, preferences, updatePreferences } = usePreferenceContext();
-  const [selectedModel, setSelectedModel] = useState<TBaseModel>("openai");
+export default function LLMsSettings() {
+  const { provider } = useParams();
+  const { push } = useRouter();
+  const { apiKeys, preferences } = usePreferenceContext();
+  const [selectedModel, setSelectedModel] = useState<TProvider>("openai");
   const [ollamaConnected, setOllamaConnected] = useState(false);
 
   const checkOllamaConnection = async () => {
@@ -38,11 +42,13 @@ export const ModelSettings = () => {
   }, [preferences.ollamaBaseUrl]);
 
   useEffect(() => {
-    if (selected.startsWith("models/")) {
-      const model = selected?.split("/")?.[1];
-      setSelectedModel(model as TBaseModel);
+    if (providers.includes(provider as TProvider)) {
+      setSelectedModel(provider as TProvider);
+    } else {
+      push("settings/llms/openai");
     }
-  }, [selected]);
+  }, [provider]);
+
   const modelSettingsData = [
     {
       value: "openai",
@@ -83,7 +89,7 @@ export const ModelSettings = () => {
         collapsible
         className="w-full"
         onValueChange={(value) => {
-          setSelectedModel(value as TBaseModel);
+          setSelectedModel(value as TProvider);
         }}
       >
         {modelSettingsData.map((model) => (
@@ -123,4 +129,4 @@ export const ModelSettings = () => {
       </Accordion>
     </SettingsContainer>
   );
-};
+}

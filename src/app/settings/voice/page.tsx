@@ -1,11 +1,13 @@
+"use client";
+
+import { SettingCard } from "@/components/settings/setting-card";
+import { SettingsContainer } from "@/components/settings/settings-container";
 import { Flex } from "@/components/ui/flex";
 import { Switch } from "@/components/ui/switch";
 import { Type } from "@/components/ui/text";
 import { usePreferenceContext } from "@/context/preferences";
-import { SettingCard } from "./setting-card";
-import { SettingsContainer } from "./settings-container";
 
-export const VoiceInput = () => {
+export default function VoiceSettings() {
   const { updatePreferences, preferences } = usePreferenceContext();
   return (
     <SettingsContainer title="Speech-to-Text Settings">
@@ -29,4 +31,4 @@ export const VoiceInput = () => {
       </SettingCard>
     </SettingsContainer>
   );
-};
+}

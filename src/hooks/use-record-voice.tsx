@@ -2,13 +2,15 @@ import { AudioWaveSpinner } from "@/components/ui/audio-wave";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { usePreferenceContext, useSettingsContext } from "@/context";
+import { usePreferenceContext } from "@/context";
 import { blobToBase64 } from "@/lib/record";
 import { RecordIcon, StopIcon } from "@hugeicons/react";
+import { useRouter } from "next/navigation";
 import { OpenAI, toFile } from "openai";
 import { useRef, useState } from "react";
 
 export const useRecordVoice = () => {
+  const { push } = useRouter();
   const [text, setText] = useState<string>("");
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null
@@ -18,7 +20,6 @@ export const useRecordVoice = () => {
   const [recording, setRecording] = useState<boolean>(false);
   const [transcribing, setIsTranscribing] = useState<boolean>(false);
   const { preferences } = usePreferenceContext();
-  const { open: openSettings } = useSettingsContext();
   const chunks = useRef<Blob[]>([]);
 
   const startRecording = async (): Promise<void> => {
@@ -95,7 +96,8 @@ export const useRecordVoice = () => {
           "Recordings require OpenAI API key. Please check settings.",
         variant: "destructive",
       });
-      openSettings("models/openai");
+
+      push(`settings/llms/openai`);
       return;
     }
 
@@ -108,7 +110,7 @@ export const useRecordVoice = () => {
           "Recordings require Speech to Text enabled. Please check settings.",
         variant: "destructive",
       });
-      openSettings("voice-input");
+      push(`settings/voice`);
     }
   };
 

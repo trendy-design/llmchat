@@ -1,8 +1,9 @@
 import { ModelIcon } from "@/components/model-icon";
+import { providers } from "@/config/models";
 import { ComponentProps } from "react";
 import { TToolKey } from "./tools";
 
-export type TBaseModel = "openai" | "anthropic" | "gemini" | "ollama";
+export type TProvider = (typeof providers)[number];
 
 export const models = [
   "gpt-4o",
@@ -30,6 +31,6 @@ export type TModelItem = {
   vision?: boolean;
   tokens: number;
   plugins: TToolKey[];
-  provider: TBaseModel;
+  provider: TProvider;
   maxOutputTokens: number;
 };

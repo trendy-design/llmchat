@@ -1,4 +1,4 @@
-import { usePromptsContext, useSessions, useSettingsContext } from "@/context";
+import { usePromptsContext, useSessions } from "@/context";
 import {
   Moon02Icon,
   MoreHorizontalIcon,
@@ -20,10 +20,11 @@ import {
   Flex,
   Tooltip,
 } from "@/components/ui";
+import { useRouter } from "next/navigation";
 
 export const Sidebar = () => {
   const { theme, setTheme } = useTheme();
-  const { open: openSettings } = useSettingsContext();
+  const { push } = useRouter();
   const { open: openPrompts } = usePromptsContext();
   const [isOpen, setIsOpen] = useState(false);
   const { createSession } = useSessions();
@@ -54,7 +55,7 @@ export const Sidebar = () => {
   ];
 
   return (
-    <div className="absolute z-[50] flex flex-col  justify-center items-center gap-3 pb-6 md:p-3 top-0 bottom-0 left-0 border-r border-zinc-50 dark:border-white/5">
+    <div className="absolute z-[50] flex flex-col  justify-center items-center gap-3 pb-6 md:p-3 top-0 bottom-0 left-0 border-r border-zinc-900/5 dark:border-white/5">
       <div className="flex flex-row gap-2 items-center">
         {renderNewSession()}
       </div>
@@ -80,7 +81,7 @@ export const Sidebar = () => {
           size="iconSm"
           variant="ghost"
           onClick={() => {
-            openSettings();
+            push("/settings");
           }}
         >
           <Settings03Icon size={20} strokeWidth={2} />

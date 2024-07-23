@@ -1,6 +1,6 @@
-import { TBaseModel, TModelKey } from "@/types";
+import { TModelKey, TProvider } from "@/types";
 
-export const getTestModelKey = (key: TBaseModel): TModelKey => {
+export const getTestModelKey = (key: TProvider): TModelKey => {
   switch (key) {
     case "openai":
       return "gpt-3.5-turbo";

@@ -1,3 +1,7 @@
+"use client";
+import { ImageGenerationPlugin } from "@/components/settings/plugins/image-generation";
+import { WebSearchPlugin } from "@/components/settings/plugins/web-search";
+import { SettingsContainer } from "@/components/settings/settings-container";
 import {
   Accordion,
   AccordionContent,
@@ -5,14 +9,9 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Flex } from "@/components/ui/flex";
-import { usePreferenceContext } from "@/context";
 import { GlobalSearchIcon, Image01Icon } from "@hugeicons/react";
-import { SettingsContainer } from "../settings-container";
-import { ImageGenerationPlugin } from "./image-generation";
-import { WebSearchPlugin } from "./web-search";
 
-export const PulginSettings = () => {
-  const { apiKeys } = usePreferenceContext();
+export default function PulginSettings() {
   const pluginSettingsData = [
     {
       value: "websearch",
@@ -49,4 +48,4 @@ export const PulginSettings = () => {
       </Accordion>
     </SettingsContainer>
   );
-};
+}

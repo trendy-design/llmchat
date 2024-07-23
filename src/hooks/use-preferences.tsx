@@ -1,5 +1,5 @@
 import { defaultPreferences } from "@/config";
-import { TApiKeys, TBaseModel, TPreferences } from "@/types";
+import { TApiKeys, TPreferences, TProvider } from "@/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { get, set } from "idb-keyval";
 
@@ -55,13 +55,13 @@ export const usePreferences = () => {
     await set("preferences", defaultPreferences);
   };
 
-  const setApiKey = async (key: TBaseModel, value: string) => {
+  const setApiKey = async (key: TProvider, value: string) => {
     const keys = await getApiKeys();
     const newKeys = { ...keys, [key]: value };
     await set("api-keys", newKeys);
   };
 
-  const getApiKey = async (key: TBaseModel) => {
+  const getApiKey = async (key: TProvider) => {
     const keys = await getApiKeys();
     return keys[key];
   };

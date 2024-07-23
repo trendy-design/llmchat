@@ -1,11 +1,13 @@
+"use client";
+
+import { SettingCard } from "@/components/settings/setting-card";
+import { SettingsContainer } from "@/components/settings/settings-container";
 import { Button } from "@/components/ui/button";
 import { Type } from "@/components/ui/text";
 import { usePreferenceContext } from "@/context/preferences";
 import { Delete01Icon } from "@hugeicons/react";
-import { SettingCard } from "./setting-card";
-import { SettingsContainer } from "./settings-container";
 
-export const MemorySettings = () => {
+export default function MemorySettings() {
   const { updatePreferences, preferences } = usePreferenceContext();
 
   const renderMemory = (memory: string) => {
@@ -33,4 +35,4 @@ export const MemorySettings = () => {
       {preferences?.memories?.map(renderMemory)}
     </SettingsContainer>
   );
-};
+}

@@ -1,7 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
 import { getTestModelKey } from "@/helper/models";
 import { modelService } from "@/services/models";
-import { TBaseModel } from "@/types";
+import { TProvider } from "@/types";
 import { useState } from "react";
 import { useModelList } from "./use-model-list";
 
@@ -9,7 +9,7 @@ export const useLLMTest = () => {
   const { getModelByKey } = useModelList();
   const [isCheckingApiKey, setIsCheckingApiKey] = useState(false);
   const { toast } = useToast();
-  const testLLM = async (model: TBaseModel, apiKey?: string) => {
+  const testLLM = async (model: TProvider, apiKey?: string) => {
     try {
       const modelKey = getTestModelKey(model);
 
@@ -48,8 +48,6 @@ export const useLLMTest = () => {
           ],
         });
 
-      console.log(data);
-
       if (data) {
         return true;
       }
@@ -66,7 +64,7 @@ export const useLLMTest = () => {
     onValidated,
     onError,
   }: {
-    model: TBaseModel;
+    model: TProvider;
     key: string;
     onValidated: () => void;
     onError: () => void;

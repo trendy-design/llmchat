@@ -1,5 +1,7 @@
 import { TModelItem } from "@/types";
 
+export const providers = ["openai", "anthropic", "gemini", "ollama"] as const;
+
 export const models: TModelItem[] = [
   {
     name: "GPT 4o Mini",

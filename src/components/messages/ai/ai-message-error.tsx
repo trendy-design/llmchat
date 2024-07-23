@@ -1,8 +1,8 @@
 import { Flex, Type } from "@/components/ui";
-import { TSettingRoutes, useSettingsContext } from "@/context";
 import { useModelList } from "@/hooks";
 import { TChatMessage } from "@/types";
 import { Alert02Icon } from "@hugeicons/react";
+import { useRouter } from "next/navigation";
 import { FC } from "react";
 
 type TAIMessageError = {
@@ -16,8 +16,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
   errorMessage,
   message,
 }) => {
-  const { open: openSettings } = useSettingsContext();
-
+  const { push } = useRouter();
   const { getModelByKey } = useModelList();
   if (["finish", "cancel", undefined].includes(stopReason)) {
     return <></>;
@@ -32,9 +31,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
           API Key is invalid or expired.
           <span
             className="cursor-pointer underline ml-1"
-            onClick={() =>
-              openSettings(`models/${model?.provider}` as TSettingRoutes)
-            }
+            onClick={() => push(`/settings/llms/${model?.provider}`)}
           >
             Check your API Key
           </span>

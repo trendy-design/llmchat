@@ -1,9 +1,13 @@
+import { MainLayout } from "@/components/layout/main-layout";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
+  AssistantsProvider,
+  ChatProvider,
+  CommandsProvider,
   PreferenceProvider,
+  PromptsProvider,
   ReactQueryProvider,
   SessionsProvider,
-  SettingsProvider,
 } from "@/context"; // Consolidated context imports
 import { cn } from "@/lib/utils";
 import type { Metadata, Viewport } from "next"; // Combined type imports
@@ -41,7 +45,15 @@ export default function RootLayout({
             <TooltipProvider>
               <PreferenceProvider>
                 <SessionsProvider>
-                  <SettingsProvider>{children}</SettingsProvider>
+                  <ChatProvider>
+                    <CommandsProvider>
+                      <AssistantsProvider>
+                        <PromptsProvider>
+                          <MainLayout>{children}</MainLayout>
+                        </PromptsProvider>
+                      </AssistantsProvider>
+                    </CommandsProvider>
+                  </ChatProvider>
                 </SessionsProvider>
               </PreferenceProvider>
             </TooltipProvider>

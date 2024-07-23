@@ -1,15 +1,16 @@
 import { GeneratedImage } from "@/components/generated-image";
-import { usePreferenceContext, useSettingsContext } from "@/context";
+import { usePreferenceContext } from "@/context";
 import { dalleTool } from "@/tools/dalle";
 import { duckduckGoTool } from "@/tools/duckduckgo";
 import { googleSearchTool } from "@/tools/google";
 import { memoryTool } from "@/tools/memory";
 import { TToolConfig, TToolKey } from "@/types";
 import { BrainIcon, GlobalSearchIcon, Image01Icon } from "@hugeicons/react";
+import { useRouter } from "next/navigation";
 
 export const useTools = () => {
+  const { push } = useRouter();
   const { preferences, apiKeys } = usePreferenceContext();
-  const { open } = useSettingsContext();
 
   const tools: TToolConfig[] = [
     {
@@ -33,7 +34,7 @@ export const useTools = () => {
         return true;
       },
       validationFailedAction: () => {
-        open("plugins/web-search");
+        push("settings/plugins/web-search");
       },
       loadingMessage:
         preferences?.defaultWebSearchEngine === "google"

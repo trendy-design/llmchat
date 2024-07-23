@@ -1,8 +1,8 @@
 import { TAssistant } from "./assistants";
-import { TBaseModel } from "./models";
+import { TProvider } from "./models";
 import { TToolKey } from "./tools";
 
-export type TApiKeys = Partial<Record<TBaseModel, string>>;
+export type TApiKeys = Partial<Record<TProvider, string>>;
 
 export type TPreferences = {
   defaultAssistant: TAssistant["key"];
