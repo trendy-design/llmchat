@@ -14,7 +14,7 @@ import {
 import { Flex } from "@/components/ui/flex";
 import { providers } from "@/config/models";
 import { usePreferenceContext } from "@/context";
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import { TProvider } from "@/types";
 import { AlertCircleIcon, CheckmarkCircle02Icon } from "@hugeicons/react";
 import { useParams, useRouter } from "next/navigation";

@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Type } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { usePreferenceContext } from "@/context/preferences";
-import { useModelList } from "@/hooks/use-model-list";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { useTools } from "@/hooks/use-tools";
 import { TToolKey } from "@/types";
 import { ElectricPlugsIcon } from "@hugeicons/react";
@@ -23,7 +23,7 @@ export type TPluginSelect = {
 export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { tools } = useTools();
-  const { getAssistantByKey } = useModelList();
+  const { getAssistantByKey } = useAssistantUtils();
   const { preferences, updatePreferences } = usePreferenceContext();
   const availableTools = tools.filter((tool) => tool.showInMenu);
   const availableToolsKey = availableTools.map((tool) => tool.key);

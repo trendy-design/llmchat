@@ -9,7 +9,7 @@ import {
   ReactQueryProvider,
   SessionsProvider,
 } from "@/context"; // Consolidated context imports
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import type { Metadata, Viewport } from "next"; // Combined type imports
 import { ThemeProvider } from "next-themes";
 import { interVar } from "./fonts";

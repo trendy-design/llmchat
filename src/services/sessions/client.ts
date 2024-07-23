@@ -1,4 +1,4 @@
-import { sortSessions } from "@/lib/helper";
+import { sortSessions } from "@/helper/utils";
 import { TChatMessage, TChatSession } from "@/types";
 import { del, get, set } from "idb-keyval";
 import moment from "moment";

@@ -1,7 +1,7 @@
 import { Button, Flex, Tooltip } from "@/components/ui";
 import { useSessions } from "@/context/sessions";
-import { sortSessions } from "@/lib/helper";
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
+import { sortSessions } from "@/helper/utils";
 import { SidebarLeftIcon } from "@hugeicons/react";
 import { ClockCounterClockwise, X } from "@phosphor-icons/react";
 import { useState } from "react";

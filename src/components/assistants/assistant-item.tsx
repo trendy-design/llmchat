@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Flex } from "@/components/ui/flex";
 import { defaultPreferences } from "@/config";
-import { useModelList } from "@/hooks/use-model-list";
-import { formatNumber } from "@/lib/helper";
+import { formatNumber } from "@/helper/utils";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { TAssistant } from "@/types";
 import { PuzzleIcon, ViewIcon } from "@hugeicons/react";
 import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
@@ -32,7 +32,7 @@ export const AssistantItem = ({
   onEdit,
 }: TAssistantItem) => {
   const { updatePreferences } = usePreferenceContext();
-  const { getAssistantByKey, getAssistantIcon } = useModelList();
+  const { getAssistantByKey, getAssistantIcon } = useAssistantUtils();
   const assistantProps = getAssistantByKey(assistant.key);
   const model = assistantProps?.model;
   const [open, setOpen] = useState(false);

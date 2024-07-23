@@ -10,7 +10,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { defaultPreferences } from "@/config";
 import { useSessions } from "@/context";
 import { usePreferenceContext } from "@/context/preferences";
-import { generateAndDownloadJson } from "@/lib/helper";
+import { generateAndDownloadJson } from "@/helper/utils";
 import { TPreferences } from "@/types";
 import { ChangeEvent } from "react";
 import { z } from "zod";

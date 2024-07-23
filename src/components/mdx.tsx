@@ -5,7 +5,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { REVEAL_ANIMATION_VARIANTS } from "@/helper/animations";
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import { ArrowUpRight, Link } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import Markdown from "marked-react";

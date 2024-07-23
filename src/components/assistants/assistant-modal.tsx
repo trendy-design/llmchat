@@ -10,8 +10,8 @@ import {
 import { Flex } from "@/components/ui/flex";
 import { Type } from "@/components/ui/text";
 import { usePreferenceContext } from "@/context";
-import { useModelList } from "@/hooks";
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
+import { useAssistantUtils } from "@/hooks";
 
 import { defaultPreferences } from "@/config";
 import { TAssistant, TAssistantType } from "@/types";
@@ -39,7 +39,7 @@ export const AssistantModal: FC<TAssitantModal> = ({
     createAssistantMutation,
     deleteAssistantMutation,
     updateAssistantMutation,
-  } = useModelList();
+  } = useAssistantUtils();
 
   const searchRef = useRef<HTMLInputElement>(null);
   const [openCreateAssistant, setOpenCreateAssistant] = useState(false);

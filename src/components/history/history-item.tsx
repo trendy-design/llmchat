@@ -9,7 +9,7 @@ import {
 import { Type } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useSessions } from "@/context";
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import { TChatSession } from "@/types";
 import { Delete01Icon, Edit02Icon } from "@hugeicons/react";
 import moment from "moment";

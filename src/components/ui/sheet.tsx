@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import React from "react";
 import { Drawer } from "vaul";
 

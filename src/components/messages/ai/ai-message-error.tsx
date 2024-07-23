@@ -1,5 +1,5 @@
 import { Flex, Type } from "@/components/ui";
-import { useModelList } from "@/hooks";
+import { useAssistantUtils } from "@/hooks";
 import { TChatMessage } from "@/types";
 import { Alert02Icon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
@@ -17,7 +17,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
   message,
 }) => {
   const { push } = useRouter();
-  const { getModelByKey } = useModelList();
+  const { getModelByKey } = useAssistantUtils();
   if (["finish", "cancel", undefined].includes(stopReason)) {
     return <></>;
   }

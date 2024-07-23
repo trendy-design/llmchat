@@ -10,7 +10,7 @@ import { Type } from "@/components/ui/text";
 import { Tooltip } from "@/components/ui/tooltip";
 import { defaultPreferences } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
-import { useModelList } from "@/hooks/use-model-list";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { TPreferences } from "@/types";
 import { Settings03Icon } from "@hugeicons/react";
 import { ArrowClockwise, Info } from "@phosphor-icons/react";
@@ -19,7 +19,7 @@ import { useState } from "react";
 export const QuickSettings = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { preferences, updatePreferences } = usePreferenceContext();
-  const { getModelByKey, getAssistantByKey } = useModelList();
+  const { getModelByKey, getAssistantByKey } = useAssistantUtils();
 
   const renderResetToDefault = (key: keyof TPreferences) => {
     return (

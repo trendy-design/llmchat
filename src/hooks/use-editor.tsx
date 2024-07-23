@@ -1,5 +1,8 @@
 import { useChatContext } from "@/context";
-import { DisableEnter, ShiftEnterToLineBreak } from "@/lib/tiptap-extensions";
+import {
+  DisableEnter,
+  ShiftEnterToLineBreak,
+} from "@/helper/tiptap-extensions";
 import { Document } from "@tiptap/extension-document";
 import { HardBreak } from "@tiptap/extension-hard-break";
 import { Highlight } from "@tiptap/extension-highlight";

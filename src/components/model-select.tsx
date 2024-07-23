@@ -6,8 +6,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useModelList } from "@/hooks/use-model-list";
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { TModelKey } from "@/types";
 import { FC, useState } from "react";
 import { ModelIcon } from "./model-icon";
@@ -35,7 +35,7 @@ export const ModelSelect: FC<TModelSelect> = ({
     assistants,
     getAssistantByKey,
     getAssistantIcon,
-  } = useModelList();
+  } = useAssistantUtils();
 
   const activeAssistant = getAssistantByKey(selectedModel);
 

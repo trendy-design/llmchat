@@ -2,7 +2,7 @@ import { ConfirmPopover } from "@/components/popover-confirm";
 import { RegenerateWithModelSelect } from "@/components/regenerate-model-select";
 import { Button, Flex, Spinner, Tooltip, Type } from "@/components/ui";
 import { useChatContext, useSessions } from "@/context";
-import { useClipboard, useModelList } from "@/hooks";
+import { useAssistantUtils, useClipboard } from "@/hooks";
 import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { TChatMessage } from "@/types";
 import { Copy01Icon, Delete01Icon, Tick01Icon } from "@hugeicons/react";
@@ -20,7 +20,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
   const { refetch, store } = useChatContext();
   const messages = store((state) => state.messages);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
-  const { getAssistantByKey } = useModelList();
+  const { getAssistantByKey } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
   const { removeMessageByIdMutation } = useSessions();
 

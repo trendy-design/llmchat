@@ -1,4 +1,5 @@
 import { TAttachment } from "@/components/chat-input";
+import { Tooltip } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { ImageAdd01Icon } from "@hugeicons/react";
@@ -94,7 +95,7 @@ export const useImageAttachment = () => {
     }
   };
 
-  const renderFileUpload = () => {
+  const renderImageUpload = () => {
     return (
       <>
         <input
@@ -103,14 +104,16 @@ export const useImageAttachment = () => {
           className="hidden"
           onChange={handleImageUpload}
         />
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleFileSelect}
-          className="px-1.5"
-        >
-          <ImageAdd01Icon size={18} strokeWidth={1.5} />
-        </Button>
+        <Tooltip content="Attach an image">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleFileSelect}
+            className="px-1.5"
+          >
+            <ImageAdd01Icon size={18} strokeWidth={1.5} />
+          </Button>
+        </Tooltip>
       </>
     );
   };
@@ -121,6 +124,6 @@ export const useImageAttachment = () => {
     handleFileSelect,
     clearAttachment,
     renderAttachedImage,
-    renderFileUpload,
+    renderImageUpload,
   };
 };

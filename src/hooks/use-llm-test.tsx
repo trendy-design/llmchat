@@ -3,10 +3,10 @@ import { getTestModelKey } from "@/helper/models";
 import { modelService } from "@/services/models";
 import { TProvider } from "@/types";
 import { useState } from "react";
-import { useModelList } from "./use-model-list";
+import { useAssistantUtils } from "./use-assistant-utils";
 
 export const useLLMTest = () => {
-  const { getModelByKey } = useModelList();
+  const { getModelByKey } = useAssistantUtils();
   const [isCheckingApiKey, setIsCheckingApiKey] = useState(false);
   const { toast } = useToast();
   const testLLM = async (model: TProvider, apiKey?: string) => {

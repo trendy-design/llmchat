@@ -3,7 +3,7 @@ import { useRef } from "react";
 import { Mdx } from "@/components/mdx";
 import { Flex, Tooltip } from "@/components/ui";
 import { useChatContext } from "@/context";
-import { useModelList } from "@/hooks";
+import { useAssistantUtils } from "@/hooks";
 import { TChatMessage } from "@/types";
 import { AIMessageActions } from "./ai-message-actions";
 import { AIMessageError } from "./ai-message-error";
@@ -22,7 +22,7 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
   const editor = store((state) => state.editor);
   const setContextValue = store((state) => state.setContext);
   const messageRef = useRef<HTMLDivElement>(null);
-  const { getAssistantIcon } = useModelList();
+  const { getAssistantIcon } = useAssistantUtils();
 
   const handleSelection = (value: string) => {
     setContextValue(value);

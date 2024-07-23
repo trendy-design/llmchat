@@ -1,22 +1,18 @@
 import { ModelIcon } from "@/components/model-icon";
-import { defaultPreferences } from "@/config";
+import { configs, defaultPreferences } from "@/config";
 import { models } from "@/config/models";
 import { usePreferenceContext } from "@/context";
 import { useAssistantsQueries } from "@/services/assistants";
 import { TAssistant, TModelItem, TModelKey } from "@/types";
-import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-export const useModelList = () => {
+export const useAssistantUtils = () => {
   const assistantQueries = useAssistantsQueries();
   const { preferences } = usePreferenceContext();
 
-  const ollamaModelsQuery = useQuery({
-    queryKey: ["ollama-models"],
-    queryFn: () =>
-      fetch(`${preferences.ollamaBaseUrl}/api/tags`).then((res) => res.json()),
-    enabled: !!preferences,
-  });
+  const ollamaModelsQuery = assistantQueries.useOllamaModelsQuery(
+    `${preferences.ollamaBaseUrl}${configs.ollamaTagsEndpoint}`
+  );
 
   const allModels: TModelItem[] = useMemo(
     () => [

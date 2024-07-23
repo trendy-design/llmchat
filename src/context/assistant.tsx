@@ -1,7 +1,7 @@
 "use client";
 
 import { AssistantModal } from "@/components/assistants/assistant-modal";
-import { useModelList } from "@/hooks/use-model-list";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { TAssistantsContext, TAssistantsProvider } from "@/types";
 import { FC, createContext, useContext, useState } from "react";
 
@@ -11,7 +11,7 @@ export const AssistantsContext = createContext<undefined | TAssistantsContext>(
 
 export const AssistantsProvider: FC<TAssistantsProvider> = ({ children }) => {
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
-  const { assistants, getAssistantByKey } = useModelList();
+  const { assistants, getAssistantByKey } = useAssistantUtils();
   const [selectedAssistantKey, setSelectedAssistantKey] = useState<string>("");
 
   const open = () => {

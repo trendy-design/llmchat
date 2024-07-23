@@ -9,8 +9,8 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useToast } from "@/components/ui/use-toast";
-import { sortSessions } from "@/lib/helper";
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
+import { sortSessions } from "@/helper/utils";
 import moment from "moment";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";

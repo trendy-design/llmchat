@@ -5,7 +5,7 @@ import { Command as CommandPrimitive } from "cmdk";
 import * as React from "react";
 
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import { Search01Icon } from "@hugeicons/react";
 
 const Command = React.forwardRef<

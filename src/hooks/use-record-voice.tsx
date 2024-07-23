@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { usePreferenceContext } from "@/context";
-import { blobToBase64 } from "@/lib/record";
+import { blobToBase64 } from "@/helper/record";
 import { RecordIcon, StopIcon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 import { OpenAI, toFile } from "openai";

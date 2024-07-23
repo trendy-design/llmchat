@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import { SparklesIcon } from "@hugeicons/react";
 import Image from "next/image";
 export type ModelIconType =

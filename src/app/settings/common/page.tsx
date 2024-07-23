@@ -9,7 +9,7 @@ import { Type } from "@/components/ui/text";
 import { Textarea } from "@/components/ui/textarea";
 import { defaultPreferences } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import { TPreferences } from "@/types";
 import { ArrowClockwise } from "@phosphor-icons/react";
 import { ChangeEvent } from "react";

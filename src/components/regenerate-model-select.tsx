@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Tooltip } from "@/components/ui/tooltip";
-import { useModelList } from "@/hooks/use-model-list";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { TAssistant, TModelKey } from "@/types";
 import { ArrowDown01Icon, SparklesIcon } from "@hugeicons/react";
 import { useState } from "react";
@@ -20,7 +20,8 @@ export const RegenerateWithModelSelect = ({
   assistant,
   onRegenerate,
 }: TRegenerateModelSelect) => {
-  const { assistants, getAssistantByKey, getAssistantIcon } = useModelList();
+  const { assistants, getAssistantByKey, getAssistantIcon } =
+    useAssistantUtils();
   const [isOpen, setIsOpen] = useState(false);
 
   const messageAssistantProps = getAssistantByKey(assistant.key);
