@@ -18,13 +18,7 @@ export const ImageGenerationPlugin = () => {
     standard: "Standard",
     hd: "HD",
   };
-  const dalleImageSizes = [
-    "1024x1024",
-    "512x512",
-    "256x256",
-    "1792x1024",
-    "1024x1792",
-  ];
+  const dalleImageSizes = ["1024x1024", "1792x1024", "1024x1792"];
   return (
     <Flex direction="col" gap="sm" className="border-t pt-2 border-white/10">
       <Flex className="w-full" justify="between" items="center">

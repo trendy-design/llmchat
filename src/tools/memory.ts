@@ -18,10 +18,11 @@ const memoryTool = (args: TToolArg) => {
   const { apiKeys, sendToolResponse, preferences, updatePreferences } = args;
   const memorySchema = z.object({
     memory: z
-      .string()
+      .array(z.string().describe("key information"))
       .describe(
-        "key informations about the user, any user preference to personalize future interactions. It must be short and concise"
+        "key informations about the user, any user preference to personalize future interactions."
       ),
+
     question: z.string().describe("question user asked"),
   });
 
@@ -32,7 +33,7 @@ const memoryTool = (args: TToolArg) => {
     schema: memorySchema,
     func: async ({ memory, question }, runManager) => {
       try {
-        const existingMemories = preferences?.memories;
+        const existingMemories = preferences?.memories || [];
         const model = new ChatOpenAI({
           model: "gpt-3.5-turbo",
           apiKey: apiKeys.openai,
@@ -40,19 +41,30 @@ const memoryTool = (args: TToolArg) => {
 
         const chain = RunnableSequence.from([
           PromptTemplate.fromTemplate(
-            `Here is new information: {new_memory} \n and update the following information if required otherwise add new information: """{existing_memory}""" \n{format_instructions} `
+            `User's request: "{question}"
+            New information: {new_memory}
+            Existing memories: {existing_memory}
+            
+            Update, delete, or add memories based on the new information:
+            1. Update existing memories with new details.
+            2. Delete memories if requested.
+            3. Add new memories if they are unique.
+            
+            {format_instructions}`
           ),
           model,
           memoryParser as any,
         ]);
 
         const response = await chain.invoke({
-          new_memory: memory,
-          existing_memory: existingMemories?.join("\n"),
+          new_memory: memory.join("\n"),
+          existing_memory: existingMemories.join("\n"),
+          question: question,
           format_instructions: memoryParser.getFormatInstructions(),
         });
+
         if (!response?.memories?.length) {
-          runManager?.handleToolError("Error performing Duckduck go search");
+          runManager?.handleToolError("Error performing memory update");
           return question;
         }
 
@@ -60,19 +72,17 @@ const memoryTool = (args: TToolArg) => {
           memories: response.memories,
         });
 
-        console.log("tool updated", response);
-
         sendToolResponse({
           toolName: "memory",
           toolArgs: {
             memory,
           },
-          toolResponse: response,
           toolLoading: false,
+          toolResponse: response,
         });
         return question;
       } catch (error) {
-        return "Error performing search. Must not use duckduckgo_search tool now. Ask user to check API keys.";
+        return "Error performing memory update. Please check API keys.";
       }
     },
   });

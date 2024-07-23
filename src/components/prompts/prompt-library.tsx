@@ -16,6 +16,7 @@ import {
 import { TPrompt } from "@/hooks/use-prompts";
 import { Edit02Icon, NoteIcon } from "@hugeicons/react";
 import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
+import { Flex } from "../ui";
 
 export type TPromptLibrary = {
   onPromptSelect: (prompt: TPrompt) => void;
@@ -67,6 +68,7 @@ export const PromptLibrary = ({
               >
                 <NoteIcon size={20} variant="stroke" strokeWidth="2" />
                 {prompt.name}
+                <Flex className="flex-1" />
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="iconSm">

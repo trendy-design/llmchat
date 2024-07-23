@@ -1,3 +1,4 @@
+export * from "./use-attachment";
 export * from "./use-clipboard";
 export * from "./use-editor-extensions";
 export * from "./use-image-attachment";

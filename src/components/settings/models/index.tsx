@@ -18,8 +18,23 @@ import { OpenAISettings } from "./openai";
 
 export const ModelSettings = () => {
   const { selected } = useSettingsContext();
-  const { apiKeys } = usePreferenceContext();
+  const { apiKeys, preferences, updatePreferences } = usePreferenceContext();
   const [selectedModel, setSelectedModel] = useState<TBaseModel>("openai");
+  const [ollamaConnected, setOllamaConnected] = useState(false);
+
+  const checkOllamaConnection = async () => {
+    try {
+      const url = preferences.ollamaBaseUrl;
+      const response = await fetch(url + "/api/tags");
+      setOllamaConnected(true);
+    } catch (error) {
+      setOllamaConnected(false);
+    }
+  };
+
+  useEffect(() => {
+    checkOllamaConnection();
+  }, [preferences.ollamaBaseUrl]);
 
   useEffect(() => {
     if (selected.startsWith("models/")) {
@@ -55,7 +70,7 @@ export const ModelSettings = () => {
       value: "ollama",
       label: "Ollama",
       iconType: "ollama",
-      connected: !!apiKeys.ollama,
+      connected: ollamaConnected,
       settingsComponent: OllamaSettings,
     },
   ];

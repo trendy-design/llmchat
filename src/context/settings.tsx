@@ -66,6 +66,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
   const [selectedMenu, setSelectedMenu] = useState<TSettingRoutes>("common");
 
   const open = (route?: TSettingRoutes) => {
+    console.log("route", route);
     setIsSettingOpen(true);
     setSelectedMenu(route || "common");
   };
@@ -125,7 +126,7 @@ export const SettingsProvider = ({ children }: TSettingsProvider) => {
             <p className="text-md font-medium">Settings</p>
           </div>
           <div className="flex flex-col md:flex-row w-full relative h-full overflow-hidden">
-            <div className="w-full md:w-[220px] px-2  pt-2 pb-2 md:pb-16 border-zinc-500/10 absolute md:h-full overflow-x-auto md:overflow-y-auto no-scrollbar left-0 top-0 right-0 md:bottom-0 flex flex-row md:flex-col md:gap-0 gap-1">
+            <div className="w-full md:w-[220px] px-2 pt-2 pb-2 md:pb-16 border-zinc-500/10 absolute md:h-full overflow-x-auto md:overflow-y-auto no-scrollbar left-0 top-0 right-0 md:bottom-0 flex flex-row md:flex-col md:gap-1 gap-1">
               {settingMenu.map((menu) => (
                 <Button
                   variant={selectedMenu === menu.key ? "secondary" : "ghost"}

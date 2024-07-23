@@ -1,3 +1,4 @@
+import { GeneratedImage } from "@/components/generated-image";
 import { usePreferenceContext, useSettingsContext } from "@/context";
 import { dalleTool } from "@/tools/dalle";
 import { duckduckGoTool } from "@/tools/duckduckgo";
@@ -57,13 +58,7 @@ export const useTools = () => {
       },
       validationFailedAction: () => {},
       renderUI: ({ image }) => {
-        return (
-          <img
-            src={image}
-            alt=""
-            className="w-[400px] h-[400px] rounded-2xl border"
-          />
-        );
+        return <GeneratedImage image={image} />;
       },
       loadingMessage: "Generating Image ...",
       resultMessage: "Generated Image",
@@ -91,7 +86,7 @@ export const useTools = () => {
         );
       },
       loadingMessage: "Saving to the memory...",
-      resultMessage: "Updated memory",
+      resultMessage: "Saved to the memory",
       icon: BrainIcon,
       smallIcon: BrainIcon,
     },

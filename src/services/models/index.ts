@@ -18,7 +18,7 @@ export class ModelService {
       ...preferences,
     };
 
-    switch (model.baseModel) {
+    switch (model.provider) {
       case "openai":
         return new ChatOpenAI({
           model: model.key,
@@ -32,10 +32,10 @@ export class ModelService {
       case "anthropic":
         return new ChatAnthropic({
           model: model.key,
-          streaming: true,
           anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
           apiKey,
           maxTokens,
+          streaming: true,
           temperature,
           topP,
           topK,

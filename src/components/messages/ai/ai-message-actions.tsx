@@ -39,8 +39,8 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
     }
     invokeModel({
       ...message.runConfig,
-      assistant: props.assistant,
       messageId: message.id,
+      assistant: props.assistant,
     });
   };
 

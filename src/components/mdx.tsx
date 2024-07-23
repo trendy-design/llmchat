@@ -5,6 +5,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { REVEAL_ANIMATION_VARIANTS } from "@/helper/animations";
+import { cn } from "@/lib/utils";
 import { ArrowUpRight, Link } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import Markdown from "marked-react";
@@ -14,9 +15,10 @@ export type TMdx = {
   message?: string;
   animate: boolean;
   messageId?: string;
+  size?: "sm" | "base";
 };
 
-const Mdx: FC<TMdx> = ({ message, animate, messageId }) => {
+const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
   if (!message || !messageId) {
     return null;
   }
@@ -103,8 +105,16 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId }) => {
     </span>
   );
 
+  const articleClass = cn(
+    "prose dark:prose-invert w-full prose-zinc prose-h3:font-medium prose-h4:font-medium prose-h5:font-medium prose-h6:font-medium prose-h3:text-lg prose-h4:text-base prose-h5:text-base prose-h6:text-base prose-heading:font-medium prose-strong:font-medium prose-headings:text-lg prose-th:text-sm",
+    {
+      "prose-sm": size === "sm",
+      "prose-base": size === "base",
+    }
+  );
+
   return (
-    <article className="prose dark:prose-invert w-full prose-zinc prose-h3:font-medium prose-h4:font-medium prose-h5:font-medium prose-h6:font-medium prose-h3:text-lg prose-h4:text-base prose-h5:text-base prose-h6:text-base prose-heading:font-medium prose-strong:font-medium prose-headings:text-lg prose-th:text-sm">
+    <article className={articleClass}>
       <Markdown
         renderer={{
           text: (text) => (

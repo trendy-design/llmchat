@@ -10,11 +10,13 @@ import {
 import { Flex } from "@/components/ui/flex";
 import { defaultPreferences } from "@/config";
 import { useModelList } from "@/hooks/use-model-list";
+import { formatNumber } from "@/lib/helper";
 import { TAssistant } from "@/types";
-import { ConnectIcon } from "@hugeicons/react";
+import { PuzzleIcon, ViewIcon } from "@hugeicons/react";
 import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
 import { useState } from "react";
 import { usePreferenceContext } from "../../context/preferences";
+import { Type } from "../ui";
 
 export type TAssistantItem = {
   assistant: TAssistant;
@@ -55,9 +57,19 @@ export const AssistantItem = ({
         {getAssistantIcon(assistant.key)}
         {assistant.name} {model?.isNew && <Badge>New</Badge>}
         <div className="flex flex-1"></div>
-        {!!model?.plugins?.length && (
-          <ConnectIcon size={16} strokeWidth={2} className="text-zinc-500" />
-        )}
+        <Flex gap="md" items="center">
+          {!!model?.vision && (
+            <ViewIcon size={16} strokeWidth={1.5} className="text-zinc-500" />
+          )}
+          {!!model?.plugins?.length && (
+            <PuzzleIcon size={16} strokeWidth={1.5} className="text-zinc-500" />
+          )}
+          {model?.tokens && (
+            <Type size="xs" textColor="secondary">
+              {formatNumber(model?.tokens)}
+            </Type>
+          )}
+        </Flex>
         {assistant.type === "custom" && (
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger

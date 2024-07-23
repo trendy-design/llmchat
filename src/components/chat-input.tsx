@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { defaultPreferences } from "@/config";
 import { useAssistants, useChatContext, usePreferenceContext } from "@/context";
 import {
+  useAttachment,
   useImageAttachment,
   useModelList,
   useRecordVoice,
@@ -44,6 +45,7 @@ export const ChatInput = () => {
   } = useRecordVoice();
   const { renderFileUpload, renderAttachedImage, attachment, clearAttachment } =
     useImageAttachment();
+  const { renderAttachedPdf, renderPdfFileUpload } = useAttachment();
   const { selectedAssistant, open: openAssistants } = useAssistants();
   const { invokeModel } = useLLMRunner();
 
@@ -197,6 +199,7 @@ export const ChatInput = () => {
                   {renderAttachedImage()}
                 </div>
               )}
+
               <div className="flex flex-row pl-2 md:pl-3 pr-2 py-2 w-full gap-0 items-end">
                 <EditorContent
                   editor={editor}
@@ -226,6 +229,7 @@ export const ChatInput = () => {
 
               <PluginSelect selectedAssistantKey={selectedAssistantKey} />
               {renderFileUpload()}
+
               <div className="flex-1"></div>
 
               {!isGenerating && (

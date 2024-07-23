@@ -33,7 +33,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
           <span
             className="cursor-pointer underline ml-1"
             onClick={() =>
-              openSettings(`models/${model?.baseModel}` as TSettingRoutes)
+              openSettings(`models/${model?.provider}` as TSettingRoutes)
             }
           >
             Check your API Key
