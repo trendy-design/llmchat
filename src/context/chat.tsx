@@ -1,4 +1,5 @@
 "use client";
+import { useTitleGenerator } from "@/hooks/use-title-generator";
 import { createChatStore } from "@/store/chat/store";
 import { TChatContext, TChatProvider } from "@/types/chat";
 import { useParams } from "next/navigation";
@@ -15,6 +16,8 @@ export const ChatProvider: FC<TChatProvider> = ({ children }) => {
   const currentMessage = store((state) => state.currentMessage);
   const addMessage = store((state) => state.addMessage);
   const setIsGenerating = store((state) => state.setIsGenerating);
+
+  const { generateTitleForSession } = useTitleGenerator();
   const {
     useGetSessionByIdQuery,
     addMessageMutation,
@@ -28,16 +31,23 @@ export const ChatProvider: FC<TChatProvider> = ({ children }) => {
   useEffect(() => {
     if (!currentMessage) return;
 
-    currentMessage?.tools &&
-      console.log("currentMessage", currentMessage?.tools);
     addMessage(currentMessage);
 
     if (currentMessage.stop && currentMessage.sessionId) {
-      addMessageMutation.mutate({
-        parentId: currentMessage.sessionId,
-        message: currentMessage,
-      });
-      setIsGenerating(false);
+      addMessageMutation.mutate(
+        {
+          parentId: currentMessage.sessionId,
+          message: currentMessage,
+        },
+        {
+          onSuccess: async (messages) => {
+            setIsGenerating(false);
+            if (messages?.[0].sessionId && messages?.length < 2) {
+              await generateTitleForSession(messages?.[0].sessionId as string);
+            }
+          },
+        }
+      );
     }
   }, [currentMessage]);
 

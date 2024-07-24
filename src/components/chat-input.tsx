@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ArrowDown02Icon, Navigation03Icon } from "@/components/ui/icons";
 import { defaultPreferences } from "@/config";
 import { useAssistants, useChatContext, usePreferenceContext } from "@/context";
 import { slideUpVariant } from "@/helper/animations";
@@ -13,7 +14,6 @@ import {
 import { useChatEditor } from "@/hooks/use-editor";
 import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { TAssistant } from "@/types";
-import { ArrowDown02Icon, Navigation03Icon } from "@hugeicons/react";
 import { ArrowElbowDownRight, Stop, X } from "@phosphor-icons/react";
 import { EditorContent } from "@tiptap/react";
 import { motion } from "framer-motion";

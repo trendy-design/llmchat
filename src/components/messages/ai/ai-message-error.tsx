@@ -1,7 +1,7 @@
 import { Flex, Type } from "@/components/ui";
+import { Alert02Icon } from "@/components/ui/icons";
 import { useAssistantUtils } from "@/hooks";
 import { TChatMessage } from "@/types";
-import { Alert02Icon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
 

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
+import { Delete01Icon, Edit02Icon } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
 import {
   Popover,
@@ -11,7 +12,6 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useSessions } from "@/context";
 import { cn } from "@/helper/clsx";
 import { TChatSession } from "@/types";
-import { Delete01Icon, Edit02Icon } from "@hugeicons/react";
 import moment from "moment";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -70,10 +70,10 @@ export const HistoryItem = ({
   };
 
   const containerClasses = cn(
-    "gap-2 group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
+    "gap-2 w-full group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
     sessionId?.toString() === session.id || isEditing
       ? "bg-black/10 dark:bg-black/30"
-      : ""
+      : "",
   );
 
   const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -131,7 +131,7 @@ export const HistoryItem = ({
       )}
       {(!isEditing || openDeleteConfirm) && (
         <Flex
-          className={cn("group-hover:flex hidden", openDeleteConfirm && "flex")}
+          className={cn("hidden group-hover:flex", openDeleteConfirm && "flex")}
         >
           <Button variant="ghost" size="iconXS" onClick={handleEditClick}>
             <Edit02Icon size={14} variant="stroke" strokeWidth="2" />
@@ -151,7 +151,7 @@ export const HistoryItem = ({
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="z-[1000]" side="bottom">
-                <p className="text-sm md:text-base font-medium pb-2">
+                <p className="pb-2 text-sm font-medium md:text-base">
                   Are you sure you want to delete this message?
                 </p>
                 <div className="flex flex-row gap-1">

@@ -1,8 +1,7 @@
-import { sortSessions } from "@/helper/utils";
+import { generateShortUUID, sortSessions } from "@/helper/utils";
 import { TChatMessage, TChatSession } from "@/types";
 import { del, get, set } from "idb-keyval";
 import moment from "moment";
-import { v4 } from "uuid";
 
 class SessionsService {
   private messagesService: MessagesService;
@@ -23,7 +22,7 @@ class SessionsService {
 
   async updateSession(
     sessionId: string,
-    newSession: Partial<Omit<TChatSession, "id">>
+    newSession: Partial<Omit<TChatSession, "id">>,
   ) {
     const sessions = await this.getSessions();
     const newSessions = sessions.map((session) => {
@@ -44,7 +43,7 @@ class SessionsService {
   async removeSessionById(id: string) {
     const sessions = await this.getSessions();
     const newSessions = sessions.filter(
-      (session: TChatSession) => session.id !== id
+      (session: TChatSession) => session.id !== id,
     );
 
     this.messagesService.removeMessages(id);
@@ -70,7 +69,7 @@ class SessionsService {
     }
 
     const newSession: TChatSession = {
-      id: v4(),
+      id: generateShortUUID(),
       title: "Untitled",
       createdAt: moment().toISOString(),
     };
@@ -107,7 +106,7 @@ class MessagesService {
     const messages = await this.getMessages(parentId);
 
     const existingMessage = messages.find(
-      (message) => message.id === chatMessage.id
+      (message) => message.id === chatMessage.id,
     );
 
     const newMessages = existingMessage

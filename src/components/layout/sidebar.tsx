@@ -1,4 +1,3 @@
-import { usePromptsContext, useSessions } from "@/context";
 import {
   Moon02Icon,
   MoreHorizontalIcon,
@@ -6,7 +5,8 @@ import {
   PlusSignIcon,
   Settings03Icon,
   Sun01Icon,
-} from "@hugeicons/react";
+} from "@/components/ui/icons";
+import { usePromptsContext, useSessions } from "@/context";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { HistorySidebar } from "../history/history-side-bar";
@@ -35,7 +35,7 @@ export const Sidebar = () => {
         <Button
           size="icon"
           variant={"ghost"}
-          className="min-w-8 h-8"
+          className="h-8 min-w-8"
           onClick={() => {
             createSession({
               redirect: true,
@@ -55,12 +55,12 @@ export const Sidebar = () => {
   ];
 
   return (
-    <div className="absolute z-[50] flex flex-col  justify-center items-center gap-3 pb-6 md:p-3 top-0 bottom-0 left-0 border-r border-zinc-900/5 dark:border-white/5">
-      <div className="flex flex-row gap-2 items-center">
+    <div className="absolute bottom-0 left-0 top-0 z-[50] flex flex-col items-center justify-center gap-3 border-r border-zinc-500/5 pb-6 dark:border-zinc-500/5 md:p-3">
+      <div className="flex flex-row items-center gap-2">
         {renderNewSession()}
       </div>
 
-      <div className="flex flex-col gap-2 items-center">
+      <div className="flex flex-col items-center gap-2">
         <HistorySidebar />
       </div>
       <Tooltip content="Prompts" side="left" sideOffset={4}>
@@ -89,7 +89,7 @@ export const Sidebar = () => {
       </Tooltip>
       <DropdownMenu
         open={isOpen}
-        onOpenChange={(open) => {
+        onOpenChange={(open: boolean) => {
           document.body.style.pointerEvents = "auto";
           setIsOpen(open);
         }}
@@ -102,7 +102,7 @@ export const Sidebar = () => {
           </DropdownMenuTrigger>
         </Tooltip>
         <DropdownMenuContent
-          className="min-w-[250px] text-sm md:text-base mr-2"
+          className="mr-2 min-w-[250px] text-sm md:text-base"
           align="end"
           side="left"
           sideOffset={4}
@@ -112,7 +112,7 @@ export const Sidebar = () => {
               {item.label}
             </DropdownMenuItem>
           ))}
-          <div className="my-1 h-[1px] bg-black/10 dark:bg-white/10 w-full" />
+          <div className="my-1 h-[1px] w-full bg-black/10 dark:bg-white/10" />
 
           <DropdownMenuItem
             onClick={() => {

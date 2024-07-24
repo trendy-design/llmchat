@@ -1,16 +1,20 @@
 import { GeneratedImage } from "@/components/generated-image";
+import {
+  BrainIcon,
+  GlobalSearchIcon,
+  Image01Icon,
+} from "@/components/ui/icons";
 import { usePreferenceContext } from "@/context";
 import { dalleTool } from "@/tools/dalle";
 import { duckduckGoTool } from "@/tools/duckduckgo";
 import { googleSearchTool } from "@/tools/google";
 import { memoryTool } from "@/tools/memory";
 import { TToolConfig, TToolKey } from "@/types";
-import { BrainIcon, GlobalSearchIcon, Image01Icon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 
 export const useTools = () => {
   const { push } = useRouter();
-  const { preferences, apiKeys } = usePreferenceContext();
+  const { preferences } = usePreferenceContext();
 
   const tools: TToolConfig[] = [
     {
@@ -82,7 +86,7 @@ export const useTools = () => {
           <img
             src={image}
             alt=""
-            className="w-[400px] h-[400px] rounded-2xl border"
+            className="h-[400px] w-[400px] rounded-2xl border"
           />
         );
       },

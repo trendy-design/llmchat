@@ -1,7 +1,7 @@
 import { TAttachment } from "@/components/chat-input";
 import { Button } from "@/components/ui/button";
+import { Pdf01Icon } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
-import { Pdf01Icon } from "@hugeicons/react";
 import { X } from "@phosphor-icons/react";
 import { ChangeEvent, useState } from "react";
 

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
+import { Settings03Icon } from "@/components/ui/icons";
 import {
   Popover,
   PopoverContent,
@@ -12,7 +13,6 @@ import { defaultPreferences } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
 import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { TPreferences } from "@/types";
-import { Settings03Icon } from "@hugeicons/react";
 import { ArrowClockwise, Info } from "@phosphor-icons/react";
 import { useState } from "react";
 

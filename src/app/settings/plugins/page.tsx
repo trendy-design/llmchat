@@ -9,7 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Flex } from "@/components/ui/flex";
-import { GlobalSearchIcon, Image01Icon } from "@hugeicons/react";
+import { GlobalSearchIcon, Image01Icon } from "@/components/ui/icons";
 
 export default function PulginSettings() {
   const pluginSettingsData = [

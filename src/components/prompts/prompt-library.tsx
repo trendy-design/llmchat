@@ -13,8 +13,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Edit02Icon, NoteIcon } from "@/components/ui/icons";
 import { TPrompt } from "@/hooks/use-prompts";
-import { Edit02Icon, NoteIcon } from "@hugeicons/react";
 import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
 import { Flex } from "../ui";
 

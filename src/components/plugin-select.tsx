@@ -1,6 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
+import { ElectricPlugsIcon } from "@/components/ui/icons";
 import {
   Popover,
   PopoverContent,
@@ -13,7 +14,6 @@ import { usePreferenceContext } from "@/context/preferences";
 import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { useTools } from "@/hooks/use-tools";
 import { TToolKey } from "@/types";
-import { ElectricPlugsIcon } from "@hugeicons/react";
 import { FC, useEffect, useState } from "react";
 
 export type TPluginSelect = {

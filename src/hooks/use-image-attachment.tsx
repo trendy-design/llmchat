@@ -1,8 +1,8 @@
 import { TAttachment } from "@/components/chat-input";
 import { Tooltip } from "@/components/ui";
 import { Button } from "@/components/ui/button";
+import { ImageAdd01Icon } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
-import { ImageAdd01Icon } from "@hugeicons/react";
 import { X } from "@phosphor-icons/react";
 import Image from "next/image";
 import { ChangeEvent, useState } from "react";

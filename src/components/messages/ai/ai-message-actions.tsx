@@ -1,11 +1,11 @@
 import { ConfirmPopover } from "@/components/popover-confirm";
 import { RegenerateWithModelSelect } from "@/components/regenerate-model-select";
 import { Button, Flex, Spinner, Tooltip, Type } from "@/components/ui";
+import { Copy01Icon, Delete01Icon, Tick01Icon } from "@/components/ui/icons";
 import { useChatContext, useSessions } from "@/context";
 import { useAssistantUtils, useClipboard } from "@/hooks";
 import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { TChatMessage } from "@/types";
-import { Copy01Icon, Delete01Icon, Tick01Icon } from "@hugeicons/react";
 import { FC, useState } from "react";
 
 export type TAIMessageActions = {

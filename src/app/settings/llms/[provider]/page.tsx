@@ -12,11 +12,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Flex } from "@/components/ui/flex";
+import { AlertCircleIcon, CheckmarkCircle02Icon } from "@/components/ui/icons";
 import { providers } from "@/config/models";
 import { usePreferenceContext } from "@/context";
 import { cn } from "@/helper/clsx";
 import { TProvider } from "@/types";
-import { AlertCircleIcon, CheckmarkCircle02Icon } from "@hugeicons/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 

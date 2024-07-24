@@ -1,5 +1,6 @@
 import { TChatMessage, TChatSession } from "@/types";
 import moment from "moment";
+import { v4 } from "uuid";
 
 export const getRelativeDate = (date: string | Date) => {
   const today = moment().startOf("day");
@@ -34,21 +35,21 @@ export function removeExtraSpaces(str?: string) {
 
 export const sortSessions = (
   sessions: TChatSession[],
-  sortBy: "createdAt" | "updatedAt"
+  sortBy: "createdAt" | "updatedAt",
 ) => {
   return sessions.sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
 };
 
 export const sortMessages = (
   messages: Partial<TChatMessage>[],
-  sortBy: "createdAt"
+  sortBy: "createdAt",
 ) => {
   return messages.sort((a, b) => moment(a[sortBy]).diff(moment(b[sortBy])));
 };
 
 export const convertFileToBase64 = (
   file: File,
-  onChange: (base64: string) => void
+  onChange: (base64: string) => void,
 ): void => {
   if (!file) {
     alert("Please select a file!");
@@ -98,4 +99,19 @@ export async function imageUrlToBase64(imageUrl: string): Promise<string> {
     reader.onerror = (error) => reject(error);
     reader.readAsDataURL(blob);
   });
+}
+
+export function generateShortUUID() {
+  const uuid = v4();
+  const base64UUID = uuidToBase64(uuid);
+  return base64UUID;
+}
+
+function uuidToBase64(uuid: string) {
+  const bytes = uuid
+    .replace(/-/g, "")
+    .match(/.{1,2}/g)
+    ?.map((byte) => parseInt(byte, 16));
+  const base64 = btoa(String.fromCharCode(...(bytes || [])));
+  return base64.replace(/=+$/, "");
 }

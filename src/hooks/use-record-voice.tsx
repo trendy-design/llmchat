@@ -1,10 +1,10 @@
 import { AudioWaveSpinner } from "@/components/ui/audio-wave";
 import { Button } from "@/components/ui/button";
+import { RecordIcon, StopIcon } from "@/components/ui/icons";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { usePreferenceContext } from "@/context";
 import { blobToBase64 } from "@/helper/record";
-import { RecordIcon, StopIcon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 import { OpenAI, toFile } from "openai";
 import { useRef, useState } from "react";

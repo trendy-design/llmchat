@@ -3,9 +3,9 @@
 import { SettingCard } from "@/components/settings/setting-card";
 import { SettingsContainer } from "@/components/settings/settings-container";
 import { Button } from "@/components/ui/button";
+import { Delete01Icon } from "@/components/ui/icons";
 import { Type } from "@/components/ui/text";
 import { usePreferenceContext } from "@/context/preferences";
-import { Delete01Icon } from "@hugeicons/react";
 
 export default function MemorySettings() {
   const { updatePreferences, preferences } = usePreferenceContext();

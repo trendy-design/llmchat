@@ -1,8 +1,7 @@
 import { Button, Flex, Tooltip } from "@/components/ui";
+import { SidebarLeftIcon } from "@/components/ui/icons";
 import { useSessions } from "@/context/sessions";
-import { cn } from "@/helper/clsx";
 import { sortSessions } from "@/helper/utils";
-import { SidebarLeftIcon } from "@hugeicons/react";
 import { ClockCounterClockwise, X } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Drawer } from "vaul";
@@ -23,25 +22,22 @@ export const HistorySidebar = () => {
       </Tooltip>
 
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 z-[10] bg-zinc-500/70 dark:bg-zinc-900/70 backdrop-blur-sm" />
-        <Drawer.Content
-          className={cn(
-            "flex flex-col rounded-3xl outline-none h-[98dvh] w-[320px] fixed z-[901] md:bottom-2 left-2 top-2 "
-          )}
-        >
-          <div className="bg-white dark:bg-zinc-800 h-[98dvh] dark:border dark:border-white/5 flex flex-row rounded-2xl flex-1 p-2 relative">
-            <div className="flex flex-col w-full overflow-y-auto no-scrollbar">
-              <div className="flex flex-row justify-between">
-                <div className="p-2">
-                  <Flex
-                    className="text-sm text-zinc-500"
-                    items="center"
-                    gap="sm"
-                  >
-                    <ClockCounterClockwise size={18} weight="bold" /> Recent
-                    History
-                  </Flex>
-                </div>
+        <Drawer.Overlay className="fixed inset-0 z-[10] bg-zinc-500/70 backdrop-blur-sm dark:bg-zinc-900/70" />
+        <Drawer.Content className="fixed left-2 top-2 z-[901] flex h-[98dvh] w-[320px] flex-col rounded-3xl outline-none md:bottom-2">
+          <div className="relative flex h-[98dvh] flex-1 flex-row rounded-2xl bg-white dark:border dark:border-white/5 dark:bg-zinc-800">
+            <Flex
+              direction="col"
+              className="w-full overflow-y-auto no-scrollbar"
+            >
+              <Flex
+                justify="between"
+                items="center"
+                className="w-full py-2 pl-3 pr-2 border-b w-ful border-zinc-500/10"
+              >
+                <Flex className="text-sm text-zinc-500" items="center" gap="sm">
+                  <ClockCounterClockwise size={18} weight="bold" /> Recent
+                  History
+                </Flex>
 
                 <Button
                   variant="ghost"
@@ -52,20 +48,22 @@ export const HistorySidebar = () => {
                 >
                   <X size={18} weight="bold" />
                 </Button>
-              </div>
+              </Flex>
 
-              {sortSessions(sessions, "updatedAt")?.map((session) => (
-                <HistoryItem
-                  session={session}
-                  key={session.id}
-                  dismiss={() => {
-                    setOpen(false);
-                  }}
-                />
-              ))}
-            </div>
-            <div className="flex flex-col h-full justify-center items-center absolute right-[-20px] w-4">
-              <div className="w-1 h-4 flex-shrink-0 rounded-full bg-white/50 mb-4" />
+              <Flex className="w-full p-2" gap="xs" direction="col">
+                {sortSessions(sessions, "createdAt")?.map((session) => (
+                  <HistoryItem
+                    session={session}
+                    key={session.id}
+                    dismiss={() => {
+                      setOpen(false);
+                    }}
+                  />
+                ))}
+              </Flex>
+            </Flex>
+            <div className="absolute right-[-20px] flex h-full w-4 flex-col items-center justify-center">
+              <div className="flex-shrink-0 w-1 h-4 mb-4 rounded-full bg-white/50" />
             </div>
           </div>
         </Drawer.Content>

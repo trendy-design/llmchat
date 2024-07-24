@@ -5,10 +5,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { ArrowDown01Icon, SparklesIcon } from "@/components/ui/icons";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { TAssistant, TModelKey } from "@/types";
-import { ArrowDown01Icon, SparklesIcon } from "@hugeicons/react";
 import { useState } from "react";
 
 export type TRegenerateModelSelect = {

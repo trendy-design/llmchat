@@ -1,5 +1,5 @@
+import { SparklesIcon } from "@/components/ui/icons";
 import { cn } from "@/helper/clsx";
-import { SparklesIcon } from "@hugeicons/react";
 import Image from "next/image";
 export type ModelIconType =
   | "gpt3"

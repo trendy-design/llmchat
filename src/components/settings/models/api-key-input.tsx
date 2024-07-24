@@ -1,7 +1,7 @@
 import { Flex } from "@/components/ui";
 import { Button } from "@/components/ui/button";
+import { SquareLock02Icon, ViewIcon, ViewOffIcon } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
-import { SquareLock02Icon, ViewIcon, ViewOffIcon } from "@hugeicons/react";
 import { FC, useState } from "react";
 export type TApiKeyInput = {
   value: string;

@@ -8,11 +8,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Flex } from "@/components/ui/flex";
+import { PuzzleIcon, ViewIcon } from "@/components/ui/icons";
 import { defaultPreferences } from "@/config";
 import { formatNumber } from "@/helper/utils";
 import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { TAssistant } from "@/types";
-import { PuzzleIcon, ViewIcon } from "@hugeicons/react";
 import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
 import { useState } from "react";
 import { usePreferenceContext } from "../../context/preferences";
@@ -49,7 +49,7 @@ export const AssistantItem = ({
           },
           () => {
             onSelect(assistant);
-          }
+          },
         );
       }}
     >
@@ -74,7 +74,7 @@ export const AssistantItem = ({
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger
               asChild
-              onClick={(e) => {
+              onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                 e.stopPropagation();
               }}
             >
@@ -89,11 +89,11 @@ export const AssistantItem = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-              className="min-w-[200px] text-sm md:text-base z-[800]"
+              className="z-[800] min-w-[200px] text-sm md:text-base"
               align="end"
             >
               <DropdownMenuItem
-                onClick={(e) => {
+                onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                   onEdit(assistant);
 
                   e.stopPropagation();

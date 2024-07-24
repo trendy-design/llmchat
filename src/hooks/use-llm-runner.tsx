@@ -3,7 +3,7 @@ import { defaultPreferences } from "@/config";
 import { useChatContext, usePreferenceContext, useSessions } from "@/context";
 import { injectPresetValues } from "@/helper/preset-prompt-values";
 import { constructPrompt } from "@/helper/promptUtil";
-import { sortMessages } from "@/helper/utils";
+import { generateShortUUID, sortMessages } from "@/helper/utils";
 import { modelService } from "@/services/models";
 import { messagesService, sessionsService } from "@/services/sessions/client";
 import { TLLMRunConfig } from "@/types";
@@ -15,7 +15,6 @@ import {
 } from "@langchain/core/prompts";
 import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import moment from "moment";
-import { v4 } from "uuid";
 import { useAssistantUtils, useTools } from ".";
 
 export const useLLMRunner = () => {
@@ -38,7 +37,7 @@ export const useLLMRunner = () => {
     const currentAbortController = new AbortController();
     setAbortController(currentAbortController);
     const { sessionId, messageId, input, context, image, assistant } = config;
-    const newMessageId = messageId || v4();
+    const newMessageId = messageId || generateShortUUID();
     const modelKey = assistant.baseModel;
     const session = await sessionsService.getSessionById(sessionId);
     const messages = await messagesService.getMessages(sessionId);
@@ -93,7 +92,7 @@ export const useLLMRunner = () => {
             preferences,
             apiKeys,
             sendToolResponse: addTool,
-          })
+          }),
         )
         ?.filter((t): t is any => !!t) || [];
 
@@ -141,7 +140,7 @@ export const useLLMRunner = () => {
     const chainWithoutTools = prompt.pipe(
       selectedModel.bind({
         signal: currentAbortController?.signal,
-      }) as any
+      }) as any,
     );
 
     let streamedMessage = "";
@@ -169,7 +168,7 @@ export const useLLMRunner = () => {
                 parentRunId,
                 tags,
                 metadata,
-                name
+                name,
               ) {
                 console.log(
                   "handleToolStart",
@@ -179,7 +178,7 @@ export const useLLMRunner = () => {
                   parentRunId,
                   tags,
                   metadata,
-                  name
+                  name,
                 );
 
                 console.log("handleToolStart", name);
@@ -222,7 +221,7 @@ export const useLLMRunner = () => {
               },
             },
           ],
-        }
+        },
       );
 
       updateCurrentMessage({
@@ -232,7 +231,6 @@ export const useLLMRunner = () => {
         stop: true,
         stopReason: "finish",
       });
-      generateTitleForSession(sessionId);
     } catch (err) {
       updateCurrentMessage({
         isLoading: false,
