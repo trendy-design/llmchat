@@ -1,5 +1,5 @@
 import { ModelIcon } from "@/components/model-icon";
-import { configs, defaultPreferences } from "@/config";
+import { defaultPreferences } from "@/config";
 import { models } from "@/config/models";
 import { usePreferenceContext } from "@/context";
 import { useAssistantsQueries } from "@/services/assistants";
@@ -11,7 +11,7 @@ export const useAssistantUtils = () => {
   const { preferences } = usePreferenceContext();
 
   const ollamaModelsQuery = assistantQueries.useOllamaModelsQuery(
-    `${preferences.ollamaBaseUrl}${configs.ollamaTagsEndpoint}`
+    preferences.ollamaBaseUrl,
   );
 
   const allModels: TModelItem[] = useMemo(
@@ -26,10 +26,10 @@ export const useAssistantUtils = () => {
           icon: "ollama",
           provider: "ollama",
           maxOutputTokens: 2048,
-        })
+        }),
       ) || []),
     ],
-    [ollamaModelsQuery.data?.models]
+    [ollamaModelsQuery.data?.models],
   );
 
   const getModelByKey = (key: TModelKey) => {
@@ -45,13 +45,13 @@ export const useAssistantUtils = () => {
         type: "base",
         systemPrompt:
           preferences.systemPrompt || defaultPreferences.systemPrompt,
-      })
+      }),
     ),
     ...(assistantQueries?.assistantsQuery.data || []),
   ];
 
   const getAssistantByKey = (
-    key: string
+    key: string,
   ): { assistant: TAssistant; model: TModelItem } | undefined => {
     const assistant = assistants.find((assistant) => assistant.key === key);
     if (!assistant) return;
@@ -76,7 +76,7 @@ export const useAssistantUtils = () => {
     getModelByKey,
     getAssistantIcon,
     assistants: assistants.filter((a) =>
-      allModels.some((m) => m.key === a.baseModel)
+      allModels.some((m) => m.key === a.baseModel),
     ),
     getAssistantByKey,
     ...assistantQueries,
