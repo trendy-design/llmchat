@@ -98,8 +98,8 @@ export const CreatePrompt = ({
   };
 
   return (
-    <div className="flex flex-col items-start  w-full h-full relative overflow-hidden">
-      <div className="w-full px-2 py-2 border-b border-zinc-500/20 flex flex-row gap-3 items-center">
+    <div className="relative flex flex-col items-start w-full h-full overflow-hidden">
+      <div className="flex flex-row items-center w-full gap-3 px-2 py-2 border-b border-zinc-500/20">
         <Button
           size="iconSm"
           variant="ghost"
@@ -113,7 +113,7 @@ export const CreatePrompt = ({
           {prompt ? "Edit Prompt" : "Create New Prompt"}
         </p>
       </div>
-      <div className="flex flex-col w-full flex-1 p-2 overflow-y-auto h-full pb-[80px] no-scrollbar">
+      <div className="no-scrollbar flex h-full w-full flex-1 flex-col overflow-y-auto p-2 pb-[80px]">
         <Input
           type="text"
           placeholder="Prompt Title"
@@ -126,13 +126,13 @@ export const CreatePrompt = ({
         <EditorContent
           editor={editor}
           autoFocus
-          className="w-full p-3 [&>*]:leading-7 text-sm md:text-base outline-none focus:outline-none  [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar cursor-text"
+          className="no-scrollbar [&>*]:no-scrollbar w-full cursor-text p-3 text-sm outline-none focus:outline-none md:text-base [&>*]:leading-7 [&>*]:outline-none"
         />
-        <p className="text-xs text-zinc-500 py-2 px-3 flex flex-row gap-2 items-center">
+        <p className="flex flex-row items-center gap-2 px-3 py-2 text-xs text-zinc-500">
           Use <Badge>{`{{ input }}`}</Badge> for user input
         </p>
       </div>
-      <div className="w-full px-2 py-2 border-t bg-white dark:bg-zinc-800 absolute bottom-0 left-0 right-0 border-zinc-500/20 flex flex-row gap-3 items-center">
+      <div className="absolute bottom-0 left-0 right-0 flex flex-row items-center w-full gap-3 px-2 py-2 bg-white border-t border-zinc-500/20 dark:bg-zinc-800">
         <Button
           variant="default"
           onClick={() => {
