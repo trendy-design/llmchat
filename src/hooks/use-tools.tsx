@@ -1,79 +1,22 @@
-import { usePreferenceContext, useSettingsContext } from "@/context";
+import { GeneratedImage } from "@/components/generated-image";
+import {
+  BrainIcon,
+  GlobalSearchIcon,
+  Image01Icon,
+} from "@/components/ui/icons";
+import { usePreferenceContext } from "@/context";
 import { dalleTool } from "@/tools/dalle";
 import { duckduckGoTool } from "@/tools/duckduckgo";
 import { googleSearchTool } from "@/tools/google";
 import { memoryTool } from "@/tools/memory";
-import {
-  BrainIcon,
-  GlobalSearchIcon,
-  HugeiconsProps,
-  Image01Icon,
-} from "@hugeicons/react";
-import { FC, ReactNode, RefAttributes } from "react";
-import { TApiKeys, TPreferences, TToolResponse } from ".";
-
-export const toolKeys = ["calculator", "web_search"];
-
-export type TToolArg = {
-  updatePreferences: ReturnType<
-    typeof usePreferenceContext
-  >["updatePreferences"];
-  preferences: TPreferences;
-  apiKeys: TApiKeys;
-  sendToolResponse: (response: TToolResponse) => void;
-};
-
-export type TToolKey = (typeof toolKeys)[number];
-export type IconSize = "sm" | "md" | "lg";
-export type TTool = {
-  key: TToolKey;
-  description: string;
-  name: string;
-  loadingMessage?: string;
-  resultMessage?: string;
-  isBeta?: boolean;
-  renderUI?: (args: any) => ReactNode;
-  showInMenu?: boolean;
-  validate?: () => Promise<boolean>;
-  validationFailedAction?: () => void;
-  tool: (args: TToolArg) => any;
-  icon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
-  smallIcon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
-};
-
-interface DataEntry {
-  label: string;
-  name: string;
-  values: number;
-}
-
-interface GroupedData {
-  [key: string]: DataEntry[];
-}
-
-const getLabels = (data: DataEntry[]): string[] => {
-  return data.reduce((acc: string[], entry: DataEntry) => {
-    if (!acc.includes(entry.label)) {
-      return [...acc, entry.label];
-    }
-    return acc;
-  }, []);
-};
-
-const getData = (data: DataEntry[], labels: string[]): string[] => {
-  return data.reduce((acc: string[], entry: DataEntry) => {
-    if (!acc.includes(entry.name)) {
-      return [...acc, entry.name];
-    }
-    return acc;
-  }, []);
-};
+import { TToolConfig, TToolKey } from "@/types";
+import { useRouter } from "next/navigation";
 
 export const useTools = () => {
-  const { preferences, apiKeys } = usePreferenceContext();
-  const { open } = useSettingsContext();
+  const { push } = useRouter();
+  const { preferences } = usePreferenceContext();
 
-  const tools: TTool[] = [
+  const tools: TToolConfig[] = [
     {
       key: "web_search",
       description: "Search on web",
@@ -95,7 +38,7 @@ export const useTools = () => {
         return true;
       },
       validationFailedAction: () => {
-        open("plugins/web-search");
+        push("settings/plugins/web-search");
       },
       loadingMessage:
         preferences?.defaultWebSearchEngine === "google"
@@ -120,13 +63,7 @@ export const useTools = () => {
       },
       validationFailedAction: () => {},
       renderUI: ({ image }) => {
-        return (
-          <img
-            src={image}
-            alt=""
-            className="w-[400px] h-[400px] rounded-2xl border"
-          />
-        );
+        return <GeneratedImage image={image} />;
       },
       loadingMessage: "Generating Image ...",
       resultMessage: "Generated Image",
@@ -149,35 +86,15 @@ export const useTools = () => {
           <img
             src={image}
             alt=""
-            className="w-[400px] h-[400px] rounded-2xl border"
+            className="h-[400px] w-[400px] rounded-2xl border"
           />
         );
       },
       loadingMessage: "Saving to the memory...",
-      resultMessage: "Updated memory",
+      resultMessage: "Saved to the memory",
       icon: BrainIcon,
       smallIcon: BrainIcon,
     },
-    // {
-    //   key: "chart",
-    //   description: "Genrate Chart",
-    //   tool: chartTool,
-    //   name: "Chart",
-    //   isBeta: true,
-    //   showInMenu: true,
-
-    //   validate: async () => {
-    //     return true;
-    //   },
-    //   validationFailedAction: () => {
-    //     open("web-search");
-    //   },
-
-    //   loadingMessage: "Generating chart...",
-    //   resultMessage: "Generated Chart",
-    //   icon: PieChartIcon,
-    //   smallIcon: PieChartIcon,
-    // },
   ];
 
   const getToolByKey = (key: TToolKey) => {

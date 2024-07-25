@@ -1,15 +1,17 @@
 export type TFormLabel = {
   children?: React.ReactNode;
   label: string;
+  isOptional?: boolean;
 };
-export const FormLabel = ({ children, label }: TFormLabel) => {
+export const FormLabel = ({ children, label, isOptional }: TFormLabel) => {
   return (
-    <div className="flex flex-col w-full gap-0 items-start">
-      <p className="text-xs md:text-sm font-medium text-zinc-800 dark:text-white">
+    <div className="flex w-full flex-col items-start gap-0">
+      <p className="text-xs font-medium text-zinc-800 dark:text-white md:text-sm">
         {label}
+        {isOptional && <span className="text-zinc-500"> (Optional)</span>}
       </p>
       {children && (
-        <p className="text-xs text-zinc-500 leading-5">{children}</p>
+        <p className="text-xs leading-5 text-zinc-500">{children}</p>
       )}
     </div>
   );

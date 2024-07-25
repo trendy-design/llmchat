@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import { ReactNode } from "react";
 
 export type TSettingCard = {

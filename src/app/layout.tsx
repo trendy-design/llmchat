@@ -1,12 +1,15 @@
+import { MainLayout } from "@/components/layout/main-layout";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
-  ConfirmProvider,
+  AssistantsProvider,
+  ChatProvider,
+  CommandsProvider,
   PreferenceProvider,
+  PromptsProvider,
   ReactQueryProvider,
   SessionsProvider,
-  SettingsProvider,
 } from "@/context"; // Consolidated context imports
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import type { Metadata, Viewport } from "next"; // Combined type imports
 import { ThemeProvider } from "next-themes";
 import { interVar } from "./fonts";
@@ -40,13 +43,19 @@ export default function RootLayout({
         >
           <ReactQueryProvider>
             <TooltipProvider>
-              <ConfirmProvider>
-                <PreferenceProvider>
-                  <SessionsProvider>
-                    <SettingsProvider>{children}</SettingsProvider>
-                  </SessionsProvider>
-                </PreferenceProvider>
-              </ConfirmProvider>
+              <PreferenceProvider>
+                <SessionsProvider>
+                  <ChatProvider>
+                    <CommandsProvider>
+                      <AssistantsProvider>
+                        <PromptsProvider>
+                          <MainLayout>{children}</MainLayout>
+                        </PromptsProvider>
+                      </AssistantsProvider>
+                    </CommandsProvider>
+                  </ChatProvider>
+                </SessionsProvider>
+              </PreferenceProvider>
             </TooltipProvider>
           </ReactQueryProvider>
         </ThemeProvider>
