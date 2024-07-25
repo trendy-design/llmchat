@@ -9,11 +9,12 @@ import {
 import { FC, createContext, useContext, useEffect, useState } from "react";
 
 export const SessionContext = createContext<TSessionsContext | undefined>(
-  undefined
+  undefined,
 );
 
 export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
   const [sessions, setSessions] = useState<TChatSession[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string>();
   const useChatSessionQueriesProps = useChatSessionQueries();
   const { sessionsQuery, createNewSessionMutation, addMessageMutation } =
     useChatSessionQueriesProps;
@@ -27,11 +28,15 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
     await createNewSessionMutation.mutateAsync(undefined, {
       onSuccess: (data) => {
         if (redirect) {
-          window.open(`/chat/${data.id}`, "_self");
+          setActiveSessionId(data.id);
         }
       },
     });
   };
+
+  useEffect(() => {
+    createSession({ redirect: true });
+  }, []);
 
   const addMessage = async (parentId: string, message: TChatMessage) => {
     await addMessageMutation.mutateAsync({
@@ -44,6 +49,8 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
     <SessionContext.Provider
       value={{
         sessions,
+        activeSessionId,
+        setActiveSessionId,
         isAllSessionLoading: sessionsQuery.isLoading,
         createSession,
         refetchSessions: sessionsQuery.refetch,

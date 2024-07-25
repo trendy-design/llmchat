@@ -18,7 +18,7 @@ export const AISelectionProvider: FC<TAISelectionProvider> = ({
 
   return (
     <Selection.Root>
-      <Selection.Trigger>{children}</Selection.Trigger>
+      <Selection.Trigger className="w-full">{children}</Selection.Trigger>
       <Selection.Portal container={document?.getElementById("chat-container")}>
         <Selection.Content sticky="always" sideOffset={10} id="chat-reply">
           {selectedText && (

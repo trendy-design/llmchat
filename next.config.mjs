@@ -3,16 +3,22 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: "/",
-        destination: "/chat/new",
-      },
-      {
         source: "/settings/llms",
         destination: "/settings/llms/openai",
       },
       {
         source: "/settings",
         destination: "/settings/common",
+      },
+    ];
+  },
+
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/chat",
+        permanent: true,
       },
     ];
   },

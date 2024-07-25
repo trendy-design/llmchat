@@ -13,7 +13,6 @@ import { useSessions } from "@/context";
 import { cn } from "@/helper/clsx";
 import { TChatSession } from "@/types";
 import moment from "moment";
-import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export const HistoryItem = ({
@@ -23,16 +22,16 @@ export const HistoryItem = ({
   session: TChatSession;
   dismiss: () => void;
 }) => {
-  const { sessionId } = useParams();
   const {
     updateSessionMutation,
     removeSessionMutation,
     refetchSessions,
     createSession,
+    setActiveSessionId,
+    activeSessionId,
   } = useSessions();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(session.title);
-  const router = useRouter();
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const historyInputRef = useRef<HTMLInputElement>(null);
 
@@ -64,14 +63,14 @@ export const HistoryItem = ({
 
   const handleOnClick = () => {
     if (!isEditing) {
-      router.push(`/chat/${session.id}`);
+      setActiveSessionId(session.id);
       dismiss();
     }
   };
 
   const containerClasses = cn(
     "gap-2 w-full group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
-    sessionId?.toString() === session.id || isEditing
+    activeSessionId === session.id || isEditing
       ? "bg-black/10 dark:bg-black/30"
       : "",
   );
@@ -89,7 +88,7 @@ export const HistoryItem = ({
   const handleDeleteConfirm = (e: React.MouseEvent<HTMLButtonElement>) => {
     removeSessionMutation.mutate(session.id, {
       onSuccess: () => {
-        if (sessionId === session.id) {
+        if (activeSessionId === session.id) {
           createSession({
             redirect: true,
           });
