@@ -14,6 +14,8 @@ export type TSessionsProvider = {
 
 export type TSessionsContext = {
   sessions: TChatSession[];
+  activeSessionId?: string;
+  setActiveSessionId: (id: string) => void;
   isAllSessionLoading: boolean;
   createSession: (props: { redirect?: boolean }) => void;
   refetchSessions?: () => void;

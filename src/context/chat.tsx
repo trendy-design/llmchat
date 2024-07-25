@@ -2,21 +2,18 @@
 import { useTitleGenerator } from "@/hooks/use-title-generator";
 import { createChatStore } from "@/store/chat/store";
 import { TChatContext, TChatProvider } from "@/types/chat";
-import { useParams } from "next/navigation";
 import { FC, createContext, useContext, useEffect, useMemo } from "react";
 import { useSessions } from "./sessions";
 
 export const ChatContext = createContext<undefined | TChatContext>(undefined);
 
-export const ChatProvider: FC<TChatProvider> = ({ children }) => {
-  const { sessionId } = useParams();
-  const store = useMemo(() => createChatStore(), []); // Create a unique store for each provider
+export const ChatProvider: FC<TChatProvider> = ({ children, sessionId }) => {
+  const store = useMemo(() => createChatStore(), []);
   const setSession = store((state) => state.setSession);
   const setMessages = store((state) => state.setMessages);
   const currentMessage = store((state) => state.currentMessage);
   const addMessage = store((state) => state.addMessage);
   const setIsGenerating = store((state) => state.setIsGenerating);
-
 
   const { generateTitleForSession } = useTitleGenerator();
   const {
@@ -47,7 +44,7 @@ export const ChatProvider: FC<TChatProvider> = ({ children }) => {
               await generateTitleForSession(messages?.[0].sessionId as string);
             }
           },
-        }
+        },
       );
     }
   }, [currentMessage]);

@@ -31,7 +31,7 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
   };
 
   return (
-    <div className="flex flex-row w-full mt-6">
+    <div className="mt-6 flex w-full flex-row">
       <div className="p-2 md:px-3 md:py-2">
         <Tooltip content={runConfig.assistant.name}>
           {getAssistantIcon(runConfig.assistant.key, "sm")}
@@ -42,7 +42,7 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
         direction="col"
         gap="none"
         items="start"
-        className="flex-1 w-full p-2 overflow-hidden"
+        className="w-full flex-1 overflow-hidden p-2"
       >
         {tools?.map((tool) => (
           <AIToolMessage tool={tool} key={tool.toolName} />

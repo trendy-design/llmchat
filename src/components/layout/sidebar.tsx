@@ -59,7 +59,7 @@ export const Sidebar = () => {
     return (
       <Tooltip content="Spaces (coming soon)" side="left" sideOffset={4}>
         <Button size="iconSm" variant="ghost">
-          <FolderLibraryIcon size={20} strokeWidth={2}/>
+          <FolderLibraryIcon size={20} strokeWidth={2} />
         </Button>
       </Tooltip>
     );
@@ -68,9 +68,13 @@ export const Sidebar = () => {
   const renderPrompts = () => {
     return (
       <Tooltip content="Prompts" side="left" sideOffset={4}>
-        <Button size="iconSm" variant="ghost" onClick={() => {
-          openPrompts();
-        }}>
+        <Button
+          size="iconSm"
+          variant="ghost"
+          onClick={() => {
+            openPrompts();
+          }}
+        >
           <NoteIcon size={20} strokeWidth={2} />
         </Button>
       </Tooltip>
@@ -80,9 +84,13 @@ export const Sidebar = () => {
   const renderSettings = () => {
     return (
       <Tooltip content="Settings" side="left" sideOffset={4}>
-        <Button size="iconSm" variant="ghost" onClick={() => {
-          push("/settings");
-        }}>
+        <Button
+          size="iconSm"
+          variant="ghost"
+          onClick={() => {
+            push("/settings");
+          }}
+        >
           <Settings03Icon size={20} strokeWidth={2} />
         </Button>
       </Tooltip>
@@ -90,7 +98,7 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="flex md:flex-col md:h-screen flex-row items-center justify-center gap-3 md:border-r border-zinc-500/5 pb-6 dark:border-zinc-500/5 p-3">
+    <div className="flex flex-row items-center justify-center gap-3 border-zinc-500/5 p-3 pb-6 dark:border-zinc-500/5 md:h-screen md:flex-col md:border-r">
       <div className="flex flex-row items-center gap-2">
         {renderNewSession()}
       </div>

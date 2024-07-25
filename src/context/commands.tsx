@@ -30,7 +30,7 @@ export type TCommandContext = {
   dismiss: () => void;
 };
 export const CommandsContext = createContext<undefined | TCommandContext>(
-  undefined
+  undefined,
 );
 
 export const useCommandContext = () => {
@@ -45,7 +45,8 @@ export type TCommandsProvider = {
   children: React.ReactNode;
 };
 export const CommandsProvider = ({ children }: TCommandsProvider) => {
-  const { sessions, createSession, refetchSessions } = useSessions();
+  const { sessions, createSession, refetchSessions, setActiveSessionId } =
+    useSessions();
   const { toast } = useToast();
   const router = useRouter();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
@@ -138,7 +139,7 @@ export const CommandsProvider = ({ children }: TCommandsProvider) => {
                 value={action.name}
                 onSelect={action.action}
               >
-                <div className="w-6 h-6 items-center justify-center flex">
+                <div className="flex h-6 w-6 items-center justify-center">
                   <action.icon
                     size={18}
                     strokeWidth="2"
@@ -155,14 +156,14 @@ export const CommandsProvider = ({ children }: TCommandsProvider) => {
                 <CommandItem
                   key={session.id}
                   value={`${session.id}/${session.title}`}
-                  className={cn("gap-2 w-full")}
+                  className={cn("w-full gap-2")}
                   onSelect={(value) => {
-                    router.push(`/chat/${session.id}`);
+                    setActiveSessionId(session.id);
                     onClose();
                   }}
                 >
                   <span className="w-full truncate">{session.title}</span>
-                  <span className="pl-4 text-xs md:text-xs  text-zinc-400 dark:text-zinc-700 flex-shrink-0">
+                  <span className="flex-shrink-0 pl-4 text-xs text-zinc-400 dark:text-zinc-700 md:text-xs">
                     {moment(session.createdAt).fromNow(true)}
                   </span>
                 </CommandItem>

@@ -1,11 +1,6 @@
-import { MainLayout } from "@/components/layout/main-layout";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
-  AssistantsProvider,
-  ChatProvider,
-  CommandsProvider,
   PreferenceProvider,
-  PromptsProvider,
   ReactQueryProvider,
   SessionsProvider,
 } from "@/context"; // Consolidated context imports
@@ -44,17 +39,7 @@ export default function RootLayout({
           <ReactQueryProvider>
             <TooltipProvider>
               <PreferenceProvider>
-                <SessionsProvider>
-                  <ChatProvider>
-                    <CommandsProvider>
-                      <AssistantsProvider>
-                        <PromptsProvider>
-                          <MainLayout>{children}</MainLayout>
-                        </PromptsProvider>
-                      </AssistantsProvider>
-                    </CommandsProvider>
-                  </ChatProvider>
-                </SessionsProvider>
+                <SessionsProvider>{children}</SessionsProvider>
               </PreferenceProvider>
             </TooltipProvider>
           </ReactQueryProvider>

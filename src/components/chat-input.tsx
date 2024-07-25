@@ -181,7 +181,7 @@ export const ChatInput = () => {
       )}
     >
       {isFreshSession && <ChatGreeting />}
-      <div className="flex flex-row items-center mb-2 justify-center gap-2">
+      <div className="mb-2 flex flex-row items-center justify-center gap-2">
         {renderScrollToBottom()}
         {renderStopGeneration()}
       </div>
