@@ -17,6 +17,7 @@ export const ChatProvider: FC<TChatProvider> = ({ children }) => {
   const addMessage = store((state) => state.addMessage);
   const setIsGenerating = store((state) => state.setIsGenerating);
 
+
   const { generateTitleForSession } = useTitleGenerator();
   const {
     useGetSessionByIdQuery,

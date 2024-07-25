@@ -20,6 +20,7 @@ import {
   Flex,
   Tooltip,
 } from "@/components/ui";
+import { FolderLibraryIcon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 
 export const Sidebar = () => {
@@ -54,6 +55,40 @@ export const Sidebar = () => {
     { label: "Support", onClick: () => {} },
   ];
 
+  const renderSpaces = () => {
+    return (
+      <Tooltip content="Spaces (coming soon)" side="left" sideOffset={4}>
+        <Button size="iconSm" variant="ghost">
+          <FolderLibraryIcon size={20} strokeWidth={2}/>
+        </Button>
+      </Tooltip>
+    );
+  };
+
+  const renderPrompts = () => {
+    return (
+      <Tooltip content="Prompts" side="left" sideOffset={4}>
+        <Button size="iconSm" variant="ghost" onClick={() => {
+          openPrompts();
+        }}>
+          <NoteIcon size={20} strokeWidth={2} />
+        </Button>
+      </Tooltip>
+    );
+  };
+
+  const renderSettings = () => {
+    return (
+      <Tooltip content="Settings" side="left" sideOffset={4}>
+        <Button size="iconSm" variant="ghost" onClick={() => {
+          push("/settings");
+        }}>
+          <Settings03Icon size={20} strokeWidth={2} />
+        </Button>
+      </Tooltip>
+    );
+  };
+
   return (
     <div className="absolute bottom-0 left-0 top-0 z-[50] flex flex-col items-center justify-center gap-3 border-r border-zinc-500/5 pb-6 dark:border-zinc-500/5 md:p-3">
       <div className="flex flex-row items-center gap-2">
@@ -63,30 +98,11 @@ export const Sidebar = () => {
       <div className="flex flex-col items-center gap-2">
         <HistorySidebar />
       </div>
-      <Tooltip content="Prompts" side="left" sideOffset={4}>
-        <Button
-          size="iconSm"
-          variant="ghost"
-          onClick={() => {
-            openPrompts();
-          }}
-        >
-          <NoteIcon size={20} strokeWidth={2} />
-        </Button>
-      </Tooltip>
+      {renderPrompts()}
+      {renderSpaces()}
 
       <Flex className="flex-1" />
-      <Tooltip content="Preferences" side="left" sideOffset={4}>
-        <Button
-          size="iconSm"
-          variant="ghost"
-          onClick={() => {
-            push("/settings");
-          }}
-        >
-          <Settings03Icon size={20} strokeWidth={2} />
-        </Button>
-      </Tooltip>
+      {renderSettings()}
       <DropdownMenu
         open={isOpen}
         onOpenChange={(open: boolean) => {

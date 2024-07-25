@@ -1,8 +1,8 @@
-import { Button, Flex, Tooltip } from "@/components/ui";
-import { SidebarLeftIcon } from "@/components/ui/icons";
+import { Button, Flex, Tooltip, Type } from "@/components/ui";
 import { useSessions } from "@/context/sessions";
 import { sortSessions } from "@/helper/utils";
-import { ClockCounterClockwise, X } from "@phosphor-icons/react";
+import { MessageMultiple01Icon } from "@hugeicons/react";
+import { X } from "@phosphor-icons/react";
 import { useState } from "react";
 import { Drawer } from "vaul";
 import { HistoryItem } from "./history-item";
@@ -16,7 +16,7 @@ export const HistorySidebar = () => {
       <Tooltip content="Chat History" side="left" sideOffset={4}>
         <Drawer.Trigger asChild>
           <Button variant="ghost" size="iconSm">
-            <SidebarLeftIcon size={20} strokeWidth={2} />
+            <MessageMultiple01Icon size={20} strokeWidth={2}/>
           </Button>
         </Drawer.Trigger>
       </Tooltip>
@@ -34,9 +34,10 @@ export const HistorySidebar = () => {
                 items="center"
                 className="w-full py-2 pl-3 pr-2 border-b w-ful border-zinc-500/10"
               >
-                <Flex className="text-sm text-zinc-500" items="center" gap="sm">
-                  <ClockCounterClockwise size={18} weight="bold" /> Recent
-                  History
+                <Flex items="center" gap="sm">
+                <MessageMultiple01Icon size={20} strokeWidth={2} className="text-zinc-500"/>
+                <Type size="sm" weight="medium" textColor="secondary">
+               Recent History</Type>
                 </Flex>
 
                 <Button
