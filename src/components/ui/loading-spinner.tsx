@@ -45,7 +45,7 @@ const DotTransition = {
   ease: "easeInOut",
 };
 
-export default function Spinner() {
+export function Spinner() {
   return (
     <svg
       fill="none"

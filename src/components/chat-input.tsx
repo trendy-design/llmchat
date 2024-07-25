@@ -1,32 +1,25 @@
-import { ArrowElbowDownRight, Stop, X } from "@phosphor-icons/react";
-import { EditorContent } from "@tiptap/react";
-import { motion } from "framer-motion";
-import { useParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-
+import { Button } from "@/components/ui/button";
+import { ArrowDown02Icon, Navigation03Icon } from "@/components/ui/icons";
+import { defaultPreferences } from "@/config";
+import { useAssistants, useChatContext, usePreferenceContext } from "@/context";
+import { slideUpVariant } from "@/helper/animations";
+import { cn } from "@/helper/clsx";
 import {
-  useAssistantContext,
-  useChatContext,
-  usePreferenceContext,
-  useSessionsContext,
-} from "@/context";
-import {
-  defaultPreferences,
+  useAssistantUtils,
   useImageAttachment,
-  useModelList,
   useRecordVoice,
   useScrollToBottom,
 } from "@/hooks";
-import { TAssistant } from "@/hooks/use-chat-session";
-import { slideUpVariant } from "@/lib/framer-motion";
-import { cn } from "@/lib/utils";
-import { ArrowDown02Icon, Navigation03Icon } from "@hugeicons/react";
+import { useChatEditor } from "@/hooks/use-editor";
+import { useLLMRunner } from "@/hooks/use-llm-runner";
+import { TAssistant } from "@/types";
+import { ArrowElbowDownRight, Stop, X } from "@phosphor-icons/react";
+import { EditorContent } from "@tiptap/react";
+import { motion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { ChatExamples } from "./chat-examples";
 import { ChatGreeting } from "./chat-greeting";
 import { PluginSelect } from "./plugin-select";
-import { PromptsBotsCombo } from "./prompts-bots-combo";
-import { QuickSettings } from "./quick-settings";
-import { Button } from "./ui/button";
 
 export type TAttachment = {
   file?: File;
@@ -34,7 +27,13 @@ export type TAttachment = {
 };
 
 export const ChatInput = () => {
-  const { sessionId } = useParams();
+  const { store } = useChatContext();
+  const session = store((state) => state.session);
+  const messages = store((state) => state.messages);
+  const contextValue = store((state) => state.context);
+  const setContextValue = store((state) => state.setContext);
+  const stopGeneration = store((state) => state.stopGeneration);
+  const isGenerating = store((state) => state.isGenerating);
   const { showButton, scrollToBottom } = useScrollToBottom();
   const {
     renderListeningIndicator,
@@ -43,24 +42,19 @@ export const ChatInput = () => {
     text,
     transcribing,
   } = useRecordVoice();
-  const { currentSession } = useSessionsContext();
-  const { renderFileUpload, renderAttachedImage, attachment, clearAttachment } =
-    useImageAttachment();
-  const { selectedAssistant, open: openAssistants } = useAssistantContext();
   const {
-    editor,
-    handleRunModel,
-    openPromptsBotCombo,
-    setOpenPromptsBotCombo,
-    sendMessage,
-    isGenerating,
-    contextValue,
-    setContextValue,
-    stopGeneration,
-  } = useChatContext();
+    renderImageUpload,
+    renderAttachedImage,
+    attachment,
+    clearAttachment,
+  } = useImageAttachment({ id: "image-upload" });
+  const { selectedAssistant, open: openAssistants } = useAssistants();
+  const { invokeModel } = useLLMRunner();
+
+  const { editor } = useChatEditor();
 
   const { preferences, updatePreferences } = usePreferenceContext();
-  const { models, getAssistantByKey, getAssistantIcon } = useModelList();
+  const { models, getAssistantByKey, getAssistantIcon } = useAssistantUtils();
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [selectedAssistantKey, setSelectedAssistantKey] = useState<
@@ -79,36 +73,33 @@ export const ChatInput = () => {
   }, [models, preferences]);
 
   useEffect(() => {
-    if (editor?.isActive) {
-      editor.commands.focus("end");
-    }
-  }, [editor?.isActive]);
-
-  useEffect(() => {
-    if (sessionId) {
+    if (session?.id) {
       inputRef.current?.focus();
     }
-  }, [sessionId]);
+  }, [session?.id]);
 
-  const isFreshSession = !currentSession?.messages?.length;
+  const isFreshSession = !messages?.length;
+
+  const sendMessage = (input: string) => {
+    const props = getAssistantByKey(preferences.defaultAssistant);
+    if (!props || !session) {
+      return;
+    }
+    invokeModel({
+      input,
+      image: attachment?.base64,
+      sessionId: session.id,
+      assistant: props.assistant,
+    });
+    clearAttachment();
+    editor?.commands.clearContent();
+  };
 
   useEffect(() => {
-    if (text) {
+    if (text && session) {
       editor?.commands.clearContent();
       editor?.commands.setContent(text);
-      const props = getAssistantByKey(preferences.defaultAssistant);
-      if (!props) {
-        return;
-      }
-      handleRunModel({
-        input: text,
-        image: attachment?.base64,
-        sessionId: sessionId.toString(),
-        assistant: props.assistant,
-      });
-      clearAttachment();
-
-      editor?.commands.clearContent();
+      sendMessage(text);
     }
   }, [text]);
 
@@ -123,7 +114,7 @@ export const ChatInput = () => {
           <Button
             onClick={scrollToBottom}
             size="iconSm"
-            className="dark:bg-zinc-800 dark:border dark:text-white dark:border-white/10"
+            className="dark:border dark:border-white/10 dark:bg-zinc-800 dark:text-white"
             variant="outline"
             rounded="full"
           >
@@ -145,7 +136,7 @@ export const ChatInput = () => {
           <Button
             rounded="full"
             size="sm"
-            className="dark:bg-zinc-800 dark:border dark:text-white dark:border-white/10"
+            className="dark:border dark:border-white/10 dark:bg-zinc-800 dark:text-white"
             onClick={() => {
               stopGeneration();
             }}
@@ -158,35 +149,12 @@ export const ChatInput = () => {
     }
   };
 
-  //   if (showPopup && !recording && !transcribing) {
-  //     return (
-  //       <motion.span
-  //         initial={{ scale: 0, opacity: 0 }}
-  //         animate={{ scale: 1, opacity: 1 }}
-  //         exit={{ scale: 0, opacity: 0 }}
-  //       >
-  //         <Button
-  //           onClick={() => {
-  //             setContextValue(selectedText);
-  //             handleClearSelection();
-  //             inputRef.current?.focus();
-  //           }}
-  //           variant="secondary"
-  //           size="sm"
-  //         >
-  //           <Quotes size={20} weight="bold" /> Reply
-  //         </Button>
-  //       </motion.span>
-  //     );
-  //   }
-  // };
-
   const renderSelectedContext = () => {
     if (contextValue) {
       return (
-        <div className="flex flex-row items-start py-2 ring-1 ring-zinc-100 dark:ring-zinc-700 bg-white border-zinc-100 dark:bg-zinc-800 border dark:border-white/10 text-zinc-700 dark:text-zinc-200 rounded-xl w-full md:w-[700px] lg:w-[720px]  justify-start gap-2 pl-2 pr-2">
+        <div className="flex w-full flex-row items-start justify-start gap-2 rounded-xl border border-zinc-100 bg-white py-2 pl-2 pr-2 text-zinc-700 ring-1 ring-zinc-100 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 md:w-[700px] lg:w-[720px]">
           <ArrowElbowDownRight size={16} weight="bold" className="mt-1" />
-          <p className="w-full overflow-hidden ml-2 text-sm md:text-base line-clamp-2">
+          <p className="ml-2 line-clamp-2 w-full overflow-hidden text-sm md:text-base">
             {contextValue}
           </p>
           <Button
@@ -195,7 +163,7 @@ export const ChatInput = () => {
             onClick={() => {
               setContextValue("");
             }}
-            className="flex-shrink-0 ml-4"
+            className="ml-4 flex-shrink-0"
           >
             <X size={14} weight="bold" />
           </Button>
@@ -207,106 +175,88 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 md:px-4 pb-4 pt-16  right-0 gap-2",
-        "bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0",
-        isFreshSession && "top-0"
+        "absolute bottom-0 right-0 flex w-full flex-col items-center justify-end gap-2 px-2 pb-4 pt-16 md:justify-center md:px-4",
+        "left-0 bg-gradient-to-t from-white from-70% to-transparent transition-all duration-1000 ease-in-out dark:from-zinc-800",
+        isFreshSession && "top-0",
       )}
     >
       {isFreshSession && <ChatGreeting />}
-      <div className="flex flex-row items-center justify-center gap-2 mb-2">
+      <div className="mb-2 flex flex-row items-center justify-center gap-2">
         {renderScrollToBottom()}
         {renderStopGeneration()}
         {renderListeningIndicator()}
       </div>
-      <div className="flex flex-col gap-3 w-full md:w-[700px] lg:w-[720px]">
+      <div className="flex w-full flex-col gap-3 md:w-[700px] lg:w-[720px]">
         {renderSelectedContext()}
         {editor && (
-          <PromptsBotsCombo
-            open={openPromptsBotCombo}
-            onBack={() => {
-              editor?.commands.clearContent();
-              editor?.commands.focus("end");
-            }}
-            onPromptSelect={(prompt) => {
-              editor?.commands.setContent(prompt.content);
-              editor?.commands.insertContent("");
-              editor?.commands.focus("end");
-              setOpenPromptsBotCombo(false);
-            }}
-            onOpenChange={setOpenPromptsBotCombo}
+          <motion.div
+            variants={slideUpVariant}
+            initial={"initial"}
+            animate={editor.isEditable ? "animate" : "initial"}
+            className="flex w-full flex-col items-start gap-0 overflow-hidden rounded-2xl border bg-zinc-50 dark:border-white/5 dark:bg-white/5"
           >
-            <motion.div
-              variants={slideUpVariant}
-              initial={"initial"}
-              animate={editor.isEditable ? "animate" : "initial"}
-              className="flex flex-col items-start gap-0 focus-within:ring-2 ring-zinc-100 dark:ring-zinc-700 ring-offset-2 dark:ring-offset-zinc-800 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
-            >
-              <div className="flex flex-col items-start justify-start w-full">
-                {attachment && (
-                  <div className="pl-2 md:pl-3 pr-2 pt-2">
-                    {renderAttachedImage()}
-                  </div>
-                )}
-                <div className="flex flex-row pl-2 md:pl-3 pr-2 py-2 w-full gap-0 items-end">
-                  <EditorContent
-                    editor={editor}
-                    autoFocus
-                    onKeyDown={(e) => {
-                      console.log("keydown", e.key);
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        sendMessage(attachment?.base64);
-                        clearAttachment();
-                      }
-                    }}
-                    className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
-                  />
-
-                  {!isGenerating && renderRecordingControls()}
+            <div className="flex w-full flex-col items-start justify-start">
+              {attachment && (
+                <div className="pl-2 pr-2 pt-2 md:pl-3">
+                  {renderAttachedImage()}
                 </div>
+              )}
+
+              <div className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
+                <EditorContent
+                  editor={editor}
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      sendMessage(editor.getText());
+                    }
+                  }}
+                  className="no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[120px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-sm outline-none focus:outline-none md:text-base [&>*]:leading-6 [&>*]:outline-none"
+                />
+                {!isGenerating && renderRecordingControls()}
               </div>
-              <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 pb-2 px-2">
+            </div>
+            <div className="flex w-full flex-row items-center justify-start gap-0 px-2 pb-2 pt-1">
+              <Button
+                variant={"ghost"}
+                onClick={openAssistants}
+                className={cn("gap-2 pl-1 pr-3 text-xs md:text-sm")}
+                size="sm"
+              >
+                {selectedAssistant?.assistant.key &&
+                  getAssistantIcon(selectedAssistant?.assistant.key, "sm")}
+
+                {selectedAssistant?.assistant.name}
+              </Button>
+
+              <PluginSelect selectedAssistantKey={selectedAssistantKey} />
+              {renderImageUpload({ showIcon: true })}
+
+              <div className="flex-1"></div>
+
+              {!isGenerating && (
                 <Button
-                  variant={"ghost"}
-                  onClick={openAssistants}
-                  className={cn("pl-1 pr-3 gap-2 text-xs md:text-sm")}
-                  size="sm"
+                  size="iconSm"
+                  rounded="full"
+                  variant={!!editor?.getText() ? "default" : "secondary"}
+                  disabled={!editor?.getText()}
+                  className={cn(
+                    !!editor?.getText() &&
+                      "bg-zinc-800 text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:outline-emerald-400",
+                  )}
+                  onClick={() => {
+                    sendMessage(editor.getText());
+                  }}
                 >
-                  {selectedAssistant?.assistant.key &&
-                    getAssistantIcon(selectedAssistant?.assistant.key)}
-
-                  {selectedAssistant?.assistant.name}
+                  <Navigation03Icon
+                    size={18}
+                    variant="stroke"
+                    strokeWidth="2"
+                  />
                 </Button>
-
-                <PluginSelect selectedAssistantKey={selectedAssistantKey} />
-                {renderFileUpload()}
-                <QuickSettings />
-                <div className="flex-1"></div>
-
-                {!isGenerating && (
-                  <Button
-                    size="iconSm"
-                    rounded="full"
-                    variant={!!editor?.getText() ? "default" : "secondary"}
-                    disabled={!editor?.getText()}
-                    className={cn(
-                      !!editor?.getText() &&
-                        "bg-zinc-800 dark:bg-emerald-500/20 text-white dark:text-emerald-400 dark:outline-emerald-400"
-                    )}
-                    onClick={() => {
-                      sendMessage(attachment?.base64);
-                      clearAttachment();
-                    }}
-                  >
-                    <Navigation03Icon
-                      size={18}
-                      variant="stroke"
-                      strokeWidth="2"
-                    />
-                  </Button>
-                )}
-              </div>
-            </motion.div>
-          </PromptsBotsCombo>
+              )}
+            </div>
+          </motion.div>
         )}
       </div>
       {isFreshSession && <ChatExamples />}

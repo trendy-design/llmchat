@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import { motion } from "framer-motion";
 export type TLabelDivider = {
   label: string;

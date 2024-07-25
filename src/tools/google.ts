@@ -1,4 +1,4 @@
-import { TToolArg } from "@/hooks";
+import { TToolArg } from "@/types";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import axios from "axios";
 import { z } from "zod";
@@ -53,6 +53,7 @@ const googleSearchTool = (args: TToolArg) => {
           },
           toolRenderArgs: { searchResult },
           toolResponse: searchResult,
+          toolLoading: false,
         });
         return searchPrompt;
       } catch (error) {

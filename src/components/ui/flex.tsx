@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import { VariantProps, cva } from "class-variance-authority";
 import React from "react";
 const flexVariants = cva("flex", {

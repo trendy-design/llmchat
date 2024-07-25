@@ -1,15 +1,15 @@
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { ModelIcon } from "./model-icon";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/helper/clsx";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
+import { TModelKey } from "@/types";
+import { FC, useState } from "react";
 
 export type TModelSelect = {
   selectedModel: TModelKey;
@@ -19,17 +19,22 @@ export type TModelSelect = {
   className?: string;
 };
 
-export const ModelSelect = ({
+export const ModelSelect: FC<TModelSelect> = ({
   selectedModel,
   variant,
   fullWidth,
   setSelectedModel,
   className,
-}: TModelSelect) => {
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { getModelByKey, models, assistants, getAssistantByKey } =
-    useModelList();
+  const {
+    getModelByKey,
+    models,
+    assistants,
+    getAssistantByKey,
+    getAssistantIcon,
+  } = useAssistantUtils();
 
   const activeAssistant = getAssistantByKey(selectedModel);
 
@@ -39,10 +44,11 @@ export const ModelSelect = ({
         <DropdownMenuTrigger asChild>
           <Button
             variant={variant || "ghost"}
-            className={cn("pl-1 pr-3 gap-2 text-xs md:text-sm", className)}
+            className={cn("gap-2 pl-1 pr-3 text-xs md:text-sm", className)}
             size="sm"
           >
-            {activeAssistant?.model?.icon("sm")}{" "}
+            {activeAssistant?.assistant &&
+              getAssistantIcon(activeAssistant?.assistant.key, "sm")}
             {activeAssistant?.assistant.name}
           </Button>
         </DropdownMenuTrigger>
@@ -51,8 +57,8 @@ export const ModelSelect = ({
           align="end"
           sideOffset={4}
           className={cn(
-            "text-xs z-[610] md:text-sm max-h-[260px] overflow-y-auto no-scrollbar",
-            fullWidth ? "w-full" : "min-w-[250px]"
+            "no-scrollbar z-[610] max-h-[260px] overflow-y-auto text-xs md:text-sm",
+            fullWidth ? "w-full" : "min-w-[250px]",
           )}
         >
           {assistants
@@ -63,9 +69,9 @@ export const ModelSelect = ({
               return (
                 <DropdownMenuItem
                   className={cn(
-                    "text-xs md:text-sm font-medium",
+                    "text-xs font-medium md:text-sm",
                     activeAssistant?.assistant.key === assistant.key &&
-                      "dark:bg-black/30 bg-zinc-50"
+                      "bg-zinc-50 dark:bg-black/30",
                   )}
                   key={assistant.key}
                   onClick={() => {
@@ -73,11 +79,8 @@ export const ModelSelect = ({
                     setIsOpen(false);
                   }}
                 >
-                  {assistant.type === "base" ? (
-                    model?.icon("sm")
-                  ) : (
-                    <ModelIcon type="custom" size="sm" />
-                  )}
+                  {getAssistantIcon(assistant.key, "sm")}
+                  {assistant.name}
                   {model?.isNew && <Badge>New</Badge>}
                 </DropdownMenuItem>
               );

@@ -5,8 +5,8 @@ import { Command as CommandPrimitive } from "cmdk";
 import * as React from "react";
 
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
-import { Search01Icon } from "@hugeicons/react";
+import { Search01Icon } from "@/components/ui/icons";
+import { cn } from "@/helper/clsx";
 
 const Command = React.forwardRef<
   React.ElementRef<typeof CommandPrimitive>,
@@ -15,8 +15,8 @@ const Command = React.forwardRef<
   <CommandPrimitive
     ref={ref}
     className={cn(
-      "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover dark:bg-zinc-800 text-popover-foreground",
-      className
+      "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground dark:bg-zinc-800",
+      className,
     )}
     {...props}
   />
@@ -29,8 +29,8 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
       <DialogOverlay className="!bg-transparent backdrop-blur-0" />
-      <DialogContent className="p-0 border border-transparent dark:border-white/10 overflow-hidden">
-        <Command className="dark:!bg-zinc-800 bg-white pb-2  [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 ">
+      <DialogContent className="p-0 overflow-hidden border border-transparent dark:border-white/10">
+        <Command className="bg-white pb-2 dark:!bg-zinc-800 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
           {children}
         </Command>
       </DialogContent>
@@ -46,13 +46,13 @@ const CommandInput = React.forwardRef<
     <Search01Icon
       size={24}
       strokeWidth="2"
-      className="mr-2 h-4 w-4 shrink-0 opacity-50"
+      className="w-4 h-4 mr-2 opacity-50 shrink-0"
     />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
         "flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
-        className
+        className,
       )}
       {...props}
     />
@@ -68,8 +68,8 @@ const CommandList = React.forwardRef<
   <CommandPrimitive.List
     ref={ref}
     className={cn(
-      "max-h-[410px] overflow-y-auto no-scrollbar overflow-x-hidden",
-      className
+      "no-scrollbar max-h-[410px] overflow-y-auto overflow-x-hidden",
+      className,
     )}
     {...props}
   />
@@ -83,7 +83,7 @@ const CommandEmpty = React.forwardRef<
 >((props, ref) => (
   <CommandPrimitive.Empty
     ref={ref}
-    className="py-6 text-center text-sm md:text-base"
+    className="py-6 text-sm text-center md:text-base"
     {...props}
   />
 ));
@@ -97,8 +97,8 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={cn(
-      "overflow-hidden text-foreground [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-sm md:text-base [&_[cmdk-group-heading]]:font-medium dark:[&_[cmdk-group-heading]]:text-white/30 [&_[cmdk-group-heading]]:text-zinc-800/50",
-      className
+      "overflow-hidden text-foreground md:text-base [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-zinc-800/50 dark:[&_[cmdk-group-heading]]:text-white/30",
+      className,
     )}
     {...props}
   />
@@ -125,8 +125,8 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-pointer font-medium gap-2 text-zinc-800 dark:text-zinc-100 items-center rounded-xl !px-3 !py-2 min-h-12 text-xs md:text-sm outline-none aria-selected:bg-zinc-100 dark:aria-selected:bg-zinc-900/50 aria-selected:text-zinc-800 aria-disabled:opacity-50 aria-disabled:pointer-events-none dark:aria-selected:text-zinc-100",
-      className
+      "relative flex min-h-12 cursor-pointer items-center gap-2 rounded-xl !px-3 !py-2 text-xs font-medium text-zinc-800 outline-none aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-selected:bg-zinc-100 aria-selected:text-zinc-800 dark:text-zinc-100 dark:aria-selected:bg-zinc-900/50 dark:aria-selected:text-zinc-100 md:text-sm",
+      className,
     )}
     {...props}
   />
@@ -141,8 +141,8 @@ const CommandShortcut = ({
   return (
     <span
       className={cn(
-        "ml-auto text-sm md:text-base tracking-widest text-muted-foreground",
-        className
+        "ml-auto text-sm tracking-widest text-muted-foreground md:text-base",
+        className,
       )}
       {...props}
     />

@@ -1,17 +1,20 @@
-import { useSessionsContext } from "@/context/sessions";
-import { TChatSession } from "@/hooks/use-chat-session";
-import { useModelList } from "@/hooks/use-model-list";
-import { cn } from "@/lib/utils";
-import { Delete01Icon, Edit02Icon } from "@hugeicons/react";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { Delete01Icon, Edit02Icon } from "@/components/ui/icons";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Type } from "@/components/ui/text";
+import { Tooltip } from "@/components/ui/tooltip";
+import { useSessions } from "@/context";
+import { cn } from "@/helper/clsx";
+import { TChatSession } from "@/types";
 import moment from "moment";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "../ui/button";
-import { Flex } from "../ui/flex";
-import { Input } from "../ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Type } from "../ui/text";
-import { Tooltip } from "../ui/tooltip";
 
 export const HistoryItem = ({
   session,
@@ -20,26 +23,18 @@ export const HistoryItem = ({
   session: TChatSession;
   dismiss: () => void;
 }) => {
+  const { sessionId } = useParams();
   const {
-    currentSession,
     updateSessionMutation,
-    removeSessionByIdMutation,
+    removeSessionMutation,
+    refetchSessions,
     createSession,
-  } = useSessionsContext();
-  const { getModelByKey, getAssistantByKey } = useModelList();
+  } = useSessions();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(session.title);
   const router = useRouter();
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const historyInputRef = useRef<HTMLInputElement>(null);
-
-  const assistantProps = getAssistantByKey(
-    session.messages?.[0]?.inputProps?.assistant?.key
-  );
-
-  const modelProps = getModelByKey(
-    session.messages?.[0]?.inputProps?.assistant?.baseModel
-  );
 
   useEffect(() => {
     if (isEditing) {
@@ -47,52 +42,79 @@ export const HistoryItem = ({
     }
   }, [isEditing]);
 
-  return (
-    <div
-      key={session.id}
-      className={cn(
-        "gap-2 group w-full cursor-pointer flex flex-row items-start p-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
-        currentSession?.id === session.id || isEditing
-          ? "bg-black/10 dark:bg-black/30"
-          : ""
-      )}
-      onClick={() => {
-        if (!isEditing) {
-          router.push(`/chat/${session.id}`);
-          dismiss();
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value);
+  };
+
+  const handleInputBlur = () => {
+    setIsEditing(false);
+  };
+
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      setIsEditing(false);
+      updateSessionMutation.mutate({
+        sessionId: session.id,
+        session: {
+          title: title?.trim() || session?.title || "Untitled",
+        },
+      });
+    }
+  };
+
+  const handleOnClick = () => {
+    if (!isEditing) {
+      router.push(`/chat/${session.id}`);
+      dismiss();
+    }
+  };
+
+  const containerClasses = cn(
+    "gap-2 w-full group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
+    sessionId?.toString() === session.id || isEditing
+      ? "bg-black/10 dark:bg-black/30"
+      : "",
+  );
+
+  const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setIsEditing(true);
+    e.stopPropagation();
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    setOpenDeleteConfirm(true);
+    e.stopPropagation();
+  };
+
+  const handleDeleteConfirm = (e: React.MouseEvent<HTMLButtonElement>) => {
+    removeSessionMutation.mutate(session.id, {
+      onSuccess: () => {
+        if (sessionId === session.id) {
+          createSession({
+            redirect: true,
+          });
         }
-      }}
-    >
+        refetchSessions?.();
+      },
+    });
+    e.stopPropagation();
+  };
+
+  return (
+    <div key={session.id} className={containerClasses} onClick={handleOnClick}>
       {isEditing ? (
         <Input
           variant="ghost"
           className="h-6 text-sm"
           ref={historyInputRef}
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              setIsEditing(false);
-              updateSessionMutation.mutate({
-                sessionId: session.id,
-                session: {
-                  title: title?.trim() || session?.title || "Untitled",
-                },
-              });
-            }
-          }}
-          onBlur={() => {
-            setIsEditing(false);
-            updateSessionMutation.mutate({
-              sessionId: session.id,
-              session: { title: title?.trim() || session?.title || "Untitled" },
-            });
-          }}
+          onChange={handleInputChange}
+          onKeyDown={handleInputKeyDown}
+          onBlur={handleInputBlur}
         />
       ) : (
         <>
-          {modelProps?.icon?.("sm")}
-          <Flex direction="col" items="start" className="w-full">
+          <Flex direction="col" items="start" className="w-full" gap="none">
             <Type
               className="line-clamp-1"
               size="sm"
@@ -109,16 +131,9 @@ export const HistoryItem = ({
       )}
       {(!isEditing || openDeleteConfirm) && (
         <Flex
-          className={cn("group-hover:flex hidden", openDeleteConfirm && "flex")}
+          className={cn("hidden group-hover:flex", openDeleteConfirm && "flex")}
         >
-          <Button
-            variant="ghost"
-            size="iconXS"
-            onClick={(e) => {
-              setIsEditing(true);
-              e.stopPropagation();
-            }}
-          >
+          <Button variant="ghost" size="iconXS" onClick={handleEditClick}>
             <Edit02Icon size={14} variant="stroke" strokeWidth="2" />
           </Button>
           <Tooltip content="Delete">
@@ -130,32 +145,20 @@ export const HistoryItem = ({
                 <Button
                   variant={openDeleteConfirm ? "secondary" : "ghost"}
                   size="iconXS"
-                  onClick={(e) => {
-                    setOpenDeleteConfirm(true);
-                    e.stopPropagation();
-                  }}
+                  onClick={handleDeleteClick}
                 >
                   <Delete01Icon size={14} variant="stroke" strokeWidth="2" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="z-[1000]" side="bottom">
-                <p className="text-sm md:text-base font-medium pb-2">
+                <p className="pb-2 text-sm font-medium md:text-base">
                   Are you sure you want to delete this message?
                 </p>
                 <div className="flex flex-row gap-1">
                   <Button
                     variant="destructive"
                     size="sm"
-                    onClick={(e) => {
-                      removeSessionByIdMutation.mutate(session.id, {
-                        onSuccess: () => {
-                          createSession({
-                            redirect: true,
-                          });
-                        },
-                      });
-                      e.stopPropagation();
-                    }}
+                    onClick={handleDeleteConfirm}
                   >
                     Delete Message
                   </Button>

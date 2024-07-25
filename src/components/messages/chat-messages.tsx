@@ -1,24 +1,27 @@
-import { useSessionsContext } from "@/context/sessions";
-import { TChatMessage } from "@/hooks/use-chat-session";
+import { useChatContext } from "@/context";
+import { TChatMessage } from "@/types";
 import { useEffect, useRef } from "react";
-import { AIMessage } from "./ai-message";
+import { AIMessage } from "./ai/ai-message";
 import { HumanMessage } from "./human-message";
 
 export type TMessageListByDate = Record<string, TChatMessage[]>;
 
 export const ChatMessages = () => {
-  const { currentSession, isGenerating } = useSessionsContext();
+  const { store } = useChatContext();
+  const session = store((state) => state.session);
+  const messages = store((state) => state.messages);
+  const isGenerating = store((state) => state.isGenerating);
   const chatContainer = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isUserNearBottom()) {
       scrollToBottom();
     }
-  }, [currentSession?.messages]);
+  }, [messages]);
 
   useEffect(() => {
     scrollToBottom();
-  }, [currentSession?.messages?.length]);
+  }, [messages?.length]);
 
   function isUserNearBottom() {
     var scrollThreshold = 50;
@@ -41,7 +44,7 @@ export const ChatMessages = () => {
     return (
       <div className="flex flex-col gap-1 items-end w-full" key={message.id}>
         <HumanMessage chatMessage={message} isLast={isLast} />
-        <AIMessage chatMessage={message} isLast={isLast} />
+        <AIMessage message={message} isLast={isLast} />
       </div>
     );
   };
@@ -54,11 +57,8 @@ export const ChatMessages = () => {
     >
       <div className="w-full md:w-[700px] lg:w-[720px] p-2 flex flex-1 flex-col gap-24">
         <div className="flex flex-col gap-8 w-full items-start">
-          {currentSession?.messages?.map((message, index) =>
-            renderMessage(
-              message,
-              currentSession?.messages.length - 1 === index
-            )
+          {messages?.map((message, index) =>
+            renderMessage(message, messages.length - 1 === index)
           )}
         </div>
       </div>

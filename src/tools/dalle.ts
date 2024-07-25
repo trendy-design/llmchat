@@ -1,10 +1,10 @@
-import { TToolArg } from "@/hooks";
+import { TToolArg } from "@/types";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { DallEAPIWrapper } from "@langchain/openai";
 import { z } from "zod";
 
 const dalleTool = (args: TToolArg) => {
-  const { apiKeys, sendToolResponse } = args;
+  const { apiKeys, sendToolResponse, preferences } = args;
   const imageGenerationSchema = z.object({
     imageDescription: z.string(),
   });
@@ -19,6 +19,8 @@ const dalleTool = (args: TToolArg) => {
           n: 1,
           model: "dall-e-3",
           apiKey: apiKeys.openai,
+          quality: preferences.dalleImageQuality,
+          size: preferences.dalleImageSize,
         });
 
         const result = await tool.invoke(imageDescription);
@@ -36,6 +38,7 @@ const dalleTool = (args: TToolArg) => {
             image: result,
           },
           toolResponse: result,
+          toolLoading: false,
         });
         const searchPrompt = "";
         return searchPrompt;

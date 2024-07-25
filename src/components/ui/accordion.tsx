@@ -4,7 +4,7 @@ import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import * as React from "react";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 
 const Accordion = AccordionPrimitive.Root;
 
@@ -15,7 +15,7 @@ const AccordionItem = React.forwardRef<
   <AccordionPrimitive.Item
     ref={ref}
     className={cn(
-      "m-2 px-4 bg-zinc-50 dark:bg-white/5 rounded-2xl no-underline",
+      "my-2 px-4 bg-zinc-50 dark:bg-white/5 rounded-2xl no-underline",
       className
     )}
     {...props}

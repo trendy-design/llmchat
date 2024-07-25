@@ -1,21 +1,25 @@
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { Settings03Icon } from "@/components/ui/icons";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
+import { Type } from "@/components/ui/text";
+import { Tooltip } from "@/components/ui/tooltip";
+import { defaultPreferences } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
-import { useModelList } from "@/hooks/use-model-list";
-import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
-import { Settings03Icon } from "@hugeicons/react";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
+import { TPreferences } from "@/types";
 import { ArrowClockwise, Info } from "@phosphor-icons/react";
 import { useState } from "react";
-import { ModelInfo } from "./model-info";
-import { Button } from "./ui/button";
-import { Flex } from "./ui/flex";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Slider } from "./ui/slider";
-import { Type } from "./ui/text";
-import { Tooltip } from "./ui/tooltip";
 
 export const QuickSettings = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { preferences, updatePreferences } = usePreferenceContext();
-  const { getModelByKey, getAssistantByKey } = useModelList();
+  const { getModelByKey, getAssistantByKey } = useAssistantUtils();
 
   const renderResetToDefault = (key: keyof TPreferences) => {
     return (
@@ -44,11 +48,6 @@ export const QuickSettings = () => {
         </PopoverTrigger>
       </Tooltip>
       <PopoverContent className="p-0 dark:bg-zinc-700 mr-8 roundex-2xl w-[300px]">
-        {assistant && (
-          <div className="border-b dark:border-white/10 border-black/10 p-2">
-            <ModelInfo model={assistant.model} showDetails={false} />
-          </div>
-        )}
         <Flex direction="col" className="w-full px-3 py-1">
           <Flex items="center" justify="between" className="w-full">
             <Tooltip content="Temprature">
