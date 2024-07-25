@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Edit02Icon, NoteIcon } from "@/components/ui/icons";
-import { TPrompt } from "@/hooks/use-prompts";
+import { TPrompt } from "@/types";
 import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
 import { Flex } from "../ui";
 
@@ -41,8 +41,8 @@ export const PromptLibrary = ({
         <CommandInput placeholder="Search Prompts" />
       </div>
 
-      <div className="flex flex-col w-full relative h-full">
-        <CommandEmpty className="text-sm text-zinc-500 w-full flex flex-col items-center justify-center gap-2 p-4">
+      <div className="relative flex h-full w-full flex-col">
+        <CommandEmpty className="flex w-full flex-col items-center justify-center gap-2 p-4 text-sm text-zinc-500">
           No prompts found
           <Button variant="outline" size="sm" onClick={onCreate}>
             Create new prompt

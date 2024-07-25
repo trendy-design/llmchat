@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { TPrompt } from "@/hooks/use-prompts";
+import { TPrompt } from "@/types";
 import { ArrowLeft } from "@phosphor-icons/react";
 import Document from "@tiptap/extension-document";
 import HardBreak from "@tiptap/extension-hard-break";
@@ -98,8 +98,8 @@ export const CreatePrompt = ({
   };
 
   return (
-    <div className="relative flex flex-col items-start w-full h-full overflow-hidden">
-      <div className="flex flex-row items-center w-full gap-3 px-2 py-2 border-b border-zinc-500/20">
+    <div className="relative flex h-full w-full flex-col items-start overflow-hidden">
+      <div className="flex w-full flex-row items-center gap-3 border-b border-zinc-500/20 px-2 py-2">
         <Button
           size="iconSm"
           variant="ghost"
@@ -132,7 +132,7 @@ export const CreatePrompt = ({
           Use <Badge>{`{{ input }}`}</Badge> for user input
         </p>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 flex flex-row items-center w-full gap-3 px-2 py-2 bg-white border-t border-zinc-500/20 dark:bg-zinc-800">
+      <div className="absolute bottom-0 left-0 right-0 flex w-full flex-row items-center gap-3 border-t border-zinc-500/20 bg-white px-2 py-2 dark:bg-zinc-800">
         <Button
           variant="default"
           onClick={() => {
