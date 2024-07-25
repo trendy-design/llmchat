@@ -1,8 +1,8 @@
-import { TToolArg } from "@/hooks";
+import { modelService } from "@/services/models";
+import { TToolArg } from "@/types";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { DynamicStructuredTool } from "@langchain/core/tools";
-import { ChatOpenAI } from "@langchain/openai";
 import { StructuredOutputParser } from "langchain/output_parsers";
 import { z } from "zod";
 
@@ -11,17 +11,19 @@ const memoryParser = StructuredOutputParser.fromZodSchema(
     memories: z
       .array(z.string().describe("key information point"))
       .describe("list of key informations"),
-  })
+  }),
 );
 
 const memoryTool = (args: TToolArg) => {
-  const { apiKeys, sendToolResponse, preferences, updatePreferences } = args;
+  const { apiKeys, sendToolResponse, preferences, updatePreferences, model } =
+    args;
   const memorySchema = z.object({
     memory: z
-      .string()
+      .array(z.string().describe("key information"))
       .describe(
-        "key information about the user, any user preference to personalize future interactions. It must be short and concise"
+        "key informations about the user, any user preference to personalize future interactions.",
       ),
+
     question: z.string().describe("question user asked"),
   });
 
@@ -32,27 +34,43 @@ const memoryTool = (args: TToolArg) => {
     schema: memorySchema,
     func: async ({ memory, question }, runManager) => {
       try {
-        const existingMemories = preferences?.memories;
-        const model = new ChatOpenAI({
-          model: "gpt-3.5-turbo",
+        const existingMemories = preferences?.memories || [];
+
+        const currentModel = await modelService.createInstance({
+          model: model,
           apiKey: apiKeys.openai,
         });
+        // const model = new ChatOpenAI({
+        //   model: "gpt-3.5-turbo",
+        //   apiKey: apiKeys.openai,
+        // });
 
         const chain = RunnableSequence.from([
           PromptTemplate.fromTemplate(
-            `Here is new information: {new_memory} \n and update the following information if required otherwise add new information: """{existing_memory}""" \n{format_instructions} `
+            `User's request: "{question}"
+            New information: {new_memory}
+            Existing memories: {existing_memory}
+            
+            Update, delete, or add memories based on the new information:
+            1. Update existing memories with new details.
+            2. Delete memories if requested.
+            3. Add new memories if they are unique.
+            
+            {format_instructions}`,
           ),
-          model,
+          currentModel as any,
           memoryParser as any,
         ]);
 
         const response = await chain.invoke({
-          new_memory: memory,
-          existing_memory: existingMemories?.join("\n"),
+          new_memory: memory.join("\n"),
+          existing_memory: existingMemories.join("\n"),
+          question: question,
           format_instructions: memoryParser.getFormatInstructions(),
         });
+
         if (!response?.memories?.length) {
-          runManager?.handleToolError("Error performing Duckduck go search");
+          runManager?.handleToolError("Error performing memory update");
           return question;
         }
 
@@ -60,18 +78,17 @@ const memoryTool = (args: TToolArg) => {
           memories: response.memories,
         });
 
-        console.log("tool updated", response);
-
         sendToolResponse({
           toolName: "memory",
           toolArgs: {
             memory,
           },
+          toolLoading: false,
           toolResponse: response,
         });
         return question;
       } catch (error) {
-        return "Error performing search. Must not use duckduckgo_search tool now. Ask user to check API keys.";
+        return "Error performing memory update. Please check API keys.";
       }
     },
   });

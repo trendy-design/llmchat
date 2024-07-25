@@ -1,72 +1,78 @@
+import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
 import { usePreferenceContext } from "@/context/preferences";
 import { useLLMTest } from "@/hooks/use-llm-test";
-import { ArrowRight, Info } from "@phosphor-icons/react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Button } from "../../ui/button";
-import { Input } from "../../ui/input";
+import { ApiKeyInfo } from "./api-key-info";
+import ApiKeyInput from "./api-key-input";
 
 export const GeminiSettings = () => {
   const [key, setKey] = useState<string>("");
   const { apiKeys, updateApiKey } = usePreferenceContext();
-  const { renderSaveApiKeyButton } = useLLMTest();
+  const { checkApiKey, isCheckingApiKey } = useLLMTest();
+
   useEffect(() => {
     setKey(apiKeys.gemini || "");
   }, [apiKeys.gemini]);
+
   return (
     <Flex direction="col" gap="sm">
-      <div className="flex flex-row items-end justify-between">
-        <p className="text-xs md:text-sm  text-zinc-500">
+      <Flex items="center" gap="sm">
+        <p className="text-xs md:text-sm font-medium text-zinc-300">
           Google Gemini API Key
         </p>
-      </div>
-      <Input
-        placeholder="xxxxxxxxxxxxxxxxxxxxxxxx"
-        type="password"
-        autoComplete="off"
+        <Link
+          href="https://aistudio.google.com/app/apikey"
+          className="text-blue-400 font-medium"
+        >
+          (Get API key here)
+        </Link>
+      </Flex>
+      <ApiKeyInput
         value={key}
-        onChange={(e) => {
-          setKey(e.target.value);
-        }}
+        setValue={setKey}
+        isDisabled={!!apiKeys.gemini}
+        placeholder="xxxxxxxxxxxxxxxxxxxxxxxx"
+        isLocked={!!apiKeys.gemini}
       />
 
-      <div className="flex flex-row items-center gap-2">
-        {key &&
-          key !== apiKeys?.gemini &&
-          renderSaveApiKeyButton("gemini", key, () => {
-            updateApiKey("gemini", key);
-          })}
+      <div className="flex flex-row items-center gap-1">
+        {!apiKeys.gemini && (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              checkApiKey({
+                model: "gemini",
+                key,
+                onValidated: () => {
+                  updateApiKey("gemini", key);
+                },
+                onError: () => {
+                  setKey("");
+                },
+              });
+            }}
+          >
+            {isCheckingApiKey ? "Checking..." : "Save Key"}
+          </Button>
+        )}
+
         {apiKeys?.gemini && (
           <Button
-            variant="outline"
             size="sm"
+            variant="secondary"
             onClick={() => {
               setKey("");
               updateApiKey("gemini", "");
             }}
           >
-            Remove API Key
+            Remove Key
           </Button>
         )}
-
-        <Button
-          size="sm"
-          variant="secondary"
-          onClick={() => {
-            window.open("https://aistudio.google.com/app/apikey", "_blank");
-          }}
-        >
-          Get your API key here <ArrowRight size={16} weight="bold" />
-        </Button>
       </div>
-
-      <div className="flex flex-row items-start gap-1 py-2 text-zinc-500">
-        <Info size={16} weight="bold" />
-        <p className=" text-xs">
-          Your API Key is stored locally on your browser and never sent anywhere
-          else.
-        </p>
-      </div>
+      <ApiKeyInfo />
     </Flex>
   );
 };
