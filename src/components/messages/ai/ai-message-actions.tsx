@@ -90,11 +90,9 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
                   },
                   {
                     onSuccess: () => {
-                      if (messages?.length <= 1) {
-                        window?.location?.reload();
-                      } else {
+                     
                         refetch();
-                      }
+                      
                     },
                   },
                 );
