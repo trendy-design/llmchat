@@ -35,6 +35,7 @@ export default function DataSettings() {
   function handleFileSelect(event: ChangeEvent<HTMLInputElement>) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
+    console.log(file);
 
     if (file) {
       const reader = new FileReader();
@@ -43,6 +44,8 @@ export default function DataSettings() {
         console.log(content);
         try {
           exportService.processImport(content);
+
+          console.log("imported");
 
           toast({
             title: "Data Imported",
@@ -103,7 +106,7 @@ export default function DataSettings() {
             <PopOverConfirmProvider
               title="Are you sure you want to reset all chat sessions and preferences? This action cannot be undone."
               confimBtnText="Reset All"
-              onConfirm={() => {
+              onConfirm={(dismiss) => {
                 clearSessionsMutation.mutate(undefined, {
                   onSuccess: () => {
                     updatePreferences(defaultPreferences);
@@ -115,7 +118,7 @@ export default function DataSettings() {
                     createSession({
                       redirect: true,
                     });
-                    //     dismiss();
+                    dismiss();
                   },
                 });
               }}
@@ -149,8 +152,9 @@ export default function DataSettings() {
               confimBtnText="Import Data"
               confimBtnVariant="default"
               confirmIcon={AttachmentIcon}
-              onConfirm={() => {
+              onConfirm={(dismiss) => {
                 document?.getElementById("import-config")?.click();
+                dismiss();
               }}
             >
               <Button variant="outline" size="sm">

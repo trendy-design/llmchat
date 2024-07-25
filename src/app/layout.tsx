@@ -1,3 +1,4 @@
+import { MainLayout } from "@/components/layout/main-layout";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import {
   PreferenceProvider,
@@ -39,7 +40,9 @@ export default function RootLayout({
           <ReactQueryProvider>
             <TooltipProvider>
               <PreferenceProvider>
-                <SessionsProvider>{children}</SessionsProvider>
+                <SessionsProvider>
+                  <MainLayout>{children}</MainLayout>
+                </SessionsProvider>
               </PreferenceProvider>
             </TooltipProvider>
           </ReactQueryProvider>
