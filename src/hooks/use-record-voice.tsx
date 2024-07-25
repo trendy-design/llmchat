@@ -147,16 +147,17 @@ export const useRecordVoice = () => {
   };
 
   const renderListeningIndicator = () => {
+    const containerClass = "flex w-full flex-row items-center justify-start gap-2 rounded-2xl border border-zinc-100 bg-white py-1 pl-2 pr-2 text-zinc-700 ring-1 ring-zinc-100 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 md:w-[700px] lg:w-[720px]"
     if (transcribing) {
       return (
-        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-4 py-1 h-10 flex flex-row items-center text-sm md:text-base">
+        <div className={containerClass}>
           <AudioWaveSpinner /> <p>Transcribing ...</p>
         </div>
       );
     }
     if (recording) {
       return (
-        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-2 pr-4 py-1 h-10 flex flex-row items-center text-sm md:text-base">
+        <div className={containerClass}>
           <AudioWaveSpinner />
           <p>Listening ...</p>
         </div>

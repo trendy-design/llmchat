@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 export const ChatGreeting = () => {
   return (
-    <div className="flex flex-row items-start justify-start w-[720px] gap-2">
+    <div className="flex flex-row items-start justify-start w-full md:w-[720px] gap-2">
       <motion.h1
         className="text-3xl font-semibold py-2 text-left leading-9 tracking-tight text-zinc-800 dark:text-zinc-100"
         initial={{ opacity: 0 }}

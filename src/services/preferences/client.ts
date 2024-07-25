@@ -1,8 +1,8 @@
 import { defaultPreferences } from "@/config";
-import { TApiKeys, TPreferences } from "@/types";
+import { TApiKeys, TPreferences, TProvider } from "@/types";
 import { get, set } from "idb-keyval";
 
-class PreferenceService {
+export class PreferenceService {
   async getApiKeys(): Promise<TApiKeys> {
     return (await get("api-keys")) || {};
   }
@@ -12,7 +12,7 @@ class PreferenceService {
   }
 
   async setPreferences(
-    preferences: Partial<TPreferences>
+    preferences: Partial<TPreferences>,
   ): Promise<TPreferences> {
     const currentPreferences = await this.getPreferences();
     const newPreferences = { ...currentPreferences, ...preferences };
@@ -24,7 +24,7 @@ class PreferenceService {
     await set("preferences", defaultPreferences);
   }
 
-  async setApiKey(key: string, value: string): Promise<void> {
+  async setApiKey(key: TProvider, value: string): Promise<void> {
     const keys = await this.getApiKeys();
     const newKeys = { ...keys, [key]: value };
     await set("api-keys", newKeys);

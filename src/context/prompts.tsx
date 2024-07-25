@@ -2,7 +2,8 @@
 import { CreatePrompt } from "@/components/prompts/create-prompt";
 import { PromptLibrary } from "@/components/prompts/prompt-library";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { TPrompt, usePrompts } from "@/hooks/use-prompts";
+import { usePromptsQueries } from "@/services/prompts";
+import { TPrompt } from "@/types";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { createContext, useContext, useState } from "react";
@@ -14,7 +15,7 @@ export type TPromptsContext = {
   allPrompts: TPrompt[];
 };
 export const PromptsContext = createContext<undefined | TPromptsContext>(
-  undefined
+  undefined,
 );
 
 export const usePromptsContext = () => {
@@ -39,15 +40,14 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
   const [isPromptOpen, setIsPromptOpen] = useState(false);
   const [showCreatePrompt, setShowCreatePrompt] = useState(false);
   const [editablePrompt, setEditablePrompt] = useState<TPrompt | undefined>(
-    undefined
+    undefined,
   );
   const {
-    getPrompts,
     promptsQuery,
     createPromptMutation,
     deletePromptMutation,
     updatePromptMutation,
-  } = usePrompts();
+  } = usePromptsQueries();
   const { store } = useChatContext();
   const editor = store((state) => state.editor);
 
@@ -77,7 +77,7 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
       {children}
 
       <Dialog open={isPromptOpen} onOpenChange={setIsPromptOpen}>
-        <DialogContent className="w-[96dvw] max-h-[80dvh] rounded-2xl md:w-[600px] gap-0 md:max-h-[600px] flex flex-col overflow-hidden border border-white/5 p-0">
+        <DialogContent className="flex max-h-[80dvh] w-[96dvw] flex-col gap-0 overflow-hidden rounded-2xl border border-white/5 p-0 md:max-h-[600px] md:w-[600px]">
           {showCreatePrompt ? (
             <CreatePrompt
               prompt={editablePrompt}
