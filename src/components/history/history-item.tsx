@@ -152,7 +152,7 @@ export const HistoryItem = ({
               </PopoverTrigger>
               <PopoverContent className="z-[1000]" side="bottom">
                 <p className="pb-2 text-sm font-medium md:text-base">
-                  Are you sure you want to delete this message?
+                  Are you sure you want to delete this session?
                 </p>
                 <div className="flex flex-row gap-1">
                   <Button
@@ -160,7 +160,7 @@ export const HistoryItem = ({
                     size="sm"
                     onClick={handleDeleteConfirm}
                   >
-                    Delete Message
+                    Delete
                   </Button>
                   <Button
                     variant="ghost"
