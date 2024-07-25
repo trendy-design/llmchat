@@ -94,7 +94,13 @@ export const useChatSessionQueries = () => {
       parentId: string;
       messageId: string;
     }) => {
-      await messagesService.removeMessage(parentId, messageId);
+      const leftMessages = await messagesService.removeMessage(
+        parentId,
+        messageId
+      );
+      if (!leftMessages?.length) {
+        await sessionsService.removeSessionById(parentId);
+      }
     },
     onSuccess: () => {
       sessionsQuery.refetch();

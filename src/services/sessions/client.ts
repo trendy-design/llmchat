@@ -94,6 +94,8 @@ class SessionsService {
 }
 
 class MessagesService {
+
+
   async getMessages(parentId: string): Promise<TChatMessage[]> {
     return (await get(`messages-${parentId}`)) || [];
   }
@@ -120,10 +122,15 @@ class MessagesService {
     await set(`messages-${parentId}`, newMessages);
   }
 
-  async removeMessage(parentId: string, messageId: string) {
+  async removeMessage(parentId: string, messageId: string): Promise<TChatMessage[]> {
     const messages = await this.getMessages(parentId);
     const newMessages = messages.filter((message) => message.id !== messageId);
-    await set(`messages-${parentId}`, newMessages);
+    if (!newMessages?.length) {
+      await del(`messages-${parentId}`);
+    } else {
+      await set(`messages-${parentId}`, newMessages);
+    }
+    return newMessages;
   }
 
   async removeMessages(parentId: string) {

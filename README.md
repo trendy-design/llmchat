@@ -9,6 +9,7 @@ Welcome to the All-in-One LLM App! For your info, this project is designed to ru
 - **Tailwind CSS**
 - **Framer Motion** (for animations)
 - **Zustand** (for state management)
+- **React-query** (for data fetching)
 - **LangChain** (for LLM orchestration)
 - **Supabase** (for database and authentication)
 - **Shadcn** (for additional functionality)
