@@ -5,7 +5,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
 export type TPopoverConfirm = {
   title: string;
-  onConfirm: () => void;
+  onConfirm: (dismiss: () => void) => void;
   confimBtnText?: string;
   confimBtnVariant?: "destructive" | "default";
   confirmIcon?: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
@@ -34,7 +34,7 @@ export const PopOverConfirmProvider = ({
             variant={confimBtnVariant}
             size="sm"
             onClick={(e) => {
-              onConfirm();
+              onConfirm(() => setOpenConfirm(false));
               e.stopPropagation();
             }}
           >

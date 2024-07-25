@@ -1,12 +1,11 @@
 import {
   Moon02Icon,
   MoreHorizontalIcon,
-  NoteIcon,
   PlusSignIcon,
   Settings03Icon,
   Sun01Icon,
 } from "@/components/ui/icons";
-import { usePromptsContext, useSessions } from "@/context";
+import { useSessions } from "@/context";
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { HistorySidebar } from "../history/history-side-bar";
@@ -26,7 +25,6 @@ import { useRouter } from "next/navigation";
 export const Sidebar = () => {
   const { theme, setTheme } = useTheme();
   const { push } = useRouter();
-  const { open: openPrompts } = usePromptsContext();
   const [isOpen, setIsOpen] = useState(false);
   const { createSession } = useSessions();
 
@@ -65,22 +63,6 @@ export const Sidebar = () => {
     );
   };
 
-  const renderPrompts = () => {
-    return (
-      <Tooltip content="Prompts" side="left" sideOffset={4}>
-        <Button
-          size="iconSm"
-          variant="ghost"
-          onClick={() => {
-            openPrompts();
-          }}
-        >
-          <NoteIcon size={20} strokeWidth={2} />
-        </Button>
-      </Tooltip>
-    );
-  };
-
   const renderSettings = () => {
     return (
       <Tooltip content="Settings" side="left" sideOffset={4}>
@@ -106,7 +88,6 @@ export const Sidebar = () => {
       <div className="flex flex-col items-center gap-2">
         <HistorySidebar />
       </div>
-      {renderPrompts()}
       {renderSpaces()}
 
       <Flex className="flex-1" />

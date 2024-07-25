@@ -1,8 +1,8 @@
 "use client";
+import { Flex } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import {
   BrainIcon,
-  Cancel01Icon,
   DashboardCircleIcon,
   Database02Icon,
   Settings03Icon,
@@ -10,7 +10,7 @@ import {
   VoiceIcon,
 } from "@/components/ui/icons";
 import { cn } from "@/helper/clsx";
-import { HugeiconsProps } from "@hugeicons/react";
+import { ArrowLeft02Icon, HugeiconsProps } from "@hugeicons/react";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, ReactNode, RefAttributes, useEffect } from "react";
 
@@ -76,10 +76,10 @@ export default function SettingsPage({
         variant={isSelected ? "secondary" : "ghost"}
         key={menu.route}
         onClick={() => push(menu.route)}
-        className="justify-start gap-2 px-2"
+        className="w-full justify-start gap-2 px-2"
         size="default"
       >
-        <div className="flex flex-row items-center justify-center w-6 h-6">
+        <div className="flex h-6 w-6 flex-row items-center justify-center">
           <Icon size={18} variant="solid" className="dark:text-zinc-500" />
         </div>
         <span
@@ -95,17 +95,22 @@ export default function SettingsPage({
   };
 
   return (
-    <div className="relative flex flex-col w-full h-screen overflow-hidden bg-white dark:bg-zinc-800 md:flex-row">
-      <Button
-        size="iconSm"
-        className="absolute w-10 h-10 rounded-full right-8 top-8"
-        onClick={() => push("/")}
-      >
-        <Cancel01Icon size={18} strokeWidth={2} />
-      </Button>
+    <div className="relative flex h-screen w-full flex-col overflow-hidden bg-white dark:bg-zinc-800 md:flex-row">
       <div className="no-scrollbar absolute left-0 right-0 top-0 flex w-full flex-row items-end gap-1 overflow-x-auto border-zinc-500/10 bg-zinc-50 px-2 pb-2 pt-2 dark:bg-zinc-900/50 md:bottom-0 md:h-full md:w-[300px] md:flex-col md:gap-0 md:overflow-y-auto md:pb-16">
-        <div className="flex w-[200px] flex-col gap-1 p-4">
-          {settingMenu.map(renderMenuItem)}
+        <div className="flex w-[200px] flex-col items-end gap-2 p-4">
+          <Button
+            onClick={() => push("/")}
+            variant="ghost"
+            className="w-full justify-start gap-2 px-2"
+          >
+            <div className="flex h-6 w-6 flex-row items-center justify-center">
+              <ArrowLeft02Icon size={20} strokeWidth={2} />
+            </div>
+            Back
+          </Button>
+          <Flex direction="col" gap="sm" className="w-full">
+            {settingMenu.map(renderMenuItem)}
+          </Flex>
         </div>
       </div>
       <div className="no-scrollbar mt-12 h-full w-full max-w-[700px] overflow-y-auto p-8 pb-16 md:ml-[300px] md:mt-0">
