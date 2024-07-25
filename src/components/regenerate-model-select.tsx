@@ -1,15 +1,15 @@
-import { TAssistant } from "@/hooks";
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { ArrowDown01Icon, SparklesIcon } from "@hugeicons/react";
-import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Tooltip } from "./ui/tooltip";
+} from "@/components/ui/dropdown-menu";
+import { ArrowDown01Icon, SparklesIcon } from "@/components/ui/icons";
+import { Tooltip } from "@/components/ui/tooltip";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
+import { TAssistant, TModelKey } from "@/types";
+import { useState } from "react";
 
 export type TRegenerateModelSelect = {
   assistant: TAssistant;
@@ -20,7 +20,8 @@ export const RegenerateWithModelSelect = ({
   assistant,
   onRegenerate,
 }: TRegenerateModelSelect) => {
-  const { assistants, getAssistantByKey } = useModelList();
+  const { assistants, getAssistantByKey, getAssistantIcon } =
+    useAssistantUtils();
   const [isOpen, setIsOpen] = useState(false);
 
   const messageAssistantProps = getAssistantByKey(assistant.key);
@@ -52,8 +53,8 @@ export const RegenerateWithModelSelect = ({
                   onRegenerate(assistant.key);
                 }}
               >
-                {assistantProps?.model.icon("sm")}{" "}
-                {assistantProps?.assistant.name}{" "}
+                {getAssistantIcon(assistant.key, "sm")}
+                {assistantProps?.assistant.name}
               </DropdownMenuItem>
             );
           })}

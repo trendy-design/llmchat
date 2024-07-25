@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import Avatar from "boring-avatars";
 import Image from "next/image";
 

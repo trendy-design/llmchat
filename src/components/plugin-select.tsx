@@ -1,24 +1,29 @@
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { ElectricPlugsIcon } from "@/components/ui/icons";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
+import { Type } from "@/components/ui/text";
+import { Tooltip } from "@/components/ui/tooltip";
 import { usePreferenceContext } from "@/context/preferences";
-import { useModelList } from "@/hooks/use-model-list";
-import { TToolKey, useTools } from "@/hooks/use-tools";
-import { ConnectIcon } from "@hugeicons/react";
-import { useEffect, useState } from "react";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Flex } from "./ui/flex";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Switch } from "./ui/switch";
-import { Type } from "./ui/text";
-import { Tooltip } from "./ui/tooltip";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
+import { useTools } from "@/hooks/use-tools";
+import { TToolKey } from "@/types";
+import { FC, useEffect, useState } from "react";
 
 export type TPluginSelect = {
   selectedAssistantKey: string;
 };
 
-export const PluginSelect = ({ selectedAssistantKey }: TPluginSelect) => {
+export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { tools } = useTools();
-  const { getAssistantByKey } = useModelList();
+  const { getAssistantByKey } = useAssistantUtils();
   const { preferences, updatePreferences } = usePreferenceContext();
   const availableTools = tools.filter((tool) => tool.showInMenu);
   const availableToolsKey = availableTools.map((tool) => tool.key);
@@ -43,7 +48,7 @@ export const PluginSelect = ({ selectedAssistantKey }: TPluginSelect) => {
         <Tooltip content="Plugins">
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm">
-              <ConnectIcon size={16} variant="stroke" strokeWidth="2" />
+              <ElectricPlugsIcon size={18} variant="stroke" strokeWidth="2" />
               <Badge>{selectedPlugins.length}</Badge>
             </Button>
           </PopoverTrigger>

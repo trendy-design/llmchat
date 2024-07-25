@@ -6,6 +6,14 @@ const nextConfig = {
         source: "/",
         destination: "/chat/new",
       },
+      {
+        source: "/settings/llms",
+        destination: "/settings/llms/openai",
+      },
+      {
+        source: "/settings",
+        destination: "/settings/common",
+      },
     ];
   },
 

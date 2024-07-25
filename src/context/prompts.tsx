@@ -9,7 +9,7 @@ import { createContext, useContext, useState } from "react";
 import { useChatContext } from "./chat";
 
 export type TPromptsContext = {
-  open: (action?: "public" | "local" | "create") => void;
+  open: (create?: boolean) => void;
   dismiss: () => void;
   allPrompts: TPrompt[];
 };
@@ -38,7 +38,6 @@ export type TPromptMenuItem = {
 export const PromptsProvider = ({ children }: TPromptsProvider) => {
   const [isPromptOpen, setIsPromptOpen] = useState(false);
   const [showCreatePrompt, setShowCreatePrompt] = useState(false);
-  const [tab, setTab] = useState<"public" | "local">("public");
   const [editablePrompt, setEditablePrompt] = useState<TPrompt | undefined>(
     undefined
   );
@@ -49,13 +48,12 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
     deletePromptMutation,
     updatePromptMutation,
   } = usePrompts();
-  const { editor } = useChatContext();
+  const { store } = useChatContext();
+  const editor = store((state) => state.editor);
 
-  const open = (action?: "public" | "local" | "create") => {
-    if (action === "create") {
+  const open = (create?: boolean) => {
+    if (create) {
       setShowCreatePrompt(true);
-    } else {
-      action && setTab(action);
     }
     setIsPromptOpen(true);
   };
@@ -86,9 +84,6 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
               open={showCreatePrompt}
               onOpenChange={(isOpen) => {
                 setShowCreatePrompt(isOpen);
-                if (!isOpen) {
-                  setTab("local");
-                }
               }}
               onCreatePrompt={(prompt) => {
                 createPromptMutation.mutate(prompt);
@@ -103,8 +98,6 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
             />
           ) : (
             <PromptLibrary
-              open={!showCreatePrompt}
-              tab={tab}
               onPromptSelect={(prompt) => {
                 editor?.commands?.clearContent();
                 editor?.commands?.setContent(prompt.content);
@@ -118,7 +111,6 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
               onDelete={(prompt) => deletePromptMutation.mutate(prompt.id)}
               localPrompts={localPromptsQuery.data || []}
               publicPrompts={publicPromptsQuery.data?.prompts || []}
-              onTabChange={setTab}
               onCreate={() => setShowCreatePrompt(true)}
             />
           )}

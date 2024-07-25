@@ -1,14 +1,16 @@
-import { TAssistant } from "@/hooks/use-chat-session";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ComingSoon } from "@/components/ui/coming-soon";
+import { FormLabel } from "@/components/ui/form-label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useImageAttachment } from "@/hooks";
+import { TAssistant } from "@/types";
 import { Plus } from "@phosphor-icons/react";
 import { useFormik } from "formik";
 import { useEffect, useRef } from "react";
 import { ModelSelect } from "../model-select";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { ComingSoon } from "../ui/coming-soon";
-import { FormLabel } from "../ui/form-label";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
+import { Flex } from "../ui";
 
 export type TCreateAssistant = {
   assistant?: TAssistant;
@@ -25,10 +27,16 @@ export const CreateAssistant = ({
 }: TCreateAssistant) => {
   const botTitleRef = useRef<HTMLInputElement | null>(null);
 
+  const { attachment, renderImageUpload, renderAttachedImage, setAttachment } =
+    useImageAttachment({
+      id: "assistant-icon-upload",
+    });
+
   const formik = useFormik<Omit<TAssistant, "key">>({
     initialValues: {
       name: assistant?.name || "",
       systemPrompt: assistant?.systemPrompt || "",
+      iconURL: assistant?.iconURL || "",
       baseModel: assistant?.baseModel || "gpt-3.5-turbo",
       type: "custom",
     },
@@ -48,25 +56,37 @@ export const CreateAssistant = ({
     botTitleRef?.current?.focus();
   }, [open]);
 
+  useEffect(() => {
+    setAttachment({
+      base64: assistant?.iconURL,
+    });
+  }, [assistant]);
+
+  useEffect(() => {
+    if (attachment) {
+      formik.setFieldValue("iconURL", attachment.base64);
+    }
+  }, [attachment]);
+
   const clearAssistant = () => {
     formik.resetForm();
   };
 
   return (
-    <div className="flex flex-col items-start w-full bg-white dark:bg-zinc-800 dark:border dark:border-white/10 relative h-full overflow-hidden rounded-2xl">
-      <div className="w-full px-4 py-3 border-b  border-zinc-500/20 flex flex-row gap-3 items-center">
+    <div className="relative flex h-full w-full flex-col items-start overflow-hidden rounded-2xl bg-white dark:border dark:border-white/10 dark:bg-zinc-800">
+      <div className="flex w-full flex-row items-center gap-3 border-b border-zinc-500/20 px-4 py-3">
         <p className="text-base font-medium">
           {assistant?.key ? "Edit Assistant" : "Add New Assistant"}
         </p>
         <Badge>Beta</Badge>
       </div>
-      <div className="flex flex-col w-full p-4 gap-6 items-start h-full overflow-y-auto no-scrollbar pb-[100px]">
-        <div className="flex flex-row items-center justify-between gap-2 w-full">
+      <div className="no-scrollbar flex h-full w-full flex-col items-start gap-6 overflow-y-auto p-4 pb-[100px]">
+        <div className="flex w-full flex-row items-center justify-between gap-2">
           <FormLabel label="Base Model" />
           <ModelSelect
             variant="secondary"
             fullWidth
-            className="w-full justify-start p-2 h-10"
+            className="h-10 w-full justify-start p-2"
             selectedModel={formik.values.baseModel}
             setSelectedModel={(model) => {
               formik.setFieldValue("baseModel", model);
@@ -74,7 +94,7 @@ export const CreateAssistant = ({
           />
         </div>
 
-        <div className="flex flex-col gap-2 w-full">
+        <div className="flex w-full flex-col gap-2">
           <FormLabel label="Assistant Name" />
           <Input
             type="text"
@@ -87,7 +107,17 @@ export const CreateAssistant = ({
           />
         </div>
 
-        <div className="flex flex-col gap-2 w-full">
+        <Flex direction="col" gap="sm">
+          <FormLabel label="Icon" isOptional />
+          <Flex direction="row" gap="sm" items="center">
+            {renderAttachedImage()}
+            {renderImageUpload({
+              label: "Upload Icon",
+            })}
+          </Flex>
+        </Flex>
+
+        <div className="flex w-full flex-col gap-2">
           <FormLabel label="System Prompt">
             Assign bot a role to help users understand what the bot can do.
           </FormLabel>
@@ -99,7 +129,7 @@ export const CreateAssistant = ({
             className="w-full"
           />
         </div>
-        <div className="flex flex-col gap-2 w-full">
+        <div className="flex w-full flex-col gap-2">
           <FormLabel label="Knowledge">
             Provide custom knowledge that your bot will access to inform its
             responses. Your bot will retrieve relevant sections from the
@@ -112,7 +142,7 @@ export const CreateAssistant = ({
           </Button>
         </div>
       </div>
-      <div className="w-full p-2 border-t justify-between border-zinc-500/20 flex flex-row gap-1 items-center">
+      <div className="flex w-full flex-row items-center justify-between gap-1 border-t border-zinc-500/20 p-2">
         <Button variant="ghost" onClick={onCancel}>
           Back
         </Button>

@@ -1,10 +1,10 @@
 "use client";
-import Spinner from "@/components/ui/loading-spinner";
-import { useSessionsContext } from "@/context";
+import { Spinner } from "@/components/ui";
+import { useSessions } from "@/context";
 import { useEffect } from "react";
 
 export default function Home() {
-  const { createSession } = useSessionsContext();
+  const { createSession } = useSessions();
   useEffect(() => {
     createSession({
       redirect: true,

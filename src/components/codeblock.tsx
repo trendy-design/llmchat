@@ -2,11 +2,11 @@ import hljs from "highlight.js";
 import { useEffect, useRef } from "react";
 
 import { ibmPlex } from "@/app/fonts";
+import { Button } from "@/components/ui/button";
+import { Copy01Icon, Tick01Icon } from "@/components/ui/icons";
+import { Tooltip } from "@/components/ui/tooltip";
+import { cn } from "@/helper/clsx";
 import { useClipboard } from "@/hooks/use-clipboard";
-import { cn } from "@/lib/utils";
-import { Copy01Icon, Tick01Icon } from "@hugeicons/react";
-import { Button } from "./ui/button";
-import { Tooltip } from "./ui/tooltip";
 
 export type codeBlockProps = {
   lang?: string;
