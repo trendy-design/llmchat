@@ -181,13 +181,15 @@ export const ChatInput = () => {
       )}
     >
       {isFreshSession && <ChatGreeting />}
-      <div className="mb-2 flex flex-row items-center justify-center gap-2">
+      <div className="flex flex-row items-center mb-2 justify-center gap-2">
         {renderScrollToBottom()}
         {renderStopGeneration()}
-        {renderListeningIndicator()}
       </div>
-      <div className="flex w-full flex-col gap-3 md:w-[700px] lg:w-[720px]">
+
+      <div className="flex w-full flex-col gap-1 md:w-[700px] lg:w-[720px]">
         {renderSelectedContext()}
+        {renderListeningIndicator()}
+
         {editor && (
           <motion.div
             variants={slideUpVariant}

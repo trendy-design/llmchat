@@ -9,12 +9,11 @@ export const ChatExamples = () => {
   const editor = store((state) => state.editor);
 
   return (
-    <Flex direction="col" gap="md" justify="center" items="center">
-      <div className="flex flex-col gap-3 p-4">
-        <Type size="sm" textColor="tertiary">
+    <Flex direction="col" gap="md" justify="center" items="start" className="w-full md:w-[700px] lg:w-[720px]">
+        <Type size="sm" textColor="tertiary" className="px-3">
           Try Prompts
         </Type>
-        <div className="flex flex-col grid grid-cols-1 md:grid-cols-2 gap-3 md:w-[700px] lg:w-[720px] w-full">
+        <div className="md:grid flex flex-row justify-start overflow-x-auto md:grid-cols-2 gap-3 w-full p-1">
           {examplePrompts?.slice(0, 4)?.map((prompt, index) => (
             <Button
               key={index}
@@ -30,7 +29,6 @@ export const ChatExamples = () => {
             </Button>
           ))}
         </div>
-      </div>
     </Flex>
   );
 };

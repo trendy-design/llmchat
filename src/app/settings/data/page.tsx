@@ -11,136 +11,18 @@ import { defaultPreferences } from "@/config";
 import { useSessions } from "@/context";
 import { usePreferenceContext } from "@/context/preferences";
 import { generateAndDownloadJson } from "@/helper/utils";
-import { TPreferences } from "@/types";
+import { exportService } from "@/services/export/client";
+import {
+  AttachmentIcon,
+  FileExportIcon,
+  FileImportIcon,
+} from "@hugeicons/react";
 import { ChangeEvent } from "react";
-import { z } from "zod";
-
-const apiSchema = z.object({
-  openai: z.string().optional(),
-  gemini: z.string().optional(),
-  anthropic: z.string().optional(),
-});
-
-const preferencesSchema = z.object({
-  defaultAssistant: z.string(),
-  systemPrompt: z.string().optional(),
-  memories: z.array(z.string()).optional(),
-  messageLimit: z.number().int().positive().optional(),
-  temperature: z.number().optional(),
-  defaultPlugins: z.array(z.string()).optional(),
-  whisperSpeechToTextEnabled: z.boolean().optional(),
-  maxTokens: z.number().int().positive().optional(),
-  defaultWebSearchEngine: z
-    .string()
-    .refine((val) => ["google", "duckduckgo"].includes(val))
-    .optional(),
-  topP: z.number().optional(),
-  topK: z.number().optional(),
-  googleSearchEngineId: z.string().optional(),
-  googleSearchApiKey: z.string().optional(),
-  ollamaBaseUrl: z.string().optional(),
-});
-
-const runModelPropsSchema = z.object({
-  context: z.string().optional(),
-  input: z.string().optional(),
-  image: z.string().optional(),
-  sessionId: z.string(),
-  messageId: z.string().optional(),
-  assistant: z.object({
-    key: z.string(),
-    name: z.string(),
-    baseModel: z.string(),
-    systemPrompt: z.string(),
-    type: z.string().refine((val) => ["custom", "base"].includes(val)),
-  }),
-});
-
-const chatMessageSchema = z.object({
-  id: z.string(),
-  image: z.string().optional(),
-  rawHuman: z.string().optional(),
-  rawAI: z.string().optional(),
-  sessionId: z.string(),
-  inputProps: runModelPropsSchema,
-  toolName: z.string().optional(),
-  toolResult: z.string().optional(),
-  isLoading: z.boolean().optional(),
-  isToolRunning: z.boolean().optional(),
-  hasError: z.boolean().optional(),
-  errorMesssage: z.string().optional(),
-  createdAt: z.string(),
-});
-
-const botSchema = z.object({
-  prompt: z.string(),
-  name: z.string(),
-  description: z.string(),
-  greetingMessage: z.string().optional(),
-  id: z.string(),
-  avatar: z.string().optional(),
-  status: z.string().optional(),
-  deafultBaseModel: z.string().default("gpt-3.5-turbo"),
-});
-
-const sessionSchema = z.object({
-  messages: z.array(chatMessageSchema),
-  title: z.string().optional(),
-  id: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string().optional(),
-});
-
-const promptSchema = z.object({});
-
-const importSchema = z.object({
-  apiKeys: apiSchema.optional(),
-  preferences: preferencesSchema.optional(),
-  sessions: sessionSchema.array().optional(),
-  prompts: z.array(z.string()).optional(),
-});
-
-// const mergeSessions = (
-//   incomingSessions: TChatSession[],
-//   existingSessions: TChatSession[]
-// ) => {
-//   const updatedSessions = [...existingSessions];
-
-//   incomingSessions.forEach((incomingSession) => {
-//     const sessionIndex = existingSessions.findIndex(
-//       (s) => s.id === incomingSession.id
-//     );
-
-//     if (sessionIndex > -1) {
-//       // Merge messages from the same session
-//       const currentSession = updatedSessions[sessionIndex];
-//       const uniqueNewMessages = incomingSession.messages.filter(
-//         (im) => !currentSession.messages.some((cm) => cm.id === im.id)
-//       );
-
-//       // Combine and sort messages
-//       currentSession.messages = sortMessages(
-//         [...currentSession.messages, ...uniqueNewMessages],
-//         "createdAt"
-//       );
-//     } else {
-//       // If session does not exist, add it directly
-//       updatedSessions.push(incomingSession);
-//     }
-//   });
-
-//   return updatedSessions;
-// };
 
 export default function DataSettings() {
   const { toast } = useToast();
 
-  const {
-    sessions,
-    addSessionsMutation,
-    clearSessionsMutation,
-    createSession,
-  } = useSessions();
+  const { clearSessionsMutation, createSession } = useSessions();
 
   const {
     preferences,
@@ -158,42 +40,15 @@ export default function DataSettings() {
       const reader = new FileReader();
       reader.onload = async function (e) {
         const content = e.target?.result as string;
-
         console.log(content);
         try {
-          const jsonData = JSON.parse(content);
-          console.log(jsonData);
-          const parsedData = importSchema.parse(jsonData, {
-            errorMap: (issue: any, ctx: any) => {
-              console.log(issue, ctx);
-              return { message: ctx.defaultError };
-            },
-          });
-          parsedData?.apiKeys && updateApiKeys(parsedData?.apiKeys);
-          parsedData?.preferences &&
-            updatePreferences(parsedData?.preferences as TPreferences);
-
-          const incomingSessions = parsedData?.sessions?.filter(
-            (s) => !!s.messages.length,
-          );
-
-          // const mergedSessions = mergeSessions(
-          //   (incomingSessions as any) || [],
-          //   sessions
-          // );
-          // clearSessionsMutation.mutate(undefined, {
-          //   onSuccess: () => {
-          //     addSessionsMutation.mutate(mergedSessions);
-          //   },
-          // });
+          exportService.processImport(content);
 
           toast({
             title: "Data Imported",
             description: "The JSON file you uploaded has been imported",
             variant: "default",
           });
-
-          console.log(parsedData);
         } catch (e) {
           console.error(e);
           toast({
@@ -207,70 +62,6 @@ export default function DataSettings() {
       reader.readAsText(file);
     }
   }
-
-  // const clearAllData = async () => {
-  //   toast({
-  //     title: "Clear All Data?",
-  //     description: "This action cannot be undone.",
-  //     variant: "destructive",
-  //     action: (
-  //       <Button
-  //         size="sm"
-  //         variant="default"
-  //         onClick={() => {
-  //           clearSessionsMutation.mutate(undefined, {
-  //             onSuccess: () => {
-  //               toast({
-  //                 title: "Data Cleared",
-  //                 description: "All chat data has been cleared",
-  //                 variant: "default",
-  //               });
-  //               createSession({
-  //                 redirect: true,
-  //               });
-  //               dismiss();
-  //               dismiss();
-  //             },
-  //           });
-  //         }}
-  //       >
-  //         Clear All
-  //       </Button>
-  //     ),
-  //   });
-  // };
-
-  // const clearAllData = async () => {
-  //   toast({
-  //     title: "Clear All Data?",
-  //     description: "This action cannot be undone.",
-  //     variant: "destructive",
-  //     action: (
-  //       <Button
-  //         size="sm"
-  //         variant="default"
-  //         onClick={() => {
-  //           clearSessionsMutation.mutate(undefined, {
-  //             onSuccess: () => {
-  //               toast({
-  //                 title: "Data Cleared",
-  //                 description: "All chat data has been cleared",
-  //                 variant: "default",
-  //               });
-  //               createSession({
-  //                 redirect: true,
-  //               });
-  //               dismiss();
-  //               dismiss();
-  //             },
-  //           });
-  //         }}
-  //       >
-  //         Clear All
-  //       </Button>
-  //     ),
-  //   });
-  // };
 
   return (
     <SettingsContainer title="Manage your Data">
@@ -338,47 +129,56 @@ export default function DataSettings() {
 
         <SettingCard className="p-5">
           <Flex items="center" justify="between">
-            <Type textColor="primary" weight="medium">
-              Import Data
-            </Type>
+            <Flex direction="col">
+              <Type textColor="primary" weight="medium">
+                Import Data
+              </Type>
+              <Type textColor="secondary" size="xs">
+                Import your chat data from a JSON file
+              </Type>
+            </Flex>
             <Input
               type="file"
               onChange={handleFileSelect}
               hidden
-              className="invisible"
+              className="invisible w-0"
               id="import-config"
             />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
+            <PopOverConfirmProvider
+              title="This action will overwrite your current data. Are you sure you want to import?"
+              confimBtnText="Import Data"
+              confimBtnVariant="default"
+              confirmIcon={AttachmentIcon}
+              onConfirm={() => {
                 document?.getElementById("import-config")?.click();
               }}
             >
-              Import
-            </Button>
+              <Button variant="outline" size="sm">
+                <FileImportIcon size={16} variant="solid" /> Import
+              </Button>
+            </PopOverConfirmProvider>
           </Flex>
           <div className="my-4 h-[1px] w-full bg-zinc-500/10" />
 
           <Flex items="center" justify="between" className="w-full">
-            <Type textColor="primary" weight="medium">
-              Export Data
-            </Type>
+            <Flex direction="col">
+              <Type textColor="primary" weight="medium">
+                Export Data
+              </Type>
+              <Type textColor="secondary" size="xs">
+                Export your chat data to a JSON file
+              </Type>
+            </Flex>
             <Button
               variant="outline"
               size="sm"
               onClick={() => {
-                generateAndDownloadJson(
-                  {
-                    sessions: sessions,
-                    preferences: preferences,
-                    apiKeys: apiKeys,
-                  },
-                  "chats.so.json",
-                );
+                exportService.processExport().then((data) => {
+                  generateAndDownloadJson(data, "chats.so.json");
+                });
               }}
             >
-              Export
+              <FileExportIcon size={16} variant="solid" /> Export
             </Button>
           </Flex>
         </SettingCard>

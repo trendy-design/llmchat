@@ -7,7 +7,7 @@ export type MainLayoutProps = {
 };
 export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div className="w-full h-[100dvh] bg-zinc-100 dark:bg-zinc-800 flex flex-row ">
+    <div className="w-full h-[100dvh] bg-zinc-100 dark:bg-zinc-800 flex md:flex-row flex-col justify-start">
       <Sidebar />
       {children}
       <Toaster />

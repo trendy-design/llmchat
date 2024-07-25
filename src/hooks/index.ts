@@ -3,7 +3,6 @@ export * from "./use-attachment";
 export * from "./use-clipboard";
 export * from "./use-image-attachment";
 export * from "./use-llm-test";
-export * from "./use-prompts";
 export * from "./use-record-voice";
 export * from "./use-scroll-to-bottom";
 export * from "./use-text-selection";
