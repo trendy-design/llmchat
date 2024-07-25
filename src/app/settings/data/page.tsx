@@ -174,7 +174,7 @@ export default function DataSettings() {
             updatePreferences(parsedData?.preferences as TPreferences);
 
           const incomingSessions = parsedData?.sessions?.filter(
-            (s) => !!s.messages.length
+            (s) => !!s.messages.length,
           );
 
           // const mergedSessions = mergeSessions(
@@ -304,7 +304,7 @@ export default function DataSettings() {
               </Button>
             </PopOverConfirmProvider>
           </Flex>
-          <div className="my-4 h-[1px] bg-zinc-500/10 w-full" />
+          <div className="my-4 h-[1px] w-full bg-zinc-500/10" />
           <Flex items="center" justify="between">
             <Type textColor="primary" weight="medium">
               Clear all chat sessions and preferences
@@ -358,7 +358,7 @@ export default function DataSettings() {
               Import
             </Button>
           </Flex>
-          <div className="my-4 h-[1px] bg-zinc-500/10 w-full" />
+          <div className="my-4 h-[1px] w-full bg-zinc-500/10" />
 
           <Flex items="center" justify="between" className="w-full">
             <Type textColor="primary" weight="medium">
@@ -374,7 +374,7 @@ export default function DataSettings() {
                     preferences: preferences,
                     apiKeys: apiKeys,
                   },
-                  "chats.so.json"
+                  "chats.so.json",
                 );
               }}
             >

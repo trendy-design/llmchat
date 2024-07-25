@@ -10,7 +10,6 @@ import { cn } from "@/helper/clsx";
 import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { TModelKey } from "@/types";
 import { FC, useState } from "react";
-import { ModelIcon } from "./model-icon";
 
 export type TModelSelect = {
   selectedModel: TModelKey;
@@ -45,7 +44,7 @@ export const ModelSelect: FC<TModelSelect> = ({
         <DropdownMenuTrigger asChild>
           <Button
             variant={variant || "ghost"}
-            className={cn("pl-1 pr-3 gap-2 text-xs md:text-sm", className)}
+            className={cn("gap-2 pl-1 pr-3 text-xs md:text-sm", className)}
             size="sm"
           >
             {activeAssistant?.assistant &&
@@ -58,8 +57,8 @@ export const ModelSelect: FC<TModelSelect> = ({
           align="end"
           sideOffset={4}
           className={cn(
-            "text-xs z-[610] md:text-sm max-h-[260px] overflow-y-auto no-scrollbar",
-            fullWidth ? "w-full" : "min-w-[250px]"
+            "no-scrollbar z-[610] max-h-[260px] overflow-y-auto text-xs md:text-sm",
+            fullWidth ? "w-full" : "min-w-[250px]",
           )}
         >
           {assistants
@@ -70,9 +69,9 @@ export const ModelSelect: FC<TModelSelect> = ({
               return (
                 <DropdownMenuItem
                   className={cn(
-                    "text-xs md:text-sm font-medium",
+                    "text-xs font-medium md:text-sm",
                     activeAssistant?.assistant.key === assistant.key &&
-                      "dark:bg-black/30 bg-zinc-50"
+                      "bg-zinc-50 dark:bg-black/30",
                   )}
                   key={assistant.key}
                   onClick={() => {
@@ -80,13 +79,8 @@ export const ModelSelect: FC<TModelSelect> = ({
                     setIsOpen(false);
                   }}
                 >
-                  {assistant.type === "base" ? (
-                    getAssistantIcon(assistant.key, "sm")
-                  ) : (
-                    <ModelIcon type="custom" size="sm" />
-                  )}
+                  {getAssistantIcon(assistant.key, "sm")}
                   {assistant.name}
-
                   {model?.isNew && <Badge>New</Badge>}
                 </DropdownMenuItem>
               );
