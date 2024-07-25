@@ -41,28 +41,28 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
       return (
         <HoverCard>
           <HoverCardTrigger>
-            <a href={href} data-message-id={messageId}>
+            <a href={href} target="_blank" data-message-id={messageId}>
               {text}
             </a>
           </HoverCardTrigger>
           <HoverCardContent
             sideOffset={12}
-            className="p-3 rounded-xl flex max-w-[500px] flex-col items-start bg-zinc-700 hover:bg-zinc-800 cursor-pointer"
+            className="flex max-w-[500px] cursor-pointer flex-col items-start rounded-xl bg-zinc-700 p-3 hover:bg-zinc-800"
             onClick={() => {
               window.open(href, "_blank");
             }}
           >
-            <p className="flex flex-row font-normal text-xs items-center gap-2 text-zinc-200 dark:text-zinc-200 leading-7 w-full whitespace-pre-wrap overflow-hidden">
+            <p className="flex w-full flex-row items-center gap-2 overflow-hidden whitespace-pre-wrap text-xs font-normal leading-7 text-zinc-200 dark:text-zinc-200">
               <Link
                 size={16}
                 weight="bold"
-                className="text-white flex-shrink-0"
+                className="flex-shrink-0 text-white"
               />
               {href}
               <ArrowUpRight
                 size={16}
                 weight="bold"
-                className="text-white flex-shrink-0"
+                className="flex-shrink-0 text-white"
               />
             </p>
           </HoverCardContent>
@@ -94,27 +94,27 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
   const renderStrong = (children: ReactNode) => <strong>{children}</strong>;
 
   const renderCode = (code: string, lang: string) => (
-    <div className="my-4 w-full flex-shrink-0 not-prose">
+    <div className="not-prose my-4 w-full flex-shrink-0">
       <CodeBlock lang={lang} code={code?.toString()} />
     </div>
   );
 
   const renderCodespan = (code: string) => (
-    <span className="px-2 py-1 text-sm md:text-base rounded-md dark:text-white bg-zinc-50 text-zinc-800 dark:bg-white/10 font-medium">
+    <span className="rounded-md bg-zinc-50 px-2 py-1 text-sm font-medium text-zinc-800 dark:bg-white/10 dark:text-white md:text-base">
       {code}
     </span>
   );
 
   const articleClass = cn(
-    "prose dark:prose-invert w-full prose-zinc prose-h3:font-medium prose-h4:font-medium prose-h5:font-medium prose-h6:font-medium prose-h3:text-lg prose-h4:text-base prose-h5:text-base prose-h6:text-base prose-heading:font-medium prose-strong:font-medium prose-headings:text-lg prose-th:text-sm",
+    "prose dark:prose-invert pb-8 w-full prose-zinc prose-h3:font-medium prose-h4:font-medium prose-h5:font-medium prose-h6:font-medium prose-h3:text-lg prose-h4:text-base prose-h5:text-base prose-h6:text-base prose-heading:font-medium prose-strong:font-medium prose-headings:text-lg prose-th:text-sm",
     {
       "prose-sm": size === "sm",
       "prose-base": size === "base",
-    }
+    },
   );
 
   return (
-    <article className={articleClass}>
+    <article className={articleClass} id={`message-${messageId}`}>
       <Markdown
         renderer={{
           text: (text) => (

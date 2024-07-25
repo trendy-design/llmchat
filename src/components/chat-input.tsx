@@ -6,7 +6,6 @@ import { slideUpVariant } from "@/helper/animations";
 import { cn } from "@/helper/clsx";
 import {
   useAssistantUtils,
-  useAttachment,
   useImageAttachment,
   useRecordVoice,
   useScrollToBottom,
@@ -48,8 +47,7 @@ export const ChatInput = () => {
     renderAttachedImage,
     attachment,
     clearAttachment,
-  } = useImageAttachment();
-  const { renderAttachedPdf, renderPdfFileUpload } = useAttachment();
+  } = useImageAttachment({ id: "image-upload" });
   const { selectedAssistant, open: openAssistants } = useAssistants();
   const { invokeModel } = useLLMRunner();
 
@@ -116,7 +114,7 @@ export const ChatInput = () => {
           <Button
             onClick={scrollToBottom}
             size="iconSm"
-            className="dark:bg-zinc-800 dark:border dark:text-white dark:border-white/10"
+            className="dark:border dark:border-white/10 dark:bg-zinc-800 dark:text-white"
             variant="outline"
             rounded="full"
           >
@@ -138,7 +136,7 @@ export const ChatInput = () => {
           <Button
             rounded="full"
             size="sm"
-            className="dark:bg-zinc-800 dark:border dark:text-white dark:border-white/10"
+            className="dark:border dark:border-white/10 dark:bg-zinc-800 dark:text-white"
             onClick={() => {
               stopGeneration();
             }}
@@ -154,9 +152,9 @@ export const ChatInput = () => {
   const renderSelectedContext = () => {
     if (contextValue) {
       return (
-        <div className="flex flex-row items-start py-2 ring-1 ring-zinc-100 dark:ring-zinc-700 bg-white border-zinc-100 dark:bg-zinc-800 border dark:border-white/10 text-zinc-700 dark:text-zinc-200 rounded-xl w-full md:w-[700px] lg:w-[720px]  justify-start gap-2 pl-2 pr-2">
+        <div className="flex w-full flex-row items-start justify-start gap-2 rounded-xl border border-zinc-100 bg-white py-2 pl-2 pr-2 text-zinc-700 ring-1 ring-zinc-100 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 md:w-[700px] lg:w-[720px]">
           <ArrowElbowDownRight size={16} weight="bold" className="mt-1" />
-          <p className="w-full overflow-hidden ml-2 text-sm md:text-base line-clamp-2">
+          <p className="ml-2 line-clamp-2 w-full overflow-hidden text-sm md:text-base">
             {contextValue}
           </p>
           <Button
@@ -165,7 +163,7 @@ export const ChatInput = () => {
             onClick={() => {
               setContextValue("");
             }}
-            className="flex-shrink-0 ml-4"
+            className="ml-4 flex-shrink-0"
           >
             <X size={14} weight="bold" />
           </Button>
@@ -177,34 +175,34 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 md:px-4 pb-4 pt-16  right-0 gap-2",
-        "bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0",
-        isFreshSession && "top-0"
+        "absolute bottom-0 right-0 flex w-full flex-col items-center justify-end gap-2 px-2 pb-4 pt-16 md:justify-center md:px-4",
+        "left-0 bg-gradient-to-t from-white from-70% to-transparent transition-all duration-1000 ease-in-out dark:from-zinc-800",
+        isFreshSession && "top-0",
       )}
     >
       {isFreshSession && <ChatGreeting />}
-      <div className="flex flex-row items-center justify-center gap-2 mb-2">
+      <div className="mb-2 flex flex-row items-center justify-center gap-2">
         {renderScrollToBottom()}
         {renderStopGeneration()}
         {renderListeningIndicator()}
       </div>
-      <div className="flex flex-col gap-3 w-full md:w-[700px] lg:w-[720px]">
+      <div className="flex w-full flex-col gap-3 md:w-[700px] lg:w-[720px]">
         {renderSelectedContext()}
         {editor && (
           <motion.div
             variants={slideUpVariant}
             initial={"initial"}
             animate={editor.isEditable ? "animate" : "initial"}
-            className="flex flex-col items-start gap-0  border bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
+            className="flex w-full flex-col items-start gap-0 overflow-hidden rounded-2xl border bg-zinc-50 dark:border-white/5 dark:bg-white/5"
           >
-            <div className="flex flex-col items-start justify-start w-full">
+            <div className="flex w-full flex-col items-start justify-start">
               {attachment && (
-                <div className="pl-2 md:pl-3 pr-2 pt-2">
+                <div className="pl-2 pr-2 pt-2 md:pl-3">
                   {renderAttachedImage()}
                 </div>
               )}
 
-              <div className="flex flex-row pl-2 md:pl-3 pr-2 py-2 w-full gap-0 items-end">
+              <div className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
                 <EditorContent
                   editor={editor}
                   autoFocus
@@ -213,16 +211,16 @@ export const ChatInput = () => {
                       sendMessage(editor.getText());
                     }
                   }}
-                  className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
+                  className="no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[120px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-sm outline-none focus:outline-none md:text-base [&>*]:leading-6 [&>*]:outline-none"
                 />
                 {!isGenerating && renderRecordingControls()}
               </div>
             </div>
-            <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 pb-2 px-2">
+            <div className="flex w-full flex-row items-center justify-start gap-0 px-2 pb-2 pt-1">
               <Button
                 variant={"ghost"}
                 onClick={openAssistants}
-                className={cn("pl-1 pr-3 gap-2 text-xs md:text-sm")}
+                className={cn("gap-2 pl-1 pr-3 text-xs md:text-sm")}
                 size="sm"
               >
                 {selectedAssistant?.assistant.key &&
@@ -232,7 +230,7 @@ export const ChatInput = () => {
               </Button>
 
               <PluginSelect selectedAssistantKey={selectedAssistantKey} />
-              {renderImageUpload()}
+              {renderImageUpload({ showIcon: true })}
 
               <div className="flex-1"></div>
 
@@ -244,7 +242,7 @@ export const ChatInput = () => {
                   disabled={!editor?.getText()}
                   className={cn(
                     !!editor?.getText() &&
-                      "bg-zinc-800 dark:bg-emerald-500/20 text-white dark:text-emerald-400 dark:outline-emerald-400"
+                      "bg-zinc-800 text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:outline-emerald-400",
                   )}
                   onClick={() => {
                     sendMessage(editor.getText());

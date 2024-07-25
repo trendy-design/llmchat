@@ -37,39 +37,52 @@ export const AssistantItem = ({
   const model = assistantProps?.model;
   const [open, setOpen] = useState(false);
 
+  const handleSelect = () => {
+    updatePreferences(
+      {
+        defaultAssistant: assistant.key,
+        maxTokens: defaultPreferences.maxTokens,
+      },
+      () => onSelect(assistant),
+    );
+  };
+
+  const handleDropdownItemSelect =
+    (action: () => void) => (e: React.MouseEvent<HTMLDivElement>) => {
+      action();
+      e.stopPropagation();
+    };
+
   return (
     <CommandItem
       value={assistant.name}
       className="w-full"
-      onSelect={() => {
-        updatePreferences(
-          {
-            defaultAssistant: assistant.key,
-            maxTokens: defaultPreferences.maxTokens,
-          },
-          () => {
-            onSelect(assistant);
-          },
-        );
-      }}
+      onSelect={handleSelect}
     >
       <Flex gap="sm" items="center" key={assistant.key} className="w-full">
         {getAssistantIcon(assistant.key, "sm")}
-        {assistant.name} {model?.isNew && <Badge>New</Badge>}
+        {assistant.name}
+        {model?.isNew && assistant.type !== "custom" && <Badge>New</Badge>}
         <div className="flex flex-1"></div>
-        <Flex gap="md" items="center">
-          {!!model?.vision && (
-            <ViewIcon size={16} strokeWidth={1.5} className="text-zinc-500" />
-          )}
-          {!!model?.plugins?.length && (
-            <PuzzleIcon size={16} strokeWidth={1.5} className="text-zinc-500" />
-          )}
-          {model?.tokens && (
-            <Type size="xs" textColor="secondary">
-              {formatNumber(model?.tokens)}
-            </Type>
-          )}
-        </Flex>
+        {assistant.type !== "custom" && (
+          <Flex gap="md" items="center">
+            {!!model?.vision && (
+              <ViewIcon size={16} strokeWidth={1.5} className="text-zinc-500" />
+            )}
+            {!!model?.plugins?.length && (
+              <PuzzleIcon
+                size={16}
+                strokeWidth={1.5}
+                className="text-zinc-500"
+              />
+            )}
+            {model?.tokens && (
+              <Type size="xs" textColor="secondary">
+                {formatNumber(model?.tokens)}
+              </Type>
+            )}
+          </Flex>
+        )}
         {assistant.type === "custom" && (
           <DropdownMenu open={open} onOpenChange={setOpen}>
             <DropdownMenuTrigger
@@ -81,9 +94,7 @@ export const AssistantItem = ({
               <Button
                 variant="ghost"
                 size="iconSm"
-                onClick={(e) => {
-                  setOpen(true);
-                }}
+                onClick={() => setOpen(true)}
               >
                 <DotsThree size={20} weight="bold" />
               </Button>
@@ -93,20 +104,13 @@ export const AssistantItem = ({
               align="end"
             >
               <DropdownMenuItem
-                onClick={(e: React.MouseEvent<HTMLDivElement>) => {
-                  onEdit(assistant);
-
-                  e.stopPropagation();
-                }}
+                onClick={handleDropdownItemSelect(() => onEdit(assistant))}
               >
                 <Pencil size={14} weight="bold" />
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
-                onClick={(e) => {
-                  onDelete(assistant);
-                  e.stopPropagation();
-                }}
+                onClick={handleDropdownItemSelect(() => onDelete(assistant))}
               >
                 <TrashSimple size={14} weight="bold" />
                 Delete

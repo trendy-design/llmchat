@@ -24,7 +24,7 @@ export const AIToolMessage = ({ tool }: TAIToolMessage) => {
       {toolUsed && (
         <Type
           size="xs"
-          className="flex flex-row gap-2 items-center"
+          className="flex flex-row items-center gap-2 pb-4"
           textColor="tertiary"
         >
           {tool?.toolLoading ? (

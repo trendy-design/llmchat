@@ -5,18 +5,20 @@ import { assistantService } from "./client";
 export const useAssistantsQueries = () => {
   const assistantsQuery = useQuery({
     queryKey: ["assistants"],
-    queryFn: assistantService.getAssistants,
+    queryFn: () => assistantService.getAssistants(),
   });
 
   const createAssistantMutation = useMutation({
-    mutationFn: assistantService.createAssistant,
+    mutationFn: (assistant: Omit<TAssistant, "key">) =>
+      assistantService.createAssistant(assistant),
     onSuccess: () => {
       assistantsQuery.refetch();
     },
   });
 
   const deleteAssistantMutation = useMutation({
-    mutationFn: assistantService.deleteAssistant,
+    mutationFn: (assistantKey: string) =>
+      assistantService.deleteAssistant(assistantKey),
     onSuccess: () => {
       assistantsQuery.refetch();
     },

@@ -1,4 +1,5 @@
 export * from "./assistants";
+export * from "./documents";
 export * from "./messages";
 export * from "./models";
 export * from "./preferences";

@@ -5,6 +5,7 @@ export type TAssistantType = "base" | "custom";
 export type TAssistant = {
   name: string;
   systemPrompt: string;
+  iconURL?: string;
   baseModel: TModelKey;
   key: TModelKey | string;
   type: TAssistantType;

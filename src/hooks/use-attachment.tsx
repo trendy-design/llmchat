@@ -2,10 +2,12 @@ import { TAttachment } from "@/components/chat-input";
 import { Button } from "@/components/ui/button";
 import { Pdf01Icon } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
+import { usePreferenceContext } from "@/context";
 import { X } from "@phosphor-icons/react";
 import { ChangeEvent, useState } from "react";
 
 export const useAttachment = () => {
+  const { apiKeys } = usePreferenceContext();
   const [attachment, setAttachment] = useState<TAttachment>();
   const { toast } = useToast();
 
@@ -31,29 +33,6 @@ export const useAttachment = () => {
         ...prev,
         file,
       }));
-
-      const worker = new Worker(
-        new URL("../worker/worker.ts", import.meta.url)
-      );
-      worker.postMessage(file);
-
-      worker.onmessage = (event) => {
-        const { content, error } = event.data;
-
-        console.log(content, error);
-        if (error) {
-          toast({
-            title: "Error",
-            description: error,
-            variant: "destructive",
-          });
-        } else {
-          setAttachment((prev) => ({
-            ...prev,
-            base64: content,
-          }));
-        }
-      };
     }
   };
 
@@ -64,13 +43,13 @@ export const useAttachment = () => {
   const renderAttachedPdf = () => {
     if (attachment?.file) {
       return (
-        <div className="rounded-xl relative min-w-[60px] h-[60px] border border-white/5 shadow-md flex items-center justify-center">
+        <div className="relative flex h-[60px] min-w-[60px] items-center justify-center rounded-xl border border-white/5 shadow-md">
           <Pdf01Icon size={24} />
           <Button
             size={"iconXS"}
             variant="default"
             onClick={clearAttachment}
-            className="flex-shrink-0 w-4 h-4 z-10 absolute top-[-4px] right-[-4px]"
+            className="absolute right-[-4px] top-[-4px] z-10 h-4 w-4 flex-shrink-0"
           >
             <X size={12} weight="bold" />
           </Button>

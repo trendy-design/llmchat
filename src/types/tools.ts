@@ -1,6 +1,7 @@
 import { usePreferenceContext } from "@/context";
 import { HugeiconsProps } from "@hugeicons/react";
 import { FC, ReactNode, RefAttributes } from "react";
+import { TModelItem } from "./models";
 import { TApiKeys, TPreferences } from "./preferences";
 
 export const toolKeys = ["calculator", "web_search"];
@@ -35,6 +36,7 @@ export type TToolArg = {
   >["updatePreferences"];
   preferences: TPreferences;
   apiKeys: TApiKeys;
+  model: TModelItem;
   sendToolResponse: (response: TToolResponse) => void;
 };
 

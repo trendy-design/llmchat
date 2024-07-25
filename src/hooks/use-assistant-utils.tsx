@@ -14,6 +14,8 @@ export const useAssistantUtils = () => {
     preferences.ollamaBaseUrl,
   );
 
+  const ollamaModelsSupportsTools = ["llama3-groq-tool-use:latest"];
+
   const allModels: TModelItem[] = useMemo(
     () => [
       ...models,
@@ -22,7 +24,9 @@ export const useAssistantUtils = () => {
           name: model.name,
           key: model.name,
           tokens: 128000,
-          plugins: [],
+          plugins: ollamaModelsSupportsTools.includes(model.name)
+            ? ["web_search"]
+            : [],
           icon: "ollama",
           provider: "ollama",
           maxOutputTokens: 2048,
@@ -64,10 +68,17 @@ export const useAssistantUtils = () => {
 
   const getAssistantIcon = (assistantKey: string, size: "sm" | "md" | "lg") => {
     const assistant = getAssistantByKey(assistantKey);
-    return assistant?.assistant.type === "base" ? (
-      <ModelIcon size={size} type={assistant?.model?.icon} />
-    ) : (
-      <ModelIcon type="custom" size={size} />
+
+    return (
+      <ModelIcon
+        type={
+          assistant?.assistant.type === "base"
+            ? assistant?.model?.icon
+            : "aichat"
+        }
+        size={size}
+        base64={assistant?.assistant.iconURL}
+      />
     );
   };
 

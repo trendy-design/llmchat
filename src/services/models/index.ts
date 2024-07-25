@@ -1,8 +1,8 @@
 import { defaultPreferences } from "@/config";
 import { TModelItem, TModelKey, TPreferences, TProvider } from "@/types";
 import { ChatAnthropic } from "@langchain/anthropic";
-import { ChatOllama } from "@langchain/community/chat_models/ollama";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { ChatOllama } from "@langchain/ollama";
 import { ChatOpenAI } from "@langchain/openai";
 
 type TCreateInstance = {

@@ -90,6 +90,7 @@ export const useLLMRunner = () => {
           getToolByKey(p)?.tool({
             updatePreferences,
             preferences,
+            model: selectedModelKey,
             apiKeys,
             sendToolResponse: addTool,
           }),
@@ -223,6 +224,8 @@ export const useLLMRunner = () => {
           ],
         },
       );
+
+      console.log(stream);
 
       updateCurrentMessage({
         rawHuman: input,

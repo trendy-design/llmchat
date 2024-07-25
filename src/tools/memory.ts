@@ -1,8 +1,8 @@
+import { modelService } from "@/services/models";
 import { TToolArg } from "@/types";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { DynamicStructuredTool } from "@langchain/core/tools";
-import { ChatOpenAI } from "@langchain/openai";
 import { StructuredOutputParser } from "langchain/output_parsers";
 import { z } from "zod";
 
@@ -11,16 +11,17 @@ const memoryParser = StructuredOutputParser.fromZodSchema(
     memories: z
       .array(z.string().describe("key information point"))
       .describe("list of key informations"),
-  })
+  }),
 );
 
 const memoryTool = (args: TToolArg) => {
-  const { apiKeys, sendToolResponse, preferences, updatePreferences } = args;
+  const { apiKeys, sendToolResponse, preferences, updatePreferences, model } =
+    args;
   const memorySchema = z.object({
     memory: z
       .array(z.string().describe("key information"))
       .describe(
-        "key informations about the user, any user preference to personalize future interactions."
+        "key informations about the user, any user preference to personalize future interactions.",
       ),
 
     question: z.string().describe("question user asked"),
@@ -34,10 +35,15 @@ const memoryTool = (args: TToolArg) => {
     func: async ({ memory, question }, runManager) => {
       try {
         const existingMemories = preferences?.memories || [];
-        const model = new ChatOpenAI({
-          model: "gpt-3.5-turbo",
+
+        const currentModel = await modelService.createInstance({
+          model: model,
           apiKey: apiKeys.openai,
         });
+        // const model = new ChatOpenAI({
+        //   model: "gpt-3.5-turbo",
+        //   apiKey: apiKeys.openai,
+        // });
 
         const chain = RunnableSequence.from([
           PromptTemplate.fromTemplate(
@@ -50,9 +56,9 @@ const memoryTool = (args: TToolArg) => {
             2. Delete memories if requested.
             3. Add new memories if they are unique.
             
-            {format_instructions}`
+            {format_instructions}`,
           ),
-          model,
+          currentModel as any,
           memoryParser as any,
         ]);
 

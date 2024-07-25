@@ -30,7 +30,10 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
 
   const { showCopied, copy } = useClipboard();
   const handleCopyContent = () => {
-    rawAI && copy(rawAI);
+    const doc = document.getElementById(`message-${message.id}`);
+    if (doc) {
+      copy(doc.innerText);
+    }
   };
 
   const handleRegenerate = (assistant: string) => {
@@ -49,7 +52,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
     <Flex
       justify="between"
       items="center"
-      className="w-full pt-1 opacity-100 transition-opacity"
+      className="w-full opacity-100 transition-opacity"
     >
       {isGenerating && (
         <Flex gap="sm">
@@ -93,7 +96,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
                         refetch();
                       }
                     },
-                  }
+                  },
                 );
               }}
               open={openDeleteConfirm}
