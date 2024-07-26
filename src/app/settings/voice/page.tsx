@@ -10,8 +10,8 @@ import { usePreferenceContext } from "@/context/preferences";
 export default function VoiceSettings() {
   const { updatePreferences, preferences } = usePreferenceContext();
   return (
-    <SettingsContainer title="Speech-to-Text Settings">
-      <SettingCard className="justify-center flex flex-col p-5">
+    <SettingsContainer title="Voice Settings">
+      <SettingCard className="flex flex-col justify-center p-5">
         <Flex justify="between" items="center">
           <Flex direction="col" items="start">
             <Type textColor="primary" weight="medium">

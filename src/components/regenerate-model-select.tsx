@@ -42,7 +42,7 @@ export const RegenerateWithModelSelect = ({
           </DropdownMenuTrigger>
         </Tooltip>
 
-        <DropdownMenuContent className="min-w-[250px] h-[300px] no-scrollbar overflow-y-auto">
+        <DropdownMenuContent className="no-scrollbar h-[250px] min-w-[250px] overflow-y-auto">
           {assistants.map((assistant) => {
             const assistantProps = getAssistantByKey(assistant.key);
 

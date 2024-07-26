@@ -30,7 +30,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
         <Type textColor="secondary">
           API Key is invalid or expired.
           <span
-            className="cursor-pointer underline ml-1"
+            className="ml-1 cursor-pointer underline"
             onClick={() => push(`/settings/llms/${model?.provider}`)}
           >
             Check your API Key
@@ -42,7 +42,11 @@ export const AIMessageError: FC<TAIMessageError> = ({
   };
 
   return (
-    <Flex className="text-sm text-zinc-500 p-1" gap="sm" items="center">
+    <Flex
+      className="mb-4 rounded-xl bg-white/5 px-3 py-2 text-sm text-zinc-500"
+      gap="sm"
+      items="center"
+    >
       <Alert02Icon size={16} strokeWidth={1.5} />
       {renderErrorMessage(stopReason)}
     </Flex>

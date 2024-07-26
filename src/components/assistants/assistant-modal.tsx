@@ -95,7 +95,7 @@ export const AssistantModal: FC<TAssitantModal> = ({
         </Type>
         <Button
           size="sm"
-          variant="outline"
+          variant="outlined"
           onClick={() => setOpenCreateAssistant(true)}
         >
           Create New
@@ -119,7 +119,7 @@ export const AssistantModal: FC<TAssitantModal> = ({
             `w-full md:ml-[-200px] md:w-[400px]`,
           )}
         >
-          <Command className="relative rounded-2xl dark:border dark:border-white/10">
+          <Command className="relative rounded-lg dark:border dark:border-white/10">
             <CommandInput
               placeholder="Search assistants..."
               className="h-12"
@@ -149,8 +149,8 @@ export const AssistantModal: FC<TAssitantModal> = ({
                       <Drawer.Overlay className="fixed inset-0 z-[600] bg-zinc-500/70 backdrop-blur-sm dark:bg-zinc-900/70" />
                       <Drawer.Content
                         className={cn(
-                          "fixed bottom-0 left-0 right-0 z-[605] mx-auto mt-24 flex max-h-[450px] flex-col items-center outline-none md:bottom-6 md:left-[50%]",
-                          `w-full md:ml-[-220px] md:w-[440px]`,
+                          "fixed bottom-0 left-0 right-0 z-[605] mx-auto mt-24 flex max-h-[550px] flex-col items-center outline-none md:bottom-6 md:left-[50%]",
+                          `w-full md:ml-[-320px] md:w-[640px]`,
                         )}
                       >
                         <CreateAssistant

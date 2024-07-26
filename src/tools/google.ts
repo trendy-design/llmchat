@@ -40,7 +40,7 @@ const googleSearchTool = (args: TToolArg) => {
             (r: any, index: number) =>
               `${index + 1}. Title: """${r.title}""" \n URL: """${
                 r.url
-              }"""\n snippet: """${r.snippet}""" `
+              }"""\n snippet: """${r.snippet}""" `,
           )
           ?.join("\n\n");
 
@@ -57,6 +57,13 @@ const googleSearchTool = (args: TToolArg) => {
         });
         return searchPrompt;
       } catch (error) {
+        sendToolResponse({
+          toolName: "web_search",
+          toolArgs: {
+            input,
+          },
+          toolLoading: false,
+        });
         return "Error performing Google search. Ask user to check API keys.";
       }
     },

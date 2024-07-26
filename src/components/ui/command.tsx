@@ -29,7 +29,7 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
   return (
     <Dialog {...props}>
       <DialogOverlay className="!bg-transparent backdrop-blur-0" />
-      <DialogContent className="p-0 overflow-hidden border border-transparent dark:border-white/10">
+      <DialogContent className="overflow-hidden border border-transparent p-0 dark:border-white/10">
         <Command className="bg-white pb-2 dark:!bg-zinc-800 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
           {children}
         </Command>
@@ -46,7 +46,7 @@ const CommandInput = React.forwardRef<
     <Search01Icon
       size={24}
       strokeWidth="2"
-      className="w-4 h-4 mr-2 opacity-50 shrink-0"
+      className="mr-2 h-4 w-4 shrink-0 opacity-50"
     />
     <CommandPrimitive.Input
       ref={ref}
@@ -83,7 +83,7 @@ const CommandEmpty = React.forwardRef<
 >((props, ref) => (
   <CommandPrimitive.Empty
     ref={ref}
-    className="py-6 text-sm text-center md:text-base"
+    className="py-6 text-center text-sm md:text-base"
     {...props}
   />
 ));
@@ -125,7 +125,7 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex min-h-12 cursor-pointer items-center gap-2 rounded-xl !px-3 !py-2 text-xs font-medium text-zinc-800 outline-none aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-selected:bg-zinc-100 aria-selected:text-zinc-800 dark:text-zinc-100 dark:aria-selected:bg-zinc-900/50 dark:aria-selected:text-zinc-100 md:text-sm",
+      "relative flex min-h-11 cursor-pointer items-center gap-2 rounded-lg !px-3 !py-2 text-xs font-medium text-zinc-800 outline-none aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-selected:bg-zinc-100 aria-selected:text-zinc-800 dark:text-zinc-100 dark:aria-selected:bg-zinc-900/50 dark:aria-selected:text-zinc-100 md:text-sm",
       className,
     )}
     {...props}

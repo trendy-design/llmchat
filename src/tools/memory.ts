@@ -40,10 +40,6 @@ const memoryTool = (args: TToolArg) => {
           model: model,
           apiKey: apiKeys.openai,
         });
-        // const model = new ChatOpenAI({
-        //   model: "gpt-3.5-turbo",
-        //   apiKey: apiKeys.openai,
-        // });
 
         const chain = RunnableSequence.from([
           PromptTemplate.fromTemplate(
@@ -88,6 +84,13 @@ const memoryTool = (args: TToolArg) => {
         });
         return question;
       } catch (error) {
+        sendToolResponse({
+          toolName: "memory",
+          toolArgs: {
+            memory,
+          },
+          toolLoading: false,
+        });
         return "Error performing memory update. Please check API keys.";
       }
     },

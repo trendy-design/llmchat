@@ -16,7 +16,7 @@ export const AssistantBanner: FC<AssistantBannerProps> = ({
       items="start"
       direction="col"
       gap="md"
-      className="w-full rounded-xl bg-white/5 p-4"
+      className="w-full rounded-xl bg-zinc-800/5 p-4 dark:bg-white/5"
     >
       <Flex direction="col" gap="sm">
         <Flex items="center" gap="sm" className="!text-emerald-500">

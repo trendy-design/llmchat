@@ -36,6 +36,8 @@ export const Sidebar = () => {
           variant={"ghost"}
           className="h-8 min-w-8"
           onClick={() => {
+            push("/chat");
+
             createSession({
               redirect: true,
             });
@@ -80,14 +82,14 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="flex flex-row items-center justify-center gap-3 border-zinc-500/5 p-3 pb-6 dark:border-zinc-500/5 md:h-screen md:flex-col md:border-r">
+    <div className="fixed z-10 flex flex-row items-center justify-center gap-3 border-zinc-500/10 p-3 pb-6 dark:border-zinc-500/5 md:h-screen md:flex-col md:border-r">
       <div className="flex flex-row items-center gap-2">
         {renderNewSession()}
       </div>
-
       <div className="flex flex-col items-center gap-2">
         <HistorySidebar />
       </div>
+
       {renderSpaces()}
 
       <Flex className="flex-1" />

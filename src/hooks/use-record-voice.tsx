@@ -1,3 +1,4 @@
+import { Flex } from "@/components/ui";
 import { AudioWaveSpinner } from "@/components/ui/audio-wave";
 import { Button } from "@/components/ui/button";
 import { RecordIcon, StopIcon } from "@/components/ui/icons";
@@ -13,7 +14,7 @@ export const useRecordVoice = () => {
   const { push } = useRouter();
   const [text, setText] = useState<string>("");
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null
+    null,
   );
   const { toast } = useToast();
   const { apiKeys } = usePreferenceContext();
@@ -120,18 +121,19 @@ export const useRecordVoice = () => {
         <>
           <Button
             variant="ghost"
-            size="iconSm"
-            rounded="full"
+            size="sm"
             onClick={() => {
               stopRecording();
             }}
+            className="group"
           >
             <StopIcon
               size={18}
               variant="solid"
               strokeWidth="2"
-              className="text-red-300"
+              className="text-rose-400/80"
             />
+            <span className="hidden group-hover:flex">Stop</span>
           </Button>
         </>
       );
@@ -139,7 +141,7 @@ export const useRecordVoice = () => {
 
     return (
       <Tooltip content="Record">
-        <Button size="iconSm" variant="ghost" onClick={startVoiceRecording}>
+        <Button size="icon" variant="ghost" onClick={startVoiceRecording}>
           <RecordIcon size={18} variant="stroke" strokeWidth="2" />
         </Button>
       </Tooltip>
@@ -147,20 +149,19 @@ export const useRecordVoice = () => {
   };
 
   const renderListeningIndicator = () => {
-    const containerClass = "flex w-full flex-row items-center justify-start gap-2 rounded-2xl border border-zinc-100 bg-white py-1 pl-2 pr-2 text-zinc-700 ring-1 ring-zinc-100 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 md:w-[700px] lg:w-[720px]"
     if (transcribing) {
       return (
-        <div className={containerClass}>
+        <Flex items="center" gap="sm" className="opacity-50">
           <AudioWaveSpinner /> <p>Transcribing ...</p>
-        </div>
+        </Flex>
       );
     }
     if (recording) {
       return (
-        <div className={containerClass}>
+        <Flex items="center" gap="sm" className="opacity-50">
           <AudioWaveSpinner />
           <p>Listening ...</p>
-        </div>
+        </Flex>
       );
     }
   };

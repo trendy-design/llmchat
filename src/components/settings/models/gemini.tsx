@@ -1,5 +1,7 @@
+import { FormLabel } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
+import { configs } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
 import { useLLMTest } from "@/hooks/use-llm-test";
 import Link from "next/link";
@@ -18,17 +20,17 @@ export const GeminiSettings = () => {
 
   return (
     <Flex direction="col" gap="sm">
-      <Flex items="center" gap="sm">
-        <p className="text-xs md:text-sm font-medium text-zinc-300">
-          Google Gemini API Key
-        </p>
-        <Link
-          href="https://aistudio.google.com/app/apikey"
-          className="text-blue-400 font-medium"
-        >
-          (Get API key here)
-        </Link>
-      </Flex>
+      <FormLabel
+        label="Google Gemini API Key"
+        extra={() => (
+          <Link
+            href={configs.geminiApiKeyUrl}
+            className="text-sm font-medium text-blue-400 hover:opacity-90"
+          >
+            Get API key here
+          </Link>
+        )}
+      />
       <ApiKeyInput
         value={key}
         setValue={setKey}
@@ -37,11 +39,11 @@ export const GeminiSettings = () => {
         isLocked={!!apiKeys.gemini}
       />
 
-      <div className="flex flex-row items-center gap-1">
+      <Flex gap="sm">
         {!apiKeys.gemini && (
           <Button
             size="sm"
-            variant="outline"
+            variant="default"
             onClick={() => {
               checkApiKey({
                 model: "gemini",
@@ -71,7 +73,8 @@ export const GeminiSettings = () => {
             Remove Key
           </Button>
         )}
-      </div>
+      </Flex>
+
       <ApiKeyInfo />
     </Flex>
   );

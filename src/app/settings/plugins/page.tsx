@@ -9,20 +9,20 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Flex } from "@/components/ui/flex";
-import { GlobalSearchIcon, Image01Icon } from "@/components/ui/icons";
+import { AiImageIcon, Globe02Icon } from "@hugeicons/react";
 
 export default function PulginSettings() {
   const pluginSettingsData = [
     {
       value: "websearch",
       label: "Web Search",
-      icon: GlobalSearchIcon,
+      icon: Globe02Icon,
       settingsComponent: WebSearchPlugin,
     },
     {
       value: "image_generation",
       label: "Image Generation",
-      icon: Image01Icon,
+      icon: AiImageIcon,
       settingsComponent: ImageGenerationPlugin,
     },
   ];
@@ -34,8 +34,10 @@ export default function PulginSettings() {
           return (
             <AccordionItem key={plugin.value} value={plugin.value}>
               <AccordionTrigger>
-                <Flex gap="sm" items="center">
-                  {Icon && <Icon size={20} strokeWidth={1.5} />}
+                <Flex gap="md" items="center">
+                  {Icon && (
+                    <Icon size={20} strokeWidth={2} className="opacity-50" />
+                  )}
                   {plugin.label}
                 </Flex>
               </AccordionTrigger>

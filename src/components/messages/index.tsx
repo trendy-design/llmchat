@@ -38,7 +38,7 @@ export const ChatMessages = () => {
   const renderMessage = (message: TChatMessage, index: number) => {
     const isLast = (messages?.length || 0) - 1 === index;
     return (
-      <div className="flex flex-col gap-1 items-end w-full" key={message.id}>
+      <div className="flex w-full flex-col items-end gap-1" key={message.id}>
         <HumanMessage chatMessage={message} isLast={isLast} />
         <AIMessage message={message} isLast={isLast} />
       </div>
@@ -47,12 +47,12 @@ export const ChatMessages = () => {
 
   return (
     <div
-      className="flex flex-col w-full items-center h-[100dvh] overflow-y-auto no-scrollbar pt-[60px] pb-[200px]"
+      className="no-scrollbar flex h-[100dvh] w-full flex-col items-center overflow-y-auto pb-[200px] pt-[60px]"
       ref={chatContainer}
       id="chat-container"
     >
-      <div className="w-full md:w-[700px] lg:w-[720px] p-2 flex flex-1 flex-col gap-24">
-        <div className="flex flex-col gap-8 w-full items-start">
+      <div className="flex w-full flex-1 flex-col gap-24 p-2 md:w-[700px] lg:w-[720px]">
+        <div className="flex w-full flex-col items-start gap-8">
           {messages?.map(renderMessage)}
         </div>
       </div>

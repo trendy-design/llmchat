@@ -121,10 +121,10 @@ export const useImageAttachment = ({ id }: TUseImageAttachment) => {
         <Tooltip content={tooltip}>
           {showIcon ? (
             <Button variant="ghost" size="iconSm" onClick={handleFileSelect}>
-              <ImageAdd01Icon size={18} strokeWidth={1.5} />
+              <ImageAdd01Icon size={18} strokeWidth={2} />
             </Button>
           ) : (
-            <Button variant="outline" onClick={handleFileSelect}>
+            <Button variant="outlined" onClick={handleFileSelect}>
               {label}
             </Button>
           )}

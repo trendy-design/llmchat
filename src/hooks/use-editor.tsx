@@ -43,7 +43,7 @@ export const useChatEditor = () => {
       } else {
         const newHTML = html.replace(
           /{{(.*?)}}/g,
-          ` <mark class="prompt-highlight">$1</mark> `
+          ` <mark class="prompt-highlight">$1</mark> `,
         );
 
         if (newHTML !== html) {

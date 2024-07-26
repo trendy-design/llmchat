@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
-import { ElectricPlugsIcon } from "@/components/ui/icons";
+import { PuzzleIcon } from "@/components/ui/icons";
 import {
   Popover,
   PopoverContent,
@@ -31,8 +31,8 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
   useEffect(() => {
     setSelectedPlugins(
       preferences.defaultPlugins?.filter((p) =>
-        availableToolsKey.includes(p)
-      ) || []
+        availableToolsKey.includes(p),
+      ) || [],
     );
   }, [isOpen, preferences]);
 
@@ -48,16 +48,16 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
         <Tooltip content="Plugins">
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm">
-              <ElectricPlugsIcon size={18} variant="stroke" strokeWidth="2" />
+              <PuzzleIcon size={18} variant="stroke" strokeWidth="2" />
               <Badge>{selectedPlugins.length}</Badge>
             </Button>
           </PopoverTrigger>
         </Tooltip>
         <PopoverContent
-          className="p-0 w-[340px] dark:bg-zinc-700 mr-8 roundex-2xl"
+          className="roundex-lg mr-8 w-[340px] p-0 dark:bg-zinc-700"
           side="top"
         >
-          <p className="flex flex-row gap-2 py-2 px-3 text-sm font-medium border-b border-zinc-500/20">
+          <p className="flex flex-row gap-2 border-b border-zinc-500/20 px-3 py-2 text-sm font-medium">
             Plugins <Badge>Beta</Badge>
           </p>
           <div className="flex flex-col p-1">
@@ -66,7 +66,7 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
               return (
                 <div
                   key={tool.key}
-                  className="flex text-xs md:text-sm gap-3 flex-row items-center w-full py-2 px-3 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl"
+                  className="flex w-full flex-row items-center gap-3 rounded-lg px-3 py-2 text-xs hover:bg-zinc-50 dark:hover:bg-black/30 md:text-sm"
                 >
                   <Icon size={20} strokeWidth={1.5} />
                   <Flex direction="col" gap="none" items="start">
@@ -96,13 +96,13 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
                       } else {
                         updatePreferences({
                           defaultPlugins: defaultPlugins.filter(
-                            (plugin) => plugin !== tool.key
+                            (plugin) => plugin !== tool.key,
                           ),
                         });
                         setSelectedPlugins(
                           selectedPlugins.filter(
-                            (plugin) => plugin !== tool.key
-                          )
+                            (plugin) => plugin !== tool.key,
+                          ),
                         );
                       }
                     }}

@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +14,7 @@ import { FC, useState } from "react";
 export type TModelSelect = {
   selectedModel: TModelKey;
   fullWidth?: boolean;
-  variant?: "outline" | "ghost" | "default" | "secondary";
+  variant?: ButtonProps["variant"];
   setSelectedModel: (model: TModelKey) => void;
   className?: string;
 };
@@ -44,7 +44,7 @@ export const ModelSelect: FC<TModelSelect> = ({
         <DropdownMenuTrigger asChild>
           <Button
             variant={variant || "ghost"}
-            className={cn("gap-2 pl-1 pr-3 text-xs md:text-sm", className)}
+            className={cn("gap-2 text-xs md:text-sm", className)}
             size="sm"
           >
             {activeAssistant?.assistant &&
