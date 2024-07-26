@@ -1,6 +1,7 @@
 import { HugeiconsProps } from "@hugeicons/react";
 import { FC, RefAttributes, useState } from "react";
 import { Button } from "./button";
+import { Flex } from "./flex";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 
 export type TPopoverConfirm = {
@@ -28,8 +29,8 @@ export const PopOverConfirmProvider = ({
     <Popover open={openConfirm} onOpenChange={setOpenConfirm}>
       <PopoverTrigger asChild>{children}</PopoverTrigger>
       <PopoverContent className="z-[1000]" side="bottom">
-        <p className="pb-2 text-sm font-medium md:text-base">{title}</p>
-        <div className="flex flex-row gap-1">
+        <p className="pb-4 text-sm font-medium">{title}</p>
+        <Flex gap="sm">
           <Button
             variant={confimBtnVariant}
             size="sm"
@@ -43,7 +44,7 @@ export const PopOverConfirmProvider = ({
             {confimBtnText}
           </Button>
           <Button
-            variant="ghost"
+            variant="secondary"
             size="sm"
             onClick={(e) => {
               onCancel?.();
@@ -53,7 +54,7 @@ export const PopOverConfirmProvider = ({
           >
             Cancel
           </Button>
-        </div>
+        </Flex>{" "}
       </PopoverContent>
     </Popover>
   );

@@ -96,7 +96,7 @@ export default function SettingsPage({
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-white dark:bg-zinc-800 md:flex-row">
-      <div className="no-scrollbar absolute left-0 right-0 top-0 flex w-full flex-row items-end gap-1 overflow-x-auto border-zinc-500/10 bg-zinc-50 px-2 pb-2 pt-2 dark:bg-zinc-900/50 md:bottom-0 md:h-full md:w-[300px] md:flex-col md:gap-0 md:overflow-y-auto md:pb-16">
+      <div className="no-scrollbar absolute left-0 right-0 top-0 flex w-full flex-row items-end gap-1 overflow-x-auto border-zinc-500/10 bg-zinc-50/50 px-2 pb-2 pt-2 dark:bg-zinc-900/50 md:bottom-0 md:h-full md:w-[30vw] md:flex-col md:gap-0 md:overflow-y-auto md:pb-16">
         <div className="flex w-[200px] flex-col items-end gap-2 p-4">
           <Button
             onClick={() => push("/")}
@@ -108,12 +108,12 @@ export default function SettingsPage({
             </div>
             Back
           </Button>
-          <Flex direction="col" gap="sm" className="w-full">
+          <Flex direction="col" gap="xs" className="w-full">
             {settingMenu.map(renderMenuItem)}
           </Flex>
         </div>
       </div>
-      <div className="no-scrollbar mt-12 h-full w-full max-w-[700px] overflow-y-auto p-8 pb-16 md:ml-[300px] md:mt-0">
+      <div className="no-scrollbar mt-12 h-full w-full max-w-[720px] overflow-y-auto p-8 pb-16 md:ml-[30vw] md:mt-0">
         {children}
       </div>
     </div>

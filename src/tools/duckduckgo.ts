@@ -36,6 +36,13 @@ const duckduckGoTool = (args: TToolArg) => {
         });
         return searchPrompt;
       } catch (error) {
+        sendToolResponse({
+          toolName: "web_search",
+          toolArgs: {
+            input,
+          },
+          toolLoading: false,
+        });
         return "Error performing search. Must not use duckduckgo_search tool now. Ask user to check API keys.";
       }
     },

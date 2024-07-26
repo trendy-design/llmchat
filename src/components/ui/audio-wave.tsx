@@ -19,6 +19,6 @@ export const AudioWaveSpinner = () => {
   }, []);
 
   return (
-    <div ref={animationContainer} className="w-10 h-10 overflow-hidden"></div>
+    <div ref={animationContainer} className="h-8 w-8 overflow-hidden"></div>
   );
 };

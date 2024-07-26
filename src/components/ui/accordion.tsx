@@ -1,10 +1,10 @@
 "use client";
 
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
 import * as React from "react";
 
 import { cn } from "@/helper/clsx";
+import { ArrowDown01Icon } from "@hugeicons/react";
 
 const Accordion = AccordionPrimitive.Root;
 
@@ -15,8 +15,8 @@ const AccordionItem = React.forwardRef<
   <AccordionPrimitive.Item
     ref={ref}
     className={cn(
-      "my-2 px-4 bg-zinc-50 dark:bg-white/5 rounded-2xl no-underline",
-      className
+      "mb-2 rounded-xl bg-zinc-50 px-4 no-underline dark:bg-white/5",
+      className,
     )}
     {...props}
   />
@@ -32,12 +32,16 @@ const AccordionTrigger = React.forwardRef<
       ref={ref}
       className={cn(
         "flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all [&[data-state=open]>svg]:rotate-180",
-        className
+        className,
       )}
       {...props}
     >
       {children}
-      <ChevronDownIcon className="h-4 w-4 shrink-0 text-zinc-500 transition-transform duration-200 dark:text-zinc-400" />
+      <ArrowDown01Icon
+        size={20}
+        strokeWidth={2}
+        className="shrink-0 text-zinc-500 transition-transform duration-200 dark:text-zinc-400"
+      />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));
@@ -49,7 +53,7 @@ const AccordionContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => (
   <AccordionPrimitive.Content
     ref={ref}
-    className="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+    className="data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down overflow-hidden text-sm"
     {...props}
   >
     <div className={cn("pb-4 pt-0", className)}>{children}</div>

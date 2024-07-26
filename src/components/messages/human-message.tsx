@@ -13,20 +13,20 @@ export const HumanMessage = ({ chatMessage, isLast }: THumanMessage) => {
   return (
     <>
       {runConfig?.context && (
-        <div className="bg-zinc-50 text-zinc-600 dark:text-zinc-100 dark:bg-black/30 rounded-2xl p-2 pl-3 ml-16 md:ml-32 text-sm md:text-base flex flex-row gap-2 pr-4 border hover:border-white/5 border-transparent">
-          <Quotes size={16} weight="bold" className="flex-shrink-0 mt-2" />
+        <div className="ml-16 flex flex-row gap-2 rounded-lg border border-transparent bg-zinc-50 p-2 pl-3 pr-4 text-sm text-zinc-600 hover:border-white/5 dark:bg-black/30 dark:text-zinc-100 md:ml-32 md:text-base">
+          <Quotes size={16} weight="bold" className="mt-2 flex-shrink-0" />
 
-          <span className="pt-[0.35em] pb-[0.25em] leading-6">
+          <span className="pb-[0.25em] pt-[0.35em] leading-6">
             {runConfig?.context}
           </span>
         </div>
       )}
       {runConfig?.image && (
-        <div className="rounded-2xl relative min-w-[120px] h-[120px] border border-white/5  shadow-md">
+        <div className="relative h-[120px] min-w-[120px] rounded-lg border border-white/5 shadow-md">
           <Image
             src={runConfig?.image}
             alt="uploaded image"
-            className="w-full h-full object-cover rounded-2xl overflow-hidden"
+            className="h-full w-full overflow-hidden rounded-xl object-cover"
             width={0}
             sizes="50vw"
             height={0}
@@ -34,8 +34,8 @@ export const HumanMessage = ({ chatMessage, isLast }: THumanMessage) => {
         </div>
       )}
       <Flex className="ml-16 md:ml-32" gap="xs" items="center">
-        <div className="bg-zinc-50 text-zinc-600 dark:text-zinc-100 dark:bg-black/30  rounded-2xl text-sm md:text-base flex flex-row gap-2 px-3 py-2">
-          <span className="pt-[0.20em] pb-[0.15em] leading-6 whitespace-pre-wrap">
+        <div className="flex flex-row gap-2 rounded-lg bg-zinc-50 px-3 py-2 text-sm text-zinc-600 dark:bg-black/30 dark:text-zinc-100 md:text-base">
+          <span className="whitespace-pre-wrap pb-[0.15em] pt-[0.20em] leading-6">
             {rawHuman}
           </span>
         </div>

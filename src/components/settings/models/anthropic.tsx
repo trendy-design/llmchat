@@ -1,5 +1,7 @@
+import { FormLabel } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
+import { configs } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
 import { useLLMTest } from "@/hooks/use-llm-test";
 import Link from "next/link";
@@ -17,18 +19,19 @@ export const AnthropicSettings = () => {
   }, [apiKeys.anthropic]);
 
   return (
-    <Flex direction="col" gap="sm">
-      <Flex items="center" gap="sm">
-        <p className="text-xs md:text-sm font-medium text-zinc-300">
-          Anthropic API Key
-        </p>
-        <Link
-          href="https://console.anthropic.com/settings/keys"
-          className="text-blue-400 font-medium"
-        >
-          (Get API key here)
-        </Link>
-      </Flex>
+    <Flex direction="col" gap="md">
+      <FormLabel
+        label="Anthropic API Key"
+        extra={() => (
+          <Link
+            href={configs.anthropicApiKeyUrl}
+            className="text-sm font-medium text-blue-400 hover:opacity-90"
+          >
+            Get API key here
+          </Link>
+        )}
+      />
+
       <ApiKeyInput
         value={key}
         setValue={setKey}
@@ -37,11 +40,11 @@ export const AnthropicSettings = () => {
         isLocked={!!apiKeys.anthropic}
       />
 
-      <div className="flex flex-row items-center gap-1">
+      <Flex gap="sm">
         {!apiKeys.anthropic && (
           <Button
             size="sm"
-            variant="outline"
+            variant="default"
             onClick={() => {
               checkApiKey({
                 model: "anthropic",
@@ -71,7 +74,7 @@ export const AnthropicSettings = () => {
             Remove Key
           </Button>
         )}
-      </div>
+      </Flex>
       <ApiKeyInfo />
     </Flex>
   );

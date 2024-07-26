@@ -13,6 +13,7 @@ import { useSessions } from "@/context";
 import { cn } from "@/helper/clsx";
 import { TChatSession } from "@/types";
 import moment from "moment";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export const HistoryItem = ({
@@ -30,6 +31,7 @@ export const HistoryItem = ({
     setActiveSessionId,
     activeSessionId,
   } = useSessions();
+  const { push } = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(session.title);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
@@ -63,13 +65,14 @@ export const HistoryItem = ({
 
   const handleOnClick = () => {
     if (!isEditing) {
+      push("/chat");
       setActiveSessionId(session.id);
       dismiss();
     }
   };
 
   const containerClasses = cn(
-    "gap-2 w-full group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-xl hover:bg-black/10 hover:dark:bg-black/30",
+    "gap-2 w-full group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-lg hover:bg-black/10 hover:dark:bg-black/30",
     activeSessionId === session.id || isEditing
       ? "bg-black/10 dark:bg-black/30"
       : "",

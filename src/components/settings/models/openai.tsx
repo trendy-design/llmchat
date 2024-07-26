@@ -1,3 +1,4 @@
+import { FormLabel } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
 import { configs } from "@/config";
@@ -18,18 +19,19 @@ export const OpenAISettings = () => {
   }, [apiKeys.openai]);
 
   return (
-    <Flex direction="col" gap="sm">
-      <Flex items="center" gap="sm">
-        <p className="text-xs md:text-sm font-medium text-zinc-300">
-          Open AI API Key
-        </p>
-        <Link
-          href={configs.geminiApiKeyUrl}
-          className="text-blue-400 font-medium"
-        >
-          (Get API key here)
-        </Link>
-      </Flex>
+    <Flex direction="col" gap="md">
+      <FormLabel
+        label="Open AI API Key"
+        extra={() => (
+          <Link
+            href={configs.openaiApiKeyUrl}
+            className="text-sm font-medium text-blue-400 hover:opacity-90"
+          >
+            Get API key here
+          </Link>
+        )}
+      />
+
       <ApiKeyInput
         value={key}
         setValue={setKey}
@@ -42,7 +44,7 @@ export const OpenAISettings = () => {
         {!apiKeys.openai && (
           <Button
             size="sm"
-            variant="outline"
+            variant="default"
             onClick={() => {
               checkApiKey({
                 model: "openai",

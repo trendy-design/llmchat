@@ -1,12 +1,18 @@
-import { ConfirmPopover } from "@/components/popover-confirm";
 import { RegenerateWithModelSelect } from "@/components/regenerate-model-select";
-import { Button, Flex, Spinner, Tooltip, Type } from "@/components/ui";
+import {
+  Button,
+  Flex,
+  PopOverConfirmProvider,
+  Spinner,
+  Tooltip,
+  Type,
+} from "@/components/ui";
 import { Copy01Icon, Delete01Icon, Tick01Icon } from "@/components/ui/icons";
 import { useChatContext, useSessions } from "@/context";
 import { useAssistantUtils, useClipboard } from "@/hooks";
 import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { TChatMessage } from "@/types";
-import { FC, useState } from "react";
+import { FC } from "react";
 
 export type TAIMessageActions = {
   message: TChatMessage;
@@ -18,8 +24,6 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
   canRegenerate,
 }) => {
   const { refetch, store } = useChatContext();
-  const messages = store((state) => state.messages);
-  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const { getAssistantByKey } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
   const { removeMessageByIdMutation } = useSessions();
@@ -80,8 +84,9 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
           </Tooltip>
 
           <Tooltip content="Delete">
-            <ConfirmPopover
+            <PopOverConfirmProvider
               title="Are you sure you want to delete this message?"
+              confimBtnVariant="destructive"
               onConfirm={() => {
                 removeMessageByIdMutation.mutate(
                   {
@@ -90,20 +95,16 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
                   },
                   {
                     onSuccess: () => {
-                     
-                        refetch();
-                      
+                      refetch();
                     },
                   },
                 );
               }}
-              open={openDeleteConfirm}
-              onOpenChange={setOpenDeleteConfirm}
             >
               <Button variant="ghost" size="iconSm" rounded="lg">
                 <Delete01Icon size={18} variant="stroke" strokeWidth="2" />
               </Button>
-            </ConfirmPopover>
+            </PopOverConfirmProvider>
           </Tooltip>
           {canRegenerate && (
             <RegenerateWithModelSelect

@@ -12,11 +12,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Flex } from "@/components/ui/flex";
-import { AlertCircleIcon, CheckmarkCircle02Icon } from "@/components/ui/icons";
 import { providers } from "@/config/models";
 import { usePreferenceContext } from "@/context";
 import { cn } from "@/helper/clsx";
 import { TProvider } from "@/types";
+import { Alert01Icon, CheckmarkCircle01Icon } from "@hugeicons/react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -95,33 +95,31 @@ export default function LLMsSettings() {
         {modelSettingsData.map((model) => (
           <AccordionItem key={model.value} value={model.value}>
             <AccordionTrigger>
-              <Flex gap="sm" items="center">
+              <Flex gap="md" items="center">
                 <ModelIcon type={model.iconType as ModelIconType} size="sm" />
                 {model.label}
               </Flex>
               <Flex className="flex-1" />
               <div
                 className={cn(
-                  "px-2 !rotate-0",
-                  model.connected ? "text-emerald-400" : "text-zinc-500"
+                  "!rotate-0 px-2",
+                  model.connected
+                    ? "text-emerald-500 dark:text-emerald-400"
+                    : "text-zinc-500",
                 )}
               >
                 {model.connected ? (
-                  <CheckmarkCircle02Icon
+                  <CheckmarkCircle01Icon
                     size={20}
                     strokeWidth={1.5}
                     variant="solid"
                   />
                 ) : (
-                  <AlertCircleIcon
-                    size={20}
-                    strokeWidth={1.5}
-                    variant="solid"
-                  />
+                  <Alert01Icon size={20} strokeWidth={1.5} variant="solid" />
                 )}
               </div>
             </AccordionTrigger>
-            <AccordionContent>
+            <AccordionContent className="px-3 py-6">
               <model.settingsComponent />
             </AccordionContent>
           </AccordionItem>

@@ -19,7 +19,7 @@ export default function CommonPage() {
 
   const renderResetToDefault = (key: keyof TPreferences) => (
     <Button
-      variant="outline"
+      variant="secondary"
       size="iconXS"
       rounded="lg"
       onClick={() => updatePreferences({ [key]: defaultPreferences[key] })}
@@ -61,7 +61,7 @@ export default function CommonPage() {
       description: "Maximum tokens in a single response.",
       type: "number",
       min: 0,
-      max: 100,
+      max: 10000,
       step: 1,
     },
     {
@@ -94,109 +94,99 @@ export default function CommonPage() {
   ];
 
   return (
-    <Flex direction="col" gap="lg" className="w-full">
-      <SettingsContainer title="Default Assistant Settings">
-        <Flex direction="col" gap="sm" className="w-full" items="start">
-          <Flex justify="between" items="center" className="w-full">
-            <Flex direction="col" items="start">
-              <Type weight="medium"> System Prompt</Type>
-              <Type size="xxs" textColor="secondary">
-                Default instructions for the model.
-              </Type>
-            </Flex>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                updatePreferences({
-                  systemPrompt: defaultPreferences.systemPrompt,
-                })
-              }
-            >
-              Reset
-            </Button>
+    <SettingsContainer title="Model Settings" gap="sm">
+      <Flex direction="col" gap="md" className="w-full" items="start">
+        <Flex justify="between" items="center" className="w-full">
+          <Flex direction="col" items="start">
+            <Type weight="medium"> System Prompt</Type>
+            <Type size="xxs" textColor="secondary">
+              Default instructions for the model.
+            </Type>
           </Flex>
-          <Textarea
-            name="systemPrompt"
-            value={preferences.systemPrompt}
-            autoComplete="off"
-            onChange={(e) =>
-              updatePreferences({ systemPrompt: e.target.value })
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() =>
+              updatePreferences({
+                systemPrompt: defaultPreferences.systemPrompt,
+              })
             }
-          />
+          >
+            Reset
+          </Button>
         </Flex>
-      </SettingsContainer>
+        <Textarea
+          name="systemPrompt"
+          value={preferences.systemPrompt}
+          autoComplete="off"
+          onChange={(e) => updatePreferences({ systemPrompt: e.target.value })}
+        />
+      </Flex>
 
-      <SettingsContainer title="Model Settings">
-        <SettingCard className="px-5 mt-2">
-          {settings.map((setting, index) => {
-            const listItemClasses = cn(
-              `w-full border-b border-zinc-500/10 py-4 `,
-              {
-                "border-b-0": index === settings.length - 1,
-              }
-            );
-            return (
-              <Flex
-                key={setting.key}
-                justify="between"
-                items="center"
-                className={listItemClasses}
-              >
-                <Flex direction="col" items="start">
-                  <Type weight="medium">{setting.label}</Type>
-                  <Type size="xxs" textColor="secondary">
-                    {setting.description}
-                  </Type>
-                </Flex>
-                <Flex items="center" gap="sm">
-                  {setting.type === "number" && (
-                    <>
-                      <Input
-                        name={setting.key}
-                        type="number"
-                        size="sm"
-                        className="w-[100px]"
-                        value={
-                          preferences[
-                            setting.key as keyof TPreferences
-                          ] as string
-                        }
-                        min={setting.min}
-                        max={setting.max}
-                        step={setting.step}
-                        autoComplete="off"
-                        onChange={handleInputChange(
-                          setting.key as keyof TPreferences,
-                          setting.min,
-                          setting.max
-                        )}
-                      />
-                      <Slider
-                        className="my-2 w-[80px]"
-                        value={[
-                          Number(
-                            preferences[setting.key as keyof TPreferences]
-                          ),
-                        ]}
-                        min={setting.min}
-                        step={setting.step}
-                        max={setting.max}
-                        onValueChange={handleSliderChange(
-                          setting.key as keyof TPreferences,
-                          setting.min,
-                          setting.max
-                        )}
-                      />
-                    </>
-                  )}
-                  {renderResetToDefault(setting.key as keyof TPreferences)}
-                </Flex>
+      <SettingCard className="px-5">
+        {settings.map((setting, index) => {
+          const listItemClasses = cn(
+            `w-full border-b border-zinc-500/10 py-4 `,
+            {
+              "border-b-0": index === settings.length - 1,
+            },
+          );
+          return (
+            <Flex
+              key={setting.key}
+              justify="between"
+              items="center"
+              className={listItemClasses}
+            >
+              <Flex direction="col" items="start">
+                <Type weight="medium">{setting.label}</Type>
+                <Type size="xxs" textColor="secondary">
+                  {setting.description}
+                </Type>
               </Flex>
-            );
-          })}
-        </SettingCard>
-      </SettingsContainer>
-    </Flex>
+              <Flex items="center" gap="sm">
+                {setting.type === "number" && (
+                  <>
+                    <Slider
+                      className="my-2 w-[80px]"
+                      value={[
+                        Number(preferences[setting.key as keyof TPreferences]),
+                      ]}
+                      min={setting.min}
+                      step={setting.step}
+                      max={setting.max}
+                      onValueChange={handleSliderChange(
+                        setting.key as keyof TPreferences,
+                        setting.min,
+                        setting.max,
+                      )}
+                    />
+                    <Input
+                      name={setting.key}
+                      type="number"
+                      size="sm"
+                      className="w-[100px]"
+                      value={
+                        preferences[setting.key as keyof TPreferences] as string
+                      }
+                      min={setting.min}
+                      max={setting.max}
+                      step={setting.step}
+                      autoComplete="off"
+                      onChange={handleInputChange(
+                        setting.key as keyof TPreferences,
+                        setting.min,
+                        setting.max,
+                      )}
+                    />
+                  </>
+                )}
+                {renderResetToDefault(setting.key as keyof TPreferences)}
+              </Flex>
+            </Flex>
+          );
+        })}
+      </SettingCard>
+    </SettingsContainer>
   );
 }

@@ -1,11 +1,11 @@
 import { Mdx } from "@/components/mdx";
+import { FormLabel } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { usePreferenceContext } from "@/context/preferences";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export const OllamaSettings = () => {
@@ -84,30 +84,19 @@ To ensure proper functionality, you'll need to configure cross-origin settings d
 
   return (
     <Flex direction="col" gap="sm">
-      <Flex items="center" gap="sm">
-        <p className="text-xs md:text-sm text-zinc-500">
-          Ollama local server URL
-        </p>
-        <Link
-          href="https://aistudio.google.com/app/apikey"
-          className="text-blue-400 font-medium"
-        >
-          (Configuration guide)
-        </Link>
-      </Flex>
+      <FormLabel label="Ollama local server URL" />
       <Input
         placeholder="http://localhost:11434"
         value={url}
         autoComplete="off"
         onChange={handleURLChange}
       />
-      <div className="flex flex-row items-center gap-2">
-        <Button size="sm" variant="outline" onClick={verifyAndSaveURL}>
-          Check Connection
-        </Button>
-      </div>
 
-      <Tabs defaultValue="macos" className="w-full">
+      <Button size="sm" variant="default" onClick={verifyAndSaveURL}>
+        Check Connection
+      </Button>
+
+      <Tabs defaultValue="macos" className="mt-2 w-full">
         <TabsList className="grid w-full grid-cols-2">
           {tabConfigs.map((tab) => (
             <TabsTrigger key={tab.value} value={tab.value}>
@@ -116,7 +105,7 @@ To ensure proper functionality, you'll need to configure cross-origin settings d
           ))}
         </TabsList>
         {tabConfigs.map((tab) => (
-          <TabsContent key={tab.value} value={tab.value}>
+          <TabsContent key={tab.value} value={tab.value} className="pb-4">
             <Mdx
               message={tab.message}
               animate={false}

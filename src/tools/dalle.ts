@@ -43,6 +43,13 @@ const dalleTool = (args: TToolArg) => {
         const searchPrompt = "";
         return searchPrompt;
       } catch (error) {
+        sendToolResponse({
+          toolName: "image_generation",
+          toolArgs: {
+            imageDescription,
+          },
+          toolLoading: false,
+        });
         return "Error performing search. Must not use duckduckgo_search tool now. Ask user to check API keys.";
       }
     },

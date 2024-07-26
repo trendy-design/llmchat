@@ -24,7 +24,7 @@ export const QuickSettings = () => {
   const renderResetToDefault = (key: keyof TPreferences) => {
     return (
       <Button
-        variant="outline"
+        variant="outlined"
         size="iconXS"
         rounded="lg"
         onClick={() => {
@@ -47,7 +47,7 @@ export const QuickSettings = () => {
           </Button>
         </PopoverTrigger>
       </Tooltip>
-      <PopoverContent className="p-0 dark:bg-zinc-700 mr-8 roundex-2xl w-[300px]">
+      <PopoverContent className="roundex-2xl mr-8 w-[300px] p-0 dark:bg-zinc-700">
         <Flex direction="col" className="w-full px-3 py-1">
           <Flex items="center" justify="between" className="w-full">
             <Tooltip content="Temprature">

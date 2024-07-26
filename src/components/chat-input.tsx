@@ -1,7 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { ArrowDown02Icon, Navigation03Icon } from "@/components/ui/icons";
 import { defaultPreferences } from "@/config";
-import { useAssistants, useChatContext, usePreferenceContext } from "@/context";
+import {
+  useAssistants,
+  useChatContext,
+  usePreferenceContext,
+  usePromptsContext,
+} from "@/context";
 import { slideUpVariant } from "@/helper/animations";
 import { cn } from "@/helper/clsx";
 import {
@@ -13,6 +18,7 @@ import {
 import { useChatEditor } from "@/hooks/use-editor";
 import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { TAssistant } from "@/types";
+import { AiIdeaIcon } from "@hugeicons/react";
 import { ArrowElbowDownRight, Stop, X } from "@phosphor-icons/react";
 import { EditorContent } from "@tiptap/react";
 import { motion } from "framer-motion";
@@ -20,6 +26,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChatExamples } from "./chat-examples";
 import { ChatGreeting } from "./chat-greeting";
 import { PluginSelect } from "./plugin-select";
+import { Flex } from "./ui";
 
 export type TAttachment = {
   file?: File;
@@ -49,6 +56,7 @@ export const ChatInput = () => {
     clearAttachment,
   } = useImageAttachment({ id: "image-upload" });
   const { selectedAssistant, open: openAssistants } = useAssistants();
+  const { open: openPrompts } = usePromptsContext();
   const { invokeModel } = useLLMRunner();
 
   const { editor } = useChatEditor();
@@ -114,8 +122,7 @@ export const ChatInput = () => {
           <Button
             onClick={scrollToBottom}
             size="iconSm"
-            className="dark:border dark:border-white/10 dark:bg-zinc-800 dark:text-white"
-            variant="outline"
+            variant="outlined"
             rounded="full"
           >
             <ArrowDown02Icon size={16} strokeWidth="2" />
@@ -135,8 +142,8 @@ export const ChatInput = () => {
         >
           <Button
             rounded="full"
+            variant="secondary"
             size="sm"
-            className="dark:border dark:border-white/10 dark:bg-zinc-800 dark:text-white"
             onClick={() => {
               stopGeneration();
             }}
@@ -188,14 +195,13 @@ export const ChatInput = () => {
 
       <div className="flex w-full flex-col gap-1 md:w-[700px] lg:w-[720px]">
         {renderSelectedContext()}
-        {renderListeningIndicator()}
 
         {editor && (
           <motion.div
             variants={slideUpVariant}
             initial={"initial"}
             animate={editor.isEditable ? "animate" : "initial"}
-            className="flex w-full flex-col items-start gap-0 overflow-hidden rounded-2xl border bg-zinc-50 dark:border-white/5 dark:bg-white/5"
+            className="flex w-full flex-col items-start gap-0 overflow-hidden rounded-lg border bg-zinc-50 dark:border-white/5 dark:bg-white/5"
           >
             <div className="flex w-full flex-col items-start justify-start">
               {attachment && (
@@ -205,59 +211,81 @@ export const ChatInput = () => {
               )}
 
               <div className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
-                <EditorContent
-                  editor={editor}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      sendMessage(editor.getText());
-                    }
-                  }}
-                  className="no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[120px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-sm outline-none focus:outline-none md:text-base [&>*]:leading-6 [&>*]:outline-none"
-                />
+                <Flex className="flex-1">
+                  {recording || transcribing ? (
+                    renderListeningIndicator()
+                  ) : (
+                    <EditorContent
+                      editor={editor}
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          sendMessage(editor.getText());
+                        }
+                      }}
+                      className="no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[120px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-sm outline-none focus:outline-none md:text-base [&>*]:leading-6 [&>*]:outline-none"
+                    />
+                  )}
+                </Flex>
                 {!isGenerating && renderRecordingControls()}
               </div>
             </div>
-            <div className="flex w-full flex-row items-center justify-start gap-0 px-2 pb-2 pt-1">
-              <Button
-                variant={"ghost"}
-                onClick={openAssistants}
-                className={cn("gap-2 pl-1 pr-3 text-xs md:text-sm")}
-                size="sm"
-              >
-                {selectedAssistant?.assistant.key &&
-                  getAssistantIcon(selectedAssistant?.assistant.key, "sm")}
-
-                {selectedAssistant?.assistant.name}
-              </Button>
-
-              <PluginSelect selectedAssistantKey={selectedAssistantKey} />
-              {renderImageUpload({ showIcon: true })}
-
-              <div className="flex-1"></div>
-
-              {!isGenerating && (
+            <Flex
+              className="w-full px-2 pb-2 pt-1"
+              items="center"
+              justify="between"
+            >
+              <Flex gap="xs" items="center">
                 <Button
-                  size="iconSm"
-                  rounded="full"
-                  variant={!!editor?.getText() ? "default" : "secondary"}
-                  disabled={!editor?.getText()}
-                  className={cn(
-                    !!editor?.getText() &&
-                      "bg-zinc-800 text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:outline-emerald-400",
-                  )}
-                  onClick={() => {
-                    sendMessage(editor.getText());
-                  }}
+                  variant="ghost"
+                  onClick={openAssistants}
+                  className={cn("gap-2 pl-1.5 pr-3 text-xs md:text-sm")}
+                  size="sm"
                 >
-                  <Navigation03Icon
-                    size={18}
-                    variant="stroke"
-                    strokeWidth="2"
-                  />
+                  {selectedAssistant?.assistant.key &&
+                    getAssistantIcon(selectedAssistant?.assistant.key, "sm")}
+
+                  {selectedAssistant?.assistant.name}
                 </Button>
-              )}
-            </div>
+
+                <PluginSelect selectedAssistantKey={selectedAssistantKey} />
+                {renderImageUpload({ showIcon: true })}
+              </Flex>
+
+              <Flex gap="xs" items="center">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    openPrompts();
+                  }}
+                  className={cn("gap-2 pl-1.5 pr-3 text-xs md:text-sm")}
+                  size="sm"
+                >
+                  <AiIdeaIcon size={18} variant="stroke" strokeWidth="2" />
+                  Prompts
+                </Button>
+                {!isGenerating && (
+                  <Button
+                    size="icon"
+                    variant={!!editor?.getText() ? "default" : "secondary"}
+                    disabled={!editor?.getText()}
+                    className={cn(
+                      !!editor?.getText() &&
+                        "bg-zinc-800 text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:outline-emerald-400",
+                    )}
+                    onClick={() => {
+                      sendMessage(editor.getText());
+                    }}
+                  >
+                    <Navigation03Icon
+                      size={18}
+                      variant="stroke"
+                      strokeWidth="2"
+                    />
+                  </Button>
+                )}
+              </Flex>
+            </Flex>
           </motion.div>
         )}
       </div>
