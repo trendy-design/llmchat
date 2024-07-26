@@ -29,12 +29,12 @@ export const createChatStore = () =>
       const { currentMessage } = get();
       if (!currentMessage?.id) return;
       const exisitingTool = currentMessage?.tools?.find(
-        (t) => t.toolName === tool?.toolName
+        (t) => t.toolName === tool?.toolName,
       );
 
       const updatedTools = exisitingTool
         ? currentMessage?.tools?.map((t) =>
-            t.toolName === tool.toolName ? { ...t, ...tool } : t
+            t.toolName === tool.toolName ? { ...t, ...tool } : t,
           )
         : [...(currentMessage?.tools || []), tool];
       set({
@@ -45,7 +45,9 @@ export const createChatStore = () =>
       });
     },
     setCurrentMessage: (message) => set({ currentMessage: message }),
-    setIsGenerating: (isGenerating) => set({ isGenerating }),
+    setIsGenerating: (isGenerating) => {
+      set({ isGenerating });
+    },
     setEditor: (editor) => set({ editor }),
     resetState: () =>
       set({
@@ -64,7 +66,7 @@ export const createChatStore = () =>
       const messageExists = messages.some((m) => m.id === message.id);
 
       const updatedMessages = messages.map((m) =>
-        m.id === message.id ? message : m
+        m.id === message.id ? { ...m, ...message } : m,
       );
 
       set({

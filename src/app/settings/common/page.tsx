@@ -1,6 +1,7 @@
 "use client";
 import { SettingCard } from "@/components/settings/setting-card";
 import { SettingsContainer } from "@/components/settings/settings-container";
+import { Switch } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
 import { Input } from "@/components/ui/input";
@@ -186,6 +187,42 @@ export default function CommonPage() {
             </Flex>
           );
         })}
+      </SettingCard>
+      <SettingCard className="flex flex-col justify-center p-5">
+        <Flex justify="between" items="center">
+          <Flex direction="col" items="start">
+            <Type textColor="primary" weight="medium">
+              Suggest Related Questions
+            </Type>
+            <Type size="xs" textColor="tertiary">
+              Suggest related questions to the user's query.
+            </Type>
+          </Flex>
+          <Switch
+            checked={preferences?.suggestRelatedQuestions}
+            onCheckedChange={(checked) => {
+              updatePreferences({ suggestRelatedQuestions: checked });
+            }}
+          />
+        </Flex>
+        <div className="my-4 h-[1px] w-full bg-zinc-500/10" />
+
+        <Flex justify="between" items="center">
+          <Flex direction="col" items="start">
+            <Type textColor="primary" weight="medium">
+              AI Generated Title
+            </Type>
+            <Type size="xs" textColor="tertiary">
+              Auto generate a title for the conversation.
+            </Type>
+          </Flex>
+          <Switch
+            checked={preferences?.generateTitle}
+            onCheckedChange={(checked) => {
+              updatePreferences({ generateTitle: checked });
+            }}
+          />
+        </Flex>
       </SettingCard>
     </SettingsContainer>
   );

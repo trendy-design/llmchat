@@ -4,4 +4,5 @@ export type TConstructPrompt = {
   memories: string[];
   hasMessages: boolean;
   systemPrompt: string;
+  formatInstructions?: boolean;
 };

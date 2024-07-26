@@ -4,7 +4,7 @@ import { VariantProps, cva } from "class-variance-authority";
 
 import React from "react";
 
-const typeVariants = cva("text", {
+const typeVariants = cva("text flex", {
   variants: {
     size: {
       xxs: "text-xs",
@@ -50,7 +50,7 @@ export const Type = React.forwardRef<HTMLParagraphElement, TypeProps>(
         {props.children}
       </p>
     );
-  }
+  },
 );
 
 Type.displayName = "Type";

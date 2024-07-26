@@ -7,6 +7,7 @@ import { TToolResponse } from "./tools";
 export type TChatState = {
   session?: TChatSession;
   currentMessage?: TChatMessage;
+
   messages: TChatMessage[];
   setMessages: (messages: TChatMessage[]) => void;
   currentTools: TToolResponse[];

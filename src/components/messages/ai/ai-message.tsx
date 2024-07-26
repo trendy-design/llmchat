@@ -7,6 +7,7 @@ import { useAssistantUtils } from "@/hooks";
 import { TChatMessage } from "@/types";
 import { AIMessageActions } from "./ai-message-actions";
 import { AIMessageError } from "./ai-message-error";
+import { AIRelatedQuestions } from "./ai-related-questions";
 import { AISelectionProvider } from "./ai-selection-provider";
 import { AIToolMessage } from "./ai-tool-message";
 
@@ -53,6 +54,7 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
         </AISelectionProvider>
         {stop && <AIMessageError stopReason={stopReason} message={message} />}
         <AIMessageActions message={message} canRegenerate={message && isLast} />
+        <AIRelatedQuestions message={message} show={message && isLast} />
       </Flex>
     </div>
   );

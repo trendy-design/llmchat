@@ -1,20 +1,30 @@
 "use client";
 import { useChatSessionQueries } from "@/services/sessions/queries";
+import { createSessionsStore } from "@/store/sessions/store";
 import {
   TChatMessage,
   TChatSession,
   TSessionsContext,
   TSessionsProvider,
 } from "@/types";
-import { FC, createContext, useContext, useEffect, useState } from "react";
+import {
+  FC,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export const SessionContext = createContext<TSessionsContext | undefined>(
   undefined,
 );
 
 export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
+  const store = useMemo(() => createSessionsStore(), []);
   const [sessions, setSessions] = useState<TChatSession[]>([]);
-  const [activeSessionId, setActiveSessionId] = useState<string>();
+  const activeSessionId = store((state) => state.activeSessionId);
+  const setActiveSessionId = store((state) => state.setActiveSessionId);
   const useChatSessionQueriesProps = useChatSessionQueries();
   const { sessionsQuery, createNewSessionMutation, addMessageMutation } =
     useChatSessionQueriesProps;
@@ -35,7 +45,9 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
   };
 
   useEffect(() => {
-    createSession({ redirect: true });
+    if (!activeSessionId) {
+      createSession({ redirect: true });
+    }
   }, []);
 
   const addMessage = async (parentId: string, message: TChatMessage) => {
