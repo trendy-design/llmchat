@@ -1,6 +1,5 @@
 import {
   Moon02Icon,
-  MoreHorizontalIcon,
   PlusSignIcon,
   Settings03Icon,
   Sun01Icon,
@@ -19,7 +18,7 @@ import {
   Flex,
   Tooltip,
 } from "@/components/ui";
-import { FolderLibraryIcon } from "@hugeicons/react";
+import { FolderLibraryIcon, HelpCircleIcon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 import { useFeedback } from "../feedback/use-feedback";
 
@@ -89,7 +88,7 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="fixed z-10 flex flex-row items-center justify-center gap-3 border-zinc-500/10 p-3 dark:border-zinc-500/5 md:h-screen md:flex-col md:border-r">
+    <div className="group fixed z-10 flex flex-row items-center justify-center gap-3 border-zinc-500/10 p-3 dark:border-zinc-500/5 md:h-screen md:flex-col md:border-r">
       <div className="flex flex-row items-center gap-2">
         {renderNewSession()}
       </div>
@@ -111,7 +110,7 @@ export const Sidebar = () => {
         <Tooltip content="More" side="left" sideOffset={4}>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="iconSm">
-              <MoreHorizontalIcon size={20} variant="solid" />
+              <HelpCircleIcon size={20} variant="solid" />
             </Button>
           </DropdownMenuTrigger>
         </Tooltip>

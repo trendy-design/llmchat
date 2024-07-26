@@ -90,8 +90,8 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
             </Flex>
             <Flex gap="sm" direction="col" className="w-full px-3 pb-3">
               <Type size="sm" textColor="secondary">
-                We're always looking for ways to improve our product. Please let
-                us know what you think.
+                We&apos;re always looking for ways to improve our product.
+                Please let us know what you think.
               </Type>
 
               <FormLabel label="Email" isOptional />
