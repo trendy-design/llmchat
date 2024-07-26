@@ -52,6 +52,7 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
         return (
           <Button
             size="sm"
+            key={question}
             className="h-auto text-wrap py-2 text-left"
             variant="secondary"
             onClick={() => handleOnClick(question)}
