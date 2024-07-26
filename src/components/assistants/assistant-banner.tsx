@@ -37,7 +37,7 @@ export const AssistantBanner: FC<AssistantBannerProps> = ({
           setOpenCreateAssistant(true);
         }}
       >
-        <Add01Icon size={16} /> Create your own assistant{" "}
+        <Add01Icon size={16} strokeWidth={2} /> Create your own assistant
       </Button>
     </Flex>
   );
