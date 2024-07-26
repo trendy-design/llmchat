@@ -25,8 +25,18 @@ export class PreferenceService {
   }
 
   async setApiKey(key: TProvider, value: string): Promise<void> {
-    const keys = await this.getApiKeys();
-    const newKeys = { ...keys, [key]: value };
+    try {
+      const keys = await this.getApiKeys();
+      const newKeys = { ...keys, [key]: value };
+      await set("api-keys", newKeys);
+    } catch (error) {
+      console.error("Error setting API key", error);
+    }
+  }
+
+  async setApiKeys(keys: TApiKeys): Promise<void> {
+    const existingKeys = await this.getApiKeys();
+    const newKeys = { ...existingKeys, ...keys };
     await set("api-keys", newKeys);
   }
 
