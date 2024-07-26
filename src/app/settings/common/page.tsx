@@ -195,7 +195,7 @@ export default function CommonPage() {
               Suggest Related Questions
             </Type>
             <Type size="xs" textColor="tertiary">
-              Suggest related questions to the user's query.
+              Suggest related questions to the user&apos;s query.
             </Type>
           </Flex>
           <Switch
