@@ -117,7 +117,7 @@ export class MessagesService {
     const newMessages = existingMessage
       ? messages.map((message) => {
           if (message.id === chatMessage.id) {
-            return chatMessage;
+            return { ...message, ...chatMessage };
           }
           return message;
         })

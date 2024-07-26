@@ -10,6 +10,8 @@ export type TPreferences = {
   messageLimit: number;
   temperature: number;
   memories: string[];
+  suggestRelatedQuestions: boolean;
+  generateTitle: boolean;
   defaultPlugins: TToolKey[];
   whisperSpeechToTextEnabled: boolean;
   dalleImageQuality: "standard" | "hd";

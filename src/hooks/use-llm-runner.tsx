@@ -1,18 +1,13 @@
 import { useToast } from "@/components/ui";
 import { defaultPreferences } from "@/config";
-import { useChatContext, usePreferenceContext, useSessions } from "@/context";
+import { useChatContext, usePreferenceContext } from "@/context";
 import { injectPresetValues } from "@/helper/preset-prompt-values";
-import { constructPrompt } from "@/helper/promptUtil";
-import { generateShortUUID, sortMessages } from "@/helper/utils";
+import { constructMessagePrompt, constructPrompt } from "@/helper/promptUtil";
+import { generateShortUUID } from "@/helper/utils";
 import { modelService } from "@/services/models";
 import { messagesService, sessionsService } from "@/services/sessions/client";
 import { TLLMRunConfig } from "@/types";
-import { AIMessage, HumanMessage } from "@langchain/core/messages";
 import { LLMResult } from "@langchain/core/outputs";
-import {
-  ChatPromptTemplate,
-  MessagesPlaceholder,
-} from "@langchain/core/prompts";
 import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import moment from "moment";
 import { useAssistantUtils, useTools } from ".";
@@ -25,11 +20,10 @@ export const useLLMRunner = () => {
   const addTool = store((state) => state.addTool);
   const resetState = store((state) => state.resetState);
   const setAbortController = store((state) => state.setAbortController);
-  const { getAssistantByKey, getModelByKey } = useAssistantUtils();
+  const { getModelByKey } = useAssistantUtils();
   const { preferences, apiKeys, updatePreferences } = usePreferenceContext();
   const { getToolByKey } = useTools();
   const { toast } = useToast();
-  const { updateSessionMutation } = useSessions();
 
   const invokeModel = async (config: TLLMRunConfig) => {
     resetState();
@@ -40,11 +34,19 @@ export const useLLMRunner = () => {
     const newMessageId = messageId || generateShortUUID();
     const modelKey = assistant.baseModel;
     const session = await sessionsService.getSessionById(sessionId);
+    if (!session) {
+      setIsGenerating(false);
+      toast({
+        title: "Error",
+        description: "Session not found",
+        variant: "destructive",
+      });
+      return;
+    }
     const messages = await messagesService.getMessages(sessionId);
 
     const allPreviousMessages =
       messages?.filter((m) => m.id !== messageId) || [];
-    const chatHistory = sortMessages(allPreviousMessages, "createdAt");
     const plugins = preferences.defaultPlugins || [];
     const messageLimit =
       preferences.messageLimit || defaultPreferences.messageLimit;
@@ -103,16 +105,6 @@ export const useLLMRunner = () => {
       apiKey,
     });
 
-    const previousAllowedChatHistory = chatHistory
-      .slice(0, messageLimit)
-      .reduce((acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman }) => {
-        if (rawAI && rawHuman) {
-          return [...acc, new HumanMessage(rawHuman), new AIMessage(rawAI)];
-        } else {
-          return acc;
-        }
-      }, []);
-
     let agentExecutor: AgentExecutor | undefined;
 
     const modifiedModel = Object.create(Object.getPrototypeOf(selectedModel));
@@ -151,10 +143,15 @@ export const useLLMRunner = () => {
         ? agentExecutor
         : chainWithoutTools;
 
+    const chatHistory = await constructMessagePrompt({
+      messages: allPreviousMessages,
+      limit: messageLimit,
+    });
+
     try {
       const stream: any = await executor.invoke(
         {
-          chat_history: previousAllowedChatHistory || [],
+          chat_history: chatHistory || [],
           context,
           input,
         },
@@ -243,64 +240,7 @@ export const useLLMRunner = () => {
     }
   };
 
-  const generateTitleForSession = async (sessionId: string) => {
-    const session = await sessionsService.getSessionById(sessionId);
-    const messages = await messagesService.getMessages(sessionId);
-    const assistant = getAssistantByKey(preferences.defaultAssistant);
-    if (!assistant) {
-      return;
-    }
-
-    const apiKey = apiKeys[assistant.model.provider];
-
-    const selectedModel = await modelService.createInstance({
-      model: assistant.model,
-      preferences,
-      apiKey,
-    });
-
-    const firstMessage = messages?.[0];
-
-    if (
-      !firstMessage ||
-      !firstMessage.rawAI ||
-      !firstMessage.rawHuman ||
-      messages?.length > 2
-    ) {
-      return;
-    }
-
-    const template = ChatPromptTemplate.fromMessages([
-      new MessagesPlaceholder("message"),
-      [
-        "user",
-        "Generate a concise and clear title for this chat session. Respond with only the title and no additional text. Answer in English.",
-      ],
-    ]);
-
-    try {
-      const prompt = await template.formatMessages({
-        message: [new HumanMessage(firstMessage.rawHuman)],
-      });
-
-      const generation = await selectedModel.invoke(prompt as any, {});
-
-      const newTitle =
-        generation?.content?.toString() || session?.title || "Untitled";
-      await updateSessionMutation.mutate({
-        sessionId,
-        session: newTitle
-          ? { title: newTitle, updatedAt: moment().toISOString() }
-          : {},
-      });
-    } catch (e) {
-      console.error(e);
-      return firstMessage.rawHuman;
-    }
-  };
-
   return {
     invokeModel,
-    generateTitleForSession,
   };
 };

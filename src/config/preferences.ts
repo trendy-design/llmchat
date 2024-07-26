@@ -6,6 +6,8 @@ export const defaultPreferences: TPreferences = {
     "You're helpful assistant that can help me with my questions. Today is {{local_date}}.",
   messageLimit: 30,
   temperature: 0.5,
+  suggestRelatedQuestions: true,
+  generateTitle: true,
   memories: [],
   dalleImageQuality: "standard",
   dalleImageSize: "1024x1024",
