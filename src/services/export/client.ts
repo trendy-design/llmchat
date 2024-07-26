@@ -1,5 +1,4 @@
 import { defaultPreferences } from "@/config";
-import { providers } from "@/config/models";
 import { dataValidator } from "@/helper/validator";
 import { TChatMessage } from "@/types";
 import { ExportData } from "@/types/export";
@@ -101,12 +100,10 @@ export class ExportService {
         ));
       prompts && (await this.promptsService.addPrompts(prompts));
       preferences && (await preferencesService.setPreferences(preferences));
-      await Promise.all(
-        providers.map(async (key) => {
-          const apiKey = apiKeys?.[key];
-          apiKey && (await preferencesService.setApiKey(key, apiKey));
-        }),
-      );
+
+      console.log("API KEYS", apiKeys);
+
+      apiKeys && (await preferencesService.setApiKeys(apiKeys));
 
       assistants && (await assistantsService.addAssistants(assistants));
     } catch (error) {
