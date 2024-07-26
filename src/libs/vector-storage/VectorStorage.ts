@@ -115,14 +115,23 @@ export class VectorStorage<T> {
   private async addDocuments(
     documents: Array<IVSDocument<T>>,
   ): Promise<Array<IVSDocument<T>>> {
-    // filter out already existing documents
+    // Check for existing documents in the database
+    const existingDocs = await this.db.getAll("documents");
+    const existingTexts = new Set(existingDocs.map((d) => d.text));
+
+    // Filter out already existing documents in memory and database
     const newDocuments = documents.filter(
-      (doc) => !this.documents.some((d) => d.text === doc.text),
+      (doc) =>
+        doc.text.trim() !== "" &&
+        !this.documents.some((d) => d.text === doc.text) &&
+        !existingTexts.has(doc.text),
     );
+
     // If there are no new documents, return an empty array
     if (newDocuments.length === 0) {
       return [];
     }
+
     const newVectors = await this.embedTextsFn(
       newDocuments.map((doc) => doc.text),
     );
@@ -220,6 +229,13 @@ export class VectorStorage<T> {
     } catch (error: any) {
       console.error("Failed to save to IndexedDB:", error.message);
     }
+  }
+
+  public async deleteDocumentsByMetadata(documentId: string): Promise<void> {
+    this.documents = this.documents.filter(
+      (doc) => !Object.values(doc.metadata || {})?.includes(documentId),
+    );
+    await this.saveToIndexDbStorage(); // Save changes to IndexedDB
   }
 
   private removeDocsLRU(): void {
