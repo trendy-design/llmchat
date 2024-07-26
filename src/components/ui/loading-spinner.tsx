@@ -79,19 +79,19 @@ export function LinerSpinner() {
       >
         <motion.span
           style={LoadingDot}
-          className="dark:bg-white/50 bg-zinc-600"
+          className="bg-zinc-600 dark:bg-white/50"
           variants={DotVariants}
           transition={DotTransition}
         />
         <motion.span
           style={LoadingDot}
-          className="dark:bg-white/50 bg-zinc-600"
+          className="bg-zinc-600 dark:bg-white/50"
           variants={DotVariants}
           transition={DotTransition}
         />
         <motion.span
           style={LoadingDot}
-          className="dark:bg-white/50 bg-zinc-600"
+          className="bg-zinc-600 dark:bg-white/50"
           variants={DotVariants}
           transition={DotTransition}
         />

@@ -16,7 +16,8 @@ export const useDocumentsQueries = () => {
   });
 
   const deleteDocumentMutation = useMutation({
-    mutationFn: documentService.deleteDocument,
+    mutationFn: (documentId: string) =>
+      documentService.deleteDocument(documentId),
     onSuccess: () => {
       documentsQuery.refetch();
     },

@@ -21,12 +21,14 @@ import {
 } from "@/components/ui";
 import { FolderLibraryIcon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
+import { useFeedback } from "../feedback/use-feedback";
 
 export const Sidebar = () => {
   const { theme, setTheme } = useTheme();
   const { push } = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { createSession } = useSessions();
+  const { renderModal, setOpen: openFeedback } = useFeedback();
 
   const renderNewSession = () => {
     return (
@@ -51,7 +53,12 @@ export const Sidebar = () => {
 
   const menuItems = [
     { label: "About", onClick: () => {} },
-    { label: "Feedback", onClick: () => {} },
+    {
+      label: "Feedback",
+      onClick: () => {
+        openFeedback(true);
+      },
+    },
     { label: "Support", onClick: () => {} },
   ];
 
@@ -82,7 +89,7 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="fixed z-10 flex flex-row items-center justify-center gap-3 border-zinc-500/10 p-3 pb-6 dark:border-zinc-500/5 md:h-screen md:flex-col md:border-r">
+    <div className="fixed z-10 flex flex-row items-center justify-center gap-3 border-zinc-500/10 p-3 dark:border-zinc-500/5 md:h-screen md:flex-col md:border-r">
       <div className="flex flex-row items-center gap-2">
         {renderNewSession()}
       </div>
@@ -135,6 +142,7 @@ export const Sidebar = () => {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+      {renderModal()}
     </div>
   );
 };
