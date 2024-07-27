@@ -24,7 +24,7 @@ const constructPrompt = async (props: TConstructPrompt) => {
 
   const systemMessage: BaseMessagePromptTemplateLike = [
     "system",
-    `${systemPrompt}\n${memoryPrompt}\n${messagesPrompt}`,
+    `${systemPrompt}\n${memoryPrompt}\n${messagesPrompt}\n${formatInstructions}`,
   ];
 
   const userContent = `{input}\n\n${
@@ -48,6 +48,8 @@ const constructPrompt = async (props: TConstructPrompt) => {
       }).content
     : userContent;
 
+  console.log("userMessageContent", userMessageContent);
+
   const userMessage: BaseMessagePromptTemplateLike = [
     "user",
     userMessageContent,
@@ -56,7 +58,6 @@ const constructPrompt = async (props: TConstructPrompt) => {
   return ChatPromptTemplate.fromMessages([
     systemMessage,
     messagePlaceholders,
-    formatInstructions,
     userMessage,
     ["placeholder", "{agent_scratchpad}"],
   ]);
