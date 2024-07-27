@@ -16,13 +16,14 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
   show,
 }) => {
   const { refetch, store } = useChatContext();
-  const editor = store((state) => state.editor);
+  const isGenerating = store((state) => state.isGenerating);
   const { preferences } = usePreferenceContext();
   const { getAssistantByKey } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
 
   const handleOnClick = (question: string) => {
     const assistant = preferences.defaultAssistant;
+
     const props = getAssistantByKey(assistant);
     if (!props?.assistant) {
       return;
@@ -34,7 +35,7 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
     });
   };
 
-  if (!message?.relatedQuestions?.length || !show) {
+  if (!message?.relatedQuestions?.length || !show || isGenerating) {
     return null;
   }
 

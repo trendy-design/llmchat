@@ -7,6 +7,7 @@ import {
   TSessionsContext,
   TSessionsProvider,
 } from "@/types";
+import { usePathname } from "next/navigation";
 import {
   FC,
   createContext,
@@ -21,6 +22,7 @@ export const SessionContext = createContext<TSessionsContext | undefined>(
 );
 
 export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
+  const pathname = usePathname();
   const store = useMemo(() => createSessionsStore(), []);
   const [sessions, setSessions] = useState<TChatSession[]>([]);
   const activeSessionId = store((state) => state.activeSessionId);
@@ -44,11 +46,12 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
     });
   };
 
-  useEffect(() => {
-    if (!activeSessionId) {
-      createSession({ redirect: true });
-    }
-  }, []);
+  // useEffect(() => {
+  //   console.log("pathname", pathname);
+  //   if (!activeSessionId && pathname !== "/") {
+  //     createSession({ redirect: true });
+  //   }
+  // }, []);
 
   const addMessage = async (parentId: string, message: TChatMessage) => {
     await addMessageMutation.mutateAsync({
