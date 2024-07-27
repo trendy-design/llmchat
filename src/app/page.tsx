@@ -1,18 +1,14 @@
 "use client";
-import { Spinner } from "@/components/ui";
-import { useSessions } from "@/context";
-import { useEffect } from "react";
+import { Type } from "@/components/ui";
 
 export default function Home() {
-  const { createSession } = useSessions();
-  useEffect(() => {
-    createSession({
-      redirect: true,
-    });
-  }, []);
   return (
-    <main className="flex flex-col gap-2 h-[100dvh] w-screen items-center justify-center">
-      <Spinner />
+    <main className="flex h-[100dvh] w-screen flex-col items-center justify-center gap-2">
+      <Type className="text-center !text-[6rem] font-semibold leading-tight tracking-tighter">
+        Your Ultimate
+        <br />
+        Al Copilot
+      </Type>
     </main>
   );
 }

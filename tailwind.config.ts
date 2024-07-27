@@ -18,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-inter)"],
+      },
       colors: {
         zinc: {
           "50": "hsl(0, 0%, 93.7%, <alpha-value>)",
