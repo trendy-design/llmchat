@@ -57,6 +57,7 @@ export const useLLMRunner = () => {
       parentId: sessionId,
       sessionId,
       rawHuman: input,
+      relatedQuestions: [],
       createdAt: moment().toISOString(),
       isLoading: true,
     });
@@ -102,6 +103,7 @@ export const useLLMRunner = () => {
     const selectedModel = await modelService.createInstance({
       model: selectedModelKey,
       preferences,
+      provider: selectedModelKey.provider,
       apiKey,
     });
 
@@ -189,6 +191,8 @@ export const useLLMRunner = () => {
               },
               handleLLMNewToken: async (token: string) => {
                 streamedMessage += token;
+
+                console.log("handleLLMNewToken", token);
                 updateCurrentMessage({
                   isLoading: true,
                   rawAI: streamedMessage,
@@ -226,7 +230,7 @@ export const useLLMRunner = () => {
 
       updateCurrentMessage({
         rawHuman: input,
-        rawAI: stream?.content || stream?.output,
+        rawAI: stream?.content || stream?.output?.[0]?.text || stream?.output,
         isLoading: false,
         stop: true,
         stopReason: "finish",

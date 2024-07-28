@@ -10,7 +10,7 @@ export type TPreferenceContext = {
   preferences: TPreferences;
   updatePreferences: (
     newPreferences: Partial<TPreferences>,
-    onSuccess?: (preference: TPreferences) => void
+    onSuccess?: (preference: TPreferences) => void,
   ) => void;
   apiKeys: TApiKeys;
   updateApiKey: (key: TProvider, value: string) => void;
@@ -18,7 +18,7 @@ export type TPreferenceContext = {
 };
 
 export const PreferenceContext = createContext<undefined | TPreferenceContext>(
-  undefined
+  undefined,
 );
 
 export const usePreferenceContext = () => {
@@ -55,7 +55,7 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
 
   const updatePreferences = async (
     newPreferences: Partial<TPreferences>,
-    onSuccess?: (preference: TPreferences) => void
+    onSuccess?: (preference: TPreferences) => void,
   ) => {
     setPreferences({ ...preferences, ...newPreferences });
     setPreferencesMutation.mutate(newPreferences, {
@@ -72,6 +72,7 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
   };
   useEffect(() => {
     updateApiKey("ollama", "kdskdmkmsd");
+    updateApiKey("llmchat", "mlsdmldsm");
   }, []);
 
   const updateApiKeys = (newApiKeys: TApiKeys) => {

@@ -25,6 +25,7 @@ export const useLLMTest = () => {
 
       const selectedModel = await modelService.createInstance({
         model: selectedModelKey,
+        provider: model,
         apiKey,
       });
 

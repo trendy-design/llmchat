@@ -64,6 +64,7 @@ export default function Spaces() {
 
     const selectedModel = await modelService.createInstance({
       model: model,
+      provider: model.provider,
       apiKey: apiKeys.openai,
     });
 

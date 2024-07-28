@@ -53,6 +53,7 @@ export const useTitleGenerator = () => {
     const selectedModel = await modelService.createInstance({
       model: assistant.model,
       preferences,
+      provider: assistant.model.provider,
       apiKey,
     });
 
