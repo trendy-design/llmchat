@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@hugeicons/react": "^0.6.1",
-    "@langchain/anthropic": "^0.1.17",
+    "@langchain/anthropic": "^0.2.10",
     "@langchain/community": "^0.2.1",
     "@langchain/core": "^0.1.62",
     "@langchain/google-genai": "^0.0.12",
@@ -45,6 +45,8 @@
     "@types/jsdom": "^21.1.7",
     "@types/lodash": "^4.17.1",
     "@types/turndown": "^5.0.4",
+    "@upstash/ratelimit": "^2.0.1",
+    "@vercel/kv": "^2.0.0",
     "add": "^2.0.6",
     "axios": "^1.7.2",
     "boring-avatars": "^1.10.2",

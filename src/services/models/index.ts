@@ -4,15 +4,51 @@ import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatOllama } from "@langchain/ollama";
 import { ChatOpenAI } from "@langchain/openai";
+type ChatOpenAIConstructorParams = ConstructorParameters<typeof ChatOpenAI>[0];
+type ChatAnthropicConstructorParams = ConstructorParameters<
+  typeof ChatAnthropic
+>[0];
+type ChatGoogleGenerativeAIConstructorParams = ConstructorParameters<
+  typeof ChatGoogleGenerativeAI
+>[0];
+type ChatOllamaConstructorParams = ConstructorParameters<typeof ChatOllama>[0];
 
 type TCreateInstance = {
-  model: TModelItem;
+  model: Omit<TModelItem, "provider">;
   preferences?: Partial<TPreferences>;
   apiKey?: string;
-};
+  provider: TProvider;
+} & (
+  | {
+      provider: "openai";
+      props?: Partial<ChatOpenAIConstructorParams>;
+    }
+  | {
+      provider: "llmchat";
+      props?: Partial<ChatOpenAIConstructorParams>;
+    }
+  | {
+      provider: "anthropic";
+      props?: Partial<ChatAnthropicConstructorParams>;
+    }
+  | {
+      provider: "gemini";
+      props?: Partial<ChatGoogleGenerativeAIConstructorParams>;
+    }
+  | {
+      provider: "ollama";
+      props?: Partial<ChatOllamaConstructorParams>;
+    }
+);
 
 export class ModelService {
-  async createInstance({ model, preferences, apiKey }: TCreateInstance) {
+  async createInstance({
+    model,
+    provider,
+    preferences,
+    apiKey,
+    ...props
+  }: TCreateInstance) {
     const { temperature, topP, topK, ollamaBaseUrl, ...rest } = {
       ...defaultPreferences,
       ...preferences,
@@ -23,7 +59,21 @@ export class ModelService {
         ? rest.maxTokens
         : model.maxOutputTokens;
 
-    switch (model.provider) {
+    switch (provider) {
+      case "llmchat":
+        return new ChatOpenAI({
+          model: model.key,
+          streaming: true,
+          apiKey: "ssdlk",
+          configuration: {
+            baseURL: `${window.location.origin}/api/llmchat/`,
+          },
+          temperature,
+          maxTokens,
+          topP,
+          maxRetries: 2,
+          ...props,
+        });
       case "openai":
         return new ChatOpenAI({
           model: model.key,
@@ -33,6 +83,7 @@ export class ModelService {
           maxTokens,
           topP,
           maxRetries: 2,
+          ...props,
         });
       case "anthropic":
         return new ChatAnthropic({
@@ -45,6 +96,7 @@ export class ModelService {
           topP,
           topK,
           maxRetries: 2,
+          ...props,
         });
       case "gemini":
         return new ChatGoogleGenerativeAI({
@@ -59,6 +111,7 @@ export class ModelService {
           },
           topP,
           topK,
+          ...props,
         });
       case "ollama":
         return new ChatOllama({
@@ -69,6 +122,7 @@ export class ModelService {
           topP,
           maxRetries: 2,
           temperature,
+          ...props,
         });
       default:
         throw new Error("Invalid model");
@@ -85,6 +139,8 @@ export class ModelService {
         return "gemini-pro";
       case "ollama":
         return "phi3:latest";
+      case "llmchat":
+        return "llmchat";
     }
   }
 }

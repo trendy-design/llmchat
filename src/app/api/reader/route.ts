@@ -16,14 +16,14 @@ function cleanHtml(html: string): string {
   return html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, "")
     .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, "")
-    .replace(/<header.*?>.*?<\/header>/is, "")
-    .replace(/<footer.*?>.*?<\/footer>/is, "")
-    .replace(/<nav.*?>.*?<\/nav>/is, "")
-    .replace(/<aside.*?>.*?<\/aside>/is, "")
-    .replace(/<form.*?>.*?<\/form>/is, "")
-    .replace(/<iframe.*?>.*?<\/iframe>/is, "")
+    .replace(/<header[\s\S]*?>[\s\S]*?<\/header>/gi, "")
+    .replace(/<footer[\s\S]*?>[\s\S]*?<\/footer>/gi, "")
+    .replace(/<nav[\s\S]*?>[\s\S]*?<\/nav>/gi, "")
+    .replace(/<aside[\s\S]*?>[\s\S]*?<\/aside>/gi, "")
+    .replace(/<form[\s\S]*?>[\s\S]*?<\/form>/gi, "")
+    .replace(/<iframe[\s\S]*?>[\s\S]*?<\/iframe>/gi, "")
     .replace(
-      /<div[^>]*class\s*=\s*["']?(?:ad|advertisement|banner)["']?[^>]*>.*?<\/div>/gis,
+      /<div[^>]*class\s*=\s*["']?(?:ad|advertisement|banner)["']?[^>]*>[\s\S]*?<\/div>/gi,
       "",
     );
 }

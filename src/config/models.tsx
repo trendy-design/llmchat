@@ -1,8 +1,25 @@
 import { TModelItem } from "@/types";
 
-export const providers = ["openai", "anthropic", "gemini", "ollama"] as const;
+export const providers = [
+  "llmchat",
+  "openai",
+  "anthropic",
+  "gemini",
+  "ollama",
+] as const;
 
 export const models: TModelItem[] = [
+  {
+    name: "LLMChat",
+    key: "llmchat",
+    isNew: true,
+    tokens: 128000,
+    maxOutputTokens: 2048,
+    vision: true,
+    plugins: ["web_search", "image_generation", "memory", "chart"],
+    icon: "aichat",
+    provider: "llmchat",
+  },
   {
     name: "GPT 4o Mini",
     key: "gpt-4o-mini",

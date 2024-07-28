@@ -38,6 +38,7 @@ const memoryTool = (args: TToolArg) => {
 
         const currentModel = await modelService.createInstance({
           model: model,
+          provider: model.provider,
           apiKey: apiKeys.openai,
         });
 
