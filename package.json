@@ -46,7 +46,6 @@
     "@types/lodash": "^4.17.1",
     "@types/turndown": "^5.0.4",
     "@upstash/ratelimit": "^2.0.1",
-    "@vercel/kv": "^2.0.0",
     "add": "^2.0.6",
     "axios": "^1.7.2",
     "boring-avatars": "^1.10.2",
