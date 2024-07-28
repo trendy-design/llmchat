@@ -13,7 +13,7 @@ const inputVariants = cva(
       },
       size: {
         default: "h-11 px-4",
-        sm: "h-9 px-3 text-xs md:text-sm",
+        sm: "h-10 px-3 text-xs md:text-sm",
       },
       rounded: {
         lg: "rounded-lg",

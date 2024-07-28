@@ -49,7 +49,8 @@ export const ChatProvider: FC<TChatProvider> = ({ children, sessionId }) => {
             }
             console.log("start generating questions");
             const questions = await generateRelatedQuestion(
-              messages?.[0].sessionId,
+              currentMessage.sessionId,
+              currentMessage.id,
             );
             console.log("questions", questions);
 

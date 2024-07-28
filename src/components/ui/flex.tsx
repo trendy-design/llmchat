@@ -60,19 +60,19 @@ export interface FlexProps
 export const Flex = React.forwardRef<HTMLDivElement, FlexProps>(
   (
     { className, direction, gap, justify, items, asChild = false, ...props },
-    ref
+    ref,
   ) => {
     return (
       <div
         className={cn(
-          flexVariants({ direction, gap, justify, items, className })
+          flexVariants({ direction, gap, justify, items, className }),
         )}
         ref={ref}
       >
         {props.children}
       </div>
     );
-  }
+  },
 );
 
 Flex.displayName = "Flex";

@@ -59,7 +59,7 @@ export const useTools = () => {
         return true;
       },
       validationFailedAction: () => {},
-      renderUI: ({ image }) => {
+      renderUI: ({ image, query }) => {
         return <GeneratedImage image={image} />;
       },
       loadingMessage: "Generating Image ...",
@@ -76,16 +76,6 @@ export const useTools = () => {
       showInMenu: true,
       validate: async () => {
         return true;
-      },
-      validationFailedAction: () => {},
-      renderUI: ({ image }) => {
-        return (
-          <img
-            src={image}
-            alt=""
-            className="h-[400px] w-[400px] rounded-2xl border"
-          />
-        );
       },
       loadingMessage: "Saving to the memory...",
       resultMessage: "Saved to the memory",
