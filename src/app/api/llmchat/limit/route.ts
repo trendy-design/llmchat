@@ -9,7 +9,7 @@ export async function POST(req: NextRequest, resp: NextResponse) {
   const rateLimitMessage = "Rate limit exceeded. Please try again later."
 
   // Write the rate limit error message
-  await writer.write(encoder.encode(`data: ${JSON.stringify(rateLimitMessage)}\n\n`));
+  await writer.write(encoder.encode(`data: ${rateLimitMessage}\n\ndata: [DONE]`));
 
   // Close the writer
   await writer.close();
