@@ -30,12 +30,12 @@ export default function Home() {
             AI Copilot
           </span>
         </Flex>
-        <Type className="max-w-[400px] text-center !text-base font-medium opacity-60 md:!text-lg">
+        <Type className="max-w-[500px] px-6 text-center !text-base font-medium opacity-60 md:!text-lg">
           Navigate the AI landscape with ease Your personal co-pilot for all
           things AI.
         </Type>
       </Flex>
-      <Button size="lg" className="mb-8 mt-4" onClick={() => push("/chat")}>
+      <Button size="lg" className="mb-12 mt-4" onClick={() => push("/chat")}>
         Get Started for Free
       </Button>
 
@@ -44,7 +44,7 @@ export default function Home() {
         autoPlay
         loop
         muted
-        className="w-[70vw] rounded-xl object-cover"
+        className="w-[90vw] rounded-xl object-cover md:w-[70vw]"
       />
       <Flex
         direction="col"
