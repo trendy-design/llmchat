@@ -1,5 +1,6 @@
 "use client";
 import { Button, Flex, Type } from "@/components/ui";
+import { configs } from "@/config";
 import {
   AiMagicIcon,
   Github01Icon,
@@ -12,7 +13,7 @@ import { useRouter } from "next/navigation";
 export default function Home() {
   const { push } = useRouter();
   return (
-    <main className="relative flex w-screen flex-col items-center gap-2 pt-[20vh]">
+    <main className="relative flex min-h-screen w-screen flex-col items-center justify-start gap-2 pt-[10vh]">
       <Flex direction="col" items="center" gap="md" className="">
         <Button variant="accent" size="sm" rounded="full">
           <NewTwitterIcon size={20} variant="solid" />
@@ -21,25 +22,47 @@ export default function Home() {
         <Flex
           direction="col"
           items="center"
-          className="text-center !text-[6rem] font-semibold leading-[1.1] tracking-[-0.03em]"
+          className="text-center !text-[3rem] font-semibold leading-[1.1] tracking-[-0.03em] md:!text-[6rem]"
         >
           <span className="opacity-50">Your Ultimate</span>
           <span className="flex items-center opacity-100">
-            <AiMagicIcon size={60} variant="bulk" /> AI Copilot
+            <AiMagicIcon className="h-10 w-10 md:h-16 md:w-16" variant="bulk" />{" "}
+            AI Copilot
           </span>
         </Flex>
-        <Type className="text-center !text-lg font-medium opacity-60">
+        <Type className="max-w-[400px] text-center !text-base font-medium opacity-60 md:!text-lg">
           Navigate the AI landscape with ease Your personal co-pilot for all
           things AI.
         </Type>
       </Flex>
-      <Button size="lg" className="mt-4" onClick={() => push("/chat")}>
+      <Button size="lg" className="mb-8 mt-4" onClick={() => push("/chat")}>
         Get Started for Free
       </Button>
-      <Flex className="absolute bottom-0 w-full p-2" justify="center">
+
+      <video
+        src={configs.heroVideo}
+        autoPlay
+        loop
+        muted
+        className="w-[70vw] rounded-xl object-cover"
+      />
+      <Flex
+        direction="col"
+        className="mt-8 w-full p-4"
+        gap="none"
+        items="center"
+      >
+        <Flex gap="sm" items="center">
+          <Button size="iconSm" variant="ghost">
+            <Github01Icon size={20} variant="solid" />
+          </Button>
+          <Button size="iconSm" variant="ghost">
+            <NewTwitterEllipseIcon size={20} variant="solid" />
+          </Button>
+        </Flex>
         <Flex gap="sm" items="center">
           <Type size="xs" textColor="tertiary">
-            Copyright © 2024 Trendy.design. All rights reserved.
+            © 2024 Trendy.design
           </Type>
           <Type size="xs" textColor="tertiary">
             <Link href="/privacy">Privacy Policy</Link>
@@ -47,12 +70,6 @@ export default function Home() {
           <Type size="xs" textColor="tertiary">
             <Link href="/terms">Terms of Service</Link>
           </Type>
-          <Button size="iconSm" variant="ghost">
-            <Github01Icon size={20} variant="solid" />
-          </Button>
-          <Button size="iconSm" variant="ghost">
-            <NewTwitterEllipseIcon size={20} variant="solid" />
-          </Button>
         </Flex>
       </Flex>
     </main>

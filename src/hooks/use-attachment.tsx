@@ -67,7 +67,7 @@ export const useAttachment = () => {
           className="hidden"
           onChange={handlePdfUpload}
         />
-        <Button variant="secondary" size="sm" onClick={handleFileSelect}>
+        <Button onClick={handleFileSelect}>
           <Pdf01Icon size={18} strokeWidth={1.5} />
           Upload PDF
         </Button>

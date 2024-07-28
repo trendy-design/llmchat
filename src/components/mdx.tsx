@@ -15,7 +15,7 @@ export type TMdx = {
   message?: string;
   animate: boolean;
   messageId?: string;
-  size?: "sm" | "base";
+  size?: "xs" | "sm" | "base";
 };
 
 const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
@@ -110,6 +110,7 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
     {
       "prose-sm": size === "sm",
       "prose-base": size === "base",
+      "prose-xs": size === "xs",
     },
   );
 

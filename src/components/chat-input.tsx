@@ -182,7 +182,7 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "absolute bottom-0 right-0 flex w-full flex-col items-center justify-end gap-2 px-2 pb-4 pt-16 md:justify-center md:px-4",
+        "absolute bottom-0 right-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-4 pt-16 md:justify-center md:px-4",
         "left-0 bg-gradient-to-t from-white from-70% to-transparent transition-all duration-1000 ease-in-out dark:from-zinc-800",
         isFreshSession && "top-0",
       )}

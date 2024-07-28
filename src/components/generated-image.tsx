@@ -7,7 +7,7 @@ export type TGeneratedImage = {
 export const GeneratedImage = ({ image }: TGeneratedImage) => {
   const [error, setError] = useState(false);
   return (
-    <Flex direction="col" gap="sm">
+    <Flex direction="col" gap="md" className="mb-4">
       {!error && (
         <img
           src={image}
@@ -15,7 +15,7 @@ export const GeneratedImage = ({ image }: TGeneratedImage) => {
             setError(true);
           }}
           alt=""
-          className="w-[400px] h-[400px] rounded-2xl border"
+          className="h-[400px] w-[400px] rounded-lg border"
         />
       )}
       <Alert variant="warning">

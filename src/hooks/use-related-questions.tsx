@@ -1,3 +1,4 @@
+import { configs } from "@/config";
 import { usePreferenceContext } from "@/context";
 import { constructMessagePrompt, constructPrompt } from "@/helper/promptUtil";
 import { modelService } from "@/services/models";
@@ -9,7 +10,7 @@ import { useAssistantUtils } from ".";
 
 const parser = StructuredOutputParser.fromZodSchema(
   z.object({
-    questions: z.array(z.string()).describe("list of questions"),
+    questions: z.array(z.string()).describe("list of 2 questions"),
   }),
 );
 
@@ -17,11 +18,20 @@ export const useRelatedQuestions = () => {
   const { getAssistantByKey } = useAssistantUtils();
   const { preferences, apiKeys } = usePreferenceContext();
 
-  const generateRelatedQuestion = async (sessionId: string) => {
+  const generateRelatedQuestion = async (
+    sessionId: string,
+    messageId: string,
+  ) => {
     if (!preferences?.suggestRelatedQuestions) {
       return [];
     }
     const messages = await messagesService.getMessages(sessionId);
+    const message = messages.find((m) => m.id === messageId);
+
+    if (!message?.rawHuman || !message?.rawAI) {
+      return [];
+    }
+
     const assistant = getAssistantByKey(preferences.defaultAssistant);
 
     if (!assistant || !apiKeys[assistant.model.provider]) {
@@ -36,9 +46,9 @@ export const useRelatedQuestions = () => {
     });
 
     const prompt = await constructPrompt({
-      hasMessages: true,
+      hasMessages: false,
       formatInstructions: true,
-      systemPrompt: "You're a helpful assistant.",
+      systemPrompt: configs.relatedQuestionsSystemPrompt,
       memories: [],
     });
 
@@ -54,9 +64,11 @@ export const useRelatedQuestions = () => {
         parser as any,
       ]);
       const generation = await chain.invoke({
-        chat_history: chatHistory,
-        input:
-          "Based on previous user message, generate a list of 2-3 new questions that the user might ask based on given answer",
+        chat_history: [],
+        input: configs.relatedQuestionsUserPrompt(
+          message.rawHuman,
+          message.rawAI,
+        ),
         format_instructions: parser.getFormatInstructions(),
       });
 
