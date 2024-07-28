@@ -18,5 +18,5 @@ export default async function middleware(request: NextRequest) {
     await ratelimit.limit(ip);
   return success
     ? NextResponse.next()
-    : NextResponse.redirect(new URL("/blocked", request.url));
+    : NextResponse.redirect(new URL("/api/llmchat/limit", request.url));
 }
