@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/context/auth";
 import { cn } from "@/helper/clsx";
 import { useAssistantUtils } from "@/hooks/use-assistant-utils";
 import { TModelKey } from "@/types";
@@ -27,6 +28,7 @@ export const ModelSelect: FC<TModelSelect> = ({
   className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, open: openSignIn } = useAuth();
 
   const {
     getModelByKey,
