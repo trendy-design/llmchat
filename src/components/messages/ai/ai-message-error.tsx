@@ -38,16 +38,30 @@ export const AIMessageError: FC<TAIMessageError> = ({
         </Type>
       );
     }
+    if (stopReason === "rateLimit") {
+      return (
+        <Type textColor="secondary">
+          Too many requests. Try again tomorrow. or use your own api key
+        </Type>
+      );
+    }
+    if (stopReason === "unauthorized") {
+      return (
+        <Type textColor="secondary">
+          You are not authorized to access this resource.
+        </Type>
+      );
+    }
     return <Type textColor="secondary">An unexpected error occurred.</Type>;
   };
 
   return (
     <Flex
-      className="mb-4 rounded-xl bg-white/5 px-3 py-2 text-sm text-zinc-500"
+      className="mb-4 rounded-lg bg-zinc-50 px-4 py-3 text-sm text-zinc-500 dark:bg-white/5"
       gap="sm"
       items="center"
     >
-      <Alert02Icon size={16} strokeWidth={1.5} />
+      <Alert02Icon size={16} variant="solid" />
       {renderErrorMessage(stopReason)}
     </Flex>
   );

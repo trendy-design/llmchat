@@ -5,6 +5,7 @@ import {
   ReactQueryProvider,
   SessionsProvider,
 } from "@/context"; // Consolidated context imports
+import { AuthProvider } from "@/context/auth";
 import { cn } from "@/helper/clsx";
 import type { Metadata, Viewport } from "next"; // Combined type imports
 import { ThemeProvider } from "next-themes";
@@ -38,13 +39,17 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ReactQueryProvider>
+          <AuthProvider>
+
             <TooltipProvider>
               <PreferenceProvider>
                 <SessionsProvider>
-                  <MainLayout>{children}</MainLayout>
+                    <MainLayout>{children}</MainLayout>
                 </SessionsProvider>
               </PreferenceProvider>
             </TooltipProvider>
+            </AuthProvider>
+
           </ReactQueryProvider>
         </ThemeProvider>
       </body>

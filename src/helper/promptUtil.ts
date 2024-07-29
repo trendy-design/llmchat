@@ -58,7 +58,7 @@ const constructPrompt = async (props: TConstructPrompt) => {
   return ChatPromptTemplate.fromMessages([
     systemMessage,
     messagePlaceholders,
-    userMessage,
+  userMessage,
     ["placeholder", "{agent_scratchpad}"],
   ]);
 };
