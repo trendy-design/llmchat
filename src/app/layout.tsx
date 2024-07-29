@@ -39,17 +39,15 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ReactQueryProvider>
-          <AuthProvider>
-
-            <TooltipProvider>
-              <PreferenceProvider>
-                <SessionsProvider>
+            <AuthProvider>
+              <TooltipProvider>
+                <PreferenceProvider>
+                  <SessionsProvider>
                     <MainLayout>{children}</MainLayout>
-                </SessionsProvider>
-              </PreferenceProvider>
-            </TooltipProvider>
+                  </SessionsProvider>
+                </PreferenceProvider>
+              </TooltipProvider>
             </AuthProvider>
-
           </ReactQueryProvider>
         </ThemeProvider>
       </body>

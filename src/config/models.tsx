@@ -8,6 +8,11 @@ export const providers = [
   "ollama",
 ] as const;
 
+export const ollamaModelsSupportsTools = [
+  "llama3-groq-tool-use:latest",
+  "llama3.1:8b",
+];
+
 export const models: TModelItem[] = [
   {
     name: "LLMChat",
