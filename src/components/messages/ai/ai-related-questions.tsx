@@ -35,7 +35,12 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
     });
   };
 
-  if (!message?.relatedQuestions?.length || !show || isGenerating) {
+  if (
+    !Array.isArray(message?.relatedQuestions) ||
+    !message?.relatedQuestions?.length ||
+    !show ||
+    isGenerating
+  ) {
     return null;
   }
 
