@@ -44,7 +44,7 @@ export const useTitleGenerator = () => {
   };
 
   const generateTitle = async (message: TChatMessage) => {
-    const assistant = getAssistantByKey(preferences.defaultAssistant);
+    const assistant = getAssistantByKey(message.runConfig.assistant.key);
     if (!assistant) return;
 
     if (!message.rawAI || !message.rawHuman) return;
