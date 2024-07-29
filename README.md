@@ -32,8 +32,8 @@ Make sure you have the following installed:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/aichat.git
-   cd aichat
+   git clone https://github.com/yourusername/llmchat.git
+   cd llmchat
    ```
 
 2. Install the dependencies:

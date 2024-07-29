@@ -74,7 +74,7 @@ export const useAssistantUtils = () => {
         type={
           assistant?.assistant.type === "base"
             ? assistant?.model?.icon
-            : "aichat"
+            : "llmchatAccent"
         }
         size={size}
         base64={assistant?.assistant.iconURL}
