@@ -18,6 +18,7 @@
 
 
   :root {
+
     --color-zinc-50: 243 243 243;
     --color-zinc-100: 232 232 232;
     --color-zinc-200: 197 197 197;
@@ -59,6 +60,7 @@
 
     --radius: 0.5rem;
   }
+
 
   .dark {
     --background: 240 10% 3.9%;
@@ -126,19 +128,19 @@ p {
 mark.prompt-highlight {
   background-color: hsl(0deg 0% 100%);
   color: #2c2a2d;
-  padding: 0.1rem 0.4rem;
+  padding: 0.1rem 0.2rem;
   font-weight: 500;
   border: 1px solid rgb(0 0 0 / 12%);
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .dark mark.prompt-highlight {
   background-color: hsl(150deg 68% 56% / 20%);
   color: #41db8f;
-  padding: 0.2rem 0.4rem;
+  padding: 0.1rem 0.2rem;
   font-weight: 500;
   border: 1px solid rgb(0 0 0 / 0%);
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 .tiptap .is-editor-empty:first-child::before {

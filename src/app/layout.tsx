@@ -1,21 +1,21 @@
+import { MainLayout } from "@/components/layout/main-layout";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { SessionsProvider } from "@/context/sessions/provider";
-import { SettingsProvider } from "@/context/settings/provider";
-import { cn } from "@/lib/utils";
-import type { Metadata } from "next";
+import {
+  PreferenceProvider,
+  ReactQueryProvider,
+  SessionsProvider,
+} from "@/context"; // Consolidated context imports
+import { AuthProvider } from "@/context/auth";
+import { cn } from "@/helper/clsx";
+import type { Metadata, Viewport } from "next"; // Combined type imports
 import { ThemeProvider } from "next-themes";
-import { inter } from "./fonts";
+import { interVar } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "AI Chat",
   description: "Most intutive all-in-one AI chat client",
 };
-
-import { ConfirmProvider } from "@/context/confirm/provider";
-import { PreferenceProvider } from "@/context/preferences/provider";
-import { ReactQueryProvider } from "@/context/react-query/provider";
-import type { Viewport } from "next";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -30,24 +30,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={cn(inter.className, "antialiased")}>
+    <html lang="en" className={cn(interVar.variable, "antialiased")}>
+      <body>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
           <ReactQueryProvider>
+          <AuthProvider>
+
             <TooltipProvider>
-              <ConfirmProvider>
-                <PreferenceProvider>
-                  <SessionsProvider>
-                    <SettingsProvider>{children}</SettingsProvider>
-                  </SessionsProvider>
-                </PreferenceProvider>
-              </ConfirmProvider>
+              <PreferenceProvider>
+                <SessionsProvider>
+                    <MainLayout>{children}</MainLayout>
+                </SessionsProvider>
+              </PreferenceProvider>
             </TooltipProvider>
+            </AuthProvider>
+
           </ReactQueryProvider>
         </ThemeProvider>
       </body>

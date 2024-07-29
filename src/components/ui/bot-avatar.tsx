@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 import Avatar from "boring-avatars";
 import Image from "next/image";
 
@@ -45,7 +45,7 @@ export const BotAvatar = ({ name, size, avatar }: TBotAvatar) => {
           }
           square
           name={name}
-          variant="beam"
+          variant="marble"
           colors={["#0DB2AC", "#F5DD7E", "#FC8D4D", "#FC694D", "#FABA32"]}
         />
       )}

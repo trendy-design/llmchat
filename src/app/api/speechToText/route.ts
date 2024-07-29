@@ -10,6 +10,7 @@ export async function POST(req: NextRequest, resp: NextResponse) {
     return Response.json({ error: "No API key provided" }, { status: 401 });
   }
 
+  
   const openai = new OpenAI({
     apiKey,
     dangerouslyAllowBrowser: true,

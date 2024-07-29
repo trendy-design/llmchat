@@ -1,21 +1,29 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { TToolKey, useTools } from "@/hooks/use-tools";
-import { Plug } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Switch } from "./ui/switch";
-import { Tooltip } from "./ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { PuzzleIcon } from "@/components/ui/icons";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Switch } from "@/components/ui/switch";
+import { Type } from "@/components/ui/text";
+import { Tooltip } from "@/components/ui/tooltip";
+import { usePreferenceContext } from "@/context/preferences";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
+import { useTools } from "@/hooks/use-tools";
+import { TToolKey } from "@/types";
+import { FC, useEffect, useState } from "react";
+
 export type TPluginSelect = {
-  selectedModel: TModelKey;
+  selectedAssistantKey: string;
 };
 
-export const PluginSelect = ({ selectedModel }: TPluginSelect) => {
+export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { tools } = useTools();
-  const { getModelByKey } = useModelList();
+  const { getAssistantByKey } = useAssistantUtils();
   const { preferences, updatePreferences } = usePreferenceContext();
   const availableTools = tools.filter((tool) => tool.showInMenu);
   const availableToolsKey = availableTools.map((tool) => tool.key);
@@ -23,14 +31,14 @@ export const PluginSelect = ({ selectedModel }: TPluginSelect) => {
   useEffect(() => {
     setSelectedPlugins(
       preferences.defaultPlugins?.filter((p) =>
-        availableToolsKey.includes(p)
-      ) || []
+        availableToolsKey.includes(p),
+      ) || [],
     );
   }, [isOpen, preferences]);
 
-  const model = getModelByKey(selectedModel);
+  const assistantProps = getAssistantByKey(selectedAssistantKey);
 
-  if (!model?.plugins?.length) {
+  if (!assistantProps?.model?.plugins?.length) {
     return null;
   }
 
@@ -40,54 +48,68 @@ export const PluginSelect = ({ selectedModel }: TPluginSelect) => {
         <Tooltip content="Plugins">
           <PopoverTrigger asChild>
             <Button variant="ghost" size="sm">
-              <Plug size={16} weight="bold" />
+              <PuzzleIcon size={18} variant="stroke" strokeWidth="2" />
               <Badge>{selectedPlugins.length}</Badge>
             </Button>
           </PopoverTrigger>
         </Tooltip>
         <PopoverContent
-          className="p-0 w-[300px] dark:bg-zinc-700 mr-8 roundex-2xl"
+          className="roundex-lg mr-8 w-[340px] p-0 dark:bg-zinc-700"
           side="top"
         >
-          <p className="flex flex-row gap-2 py-2 px-3 text-sm font-medium border-b border-zinc-500/20">
+          <p className="flex flex-row gap-2 border-b border-zinc-500/20 px-3 py-2 text-sm font-medium">
             Plugins <Badge>Beta</Badge>
           </p>
           <div className="flex flex-col p-1">
-            {availableTools.map((tool) => (
-              <div
-                key={tool.key}
-                className="flex text-xs md:text-sm gap-2 flex-row items-center w-full p-2 hover:bg-zinc-50 dark:hover:bg-black/30 rounded-2xl"
-              >
-                {tool.icon("md")} {tool.name} <span className="flex-1" />
-                <Switch
-                  checked={selectedPlugins.includes(tool.key)}
-                  onCheckedChange={async (checked) => {
-                    const defaultPlugins = preferences.defaultPlugins || [];
-                    const isValidated = await tool?.validate?.();
+            {availableTools.map((tool) => {
+              const Icon = tool.icon;
+              return (
+                <div
+                  key={tool.key}
+                  className="flex w-full flex-row items-center gap-3 rounded-lg px-3 py-2 text-xs hover:bg-zinc-50 dark:hover:bg-black/30 md:text-sm"
+                >
+                  <Icon size={20} strokeWidth={1.5} />
+                  <Flex direction="col" gap="none" items="start">
+                    <Type size="sm" weight="medium">
+                      {tool.name}
+                    </Type>
+                    <Type size="xs" textColor="tertiary">
+                      {tool.description}
+                    </Type>
+                  </Flex>
+                  <span className="flex-1" />
+                  <Switch
+                    checked={selectedPlugins.includes(tool.key)}
+                    onCheckedChange={async (checked) => {
+                      const defaultPlugins = preferences.defaultPlugins || [];
+                      const isValidated = await tool?.validate?.();
 
-                    if (checked) {
-                      if (tool?.validate === undefined || isValidated) {
-                        updatePreferences({
-                          defaultPlugins: [...defaultPlugins, tool.key],
-                        });
-                        setSelectedPlugins([...selectedPlugins, tool.key]);
+                      if (checked) {
+                        if (tool?.validate === undefined || isValidated) {
+                          updatePreferences({
+                            defaultPlugins: [...defaultPlugins, tool.key],
+                          });
+                          setSelectedPlugins([...selectedPlugins, tool.key]);
+                        } else {
+                          tool?.validationFailedAction?.();
+                        }
                       } else {
-                        tool?.validationFailedAction?.();
+                        updatePreferences({
+                          defaultPlugins: defaultPlugins.filter(
+                            (plugin) => plugin !== tool.key,
+                          ),
+                        });
+                        setSelectedPlugins(
+                          selectedPlugins.filter(
+                            (plugin) => plugin !== tool.key,
+                          ),
+                        );
                       }
-                    } else {
-                      updatePreferences({
-                        defaultPlugins: defaultPlugins.filter(
-                          (plugin) => plugin !== tool.key
-                        ),
-                      });
-                      setSelectedPlugins(
-                        selectedPlugins.filter((plugin) => plugin !== tool.key)
-                      );
-                    }
-                  }}
-                />
-              </div>
-            ))}
+                    }}
+                  />
+                </div>
+              );
+            })}
           </div>
         </PopoverContent>
       </Popover>

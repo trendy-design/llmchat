@@ -1,25 +1,30 @@
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { useModelList } from "@/hooks/use-model-list";
-import { TPreferences, defaultPreferences } from "@/hooks/use-preferences";
-import { ArrowClockwise, Info, SlidersHorizontal } from "@phosphor-icons/react";
+import { Button } from "@/components/ui/button";
+import { Flex } from "@/components/ui/flex";
+import { Settings03Icon } from "@/components/ui/icons";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Slider } from "@/components/ui/slider";
+import { Type } from "@/components/ui/text";
+import { Tooltip } from "@/components/ui/tooltip";
+import { defaultPreferences } from "@/config";
+import { usePreferenceContext } from "@/context/preferences";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
+import { TPreferences } from "@/types";
+import { ArrowClockwise, Info } from "@phosphor-icons/react";
 import { useState } from "react";
-import { ModelInfo } from "./model-info";
-import { Button } from "./ui/button";
-import { Flex } from "./ui/flex";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Slider } from "./ui/slider";
-import { Type } from "./ui/text";
-import { Tooltip } from "./ui/tooltip";
 
 export const QuickSettings = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { preferences, updatePreferences } = usePreferenceContext();
-  const { getModelByKey } = useModelList();
+  const { getModelByKey, getAssistantByKey } = useAssistantUtils();
 
   const renderResetToDefault = (key: keyof TPreferences) => {
     return (
       <Button
-        variant="outline"
+        variant="outlined"
         size="iconXS"
         rounded="lg"
         onClick={() => {
@@ -31,23 +36,18 @@ export const QuickSettings = () => {
     );
   };
 
-  const model = getModelByKey(preferences?.defaultModel);
+  const assistant = getAssistantByKey(preferences?.defaultAssistant);
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <Tooltip content="Configure Model">
         <PopoverTrigger asChild>
           <Button variant="ghost" size="iconSm">
-            <SlidersHorizontal size={16} weight="bold" />
+            <Settings03Icon size={16} variant="stroke" strokeWidth="2" />
           </Button>
         </PopoverTrigger>
       </Tooltip>
-      <PopoverContent className="p-0 dark:bg-zinc-700 mr-8 roundex-2xl w-[300px]">
-        {model && (
-          <div className="border-b dark:border-white/10 border-black/10 p-2">
-            <ModelInfo model={model} showDetails={false} />
-          </div>
-        )}
+      <PopoverContent className="roundex-2xl mr-8 w-[300px] p-0 dark:bg-zinc-700">
         <Flex direction="col" className="w-full px-3 py-1">
           <Flex items="center" justify="between" className="w-full">
             <Tooltip content="Temprature">
@@ -65,7 +65,7 @@ export const QuickSettings = () => {
                 value={[Number(preferences?.maxTokens)]}
                 step={1}
                 min={0}
-                max={model?.maxOutputTokens}
+                max={assistant?.model?.maxOutputTokens}
                 onValueChange={(value: number[]) => {
                   updatePreferences({ maxTokens: value?.[0] });
                 }}

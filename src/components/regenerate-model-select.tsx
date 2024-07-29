@@ -1,25 +1,30 @@
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { ArrowClockwise } from "@phosphor-icons/react";
-import { useState } from "react";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Tooltip } from "./ui/tooltip";
+} from "@/components/ui/dropdown-menu";
+import { ArrowDown01Icon, SparklesIcon } from "@/components/ui/icons";
+import { Tooltip } from "@/components/ui/tooltip";
+import { useAssistantUtils } from "@/hooks/use-assistant-utils";
+import { TAssistant, TModelKey } from "@/types";
+import { useState } from "react";
 
 export type TRegenerateModelSelect = {
+  assistant: TAssistant;
   onRegenerate: (modelKey: TModelKey) => void;
 };
 
 export const RegenerateWithModelSelect = ({
+  assistant,
   onRegenerate,
 }: TRegenerateModelSelect) => {
-  const { models } = useModelList();
+  const { assistants, getAssistantByKey, getAssistantIcon } =
+    useAssistantUtils();
   const [isOpen, setIsOpen] = useState(false);
+
+  const messageAssistantProps = getAssistantByKey(assistant.key);
 
   return (
     <>
@@ -27,25 +32,32 @@ export const RegenerateWithModelSelect = ({
         <Tooltip content="Regenerate">
           <DropdownMenuTrigger asChild>
             {
-              <Button variant="ghost" size="iconSm" rounded="lg">
-                <ArrowClockwise size={16} weight="bold" />
+              <Button variant="ghost" size="sm" rounded="lg">
+                <SparklesIcon size={18} variant="stroke" strokeWidth="2" />
+
+                {messageAssistantProps?.model?.name}
+                <ArrowDown01Icon size={16} variant="stroke" strokeWidth="2" />
               </Button>
             }
           </DropdownMenuTrigger>
         </Tooltip>
 
-        <DropdownMenuContent className="min-w-[250px] h-[300px] no-scrollbar overflow-y-auto">
-          {models.map((model) => (
-            <DropdownMenuItem
-              key={model.key}
-              onClick={() => {
-                onRegenerate(model.key);
-              }}
-            >
-              {model.icon("sm")} {model.name}{" "}
-              {model.isNew && <Badge>New</Badge>}
-            </DropdownMenuItem>
-          ))}
+        <DropdownMenuContent className="no-scrollbar h-[250px] min-w-[250px] overflow-y-auto">
+          {assistants.map((assistant) => {
+            const assistantProps = getAssistantByKey(assistant.key);
+
+            return (
+              <DropdownMenuItem
+                key={assistant.key}
+                onClick={() => {
+                  onRegenerate(assistant.key);
+                }}
+              >
+                {getAssistantIcon(assistant.key, "sm")}
+                {assistantProps?.assistant.name}
+              </DropdownMenuItem>
+            );
+          })}
         </DropdownMenuContent>
       </DropdownMenu>
     </>

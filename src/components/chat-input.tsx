@@ -1,35 +1,32 @@
-import { useFilters } from "@/context/filters/context";
-import { TModelKey, useModelList } from "@/hooks/use-model-list";
-import { useRecordVoice } from "@/hooks/use-record-voice";
-import useScrollToBottom from "@/hooks/use-scroll-to-bottom";
-import { useTextSelection } from "@/hooks/usse-text-selection";
-import { slideUpVariant } from "@/lib/framer-motion";
-import { cn } from "@/lib/utils";
-
+import { Button } from "@/components/ui/button";
+import { ArrowDown02Icon, Navigation03Icon } from "@/components/ui/icons";
+import { defaultPreferences } from "@/config";
 import {
-  ArrowDown,
-  ArrowElbowDownRight,
-  ArrowUp,
-  Command,
-  Quotes,
-  Stop,
-  X,
-} from "@phosphor-icons/react";
-
+  useAssistants,
+  useChatContext,
+  usePreferenceContext,
+  usePromptsContext,
+} from "@/context";
+import { slideUpVariant } from "@/helper/animations";
+import { cn } from "@/helper/clsx";
+import {
+  useAssistantUtils,
+  useImageAttachment,
+  useRecordVoice,
+  useScrollToBottom,
+} from "@/hooks";
+import { useChatEditor } from "@/hooks/use-editor";
+import { useLLMRunner } from "@/hooks/use-llm-runner";
+import { TAssistant } from "@/types";
+import { AiIdeaIcon } from "@hugeicons/react";
+import { ArrowElbowDownRight, Stop, X } from "@phosphor-icons/react";
 import { EditorContent } from "@tiptap/react";
 import { motion } from "framer-motion";
-import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ModelSelect } from "./model-select";
-import { Badge } from "./ui/badge";
-
-import { useChatContext } from "@/context/chat/provider";
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { useSessionsContext } from "@/context/sessions/provider";
+import { ChatExamples } from "./chat-examples";
+import { ChatGreeting } from "./chat-greeting";
 import { PluginSelect } from "./plugin-select";
-import { PromptsBotsCombo } from "./prompts-bots-combo";
-import { QuickSettings } from "./quick-settings";
-import { Button } from "./ui/button";
+import { Flex } from "./ui";
 
 export type TAttachment = {
   file?: File;
@@ -37,8 +34,13 @@ export type TAttachment = {
 };
 
 export const ChatInput = () => {
-  const { sessionId } = useParams();
-  const { open: openFilters } = useFilters();
+  const { store } = useChatContext();
+  const session = store((state) => state.session);
+  const messages = store((state) => state.messages);
+  const contextValue = store((state) => state.context);
+  const setContextValue = store((state) => state.setContext);
+  const stopGeneration = store((state) => state.stopGeneration);
+  const isGenerating = store((state) => state.isGenerating);
   const { showButton, scrollToBottom } = useScrollToBottom();
   const {
     renderListeningIndicator,
@@ -47,69 +49,70 @@ export const ChatInput = () => {
     text,
     transcribing,
   } = useRecordVoice();
-  const { currentSession } = useSessionsContext();
   const {
-    editor,
-    handleRunModel,
-    openPromptsBotCombo,
-    setOpenPromptsBotCombo,
-    sendMessage,
-    isGenerating,
-    stopGeneration,
-  } = useChatContext();
-  const [contextValue, setContextValue] = useState<string>("");
+    renderImageUpload,
+    renderAttachedImage,
+    attachment,
+    clearAttachment,
+  } = useImageAttachment({ id: "image-upload" });
+  const { selectedAssistant, open: openAssistants } = useAssistants();
+  const { open: openPrompts } = usePromptsContext();
+  const { invokeModel } = useLLMRunner();
 
-  const { preferences } = usePreferenceContext();
-  const { models } = useModelList();
+  const { editor } = useChatEditor();
 
-  const { showPopup, selectedText, handleClearSelection } = useTextSelection();
+  const { preferences, updatePreferences } = usePreferenceContext();
+  const { models, getAssistantByKey, getAssistantIcon } = useAssistantUtils();
+
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [selectedModel, setSelectedModel] = useState<TModelKey>(
-    preferences.defaultModel
-  );
+  const [selectedAssistantKey, setSelectedAssistantKey] = useState<
+    TAssistant["key"]
+  >(preferences.defaultAssistant);
 
   useEffect(() => {
-    setSelectedModel(preferences.defaultModel);
+    const assistantProps = getAssistantByKey(preferences.defaultAssistant);
+    if (assistantProps?.model) {
+      setSelectedAssistantKey(preferences.defaultAssistant);
+    } else {
+      updatePreferences({
+        defaultAssistant: defaultPreferences.defaultAssistant,
+      });
+    }
   }, [models, preferences]);
 
-  console.log("selectedModelinput", preferences.defaultModel);
-
   useEffect(() => {
-    if (editor?.isActive) {
-      editor.commands.focus("end");
-    }
-  }, [editor?.isActive]);
-
-  // useEffect(() => {
-  //   if (currentSession?.bot?.deafultBaseModel) {
-  //     setSelectedModel(currentSession.bot.deafultBaseModel);
-  //   }
-  // }, [currentSession]);
-
-  useEffect(() => {
-    if (sessionId) {
+    if (session?.id) {
       inputRef.current?.focus();
     }
-  }, [sessionId]);
+  }, [session?.id]);
 
-  const isFreshSession =
-    !currentSession?.messages?.length && !currentSession?.bot;
+  const isFreshSession = !messages?.length;
+
+  const sendMessage = (input: string) => {
+    const props = getAssistantByKey(preferences.defaultAssistant);
+    if (!props || !session) {
+      return;
+    }
+    invokeModel({
+      input,
+      image: attachment?.base64,
+      sessionId: session.id,
+      assistant: props.assistant,
+    });
+    clearAttachment();
+    editor?.commands.clearContent();
+  };
 
   useEffect(() => {
-    if (text) {
+    if (text && session) {
       editor?.commands.clearContent();
       editor?.commands.setContent(text);
-      handleRunModel({
-        input: text,
-        sessionId: sessionId.toString(),
-      });
-
-      editor?.commands.clearContent();
+      sendMessage(text);
     }
   }, [text]);
 
   const renderScrollToBottom = () => {
-    if (showButton && !showPopup && !recording && !transcribing) {
+    if (showButton && !recording && !transcribing) {
       return (
         <motion.span
           initial={{ scale: 0, opacity: 0 }}
@@ -118,19 +121,19 @@ export const ChatInput = () => {
         >
           <Button
             onClick={scrollToBottom}
-            variant="outline"
-            size="iconXS"
+            size="iconSm"
+            variant="outlined"
             rounded="full"
           >
-            <ArrowDown size={16} weight="bold" />
+            <ArrowDown02Icon size={16} strokeWidth="2" />
           </Button>
         </motion.span>
       );
     }
   };
 
-  const renderReplyButton = () => {
-    if (showPopup && !recording && !transcribing) {
+  const renderStopGeneration = () => {
+    if (isGenerating) {
       return (
         <motion.span
           initial={{ scale: 0, opacity: 0 }}
@@ -138,15 +141,15 @@ export const ChatInput = () => {
           exit={{ scale: 0, opacity: 0 }}
         >
           <Button
-            onClick={() => {
-              setContextValue(selectedText);
-              handleClearSelection();
-              inputRef.current?.focus();
-            }}
+            rounded="full"
             variant="secondary"
             size="sm"
+            onClick={() => {
+              stopGeneration();
+            }}
           >
-            <Quotes size={20} weight="bold" /> Reply
+            <Stop size={16} weight="fill" />
+            Stop generation
           </Button>
         </motion.span>
       );
@@ -156,20 +159,20 @@ export const ChatInput = () => {
   const renderSelectedContext = () => {
     if (contextValue) {
       return (
-        <div className="flex flex-row items-center bg-black/30 text-zinc-300 rounded-xl h-10 w-[700px] justify-start gap-2 pl-3 pr-1">
-          <ArrowElbowDownRight size={16} weight="fill" />
-          <p className="w-full overflow-hidden truncate ml-2 text-sm md:text-base ">
+        <div className="flex w-full flex-row items-start justify-start gap-2 rounded-xl border border-zinc-100 bg-white py-2 pl-2 pr-2 text-zinc-700 ring-1 ring-zinc-100 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200 dark:ring-zinc-700 md:w-[700px] lg:w-[720px]">
+          <ArrowElbowDownRight size={16} weight="bold" className="mt-1" />
+          <p className="ml-2 line-clamp-2 w-full overflow-hidden text-sm md:text-base">
             {contextValue}
           </p>
           <Button
-            size={"iconSm"}
+            size={"iconXS"}
             variant="ghost"
             onClick={() => {
               setContextValue("");
             }}
-            className="flex-shrink-0 ml-4"
+            className="ml-4 flex-shrink-0"
           >
-            <X size={16} weight="bold" />
+            <X size={14} weight="bold" />
           </Button>
         </div>
       );
@@ -179,105 +182,114 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        "w-full flex flex-col items-center justify-end md:justify-center absolute bottom-0 px-2 md:px-4 pb-4 pt-16  right-0 gap-1",
-        "bg-gradient-to-t transition-all ease-in-out duration-1000 from-white dark:from-zinc-800 to-transparent from-70% left-0"
+        "absolute bottom-0 right-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-4 pt-16 md:justify-center md:px-4",
+        "left-0 bg-gradient-to-t from-white from-70% to-transparent transition-all duration-1000 ease-in-out dark:from-zinc-800",
+        isFreshSession && "top-0",
       )}
     >
-      <div className="flex flex-row items-center gap-2">
+      {isFreshSession && <ChatGreeting />}
+      <div className="mb-2 flex flex-row items-center justify-center gap-2">
         {renderScrollToBottom()}
-        {renderReplyButton()}
-        {renderListeningIndicator()}
+        {renderStopGeneration()}
       </div>
-      <div className="flex flex-col gap-1 w-full md:w-[700px] lg:w-[720px]">
+
+      <div className="flex w-full flex-col gap-1 md:w-[700px] lg:w-[720px]">
         {renderSelectedContext()}
+
         {editor && (
-          <PromptsBotsCombo
-            open={openPromptsBotCombo}
-            onBack={() => {
-              editor?.commands.clearContent();
-              editor?.commands.focus("end");
-            }}
-            onPromptSelect={(prompt) => {
-              editor?.commands.setContent(prompt.content);
-              editor?.commands.insertContent("");
-              editor?.commands.focus("end");
-              setOpenPromptsBotCombo(false);
-            }}
-            onOpenChange={setOpenPromptsBotCombo}
-            onBotSelect={(bot) => {
-              editor?.commands?.clearContent();
-              editor?.commands.focus("end");
-            }}
+          <motion.div
+            variants={slideUpVariant}
+            initial={"initial"}
+            animate={editor.isEditable ? "animate" : "initial"}
+            className="flex w-full flex-col items-start gap-0 overflow-hidden rounded-lg border bg-zinc-50 dark:border-white/5 dark:bg-white/5"
           >
-            <motion.div
-              variants={slideUpVariant}
-              initial={"initial"}
-              animate={editor.isEditable ? "animate" : "initial"}
-              className="flex flex-col items-start gap-0 bg-zinc-50 dark:bg-white/5 w-full dark:border-white/5 rounded-2xl overflow-hidden"
-            >
-              <div className="flex flex-row items-end pl-2 md:pl-3 pr-2 py-2 w-full gap-0">
-                <EditorContent
-                  editor={editor}
-                  autoFocus
-                  onKeyDown={(e) => {
-                    console.log("keydown", e.key);
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      sendMessage();
-                    }
-                  }}
-                  className="w-full min-h-8 text-sm md:text-base max-h-[120px] overflow-y-auto outline-none focus:outline-none p-1 [&>*]:outline-none no-scrollbar [&>*]:no-scrollbar [&>*]:leading-6 wysiwyg cursor-text"
-                />
+            <div className="flex w-full flex-col items-start justify-start">
+              {attachment && (
+                <div className="pl-2 pr-2 pt-2 md:pl-3">
+                  {renderAttachedImage()}
+                </div>
+              )}
 
+              <div className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
+                <Flex className="flex-1">
+                  {recording || transcribing ? (
+                    renderListeningIndicator()
+                  ) : (
+                    <EditorContent
+                      editor={editor}
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          sendMessage(editor.getText());
+                        }
+                      }}
+                      className="no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[120px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-sm outline-none focus:outline-none md:text-base [&>*]:leading-6 [&>*]:outline-none"
+                    />
+                  )}
+                </Flex>
                 {!isGenerating && renderRecordingControls()}
-
-                {isGenerating ? (
-                  <Button
-                    size="icon"
-                    className="min-w-8 h-8 ml-1"
-                    variant={isGenerating ? "secondary" : "ghost"}
-                    onClick={() => {
-                      stopGeneration();
-                    }}
-                  >
-                    <Stop size={16} weight="fill" />
-                  </Button>
-                ) : (
-                  <Button
-                    size="icon"
-                    variant={!!editor?.getText() ? "secondary" : "ghost"}
-                    disabled={!editor?.getText()}
-                    className="min-w-8 h-8 ml-1"
-                    onClick={() => {
-                      sendMessage();
-                    }}
-                  >
-                    <ArrowUp size={20} weight="bold" />
-                  </Button>
-                )}
               </div>
-              <div className="flex flex-row items-center w-full justify-start gap-0 pt-1 pb-2 px-2">
-                <ModelSelect
-                  selectedModel={selectedModel}
-                  setSelectedModel={setSelectedModel}
-                />
-                <PluginSelect selectedModel={selectedModel} />
-                <QuickSettings />
-                <div className="flex-1"></div>
+            </div>
+            <Flex
+              className="w-full px-2 pb-2 pt-1"
+              items="center"
+              justify="between"
+            >
+              <Flex gap="xs" items="center">
                 <Button
                   variant="ghost"
+                  onClick={openAssistants}
+                  className={cn("gap-2 pl-1.5 pr-3 text-xs md:text-sm")}
                   size="sm"
-                  onClick={openFilters}
-                  className="px-1.5"
                 >
-                  <Badge className="flex">
-                    <Command size={16} weight="bold" /> K
-                  </Badge>
+                  {selectedAssistant?.assistant.key &&
+                    getAssistantIcon(selectedAssistant?.assistant.key, "sm")}
+
+                  {selectedAssistant?.assistant.name}
                 </Button>
-              </div>
-            </motion.div>
-          </PromptsBotsCombo>
+
+                <PluginSelect selectedAssistantKey={selectedAssistantKey} />
+                {renderImageUpload({ showIcon: true })}
+              </Flex>
+
+              <Flex gap="xs" items="center">
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    openPrompts();
+                  }}
+                  className={cn("gap-2 pl-1.5 pr-3 text-xs md:text-sm")}
+                  size="sm"
+                >
+                  <AiIdeaIcon size={18} variant="stroke" strokeWidth="2" />
+                  Prompts
+                </Button>
+                {!isGenerating && (
+                  <Button
+                    size="icon"
+                    variant={!!editor?.getText() ? "default" : "secondary"}
+                    disabled={!editor?.getText()}
+                    className={cn(
+                      !!editor?.getText() &&
+                        "bg-zinc-800 text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:outline-emerald-400",
+                    )}
+                    onClick={() => {
+                      sendMessage(editor.getText());
+                    }}
+                  >
+                    <Navigation03Icon
+                      size={18}
+                      variant="stroke"
+                      strokeWidth="2"
+                    />
+                  </Button>
+                )}
+              </Flex>
+            </Flex>
+          </motion.div>
         )}
       </div>
+      {isFreshSession && <ChatExamples />}
     </div>
   );
 };
