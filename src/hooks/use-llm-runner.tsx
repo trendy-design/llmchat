@@ -1,6 +1,7 @@
 import { useToast } from "@/components/ui";
 import { defaultPreferences } from "@/config";
 import { useChatContext, usePreferenceContext } from "@/context";
+import { useAuth } from "@/context/auth";
 import { injectPresetValues } from "@/helper/preset-prompt-values";
 import { constructMessagePrompt, constructPrompt } from "@/helper/promptUtil";
 import { generateShortUUID } from "@/helper/utils";
@@ -13,6 +14,7 @@ import moment from "moment";
 import { useAssistantUtils, useTools } from ".";
 
 export const useLLMRunner = () => {
+  const { user, open: openSignIn } = useAuth();
   const { store } = useChatContext();
   const setIsGenerating = store((state) => state.setIsGenerating);
   const setCurrentMessage = store((state) => state.setCurrentMessage);
@@ -26,6 +28,10 @@ export const useLLMRunner = () => {
   const { toast } = useToast();
 
   const invokeModel = async (config: TLLMRunConfig) => {
+    if (!user && config.assistant.baseModel === "llmchat") {
+      openSignIn();
+      return;
+    }
     resetState();
     setIsGenerating(true);
     const currentAbortController = new AbortController();
@@ -34,6 +40,7 @@ export const useLLMRunner = () => {
     const newMessageId = messageId || generateShortUUID();
     const modelKey = assistant.baseModel;
     const session = await sessionsService.getSessionById(sessionId);
+
     if (!session) {
       setIsGenerating(false);
       toast({

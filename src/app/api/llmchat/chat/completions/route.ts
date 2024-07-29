@@ -7,7 +7,7 @@ export async function POST(req: NextRequest, resp: NextResponse) {
   const body = await req.json();
   const response = await axios({
     method: "POST",
-    url: `https://api.openai.com/v1/chat/completions`,
+    url: process.env.OPENAI_API_URL,
     headers: {
       Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       "Content-Type": "application/json",
