@@ -1,14 +1,15 @@
 import { TAssistant } from "./assistants";
 import { TToolResponse } from "./tools";
 
-export type TStopReason =
-  | "error"
-  | "cancel"
-  | "apikey"
-  | "recursion"
-  | "finish"
-  | "rateLimit"
-  | "unauthorized";
+export const stopReasons = [
+  "error",
+  "cancel",
+  "apikey",
+  "recursion",
+  "finish",
+] as const;
+
+export type TStopReason = (typeof stopReasons)[number];
 
 export type TLLMRunConfig = {
   context?: string;
