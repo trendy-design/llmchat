@@ -1,7 +1,7 @@
 import { TPreferences } from "@/types";
 
 export const defaultPreferences: TPreferences = {
-  defaultAssistant: "gpt-3.5-turbo",
+  defaultAssistant: "llmchat",
   systemPrompt:
     "You're helpful assistant that can help me with my questions. Today is {{local_date}}.",
   messageLimit: 30,

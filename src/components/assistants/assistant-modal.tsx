@@ -13,6 +13,7 @@ import { cn } from "@/helper/clsx";
 import { useAssistantUtils } from "@/hooks";
 
 import { defaultPreferences } from "@/config";
+import { useAuth } from "@/context/auth";
 import { TAssistant } from "@/types";
 import { CommandGroup } from "cmdk";
 import { FC, useEffect, useRef, useState } from "react";
@@ -34,7 +35,7 @@ export const AssistantModal: FC<TAssitantModal> = ({
   onAssistantchange,
 }) => {
   const { preferences, updatePreferences } = usePreferenceContext();
-
+  const { user, open: openSignIn } = useAuth();
   const {
     assistants,
     createAssistantMutation,
@@ -79,6 +80,9 @@ export const AssistantModal: FC<TAssitantModal> = ({
           }}
           assistant={assistant}
           onSelect={(assistant) => {
+            if (!user && assistant.baseModel === "llmchat") {
+              openSignIn();
+            }
             onAssistantchange(assistant.key);
             onOpenChange(false);
           }}
