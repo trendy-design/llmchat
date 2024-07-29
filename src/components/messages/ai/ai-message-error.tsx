@@ -1,6 +1,8 @@
-import { Flex, Type } from "@/components/ui";
+import { Button, Flex, Type } from "@/components/ui";
 import { Alert02Icon } from "@/components/ui/icons";
+import { useAuth } from "@/context/auth";
 import { useAssistantUtils } from "@/hooks";
+import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { TChatMessage } from "@/types";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
@@ -11,49 +13,66 @@ type TAIMessageError = {
   message: TChatMessage;
 };
 
+type ErrorConfig = {
+  message: string;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+};
+
 export const AIMessageError: FC<TAIMessageError> = ({
   stopReason,
-  errorMessage,
   message,
 }) => {
   const { push } = useRouter();
+  const { open: openSignIn } = useAuth();
   const { getModelByKey } = useAssistantUtils();
-  if (["finish", "cancel", undefined].includes(stopReason)) {
-    return <></>;
+  const { invokeModel } = useLLMRunner();
+
+  if (!stopReason || ["finish", "cancel", undefined].includes(stopReason)) {
+    return null;
   }
 
   const model = getModelByKey(message?.runConfig?.assistant.baseModel);
 
-  const renderErrorMessage = (stopReason?: string) => {
-    if (stopReason === "apikey") {
-      return (
-        <Type textColor="secondary">
-          API Key is invalid or expired.
-          <span
-            className="ml-1 cursor-pointer underline"
-            onClick={() => push(`/settings/llms/${model?.provider}`)}
-          >
-            Check your API Key
-          </span>
-        </Type>
-      );
-    }
-    if (stopReason === "rateLimit") {
-      return (
-        <Type textColor="secondary">
-          Too many requests. Try again tomorrow. or use your own api key
-        </Type>
-      );
-    }
-    if (stopReason === "unauthorized") {
-      return (
-        <Type textColor="secondary">
-          You are not authorized to access this resource.
-        </Type>
-      );
-    }
-    return <Type textColor="secondary">An unexpected error occurred.</Type>;
+  const errorConfigs: Record<string, ErrorConfig> = {
+    apikey: {
+      message: "API Key is invalid or expired.",
+      action: {
+        label: "Check API Key",
+        onClick: () => push(`/settings/llms/${model?.provider}`),
+      },
+    },
+    rateLimit: {
+      message:
+        "Too many requests. Please try again later or use your own API key.",
+      action: {
+        label: "Open Settings",
+        onClick: () => push("/settings/llms"),
+      },
+    },
+    unauthorized: {
+      message: "You are not authorized to access this resource.",
+      action: {
+        label: "Sign In",
+        onClick: openSignIn,
+      },
+    },
+    default: {
+      message:
+        "An unexpected error occurred. Please try again or contact support.",
+      action: {
+        label: "Retry",
+        onClick: () => {
+          invokeModel(message.runConfig);
+        },
+      },
+    },
   };
+
+  const { message: errorMessage, action } =
+    errorConfigs[stopReason] || errorConfigs.default;
 
   return (
     <Flex
@@ -62,7 +81,12 @@ export const AIMessageError: FC<TAIMessageError> = ({
       items="center"
     >
       <Alert02Icon size={16} variant="solid" />
-      {renderErrorMessage(stopReason)}
+      <Type textColor="secondary">{errorMessage}</Type>
+      {action && (
+        <Button variant="ghost" size="sm" onClick={action.onClick}>
+          {action.label}
+        </Button>
+      )}
     </Flex>
   );
 };

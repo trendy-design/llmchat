@@ -1,6 +1,6 @@
 import { ModelIcon } from "@/components/model-icon";
 import { defaultPreferences } from "@/config";
-import { models } from "@/config/models";
+import { models, ollamaModelsSupportsTools } from "@/config/models";
 import { usePreferenceContext } from "@/context";
 import { useAssistantsQueries } from "@/services/assistants";
 import { TAssistant, TModelItem, TModelKey } from "@/types";
@@ -13,8 +13,6 @@ export const useAssistantUtils = () => {
   const ollamaModelsQuery = assistantQueries.useOllamaModelsQuery(
     preferences.ollamaBaseUrl,
   );
-
-  const ollamaModelsSupportsTools = ["llama3-groq-tool-use:latest"];
 
   const allModels: TModelItem[] = useMemo(
     () => [
