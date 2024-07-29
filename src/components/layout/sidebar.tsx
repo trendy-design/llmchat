@@ -18,12 +18,14 @@ import {
   Flex,
   Tooltip,
 } from "@/components/ui";
+import { useAuth } from "@/context/auth";
 import { FolderLibraryIcon, HelpCircleIcon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 import { useFeedback } from "../feedback/use-feedback";
 
 export const Sidebar = () => {
   const { theme, setTheme } = useTheme();
+  const { open: openSignIn, logout } = useAuth();
   const { push } = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const { createSession } = useSessions();
@@ -51,6 +53,13 @@ export const Sidebar = () => {
   };
 
   const menuItems = [
+    {
+      label: "SignIn",
+      onClick: () => {
+        openSignIn();
+      },
+    },
+
     { label: "About", onClick: () => {} },
     {
       label: "Feedback",
@@ -59,6 +68,7 @@ export const Sidebar = () => {
       },
     },
     { label: "Support", onClick: () => {} },
+    { label: "Logout", onClick: logout },
   ];
 
   const renderSpaces = () => {

@@ -1,6 +1,15 @@
 import { TAssistant } from "./assistants";
 import { TToolResponse } from "./tools";
 
+export type TStopReason =
+  | "error"
+  | "cancel"
+  | "apikey"
+  | "recursion"
+  | "finish"
+  | "rateLimit"
+  | "unauthorized";
+
 export type TLLMRunConfig = {
   context?: string;
   input?: string;
@@ -21,7 +30,7 @@ export type TChatMessage = {
   tools?: TToolResponse[];
   isLoading?: boolean;
   stop?: boolean;
-  stopReason?: "error" | "cancel" | "apikey" | "recursion" | "finish";
+  stopReason?: TStopReason;
   createdAt: string;
   relatedQuestions?: string[];
 };

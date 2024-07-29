@@ -6,7 +6,8 @@ export type ModelIconType =
   | "anthropic"
   | "gemini"
   | "openai"
-  | "aichat"
+  | "llmchat"
+  | "llmchatAccent"
   | "websearch"
   | "calculator"
   | "duckduckgo_search"
@@ -25,7 +26,8 @@ export const ModelIcon = ({ type, size, base64 }: TModelIcon) => {
     anthropic: "/icons/claude.svg",
     gemini: "/icons/gemini.svg",
     openai: "/icons/openai.svg",
-    aichat: "/icons/llmchat.png",
+    llmchat: "/icons/llmchat.svg",
+    llmchatAccent: "/icons/llmchat-accent.svg",
     websearch: "/icons/websearch.svg",
     calculator: "/icons/calculator.svg",
     duckduckgo_search: "/icons/duckduckgo.svg",
@@ -34,19 +36,20 @@ export const ModelIcon = ({ type, size, base64 }: TModelIcon) => {
   };
 
   return (
-    <Image
+    <div className={cn("relative rounded-md",
+      size === "sm" && "h-7 min-w-7",
+      size === "md" && "h-8 min-w-8",
+      size === "lg" && "h-10 min-w-10",
+    )}>
+      <div className="absolute inset-0 z-10 border border-zinc-800/10 rounded-md"></div>
+      <Image
       src={base64 ? base64 : iconSrc[type]}
       width={0}
       height={0}
       alt={type}
-      className={cn(
-        "object-cover",
-        "rounded-md",
-        size === "sm" && "h-6 min-w-6",
-        size === "md" && "h-8 min-w-8",
-        size === "lg" && "h-10 min-w-10",
-      )}
+      className={"object-cover relative w-full h-full rounded-md"}
       sizes="100vw"
     />
+    </div>
   );
 };

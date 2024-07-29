@@ -28,6 +28,8 @@ export type TModelItem = {
   name: string;
   key: TModelKey;
   isNew?: boolean;
+  isFree?: boolean;
+  isSignUpRequired?: boolean;
   icon: ComponentProps<typeof ModelIcon>["type"];
   vision?: boolean;
   tokens: number;

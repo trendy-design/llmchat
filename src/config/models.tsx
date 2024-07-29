@@ -12,12 +12,13 @@ export const models: TModelItem[] = [
   {
     name: "LLMChat",
     key: "llmchat",
-    isNew: true,
+    isFree: true,
+    isSignUpRequired: true,
     tokens: 128000,
     maxOutputTokens: 2048,
     vision: true,
     plugins: ["web_search", "image_generation", "memory", "chart"],
-    icon: "aichat",
+    icon: "llmchat",
     provider: "llmchat",
   },
   {
