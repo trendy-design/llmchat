@@ -54,6 +54,8 @@ export const ChatInput = () => {
     renderAttachedImage,
     attachment,
     clearAttachment,
+    renderDropZone,
+    getRootProps,
   } = useImageAttachment({ id: "image-upload" });
   const { selectedAssistant, open: openAssistants } = useAssistants();
   const { open: openPrompts } = usePromptsContext();
@@ -201,91 +203,97 @@ export const ChatInput = () => {
             variants={slideUpVariant}
             initial={"initial"}
             animate={editor.isEditable ? "animate" : "initial"}
-            className="flex w-full flex-col items-start gap-0 overflow-hidden rounded-lg border bg-zinc-50 dark:border-white/5 dark:bg-white/5"
+            className="flex w-full overflow-hidden rounded-lg border bg-zinc-50 dark:border-white/5 dark:bg-white/5"
           >
-            <div className="flex w-full flex-col items-start justify-start">
-              {attachment && (
-                <div className="pl-2 pr-2 pt-2 md:pl-3">
-                  {renderAttachedImage()}
-                </div>
-              )}
+            <div
+              className="relative flex w-full flex-col items-start gap-0"
+              {...getRootProps()}
+            >
+              <div className="flex w-full flex-col items-start justify-start">
+                {attachment && (
+                  <div className="pl-2 pr-2 pt-2 md:pl-3">
+                    {renderAttachedImage()}
+                  </div>
+                )}
 
-              <div className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
-                <Flex className="flex-1">
-                  {recording || transcribing ? (
-                    renderListeningIndicator()
-                  ) : (
-                    <EditorContent
-                      editor={editor}
-                      autoFocus
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          sendMessage(editor.getText());
-                        }
+                <div className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
+                  <Flex className="flex-1">
+                    {recording || transcribing ? (
+                      renderListeningIndicator()
+                    ) : (
+                      <EditorContent
+                        editor={editor}
+                        autoFocus
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            sendMessage(editor.getText());
+                          }
+                        }}
+                        className="no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[120px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-sm outline-none focus:outline-none md:text-base [&>*]:leading-6 [&>*]:outline-none"
+                      />
+                    )}
+                  </Flex>
+                  {!isGenerating && renderRecordingControls()}
+                </div>
+              </div>
+              <Flex
+                className="w-full px-2 pb-2 pt-1"
+                items="center"
+                justify="between"
+              >
+                <Flex gap="xs" items="center">
+                  <Button
+                    variant="ghost"
+                    onClick={openAssistants}
+                    className={cn("gap-2 pl-1.5 pr-3 text-xs md:text-sm")}
+                    size="sm"
+                  >
+                    {selectedAssistant?.assistant.key &&
+                      getAssistantIcon(selectedAssistant?.assistant.key, "sm")}
+
+                    {selectedAssistant?.assistant.name}
+                  </Button>
+
+                  <PluginSelect selectedAssistantKey={selectedAssistantKey} />
+                  {renderImageUpload({ showIcon: true })}
+                </Flex>
+
+                <Flex gap="xs" items="center">
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      openPrompts();
+                    }}
+                    className={cn("gap-2 pl-1.5 pr-3 text-xs md:text-sm")}
+                    size="sm"
+                  >
+                    <AiIdeaIcon size={18} variant="stroke" strokeWidth="2" />
+                    Prompts
+                  </Button>
+                  {!isGenerating && (
+                    <Button
+                      size="icon"
+                      variant={!!editor?.getText() ? "default" : "secondary"}
+                      disabled={!editor?.getText()}
+                      className={cn(
+                        !!editor?.getText() &&
+                          "bg-zinc-800 text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:outline-emerald-400",
+                      )}
+                      onClick={() => {
+                        sendMessage(editor.getText());
                       }}
-                      className="no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[120px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-sm outline-none focus:outline-none md:text-base [&>*]:leading-6 [&>*]:outline-none"
-                    />
+                    >
+                      <Navigation03Icon
+                        size={18}
+                        variant="stroke"
+                        strokeWidth="2"
+                      />
+                    </Button>
                   )}
                 </Flex>
-                {!isGenerating && renderRecordingControls()}
-              </div>
+              </Flex>
+              {renderDropZone()}
             </div>
-            <Flex
-              className="w-full px-2 pb-2 pt-1"
-              items="center"
-              justify="between"
-            >
-              <Flex gap="xs" items="center">
-                <Button
-                  variant="ghost"
-                  onClick={openAssistants}
-                  className={cn("gap-2 pl-1.5 pr-3 text-xs md:text-sm")}
-                  size="sm"
-                >
-                  {selectedAssistant?.assistant.key &&
-                    getAssistantIcon(selectedAssistant?.assistant.key, "sm")}
-
-                  {selectedAssistant?.assistant.name}
-                </Button>
-
-                <PluginSelect selectedAssistantKey={selectedAssistantKey} />
-                {renderImageUpload({ showIcon: true })}
-              </Flex>
-
-              <Flex gap="xs" items="center">
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    openPrompts();
-                  }}
-                  className={cn("gap-2 pl-1.5 pr-3 text-xs md:text-sm")}
-                  size="sm"
-                >
-                  <AiIdeaIcon size={18} variant="stroke" strokeWidth="2" />
-                  Prompts
-                </Button>
-                {!isGenerating && (
-                  <Button
-                    size="icon"
-                    variant={!!editor?.getText() ? "default" : "secondary"}
-                    disabled={!editor?.getText()}
-                    className={cn(
-                      !!editor?.getText() &&
-                        "bg-zinc-800 text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:outline-emerald-400",
-                    )}
-                    onClick={() => {
-                      sendMessage(editor.getText());
-                    }}
-                  >
-                    <Navigation03Icon
-                      size={18}
-                      variant="stroke"
-                      strokeWidth="2"
-                    />
-                  </Button>
-                )}
-              </Flex>
-            </Flex>
           </motion.div>
         )}
       </div>
