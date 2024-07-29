@@ -1,25 +1,26 @@
+import { Flex } from "@/components/ui";
 import { AudioWaveSpinner } from "@/components/ui/audio-wave";
 import { Button } from "@/components/ui/button";
+import { RecordIcon, StopIcon } from "@/components/ui/icons";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
-import { usePreferenceContext } from "@/context/preferences/provider";
-import { useSettings } from "@/context/settings/context";
-import { blobToBase64 } from "@/lib/record";
-import { Microphone, StopCircle } from "@phosphor-icons/react";
+import { usePreferenceContext } from "@/context";
+import { blobToBase64 } from "@/helper/record";
+import { useRouter } from "next/navigation";
 import { OpenAI, toFile } from "openai";
 import { useRef, useState } from "react";
 
 export const useRecordVoice = () => {
+  const { push } = useRouter();
   const [text, setText] = useState<string>("");
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null
+    null,
   );
   const { toast } = useToast();
   const { apiKeys } = usePreferenceContext();
   const [recording, setRecording] = useState<boolean>(false);
   const [transcribing, setIsTranscribing] = useState<boolean>(false);
   const { preferences } = usePreferenceContext();
-  const { open: openSettings } = useSettings();
   const chunks = useRef<Blob[]>([]);
 
   const startRecording = async (): Promise<void> => {
@@ -96,7 +97,8 @@ export const useRecordVoice = () => {
           "Recordings require OpenAI API key. Please check settings.",
         variant: "destructive",
       });
-      openSettings("openai");
+
+      push(`/settings/llms/openai`);
       return;
     }
 
@@ -109,7 +111,7 @@ export const useRecordVoice = () => {
           "Recordings require Speech to Text enabled. Please check settings.",
         variant: "destructive",
       });
-      openSettings("voice-input");
+      push(`/settings/voice`);
     }
   };
 
@@ -119,12 +121,19 @@ export const useRecordVoice = () => {
         <>
           <Button
             variant="ghost"
-            size="iconSm"
+            size="sm"
             onClick={() => {
               stopRecording();
             }}
+            className="group"
           >
-            <StopCircle size={20} weight="fill" className="text-red-300" />
+            <StopIcon
+              size={18}
+              variant="solid"
+              strokeWidth="2"
+              className="text-rose-400/80"
+            />
+            <span className="hidden group-hover:flex">Stop</span>
           </Button>
         </>
       );
@@ -132,13 +141,8 @@ export const useRecordVoice = () => {
 
     return (
       <Tooltip content="Record">
-        <Button
-          size="icon"
-          variant="ghost"
-          className="min-w-8 h-8"
-          onClick={startVoiceRecording}
-        >
-          <Microphone size={20} weight="bold" />
+        <Button size="icon" variant="ghost" onClick={startVoiceRecording}>
+          <RecordIcon size={18} variant="stroke" strokeWidth="2" />
         </Button>
       </Tooltip>
     );
@@ -147,17 +151,17 @@ export const useRecordVoice = () => {
   const renderListeningIndicator = () => {
     if (transcribing) {
       return (
-        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-4 py-1 h-10 flex flex-row items-center text-sm md:text-base">
+        <Flex items="center" gap="sm" className="opacity-50">
           <AudioWaveSpinner /> <p>Transcribing ...</p>
-        </div>
+        </Flex>
       );
     }
     if (recording) {
       return (
-        <div className="bg-zinc-800 dark:bg-zinc-900 text-white rounded-full gap-2 px-2 pr-4 py-1 h-10 flex flex-row items-center text-sm md:text-base">
+        <Flex items="center" gap="sm" className="opacity-50">
           <AudioWaveSpinner />
           <p>Listening ...</p>
-        </div>
+        </Flex>
       );
     }
   };

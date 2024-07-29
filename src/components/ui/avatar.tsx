@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/helper/clsx";
 
 export type TAvatar = {
   name: string;

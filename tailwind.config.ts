@@ -10,10 +10,6 @@ const config = {
   ],
   prefix: "",
   theme: {
-    animation: {
-      marquee: "marquee 160s linear infinite",
-      marquee2: "marquee2 160s linear infinite",
-    },
     container: {
       center: true,
       padding: "2rem",
@@ -22,6 +18,9 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-inter)"],
+      },
       colors: {
         zinc: {
           "50": "hsl(0, 0%, 93.7%, <alpha-value>)",
@@ -74,7 +73,7 @@ const config = {
       fontSize: {
         xs: "0.75rem",
         sm: "0.875rem",
-        base: "0.925rem",
+        base: "0.975rem",
         lg: "1.125rem",
         xl: "1.25rem",
         "2xl": "1.563rem",
@@ -82,12 +81,13 @@ const config = {
         "4xl": "2.441rem",
         "5xl": "3.052rem",
       },
-      // fontWeights: {
-      //   normal: 350,
-      //   medium: 450,
-      //   semibold: 550,
-      //   bold: 650,
-      // },
+
+      fontWeight: {
+        normal: "350",
+        medium: "450",
+        semibold: "550",
+        bold: "650",
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
@@ -111,13 +111,9 @@ const config = {
           "100%": { transform: "translateX(0%)" },
         },
       },
-      animation: {
-        "accordion-down": "accordion-down 0.2s ease-out",
-        "accordion-up": "accordion-up 0.2s ease-out",
-      },
     },
   },
-  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
+  plugins: [require("@tailwindcss/typography")],
 } satisfies Config;
 
 export default config;

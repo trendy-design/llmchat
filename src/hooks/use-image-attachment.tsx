@@ -1,12 +1,24 @@
 import { TAttachment } from "@/components/chat-input";
+import { Tooltip } from "@/components/ui";
 import { Button } from "@/components/ui/button";
+import { ImageAdd01Icon } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
-import { ArrowElbowDownRight, Paperclip, X } from "@phosphor-icons/react";
+import { X } from "@phosphor-icons/react";
 import Image from "next/image";
 import { ChangeEvent, useState } from "react";
 import Resizer from "react-image-file-resizer";
 
-export const useImageAttachment = () => {
+export type TRenderImageUpload = {
+  showIcon?: boolean;
+  label?: string;
+  tooltip?: string;
+};
+
+export type TUseImageAttachment = {
+  id: string;
+};
+
+export const useImageAttachment = ({ id }: TUseImageAttachment) => {
   const [attachment, setAttachment] = useState<TAttachment>();
   const { toast } = useToast();
 
@@ -22,9 +34,13 @@ export const useImageAttachment = () => {
         (uri) => {
           resolve(uri);
         },
-        "file"
+        "file",
       );
     });
+
+  const clearAttachment = () => {
+    setAttachment(undefined);
+  };
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -62,53 +78,57 @@ export const useImageAttachment = () => {
   };
 
   const handleFileSelect = () => {
-    document.getElementById("fileInput")?.click();
+    document.getElementById(id)?.click();
   };
   const renderAttachedImage = () => {
-    if (attachment?.base64 && attachment?.file) {
+    if (attachment?.base64) {
       return (
-        <div className="flex flex-row items-center bg-black/30 text-zinc-300 rounded-xl h-10 w-full md:w-[700px] lg:w-[720px] justify-start gap-2 pl-3 pr-1">
-          <ArrowElbowDownRight size={20} weight="bold" />
-          <p className="w-full relative ml-2 text-sm md:text-base flex flex-row gap-2 items-center">
-            <Image
-              src={attachment.base64}
-              alt="uploaded image"
-              className="rounded-xl tanslate-y-[50%] min-w-[60px] h-[60px] border border-white/5 absolute rotate-6 shadow-md object-cover"
-              width={0}
-              height={0}
-            />
-            <span className="ml-[70px]">{attachment?.file?.name}</span>
-          </p>
+        <div className="relative h-[60px] min-w-[60px] rounded-xl border border-white/5 shadow-md">
+          <Image
+            src={attachment.base64}
+            alt="uploaded image"
+            className="h-full w-full overflow-hidden rounded-xl object-cover"
+            width={0}
+            height={0}
+          />
+
           <Button
-            size={"iconSm"}
-            variant="ghost"
-            onClick={() => {}}
-            className="flex-shrink-0 ml-4"
+            size={"iconXS"}
+            variant="default"
+            onClick={clearAttachment}
+            className="absolute right-[-4px] top-[-4px] z-10 h-4 w-4 flex-shrink-0"
           >
-            <X size={16} weight="bold" />
+            <X size={12} weight="bold" />
           </Button>
         </div>
       );
     }
   };
 
-  const renderFileUpload = () => {
+  const renderImageUpload = ({
+    showIcon,
+    label,
+    tooltip = "Attach an image",
+  }: TRenderImageUpload) => {
     return (
       <>
         <input
           type="file"
-          id="fileInput"
+          id={id}
           className="hidden"
           onChange={handleImageUpload}
         />
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleFileSelect}
-          className="px-1.5"
-        >
-          <Paperclip size={16} weight="bold" /> Attach
-        </Button>
+        <Tooltip content={tooltip}>
+          {showIcon ? (
+            <Button variant="ghost" size="iconSm" onClick={handleFileSelect}>
+              <ImageAdd01Icon size={18} strokeWidth={2} />
+            </Button>
+          ) : (
+            <Button variant="outlined" onClick={handleFileSelect}>
+              {label}
+            </Button>
+          )}
+        </Tooltip>
       </>
     );
   };
@@ -117,7 +137,9 @@ export const useImageAttachment = () => {
     attachment,
     handleImageUpload,
     handleFileSelect,
+    clearAttachment,
     renderAttachedImage,
-    renderFileUpload,
+    renderImageUpload,
+    setAttachment,
   };
 };
