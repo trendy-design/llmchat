@@ -47,7 +47,7 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
         textColor="secondary"
         className="items-center gap-2 py-1"
       >
-        <MessageQuestionIcon size={20} variant="solid" /> Related Questions
+        <MessageQuestionIcon size={20} variant="solid" /> Related
       </Type>
       {message?.relatedQuestions?.map((question) => {
         return (

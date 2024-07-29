@@ -13,7 +13,8 @@ export async function POST(req: NextRequest, resp: NextResponse) {
   const requestHeadersObject = Object.fromEntries(requestHeaders.entries());
 
   const body = await req.json();
-  const res = await fetch("https://api.anthropic.com/v1/messages", {
+  const url = process.env.ANTHROPIC_API_URL || "";
+  const res = await fetch(url, {
     method: "POST",
     headers: {
       accept: requestHeadersObject["accept"],
