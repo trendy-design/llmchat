@@ -2,6 +2,7 @@
 import { ModelIcon, ModelIconType } from "@/components/model-icon";
 import { AnthropicSettings } from "@/components/settings/models/anthropic";
 import { GeminiSettings } from "@/components/settings/models/gemini";
+import { GroqSettings } from "@/components/settings/models/groq";
 import { OllamaSettings } from "@/components/settings/models/ollama";
 import { OpenAISettings } from "@/components/settings/models/openai";
 import { SettingsContainer } from "@/components/settings/settings-container";
@@ -79,6 +80,13 @@ export default function LLMsSettings() {
       iconType: "ollama",
       connected: ollamaConnected,
       settingsComponent: OllamaSettings,
+    },
+    {
+      value: "groq",
+      label: "Groq",
+      iconType: "groq",
+      connected: !!apiKeys.groq,
+      settingsComponent: GroqSettings,
     },
   ];
   return (

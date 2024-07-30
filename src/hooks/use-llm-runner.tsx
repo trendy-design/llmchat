@@ -74,7 +74,7 @@ export const useLLMRunner = () => {
       isLoading: true,
     });
 
-    const selectedModelKey = getModelByKey(modelKey);
+    const selectedModelKey = getModelByKey(modelKey, assistant.provider);
     if (!selectedModelKey) {
       throw new Error("Model not found");
     }
@@ -100,7 +100,7 @@ export const useLLMRunner = () => {
 
     const availableTools =
       selectedModelKey?.plugins
-        ?.filter((p) => plugins.includes(p))
+        ?.filter((p) => plugins.includes(p) || p === "webpage_reader")
         ?.map((p) =>
           getToolByKey(p)?.tool({
             updatePreferences,

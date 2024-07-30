@@ -29,30 +29,38 @@ const googleSearchTool = (args: TToolArg) => {
           runManager?.handleToolError("Error performing Google search");
           throw new Error("Invalid response");
         }
-        const googleSearchResult = response.data?.items?.map((item: any) => ({
-          title: item.title,
-          snippet: item.snippet,
-          url: item.link,
-        }));
+        const googleSearchResult = response?.data?.items
+          ?.slice(0, 5)
+          ?.map((item: any) => ({
+            title: item.title,
+            snippet: item.snippet,
+            link: item.link,
+          }));
 
-        const searchResult = googleSearchResult
-          ?.map(
-            (r: any, index: number) =>
-              `${index + 1}. Title: """${r.title}""" \n URL: """${
-                r.url
-              }"""\n snippet: """${r.snippet}""" `,
-          )
-          ?.join("\n\n");
+        const information = googleSearchResult?.map(
+          (result: any) => `
+            title: ${result?.title},
+            markdown: ${result?.snippet},
+            url: ${result?.link},
+          `,
+        );
 
-        const searchPrompt = `Information: \n\n ${searchResult} \n\n Based on snippet please answer the given question with proper citations. Must Remove XML tags if any. Question: ${input}`;
+        const searchPrompt = `Answer the following question based on the information provided. if required use the link to get more information. Question: ${input} \n\n Information: \n\n ${information}`;
 
         sendToolResponse({
           toolName: "web_search",
           toolArgs: {
             input,
           },
-          toolRenderArgs: { searchResult },
-          toolResponse: searchResult,
+          toolRenderArgs: {
+            query: input,
+            searchResults: googleSearchResult?.map((result: any) => ({
+              title: result?.title,
+              snippet: result?.snippet,
+              link: result?.link,
+            })),
+          },
+          toolResponse: googleSearchResult,
           toolLoading: false,
         });
         return searchPrompt;

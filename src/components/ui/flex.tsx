@@ -68,6 +68,7 @@ export const Flex = React.forwardRef<HTMLDivElement, FlexProps>(
           flexVariants({ direction, gap, justify, items, className }),
         )}
         ref={ref}
+        {...props}
       >
         {props.children}
       </div>

@@ -1,4 +1,5 @@
-import { Flex, Spinner, Type } from "@/components/ui";
+import { ToolBadge } from "@/components/tools/tool-badge";
+import { Flex } from "@/components/ui";
 import { useTools } from "@/hooks";
 import { TToolResponse } from "@/types";
 
@@ -20,26 +21,19 @@ export const AIToolMessage = ({ tool }: TAIToolMessage) => {
   const Icon = toolUsed.smallIcon;
 
   return (
-    <>
-      {toolUsed && (
-        <Flex
-          direction="row"
-          items="center"
-          gap="sm"
-          className="mb-4 rounded-full bg-zinc-500/10 px-3 py-1.5"
-        >
-          {tool?.toolLoading ? <Spinner /> : <Icon size={16} strokeWidth={2} />}
-          <Type size="sm" textColor="secondary">
-            {tool?.toolLoading
-              ? toolUsed.loadingMessage
-              : toolUsed.resultMessage}
-          </Type>
-        </Flex>
+    <Flex direction="col" items="start" gap="sm" className="mb-4 w-full">
+      {toolUsed?.resultMessage && (
+        <ToolBadge
+          icon={Icon}
+          isLoading={tool?.toolLoading}
+          loadingPlaceholder={toolUsed.loadingMessage}
+          text={toolUsed.resultMessage}
+        />
       )}
 
       {toolUsed &&
         tool?.toolRenderArgs &&
         toolUsed?.renderUI?.(tool?.toolRenderArgs)}
-    </>
+    </Flex>
   );
 };

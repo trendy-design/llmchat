@@ -66,7 +66,10 @@ export const ModelSelect: FC<TModelSelect> = ({
           {assistants
             ?.filter((a) => a.type === "base")
             .map((assistant) => {
-              const model = getModelByKey(assistant.baseModel);
+              const model = getModelByKey(
+                assistant.baseModel,
+                assistant.provider,
+              );
 
               return (
                 <DropdownMenuItem

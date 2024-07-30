@@ -4,7 +4,7 @@ import { ComingSoon } from "@/components/ui/coming-soon";
 import { FormLabel } from "@/components/ui/form-label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useImageAttachment } from "@/hooks";
+import { useAssistantUtils, useImageAttachment } from "@/hooks";
 import { TAssistant } from "@/types";
 import { Plus } from "@phosphor-icons/react";
 import { useFormik } from "formik";
@@ -26,13 +26,14 @@ export const CreateAssistant = ({
   onCancel,
 }: TCreateAssistant) => {
   const botTitleRef = useRef<HTMLInputElement | null>(null);
+  const { assistants } = useAssistantUtils();
 
   const { attachment, renderImageUpload, renderAttachedImage, setAttachment } =
     useImageAttachment({
       id: "assistant-icon-upload",
     });
 
-  const formik = useFormik<Omit<TAssistant, "key">>({
+  const formik = useFormik<Omit<TAssistant, "key" | "provider">>({
     initialValues: {
       name: assistant?.name || "",
       systemPrompt: assistant?.systemPrompt || "",
@@ -43,9 +44,25 @@ export const CreateAssistant = ({
     enableReinitialize: true,
     onSubmit: (values) => {
       if (assistant?.key) {
-        onUpdateAssistant({ ...values, key: assistant?.key });
+        const selectedAssistant = assistants.find(
+          (a) => a.baseModel === assistant?.baseModel,
+        );
+
+        selectedAssistant?.provider &&
+          onUpdateAssistant({
+            ...values,
+            key: assistant?.key,
+            provider: selectedAssistant?.provider,
+          });
       } else {
-        onCreateAssistant(values);
+        const selectedAssistant = assistants.find(
+          (a) => a.baseModel === values?.baseModel,
+        );
+        selectedAssistant?.provider &&
+          onCreateAssistant({
+            ...values,
+            provider: selectedAssistant?.provider,
+          });
       }
       clearAssistant();
       onCancel();
