@@ -1,5 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        hostname: "icon.horse",
+      },
+      {
+        hostname: "icons.duckduckgo.com",
+      },
+      {
+        hostname: "www.google.com",
+      },
+    ],
+  },
   async rewrites() {
     return [
       {

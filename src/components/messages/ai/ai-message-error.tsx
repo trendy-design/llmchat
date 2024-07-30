@@ -34,7 +34,10 @@ export const AIMessageError: FC<TAIMessageError> = ({
     return null;
   }
 
-  const model = getModelByKey(message?.runConfig?.assistant.baseModel);
+  const model = getModelByKey(
+    message?.runConfig?.assistant.baseModel,
+    message?.runConfig?.assistant.provider,
+  );
 
   const errorConfigs: Record<string, ErrorConfig> = {
     apikey: {
