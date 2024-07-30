@@ -1,4 +1,10 @@
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Flex } from "@/components/ui/flex";
 import { Input } from "@/components/ui/input";
 import { Type } from "@/components/ui/text";
@@ -7,13 +13,6 @@ import { usePreferenceContext } from "@/context/preferences";
 import { ArrowRight, CaretDown, Info } from "@phosphor-icons/react";
 import axios from "axios";
 import { useEffect } from "react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { SettingCard } from "../setting-card";
 
 export const WebSearchPlugin = () => {
   const { toast } = useToast();
@@ -50,23 +49,8 @@ export const WebSearchPlugin = () => {
     }
   };
 
-  const renderWebSearchOptions = () => {
-    return (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button size="sm" variant="secondary">
-            google <CaretDown size={12} weight="bold" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[200px]" align="end">
-          <DropdownMenuItem>Google</DropdownMenuItem>
-          <DropdownMenuItem>DuckDuckGo</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    );
-  };
   return (
-    <Flex direction="col" gap="sm" className="border-t pt-2 border-white/10">
+    <Flex direction="col" gap="sm" className="border-t border-white/10 pt-2">
       <Flex className="w-full" justify="between" items="center">
         <Type size="sm" textColor="secondary">
           Default Search Engine
@@ -97,11 +81,11 @@ export const WebSearchPlugin = () => {
         </DropdownMenu>
       </Flex>
       {preferences.defaultWebSearchEngine === "google" && (
-        <SettingCard className="flex flex-col w-full items-start gap-2 py-3">
+        <Flex direction="col" gap="sm" className="w-full">
           <Flex direction="col" gap="sm" className="w-full">
             <Type
               size="xs"
-              className="flex flex-row gap-2 items-center"
+              className="flex flex-row items-center gap-2"
               textColor="secondary"
             >
               Google Search Engine ID <Info weight="regular" size={14} />
@@ -119,7 +103,7 @@ export const WebSearchPlugin = () => {
           <Flex direction="col" gap="sm" className="w-full">
             <Type
               size="xs"
-              className="flex flex-row gap-2 items-center"
+              className="flex flex-row items-center gap-2"
               textColor="secondary"
             >
               Google Search Api Key <Info weight="regular" size={14} />
@@ -144,14 +128,14 @@ export const WebSearchPlugin = () => {
               onClick={() => {
                 window.open(
                   "https://programmablesearchengine.google.com/controlpanel/create",
-                  "_blank"
+                  "_blank",
                 );
               }}
             >
               Get your API key here <ArrowRight size={16} weight="bold" />
             </Button>
           </Flex>
-        </SettingCard>
+        </Flex>
       )}
     </Flex>
   );

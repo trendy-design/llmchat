@@ -17,19 +17,33 @@ const duckduckGoTool = (args: TToolArg) => {
     func: async ({ input }, runManager) => {
       try {
         const response = await axios.post("/api/search", { query: input });
-        const result = response.data?.results;
+        const result = JSON?.parse(response.data?.results) || [];
         if (!result) {
           runManager?.handleToolError("Error performing Duckduck go search");
           throw new Error("Invalid response");
         }
-        const searchPrompt = `Information: \n\n ${result} \n\n Based on snippet please answer the given question with proper citations without using duckduckgo_search function again. Must Remove XML tags if any. Question: ${input}`;
+
+        const information = result?.map(
+          (result: any) => `
+          title: ${result?.title},
+          snippet: ${result?.snippet},
+          link: ${result?.link}
+        `,
+        );
+
+        const searchPrompt = `Answer the following question based on the information provided. if required use the link to get more information. Question: ${input} \n\n Information: \n\n ${information}`;
         sendToolResponse({
           toolName: "web_search",
           toolArgs: {
             input,
           },
           toolRenderArgs: {
-            searchResult: result,
+            query: input,
+            searchResults: result?.map((result: any) => ({
+              title: result?.title,
+              snippet: result?.snippet,
+              link: result?.link,
+            })),
           },
           toolResponse: result,
           toolLoading: false,

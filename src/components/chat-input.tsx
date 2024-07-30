@@ -37,6 +37,7 @@ export const ChatInput = () => {
   const { store } = useChatContext();
   const session = store((state) => state.session);
   const messages = store((state) => state.messages);
+  const currentMessage = store((state) => state.currentMessage);
   const contextValue = store((state) => state.context);
   const setContextValue = store((state) => state.setContext);
   const stopGeneration = store((state) => state.stopGeneration);
@@ -88,7 +89,7 @@ export const ChatInput = () => {
     }
   }, [session?.id]);
 
-  const isFreshSession = !messages?.length;
+  const isFreshSession = !messages?.length && !currentMessage;
 
   const sendMessage = (input: string) => {
     const props = getAssistantByKey(preferences.defaultAssistant);
