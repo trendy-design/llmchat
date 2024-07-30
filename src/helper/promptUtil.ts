@@ -58,7 +58,7 @@ const constructPrompt = async (props: TConstructPrompt) => {
   return ChatPromptTemplate.fromMessages([
     systemMessage,
     messagePlaceholders,
-  userMessage,
+    userMessage,
     ["placeholder", "{agent_scratchpad}"],
   ]);
 };
@@ -71,12 +71,11 @@ const constructMessagePrompt = async ({
   limit: number;
 }) => {
   const sortedMessages = sortMessages(messages, "createdAt");
-
   const chatHistory = sortedMessages
     .slice(0, limit)
     .reduce((acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman }) => {
       if (rawAI && rawHuman) {
-        return [...acc, new HumanMessage(rawHuman), new AIMessage(rawAI)];
+        return [new HumanMessage(rawHuman), new AIMessage(rawAI), ...acc];
       } else {
         return acc;
       }
