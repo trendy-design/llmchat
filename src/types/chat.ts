@@ -27,6 +27,7 @@ export type TChatState = {
   setAbortController: (abortController: AbortController) => void;
   stopGeneration: () => void;
   resetState: () => void;
+  removeLastMessage: () => void;
 };
 
 export type TChatContext = {
