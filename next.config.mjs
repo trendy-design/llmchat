@@ -26,15 +26,15 @@ const nextConfig = {
     ];
   },
 
-  // async redirects() {
-  //   return [
-  //     // {
-  //     //   source: "/",
-  //     //   destination: "/chat",
-  //     //   permanent: true,
-  //     // },
-  //   ];
-  // },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/chat",
+        permanent: true,
+      },
+    ];
+  },
 
   // async rewrites() {
   //   return [

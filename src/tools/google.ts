@@ -1,3 +1,4 @@
+import { googleSearchPrompt } from "@/config/prompts";
 import { TToolArg } from "@/types";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import axios from "axios";
@@ -45,8 +46,6 @@ const googleSearchTool = (args: TToolArg) => {
           `,
         );
 
-        const searchPrompt = `Answer the following question based on the information provided. if required use the link to get more information. Question: ${input} \n\n Information: \n\n ${information}`;
-
         sendToolResponse({
           toolName: "web_search",
           toolArgs: {
@@ -63,7 +62,7 @@ const googleSearchTool = (args: TToolArg) => {
           toolResponse: googleSearchResult,
           toolLoading: false,
         });
-        return searchPrompt;
+        return googleSearchPrompt(input, information);
       } catch (error) {
         sendToolResponse({
           toolName: "web_search",

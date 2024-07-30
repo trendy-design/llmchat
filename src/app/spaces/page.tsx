@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 
 import { defaultPreferences } from "@/config";
 import { models } from "@/config/models";
+import { vectorSearchSystemPrompt } from "@/config/prompts";
 import { usePreferenceContext } from "@/context";
 import { constructPrompt } from "@/helper/promptUtil";
 import { useAttachment } from "@/hooks";
@@ -69,9 +70,7 @@ export default function Spaces() {
     });
 
     const prompt = await constructPrompt({
-      systemPrompt: `You're a helpful assistant. You can refer to given context to answer the query. You can't make up anything though you can inspire from the context. you must cite the source of the information you are using.
-        context: ${JSON.stringify(results.similarItems.map((item: any) => `Title: ${item.metadata.title} \n\n ${item.text} \n\n url: ${item.metadata.source}`))}
-        `,
+      systemPrompt: vectorSearchSystemPrompt(results.similarItems),
       memories: [],
 
       hasMessages: false,
