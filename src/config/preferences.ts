@@ -4,7 +4,7 @@ export const defaultPreferences: TPreferences = {
   defaultAssistant: "llmchat",
   systemPrompt:
     "You're helpful assistant that can help me with my questions. Today is {{local_date}}.",
-  messageLimit: 30,
+  messageLimit: 5,
   temperature: 0.5,
   suggestRelatedQuestions: true,
   generateTitle: true,

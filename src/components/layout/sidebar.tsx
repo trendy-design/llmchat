@@ -20,12 +20,17 @@ import {
   Type,
 } from "@/components/ui";
 import { useAuth } from "@/context/auth";
-import { FolderLibraryIcon, HelpCircleIcon } from "@hugeicons/react";
+import {
+  ArrowLeft02Icon,
+  FolderLibraryIcon,
+  HelpCircleIcon,
+} from "@hugeicons/react";
 import Avatar from "boring-avatars";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useFeedback } from "../feedback/use-feedback";
 
 export const Sidebar = () => {
+  const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const { open: openSignIn, logout, user } = useAuth();
   const { push } = useRouter();
@@ -34,11 +39,27 @@ export const Sidebar = () => {
   const { renderModal, setOpen: openFeedback } = useFeedback();
 
   const renderNewSession = () => {
+    if (!pathname.startsWith("/chat")) {
+      return (
+        <Tooltip content="New Session" side="left" sideOffset={4}>
+          <Button
+            size="icon"
+            variant="secondary"
+            className="h-8 min-w-8"
+            onClick={() => {
+              push("/chat");
+            }}
+          >
+            <ArrowLeft02Icon size={20} strokeWidth={2} />
+          </Button>
+        </Tooltip>
+      );
+    }
     return (
       <Tooltip content="New Session" side="left" sideOffset={4}>
         <Button
           size="icon"
-          variant={"ghost"}
+          variant="ghost"
           className="h-8 min-w-8"
           onClick={() => {
             push("/chat");
@@ -105,7 +126,7 @@ export const Sidebar = () => {
             <Button
               variant="ghost"
               size="icon"
-              className="fixed bottom-4 right-4 z-10"
+              className="fixed bottom-[120px] right-4 z-10 md:bottom-4"
             >
               <HelpCircleIcon size={28} variant="solid" />
             </Button>

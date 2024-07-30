@@ -24,6 +24,10 @@ export const createChatStore = () =>
         set({ currentMessage: { ...currentMessage, ...newMessage } });
       }
     },
+    removeLastMessage: () => {
+      const { messages } = get();
+      set({ messages: messages.slice(0, -1) });
+    },
     setTools: (tools) => set({ currentTools: tools }),
     addTool: (tool) => {
       const { currentMessage } = get();
