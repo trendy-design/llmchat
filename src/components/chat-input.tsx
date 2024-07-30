@@ -237,7 +237,7 @@ export const ChatInput = () => {
                 </div>
               </div>
               <Flex
-                className="w-full px-2 pb-2 pt-1"
+                className="w-full px-1 pb-1 pt-1 md:px-2 md:pb-2"
                 items="center"
                 justify="between"
               >
@@ -264,11 +264,11 @@ export const ChatInput = () => {
                     onClick={() => {
                       openPrompts();
                     }}
-                    className={cn("gap-2 pl-1.5 pr-3 text-xs md:text-sm")}
+                    className="gap-2 pl-1.5 pr-3 text-xs md:text-sm"
                     size="sm"
                   >
                     <AiIdeaIcon size={18} variant="stroke" strokeWidth="2" />
-                    Prompts
+                    <span className="hidden md:flex">Prompts</span>
                   </Button>
                   {!isGenerating && (
                     <Button

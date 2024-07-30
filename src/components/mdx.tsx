@@ -106,10 +106,10 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
   );
 
   const articleClass = cn(
-    "prose dark:prose-invert pb-8 w-full prose-zinc prose-h3:font-medium prose-h4:font-medium prose-h5:font-medium prose-h6:font-medium prose-h3:text-lg prose-h4:text-base prose-h5:text-base prose-h6:text-base prose-heading:font-medium prose-strong:font-medium prose-headings:text-lg prose-th:text-sm",
+    "prose dark:prose-invert pb-8 w-full prose-zinc prose-h3:font-medium prose-h4:font-medium prose-h5:font-medium prose-h6:font-medium prose-h3:text-base md:prose-h3:text-lg prose-h4:text-sm md:prose-h4:text-base prose-h5:text-sm md:prose-h5:text-base prose-h6:text-sm md:prose-h6:text-base prose-heading:font-medium prose-strong:font-medium prose-headings:text-lg prose-th:text-sm",
     {
       "prose-sm": size === "sm",
-      "prose-base": size === "base",
+      "prose-sm md:prose-base": size === "base",
       "prose-xs": size === "xs",
     },
   );
