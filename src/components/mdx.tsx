@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/hover-card";
 import { REVEAL_ANIMATION_VARIANTS } from "@/helper/animations";
 import { cn } from "@/helper/clsx";
+import { isValidUrl } from "@/helper/utils";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import Markdown from "marked-react";
@@ -37,17 +38,18 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
   const renderHr = () => (
     <hr className="my-4 border-gray-100 dark:border-white/10" />
   );
-
   const renderLink = (href: string, text: ReactNode, messageId: string) => {
-    if (text && href) {
+    if (text && isValidUrl(href)) {
+      const url = new URL(href).host;
+
       return (
         <HoverCard>
           <HoverCardTrigger asChild>
             <a
-              href={href}
+              href={url}
               target="_blank"
               data-message-id={messageId}
-              className="font-normal text-blue-500 !no-underline"
+              className="font-normal text-blue-500 !no-underline dark:text-blue-400"
             >
               {text}
             </a>
@@ -60,7 +62,7 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
             }}
           >
             <Flex gap="sm" items="start" className="text-zinc-500">
-              <SearchFavicon link={new URL(href).host} className="!m-0 !mt-1" />
+              <SearchFavicon link={url} className="!m-0 !mt-1" />
               <Type size="sm" textColor="secondary" className="line-clamp-2">
                 {href}
               </Type>

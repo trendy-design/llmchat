@@ -24,7 +24,6 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
   canRegenerate,
 }) => {
   const { refetch, store } = useChatContext();
-  const removeLastMessage = store((state) => state.removeLastMessage);
   const { getAssistantByKey } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
   const { removeMessageByIdMutation } = useSessions();
@@ -52,7 +51,6 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
       messageId: message.id,
       assistant: props.assistant,
     });
-    removeLastMessage();
   };
 
   return (
@@ -62,7 +60,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
       className="w-full opacity-100 transition-opacity"
     >
       {isGenerating && (
-        <Flex gap="sm">
+        <Flex gap="sm" items="center" className="py-1">
           <Spinner />
           <Type size="sm" textColor="tertiary">
             {!!rawAI?.length ? "Typing ..." : "Thinking ..."}

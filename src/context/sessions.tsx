@@ -7,7 +7,7 @@ import {
   TSessionsContext,
   TSessionsProvider,
 } from "@/types";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   FC,
   createContext,
@@ -23,6 +23,7 @@ export const SessionContext = createContext<TSessionsContext | undefined>(
 
 export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
   const pathname = usePathname();
+  const router = useRouter();
   const store = useMemo(() => createSessionsStore(), []);
   const [sessions, setSessions] = useState<TChatSession[]>([]);
   const activeSessionId = store((state) => state.activeSessionId);
@@ -32,33 +33,38 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
     useChatSessionQueriesProps;
 
   useEffect(() => {
-    sessionsQuery?.data && setSessions(sessionsQuery?.data || []);
+    if (sessionsQuery?.data) {
+      setSessions(sessionsQuery.data);
+    }
   }, [sessionsQuery?.data]);
 
   const createSession = async (props: { redirect?: boolean }) => {
     const { redirect } = props;
-    await createNewSessionMutation.mutateAsync(undefined, {
-      onSuccess: (data) => {
-        if (redirect) {
-          setActiveSessionId(data.id);
-        }
-      },
-    });
+    try {
+      const data = await createNewSessionMutation.mutateAsync(undefined);
+      if (redirect && data) {
+        setActiveSessionId(data.id);
+      }
+    } catch (error) {
+      console.error("Failed to create session:", error);
+    }
   };
 
   useEffect(() => {
-    console.log("pathname", pathname);
-    if (!activeSessionId && pathname !== "/") {
-      console.log("created");
-      // createSession({ redirect: true });
+    if (!activeSessionId && pathname === "/chat") {
+      createSession({ redirect: true });
     }
-  }, [activeSessionId]);
+  }, [activeSessionId, pathname]);
 
   const addMessage = async (parentId: string, message: TChatMessage) => {
-    await addMessageMutation.mutateAsync({
-      parentId,
-      message,
-    });
+    try {
+      await addMessageMutation.mutateAsync({
+        parentId,
+        message,
+      });
+    } catch (error) {
+      console.error("Failed to add message:", error);
+    }
   };
 
   return (

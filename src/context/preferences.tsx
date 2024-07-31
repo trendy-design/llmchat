@@ -1,8 +1,8 @@
 "use client";
+import { defaultPreferences } from "@/config";
 import { usePreferencesQueries } from "@/services/preferences";
-import { createPreferencesStore } from "@/store/preferences/store";
 import { TApiKeys, TPreferences, TProvider } from "@/types";
-import { useEffect, useMemo } from "react";
+import { useEffect, useState } from "react";
 
 import { createContext, useContext } from "react";
 
@@ -34,11 +34,10 @@ export type TPreferencesProvider = {
 };
 
 export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
-  const store = useMemo(() => createPreferencesStore(), []);
-  const preferences = store((state) => state.preferences);
-  const apiKeys = store((state) => state.apiKeys);
-  const setPreferences = store((state) => state.setPreferences);
-  const setApiKeys = store((state) => state.setApiKeys);
+  const [preferences, setPreferences] =
+    useState<TPreferences>(defaultPreferences);
+  const [apiKeys, setApiKeys] = useState<TApiKeys>({});
+
   const {
     preferencesQuery,
     setPreferencesMutation,
@@ -58,22 +57,22 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
     newPreferences: Partial<TPreferences>,
     onSuccess?: (preference: TPreferences) => void,
   ) => {
-    setPreferences(newPreferences);
+    setPreferences((existing) => ({ ...existing, ...newPreferences }));
     setPreferencesMutation.mutate(newPreferences, {
-      onSuccess: () => {
+      onSuccess: (preference) => {
         preferencesQuery.refetch();
-        onSuccess && onSuccess(preferences);
+        onSuccess && onSuccess(preference);
       },
     });
   };
 
   const updateApiKey = async (key: TProvider, value: string) => {
-    setApiKeys({ ...apiKeys, [key]: value });
+    setApiKeys((existing) => ({ ...existing, [key]: value }));
     setApiKeyMutation.mutate({ key, value });
   };
   useEffect(() => {
-    updateApiKey("ollama", "kdskdmkmsd");
-    updateApiKey("llmchat", "mlsdmldsm");
+    updateApiKey("ollama", "ollama");
+    updateApiKey("llmchat", "llmchat");
   }, []);
 
   const updateApiKeys = (newApiKeys: TApiKeys) => {
