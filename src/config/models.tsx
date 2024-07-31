@@ -9,10 +9,7 @@ export const providers = [
   "groq",
 ] as const;
 
-export const ollamaModelsSupportsTools = [
-  "llama3-groq-tool-use:latest",
-  "llama3.1:8b",
-];
+export const ollamaModelsSupportsTools = ["llama3-groq-tool-use:latest"];
 
 export const models: TModelItem[] = [
   {
@@ -191,7 +188,7 @@ export const models: TModelItem[] = [
     key: "llama3-8b-8192",
     isNew: false,
     tokens: 200000,
-    plugins: ["web_search", "image_generation", "memory", "webpage_reader"],
+    plugins: [],
     maxOutputTokens: 4096,
     icon: "groq",
     provider: "groq",

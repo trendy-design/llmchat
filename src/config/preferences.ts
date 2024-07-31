@@ -15,7 +15,12 @@ export const defaultPreferences: TPreferences = {
   whisperSpeechToTextEnabled: false,
   defaultWebSearchEngine: "duckduckgo",
   defaultPlugins: [],
-  maxTokens: 1000,
+  maxTokens: 2000,
   topP: 1.0,
   topK: 5,
+};
+
+export const defaultKeys = {
+  ollama: "ollama",
+  llmchat: "llmchat",
 };

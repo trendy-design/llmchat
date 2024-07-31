@@ -94,11 +94,11 @@ export const useImageAttachment = ({ id }: TUseImageAttachment) => {
   const renderAttachedImage = () => {
     if (attachment?.base64) {
       return (
-        <div className="relative h-[60px] min-w-[60px] rounded-xl border border-white/5 shadow-md">
+        <div className="relative h-[60px] min-w-[60px] rounded-lg border border-black/10 shadow-md dark:border-white/10">
           <Image
             src={attachment.base64}
             alt="uploaded image"
-            className="h-full w-full overflow-hidden rounded-xl object-cover"
+            className="h-full w-full overflow-hidden rounded-lg object-cover"
             width={0}
             height={0}
           />

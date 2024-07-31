@@ -1,9 +1,10 @@
 import { ModelIcon } from "@/components/model-icon";
-import { providers } from "@/config/models";
+import { providers, providersRequireApi } from "@/config/models";
 import { ComponentProps } from "react";
 import { TToolKey } from "./tools";
 
 export type TProvider = (typeof providers)[number];
+export type TProviderRequireApi = (typeof providersRequireApi)[number];
 
 export const models = [
   "gpt-4o-mini",

@@ -5,4 +5,5 @@ export const links = {
   anthropicApiKeyUrl: "https://console.anthropic.com/settings/keys",
   googleSearchApiUrl:
     "https://programmablesearchengine.google.com/controlpanel/create",
+  groqApiKeyUrl: "https://console.groq.com/keys",
 };
