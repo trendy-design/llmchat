@@ -25,6 +25,7 @@ export const AnthropicSettings = () => {
         extra={() => (
           <Link
             href={configs.anthropicApiKeyUrl}
+            target="_blank"
             className="text-sm font-medium text-blue-400 hover:opacity-90"
           >
             Get API key here

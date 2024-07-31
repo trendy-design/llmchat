@@ -8,7 +8,7 @@ export type TPreferencesState = {
   preferences: TPreferences;
   setPreferences: (preferences: Partial<TPreferences>) => void;
   apiKeys: TApiKeys;
-  setApiKeys: (apiKeys: Partial<TApiKeys>) => void;
+  setApiKeys: (apiKeys: Partial<TProvider>) => void;
 };
 
 export type TPreferences = {

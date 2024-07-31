@@ -64,7 +64,7 @@ To ensure proper functionality, you'll need to configure cross-origin settings d
   const windowsOllamaConfig = `
   #### Step 1: Install and Start Ollama Locally
 
-  Please make sure you have enabled Ollama. If you haven't downloaded Ollama yet, please visit the [official website](#) to download.
+  Please make sure you have enabled Ollama. If you haven't downloaded Ollama yet, please visit the [official website](https://ollama.com/download) to download.
   
   #### Step 2: Configure Ollama for Cross-Origin Access
   
