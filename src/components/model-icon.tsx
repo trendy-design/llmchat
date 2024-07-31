@@ -41,9 +41,9 @@ export const ModelIcon = ({ type, size, base64 }: TModelIcon) => {
     <div
       className={cn(
         "relative rounded-md",
-        size === "sm" && "h-6 min-w-6",
-        size === "md" && "h-8 min-w-8",
-        size === "lg" && "h-10 min-w-10",
+        size === "sm" && "h-6 w-6",
+        size === "md" && "h-8 w-8",
+        size === "lg" && "h-10 w-10",
       )}
     >
       <Image

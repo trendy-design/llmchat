@@ -14,10 +14,13 @@ const vectorSearchSystemPrompt = (similarItems: any[]) => {
 };
 
 const duckDuckGoSearchPropmt = (input: string, information: string) =>
-  `Answer the following question from the information provided if you don't find proper answer you can use the webpage_reader tool to get more information. Question: ${input} \n\n Information: \n\n ${information}`;
+  `Answer the following question from the information provided. you can use the webpage_reader tool to get more information. Question: ${input} \n\n Information: \n\n ${information}`;
 
 const googleSearchPrompt = (input: string, information: string) =>
-  `Answer the following question based on the information provided if you don't find proper answer you can use the webpage_reader tool to get more information. Question: ${input} \n\n Information: \n\n ${information}`;
+  `Answer the following question based on the information provided. you can use the webpage_reader tool to get more information. Question: ${input} \n\n Information: \n\n ${information}`;
+
+const webPageReaderPrompt =
+  "A tool to read a url and extract information from it. Input should be a URL of the page to be read.";
 
 export {
   duckDuckGoSearchPropmt,
@@ -25,4 +28,5 @@ export {
   relatedQuestionsSystemPrompt,
   relatedQuestionsUserPrompt,
   vectorSearchSystemPrompt,
+  webPageReaderPrompt,
 };
