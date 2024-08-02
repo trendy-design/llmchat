@@ -24,7 +24,7 @@ export const GroqSettings = () => {
         label="Groq API Key"
         extra={() => (
           <Link
-            href={configs.anthropicApiKeyUrl}
+            href={configs.groqApiKeyUrl}
             target="_blank"
             className="text-sm font-medium text-blue-400 hover:opacity-90"
           >

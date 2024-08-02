@@ -52,7 +52,7 @@ export const sortMessages = (
   messages: Partial<TChatMessage>[],
   sortBy: "createdAt",
 ) => {
-  return messages.sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
+  return messages.sort((a, b) => moment(a[sortBy]).diff(moment(b[sortBy])));
 };
 
 export const convertFileToBase64 = (

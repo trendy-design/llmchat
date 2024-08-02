@@ -67,6 +67,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
     },
     default: {
       message:
+        message?.errorMessage ||
         "An unexpected error occurred. Please try again or contact support.",
       action: {
         label: "Retry",
@@ -87,13 +88,18 @@ export const AIMessageError: FC<TAIMessageError> = ({
       items="center"
       justify="between"
     >
-      <Flex items="center" gap="sm">
-        <Alert02Icon size={16} variant="solid" />
+      <Flex items="start" gap="sm">
+        <Alert02Icon size={16} variant="solid" className="mt-0 md:mt-0.5" />
         <Type textColor="secondary">{errorMessage}</Type>
       </Flex>
 
       {action && (
-        <Button variant="secondary" size="sm" onClick={action.onClick}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={action.onClick}
+          rounded="full"
+        >
           {action.label}
         </Button>
       )}

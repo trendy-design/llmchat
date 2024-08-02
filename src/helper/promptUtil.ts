@@ -71,9 +71,26 @@ const constructMessagePrompt = async ({
   const sortedMessages = sortMessages(messages, "createdAt");
   const chatHistory = sortedMessages
     .slice(-limit)
-    .reduce((acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman }) => {
+    .reduce((acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman, image }) => {
       if (rawHuman) {
-        acc.push(new HumanMessage(rawHuman));
+        acc.push(
+          new HumanMessage({
+            content: image
+              ? [
+                  {
+                    type: "text",
+                    text: rawHuman,
+                  },
+                  {
+                    type: "image_url",
+                    image_url: {
+                      url: image,
+                    },
+                  },
+                ]
+              : rawHuman,
+          }),
+        );
       }
       if (rawAI) {
         acc.push(new AIMessage(rawAI));
