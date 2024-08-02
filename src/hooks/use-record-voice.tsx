@@ -1,4 +1,5 @@
-import { Flex } from "@/components/ui";
+import { AudioVisualizer } from "@/components/audio-visualizer";
+import { Flex, Type } from "@/components/ui";
 import { AudioWaveSpinner } from "@/components/ui/audio-wave";
 import { Button } from "@/components/ui/button";
 import { RecordIcon, StopIcon } from "@/components/ui/icons";
@@ -13,6 +14,7 @@ import { useRef, useState } from "react";
 export const useRecordVoice = () => {
   const { push } = useRouter();
   const [text, setText] = useState<string>("");
+  const [stream, setStream] = useState<MediaStream | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null,
   );
@@ -33,6 +35,7 @@ export const useRecordVoice = () => {
     }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setStream(stream);
       const newMediaRecorder = new MediaRecorder(stream);
       newMediaRecorder.ondataavailable = (event) => {
         chunks.current.push(event.data);
@@ -71,6 +74,7 @@ export const useRecordVoice = () => {
         dangerouslyAllowBrowser: true,
       });
       const audioBuffer = Buffer.from(base64data, "base64");
+
       const transcription = await openai.audio.transcriptions.create({
         file: await toFile(audioBuffer, "audio.wav", { type: "audio/wav" }),
         model: "whisper-1",
@@ -156,11 +160,13 @@ export const useRecordVoice = () => {
         </Flex>
       );
     }
-    if (recording) {
+    if (recording && stream) {
       return (
-        <Flex items="center" gap="sm" className="opacity-50">
-          <AudioWaveSpinner />
-          <p>Listening ...</p>
+        <Flex items="center" gap="sm">
+          <AudioVisualizer stream={stream} />
+          <Type size="sm" textColor="secondary" className="flex-shrink-0">
+            Listening ...
+          </Type>
         </Flex>
       );
     }

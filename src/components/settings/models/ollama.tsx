@@ -57,7 +57,7 @@ To ensure proper functionality, you'll need to configure cross-origin settings d
 2. Enter the following command and press **Enter**:
 
    \`\`\`bash
-   launchctl setenv OLLAMA_ORIGINS "*"
+   launchctl setenv OLLAMA_ORIGINS "\\*"
    \`\`\`
   `;
 

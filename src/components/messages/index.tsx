@@ -4,7 +4,7 @@ import { RecentMessage } from "./recent-message";
 export const ChatMessages = () => {
   return (
     <div
-      className="no-scrollbar flex h-[100dvh] w-full flex-col items-center overflow-y-auto pb-[200px] pt-[60px]"
+      className="flex h-[100dvh] w-full flex-col items-center overflow-y-auto pb-[200px] pt-[60px]"
       id="chat-container"
     >
       <div className="flex w-full flex-1 flex-col gap-24 p-2 md:w-[700px] lg:w-[720px]">

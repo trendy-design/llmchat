@@ -225,13 +225,15 @@ export default function Spaces() {
     console.log("websiteUrl", websiteUrl);
     const response = await fetch(`/api/reader`, {
       method: "POST",
-      body: JSON.stringify({ url: websiteUrl }),
+      body: JSON.stringify({ urls: [websiteUrl] }),
     });
     const data = await response.json();
 
+    const results = data.results;
+
     createDocumentMutation.mutate(
       {
-        content: data,
+        content: results?.[0],
         isIndexed: false,
         meta: {
           source: data.url,

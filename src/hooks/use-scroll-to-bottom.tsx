@@ -1,26 +1,34 @@
 import { useEffect, useState } from "react";
 
 export const useScrollToBottom = () => {
-  const [showButton, setShowButton] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(true);
+
+  const scrollToBottom = () => {
+    const chatContainer = document.getElementById("chat-container");
+    if (chatContainer) {
+      console.log("use scroll to bottom");
+      chatContainer.scrollTop =
+        chatContainer.scrollHeight - chatContainer.clientHeight + 100;
+      setIsAtBottom(true);
+    }
+  };
+
+  const handleScroll = () => {
+    const chatContainer = document.getElementById("chat-container");
+    if (chatContainer) {
+      const isAtBottom =
+        chatContainer.scrollHeight - chatContainer.clientHeight <=
+        chatContainer.scrollTop + 1;
+
+      setIsAtBottom(isAtBottom);
+    }
+  };
 
   useEffect(() => {
-    const chatContainer = document?.getElementById("chat-container");
-
-    const handleScroll = () => {
-      if (!chatContainer) {
-        return;
-      }
-      if (chatContainer?.scrollTop <= chatContainer?.scrollHeight - 1200) {
-        setShowButton(true);
-      } else {
-        setShowButton(false);
-      }
-    };
-
+    const chatContainer = document.getElementById("chat-container");
     if (chatContainer) {
       chatContainer.addEventListener("scroll", handleScroll);
     }
-
     return () => {
       if (chatContainer) {
         chatContainer.removeEventListener("scroll", handleScroll);
@@ -28,19 +36,9 @@ export const useScrollToBottom = () => {
     };
   }, []);
 
-  const scrollToBottom = () => {
-    const chatContainer = document?.getElementById("chat-container");
-
-    if (chatContainer) {
-      chatContainer.scrollTo({
-        top: chatContainer.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  };
-
   return {
-    showButton,
+    showButton: !isAtBottom,
     scrollToBottom,
+    isAtBottom,
   };
 };

@@ -98,8 +98,8 @@ export const useTools = () => {
         return true;
       },
 
-      loadingMessage: "Reading the webpage...",
-      resultMessage: "Read the webpage",
+      loadingMessage: "Analyzing the webpage...",
+      resultMessage: "Analyzed webpage",
       icon: Book02Icon,
       enforceTool: true,
       smallIcon: Book02Icon,

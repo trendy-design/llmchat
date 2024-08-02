@@ -9,6 +9,7 @@ export const ChatContext = createContext<undefined | TChatContext>(undefined);
 export const ChatProvider: FC<TChatProvider> = ({ children, sessionId }) => {
   const store = useMemo(() => createChatStore(), []);
   const setSession = store((state) => state.setSession);
+  const setCurrentMessage = store((state) => state.setCurrentMessage);
   const setMessages = store((state) => state.setMessages);
 
   const { useGetSessionByIdQuery, useMessagesQuery, createSession } =
@@ -18,7 +19,10 @@ export const ChatProvider: FC<TChatProvider> = ({ children, sessionId }) => {
   const messages = useMessagesQuery(sessionId as string);
 
   useEffect(() => {
-    currentSession?.data && setSession(currentSession?.data || []);
+    if (currentSession?.data) {
+      setSession(currentSession?.data || []);
+      setCurrentMessage(undefined);
+    }
   }, [currentSession?.data]);
 
   useEffect(() => {
@@ -41,6 +45,7 @@ export const ChatProvider: FC<TChatProvider> = ({ children, sessionId }) => {
         refetch: () => {
           currentSession?.refetch();
           messages?.refetch();
+          setCurrentMessage(undefined);
         },
       }}
     >
