@@ -2,6 +2,7 @@ import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
 import { NextResponse, type NextRequest } from "next/server";
 import TurndownService from "turndown";
+
 const turndownService = new TurndownService();
 
 export type TReaderResponse = {
@@ -35,48 +36,69 @@ export type TReaderResult = {
   markdown?: string;
 };
 
+const MIN_CONTENT_LENGTH = 500;
+
 const readURL = async (url: string): Promise<TReaderResult> => {
-  const response = await fetch(url);
-  const html = await response.text();
-  const cleanedHtml = cleanHtml(html);
-  var doc = new JSDOM(cleanedHtml);
+  try {
+    const response = await fetch(url);
+    const html = await response.text();
+    const cleanedHtml = cleanHtml(html);
+    const doc = new JSDOM(cleanedHtml);
 
-  if (doc?.window?.document) {
-    const article = new Readability(doc?.window?.document).parse();
+    if (doc?.window?.document) {
+      const article = new Readability(doc.window.document).parse();
 
-    if (article?.content) {
-      const markdown = turndownService.turndown(article.content);
+      if (article?.content) {
+        const markdown = turndownService.turndown(article.content);
 
-      return {
-        success: true,
-        title: article.title,
-        url: url,
-        markdown: markdown,
-      };
-    } else {
-      const response = await fetch(`https://r.jina.ai/${url}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${process.env.JINA_API_KEY}`,
-          Accept: "application/json",
-        },
-      });
-
-      console.log("jina");
-
-      const data = await response.json();
-
-      return {
-        success: true,
-        markdown: data.content,
-        title: data.title,
-        url: url,
-      };
+        if (markdown.length >= MIN_CONTENT_LENGTH) {
+          return {
+            success: true,
+            title: article.title,
+            url: url,
+            markdown: markdown,
+          };
+        } else {
+          console.log(
+            `Content too short (${markdown.length} chars). Falling back to Jina.`,
+          );
+        }
+      }
     }
-  } else {
+
+    console.log("Using Jina as fallback.");
+    return await fetchWithJina(url);
+  } catch (error) {
+    console.error("Error in readURL:", error);
+    return { success: false };
+  }
+};
+
+const fetchWithJina = async (url: string): Promise<TReaderResult> => {
+  try {
+    const response = await fetch(`https://r.jina.ai/${url}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${process.env.JINA_API_KEY}`,
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Jina API responded with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
     return {
-      success: false,
+      success: true,
+      markdown: data.content,
+      title: data.title,
+      url: url,
     };
+  } catch (error) {
+    console.error("Error fetching with Jina:", error);
+    return { success: false };
   }
 };
 
@@ -87,7 +109,7 @@ export async function POST(req: NextRequest, resp: NextResponse) {
   if (!urls?.length) {
     return NextResponse.json({
       success: false,
-      error: "Feedback and feedback type are required",
+      error: "No URLs provided",
     });
   }
 
