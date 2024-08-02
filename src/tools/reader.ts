@@ -29,7 +29,7 @@ const readerTool = (args: TToolArg) => {
         const information = await Promise.all(
           results?.map(async (result: any) => {
             const textSplitter = new RecursiveCharacterTextSplitter({
-              chunkSize: 1400,
+              chunkSize: 4000,
               chunkOverlap: 200,
               separators: ["\n\n"],
             });

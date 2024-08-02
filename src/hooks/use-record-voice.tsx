@@ -71,6 +71,31 @@ export const useRecordVoice = () => {
         dangerouslyAllowBrowser: true,
       });
       const audioBuffer = Buffer.from(base64data, "base64");
+
+      const audioCTX = new AudioContext({
+        sampleRate: 20,
+      });
+      const blobUrl = URL.createObjectURL(
+        new Blob([audioBuffer], { type: "audio/*" }),
+      );
+      const audioData = await audioCTX.decodeAudioData(audioBuffer);
+
+      let audio;
+      if (audioData.numberOfChannels === 2) {
+        const SCALING_FACTOR = Math.sqrt(2);
+
+        let left = audioData.getChannelData(0);
+        let right = audioData.getChannelData(1);
+
+        audio = new Float32Array(left.length);
+        for (let i = 0; i < audioData.length; ++i) {
+          audio[i] = (SCALING_FACTOR * (left[i] + right[i])) / 2;
+        }
+      } else {
+        // If the audio is not stereo, we can just use the first channel:
+        audio = audioData.getChannelData(0);
+      }
+
       const transcription = await openai.audio.transcriptions.create({
         file: await toFile(audioBuffer, "audio.wav", { type: "audio/wav" }),
         model: "whisper-1",

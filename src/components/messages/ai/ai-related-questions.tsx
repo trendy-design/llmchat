@@ -4,6 +4,7 @@ import { useAssistantUtils } from "@/hooks";
 import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { TChatMessage } from "@/types";
 import { MessageQuestionIcon } from "@hugeicons/react";
+import { motion } from "framer-motion";
 import { FC } from "react";
 
 export type TAIRelatedQuestions = {
@@ -35,6 +36,21 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
     });
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   if (
     !Array.isArray(message?.relatedQuestions) ||
     !message?.relatedQuestions?.length ||
@@ -45,28 +61,36 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
   }
 
   return (
-    <Flex direction="col" gap="sm" className="w-full pt-6">
-      <Type
-        size="sm"
-        weight="medium"
-        textColor="secondary"
-        className="items-center gap-2 py-1"
-      >
-        <MessageQuestionIcon size={20} variant="solid" /> Related
-      </Type>
-      {message?.relatedQuestions?.map((question) => {
-        return (
-          <Button
-            size="sm"
-            key={question}
-            className="h-auto text-wrap py-2 text-left"
-            variant="secondary"
-            onClick={() => handleOnClick(question)}
-          >
-            {question}
-          </Button>
-        );
-      })}
-    </Flex>
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
+      variants={containerVariants}
+    >
+      <Flex direction="col" gap="sm" className="w-full pt-6">
+        <Type
+          size="sm"
+          weight="medium"
+          textColor="secondary"
+          className="items-center gap-2 py-1"
+        >
+          <MessageQuestionIcon size={20} variant="solid" /> Related
+        </Type>
+        {message?.relatedQuestions?.map((question) => {
+          return (
+            <motion.div key={question} variants={itemVariants}>
+              <Button
+                size="sm"
+                className="h-auto text-wrap py-2 text-left"
+                variant="secondary"
+                onClick={() => handleOnClick(question)}
+              >
+                {question}
+              </Button>
+            </motion.div>
+          );
+        })}
+      </Flex>
+    </motion.div>
   );
 };

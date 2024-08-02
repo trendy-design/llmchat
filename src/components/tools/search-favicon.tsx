@@ -6,14 +6,19 @@ import { FC, useState } from "react";
 export type TSeachFavicon = {
   link: string;
   className?: string;
+  size?: "sm" | "md";
 };
 
-export const SearchFavicon: FC<TSeachFavicon> = ({ link, className }) => {
+export const SearchFavicon: FC<TSeachFavicon> = ({
+  link,
+  className,
+  size = "sm",
+}) => {
   const [error, setError] = useState<boolean>(false);
   if (error) {
     return (
       <Globe02Icon
-        size={14}
+        size={size === "sm" ? 14 : 16}
         strokeWidth={1.5}
         className={cn("text-gray-500", className)}
       />
@@ -28,7 +33,11 @@ export const SearchFavicon: FC<TSeachFavicon> = ({ link, className }) => {
       }}
       width={0}
       height={0}
-      className={cn("h-4 w-4 rounded-sm object-cover", className)}
+      className={cn(
+        "rounded-sm object-cover",
+        className,
+        size === "sm" ? "h-4 w-4" : "h-5 w-5",
+      )}
       sizes="70vw"
     />
   );

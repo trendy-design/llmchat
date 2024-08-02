@@ -115,7 +115,7 @@ export const ChatInput = () => {
   }, [text]);
 
   const renderScrollToBottom = () => {
-    if (showButton && !recording && !transcribing) {
+    if (showButton && !recording && !transcribing && !isFreshSession) {
       return (
         <motion.span
           initial={{ scale: 0, opacity: 0 }}

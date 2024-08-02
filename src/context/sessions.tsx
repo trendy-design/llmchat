@@ -38,13 +38,10 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
     }
   }, [sessionsQuery?.data]);
 
-  const createSession = async (props: { redirect?: boolean }) => {
-    const { redirect } = props;
+  const createSession = async () => {
     try {
       const data = await createNewSessionMutation.mutateAsync(undefined);
-      if (redirect && data) {
-        setActiveSessionId(data.id);
-      }
+      setActiveSessionId(data.id);
     } catch (error) {
       console.error("Failed to create session:", error);
     }
@@ -52,9 +49,9 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
 
   useEffect(() => {
     if (!activeSessionId && pathname === "/chat") {
-      createSession({ redirect: true });
+      createSession();
     }
-  }, [activeSessionId, pathname]);
+  }, []);
 
   const addMessage = async (parentId: string, message: TChatMessage) => {
     try {
