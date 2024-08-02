@@ -1,13 +1,12 @@
 import { cn } from "@/helper/clsx";
-import { motion } from "framer-motion";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 export type AudioVisualizerProps = {
   stream: MediaStream;
 };
 
 export function AudioVisualizer({ stream }: AudioVisualizerProps) {
-  const [barHeights, setBarHeights] = useState<number[]>(Array(14).fill(0));
+  const barsRef = useRef<HTMLDivElement[]>([]);
   const analyserRef = useRef<AnalyserNode>();
   const animationRef = useRef<number>();
 
@@ -15,12 +14,25 @@ export function AudioVisualizer({ stream }: AudioVisualizerProps) {
     const audioContext = new window.AudioContext();
     const source = audioContext.createMediaStreamSource(stream);
     const analyser = audioContext.createAnalyser();
-    analyser.fftSize = 1024; // Increased for better frequency resolution
+    analyser.fftSize = 1024;
     source.connect(analyser);
 
     analyserRef.current = analyser;
     const bufferLength = analyser.frequencyBinCount;
     const dataArray = new Uint8Array(bufferLength);
+
+    const totalBars = 6;
+    const minFreq = 60;
+    const maxFreq = 10000;
+
+    const frequencyRanges = Array(totalBars)
+      .fill(0)
+      .map((_, i) => {
+        const startFreq = minFreq * Math.pow(maxFreq / minFreq, i / totalBars);
+        const endFreq =
+          minFreq * Math.pow(maxFreq / minFreq, (i + 1) / totalBars);
+        return { startFreq, endFreq };
+      });
 
     const updateBars = () => {
       animationRef.current = requestAnimationFrame(updateBars);
@@ -29,25 +41,7 @@ export function AudioVisualizer({ stream }: AudioVisualizerProps) {
 
       analyserRef.current.getByteFrequencyData(dataArray);
 
-      const totalBars = 12;
-      const minFreq = 80;
-      const maxFreq = 12000;
-      const frequencyRange = maxFreq - minFreq;
-
-      // Generate random frequency ranges for each bar
-      const randomRanges = Array(totalBars)
-        .fill(0)
-        .map(() => Math.random());
-      const totalRandomness = randomRanges.reduce((sum, val) => sum + val, 0);
-      const normalizedRanges = randomRanges.map((val) => val / totalRandomness);
-
-      let accumulatedRange = 0;
-      const newBarHeights = normalizedRanges.map((rangePercentage, i) => {
-        const startFreq =
-          minFreq * Math.pow(maxFreq / minFreq, accumulatedRange);
-        accumulatedRange += rangePercentage;
-        const endFreq = minFreq * Math.pow(maxFreq / minFreq, accumulatedRange);
-
+      frequencyRanges.forEach(({ startFreq, endFreq }, i) => {
         const startIndex = Math.floor(
           (startFreq / audioContext.sampleRate) * bufferLength,
         );
@@ -62,12 +56,14 @@ export function AudioVisualizer({ stream }: AudioVisualizerProps) {
         const average = sum / (endIndex - startIndex);
 
         let barHeight = average / 255;
-        barHeight = Math.pow(barHeight, 1.2); // Reduced power for less aggressive scaling
-        barHeight = barHeight * 1.5; // Increase overall height
-        return Math.max(0.1, Math.min(1, barHeight)); // Increased minimum height
-      });
+        barHeight = Math.pow(barHeight, 1.5);
+        barHeight = barHeight * 3;
+        barHeight = Math.max(0.05, Math.min(1, barHeight));
 
-      setBarHeights(newBarHeights);
+        if (barsRef.current[i]) {
+          barsRef.current[i].style.height = `${barHeight * 100}%`;
+        }
+      });
     };
 
     updateBars();
@@ -85,26 +81,21 @@ export function AudioVisualizer({ stream }: AudioVisualizerProps) {
   }, [visualize, stream]);
 
   return (
-    <div className="flex h-10 w-full items-center justify-center space-x-0.5">
-      {barHeights.map((height, index) => {
-        return (
-          <motion.div
+    <div className="flex h-24 w-full items-center justify-center space-x-1">
+      {Array(6)
+        .fill(0)
+        .map((_, index) => (
+          <div
             key={index}
-            className={cn("w-0.5 rounded-full", {
-              "bg-zinc-800/30 dark:bg-white/30": height > 0,
-              "bg-emerald-500/50 dark:bg-emerald-500/50": height > 0.2,
-              "bg-emerald-500/90 dark:bg-emerald-500/90": height > 0.3,
-            })}
-            initial={{ height: 0 }}
-            animate={{
-              height: `${height * 100}%`,
-              className: "bg-emerald-500/50",
+            ref={(el) => {
+              if (el) barsRef.current[index] = el;
             }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            style={{ minHeight: "6px" }}
-          ></motion.div>
-        );
-      })}
+            className={cn(
+              "min-h-10 w-8 rounded-full bg-zinc-800/30 transition-all duration-75 dark:bg-white/50",
+            )}
+            style={{ height: "32px" }}
+          ></div>
+        ))}
     </div>
   );
 }
