@@ -38,8 +38,9 @@ export const AuthProvider = ({ children }: TAuthProvider) => {
     setOpenSignIn(true);
   };
 
-  const logout = () => {
-    supabase.auth.signOut();
+  const logout = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
   };
 
   const signInWithGoogle = () => {
