@@ -85,9 +85,7 @@ export default function DataSettings() {
                       description: "All chat data has been cleared",
                       variant: "default",
                     });
-                    createSession({
-                      redirect: true,
-                    });
+                    createSession();
                     //     dismiss();
                   },
                 });
@@ -115,9 +113,7 @@ export default function DataSettings() {
                       description: "All chat data has been reseted",
                       variant: "default",
                     });
-                    createSession({
-                      redirect: true,
-                    });
+                    createSession();
                     dismiss();
                   },
                 });
