@@ -26,10 +26,10 @@ export const ChatProvider: FC<TChatProvider> = ({ children, sessionId }) => {
   }, [currentSession?.data]);
 
   useEffect(() => {
-    if (currentSession?.error) {
-      createSession({ redirect: true });
+    if (sessionId && currentSession?.error) {
+      createSession();
     }
-  }, [currentSession?.error]);
+  }, [currentSession?.error, sessionId]);
 
   useEffect(() => {
     if (messages?.data) {
