@@ -32,6 +32,7 @@ export const useChatEditor = () => {
       HardBreak,
       DisableEnter,
     ],
+    immediatelyRender: false,
     content: ``,
     autofocus: true,
     onTransaction(props) {

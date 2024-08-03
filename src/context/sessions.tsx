@@ -59,6 +59,10 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
     }
   };
 
+  if (!activeSessionId || sessions?.length === 0) {
+    return null;
+  }
+
   return (
     <SessionContext.Provider
       value={{
