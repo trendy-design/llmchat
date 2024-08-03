@@ -23,5 +23,8 @@ export default async function middleware(request: NextRequest) {
   );
   return success
     ? supabaseResponse
-    : NextResponse.json({ message: "Too many requests" }, { status: 429 });
+    : NextResponse.json(
+        { message: "Exceeded daily llmchat usage limit" },
+        { status: 429 },
+      );
 }

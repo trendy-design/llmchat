@@ -43,7 +43,6 @@ export const RecentMessage = () => {
               currentMessage.sessionId,
               currentMessage.id,
             );
-            console.log("questions", questions);
 
             const message = {
               ...currentMessage,
