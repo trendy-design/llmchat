@@ -17,7 +17,7 @@ export type TAIMessage = {
 };
 
 export const AIMessage = ({ message, isLast }: TAIMessage) => {
-  const { id, rawAI, isLoading, stopReason, tools, runConfig, stop } = message;
+  const { id, isLoading, stopReason, tools, runConfig, stop, rawAI } = message;
 
   const { store } = useChatContext();
   const editor = store((state) => state.editor);

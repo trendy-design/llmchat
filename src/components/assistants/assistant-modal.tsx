@@ -18,6 +18,7 @@ import { TAssistant } from "@/types";
 import { CommandGroup } from "cmdk";
 import { FC, useEffect, useRef, useState } from "react";
 import { Drawer } from "vaul";
+import { Dialog, DialogContent, DialogOverlay, DialogPortal } from "../ui";
 import { AssistantBanner } from "./assistant-banner";
 import { AssistantHeader } from "./assistant-header";
 import { AssistantItem } from "./assistant-item";
@@ -111,6 +112,7 @@ export const AssistantModal: FC<TAssitantModal> = ({
   return (
     <Drawer.Root
       direction="bottom"
+      modal={true}
       shouldScaleBackground
       open={open}
       onOpenChange={onOpenChange}
@@ -118,6 +120,9 @@ export const AssistantModal: FC<TAssitantModal> = ({
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-[400] bg-zinc-500/70 backdrop-blur-sm dark:bg-zinc-900/70" />
         <Drawer.Content
+          onInteractOutside={(e) => {
+            e.preventDefault();
+          }}
           className={cn(
             "fixed bottom-0 left-0 right-0 z-[500] mx-auto mt-24 flex max-h-[430px] flex-col items-center outline-none md:bottom-4 md:left-[50%]",
             `w-full md:ml-[-200px] md:w-[400px]`,
@@ -145,16 +150,23 @@ export const AssistantModal: FC<TAssitantModal> = ({
                       setOpenCreateAssistant={setOpenCreateAssistant}
                     />
                   )}
-                  <Drawer.NestedRoot
+                  <Dialog
+                    modal={true}
                     open={openCreateAssistant}
                     onOpenChange={setOpenCreateAssistant}
                   >
-                    <Drawer.Portal>
-                      <Drawer.Overlay className="fixed inset-0 z-[600] bg-zinc-500/70 backdrop-blur-sm dark:bg-zinc-900/70" />
-                      <Drawer.Content
+                    <DialogPortal>
+                      <DialogOverlay
+                        onPointerOutCapture={(e) => e.preventDefault()}
+                        className="fixed inset-0 z-[600] bg-zinc-500/70 backdrop-blur-sm dark:bg-zinc-900/70"
+                      />
+                      <DialogContent
+                        onInteractOutside={(e) => {
+                          e.preventDefault();
+                        }}
                         className={cn(
-                          "fixed bottom-0 left-0 right-0 z-[605] mx-auto mt-24 flex max-h-[550px] flex-col items-center outline-none md:bottom-6 md:left-[50%]",
-                          `w-full md:ml-[-320px] md:w-[640px]`,
+                          "z-[605] mx-auto flex max-h-[550px] flex-col items-center p-0 outline-none",
+                          `w-full md:w-[540px]`,
                         )}
                       >
                         <CreateAssistant
@@ -188,9 +200,9 @@ export const AssistantModal: FC<TAssitantModal> = ({
                             setUpdateAssistant(undefined);
                           }}
                         />
-                      </Drawer.Content>
-                    </Drawer.Portal>
-                  </Drawer.NestedRoot>
+                      </DialogContent>
+                    </DialogPortal>
+                  </Dialog>
 
                   {renderAssistants(customAssistants)}
                 </Flex>
