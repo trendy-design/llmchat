@@ -27,6 +27,7 @@ export const useLLMRunner = () => {
   const { user, open: openSignIn } = useAuth();
   const { store, refetch } = useChatContext();
   const setIsGenerating = store((state) => state.setIsGenerating);
+  const currentMessage = store((state) => state.currentMessage);
   const setCurrentMessage = store((state) => state.setCurrentMessage);
   const updateCurrentMessage = store((state) => state.updateCurrentMessage);
   const addTool = store((state) => state.addTool);
@@ -36,7 +37,6 @@ export const useLLMRunner = () => {
   const { preferences, apiKeys, updatePreferences } = usePreferenceContext();
   const { getToolByKey } = useTools();
   const { toast } = useToast();
-  const removeLastMessage = store((state) => state.removeLastMessage);
 
   const invokeModel = async (config: TLLMRunConfig) => {
     if (!user && config.assistant.baseModel === "llmchat") {
@@ -44,17 +44,13 @@ export const useLLMRunner = () => {
       return;
     }
 
-    resetState();
     setIsGenerating(true);
-
-    if (config.messageId) {
-      removeLastMessage();
-    }
 
     //to avoid duplication not refetch when regenerating
     if (!config?.messageId) {
       refetch();
     }
+    resetState();
 
     const currentAbortController = new AbortController();
     setAbortController(currentAbortController);
