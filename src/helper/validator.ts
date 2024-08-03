@@ -6,6 +6,7 @@ export const assistantSchema = z.object({
   name: z.string(),
   systemPrompt: z.string(),
   iconURL: z.string().optional(),
+  provider: z.enum(providers),
   baseModel: z.union([z.enum(models), z.string()]),
   key: z.string(),
   type: z.enum(["base", "custom"]),

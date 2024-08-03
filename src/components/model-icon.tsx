@@ -12,6 +12,7 @@ export type ModelIconType =
   | "calculator"
   | "duckduckgo_search"
   | "website_reader"
+  | "groq"
   | "ollama";
 
 export type TModelIcon = {
@@ -33,15 +34,16 @@ export const ModelIcon = ({ type, size, base64 }: TModelIcon) => {
     duckduckgo_search: "/icons/duckduckgo.svg",
     website_reader: "/icons/website_reader.svg",
     ollama: "/icons/ollama.svg",
+    groq: "/icons/groq.svg",
   };
 
   return (
     <div
       className={cn(
         "relative rounded-md",
-        size === "sm" && "h-6 min-w-6",
-        size === "md" && "h-8 min-w-8",
-        size === "lg" && "h-10 min-w-10",
+        size === "sm" && "h-6 w-6",
+        size === "md" && "h-8 w-8",
+        size === "lg" && "h-10 w-10",
       )}
     >
       <Image

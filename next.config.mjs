@@ -1,5 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        hostname: "icon.horse",
+      },
+      {
+        hostname: "icons.duckduckgo.com",
+      },
+      {
+        hostname: "www.google.com",
+      },
+    ],
+  },
   async rewrites() {
     return [
       {
@@ -13,15 +26,25 @@ const nextConfig = {
     ];
   },
 
-  // async redirects() {
-  //   return [
-  //     // {
-  //     //   source: "/",
-  //     //   destination: "/chat",
-  //     //   permanent: true,
-  //     // },
-  //   ];
-  // },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/chat",
+        permanent: true,
+      },
+    ];
+  },
+
+  webpack: (config) => {
+    // See https://webpack.js.org/configuration/resolve/#resolvealias
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      sharp$: false,
+      "onnxruntime-node$": false,
+    };
+    return config;
+  },
 
   // async rewrites() {
   //   return [

@@ -6,10 +6,13 @@ import {
 } from "@/components/ui/hover-card";
 import { REVEAL_ANIMATION_VARIANTS } from "@/helper/animations";
 import { cn } from "@/helper/clsx";
-import { ArrowUpRight, Link } from "@phosphor-icons/react";
+import { isValidUrl } from "@/helper/utils";
+import { ArrowUpRight } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import Markdown from "marked-react";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useEffect, useState } from "react";
+import { SearchFavicon } from "./tools/search-favicon";
+import { Flex, Type } from "./ui";
 
 export type TMdx = {
   message?: string;
@@ -19,6 +22,40 @@ export type TMdx = {
 };
 
 const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
+  const [processedMessage, setProcessedMessage] = useState("");
+
+  useEffect(() => {
+    if (message) {
+      // Process the message to hide incomplete Markdown elements
+      const processed = hideIncompleteMarkdown(message);
+      setProcessedMessage(processed);
+    }
+  }, [message]);
+
+  const hideIncompleteMarkdown = (text: string) => {
+    // Remove incomplete links
+    text = text.replace(/\[([^\]]*)\](\([^\)]*\)?)?/g, (match, text, url) => {
+      return url && url.endsWith(")") ? match : "";
+    });
+
+    // Remove incomplete images
+    text = text.replace(/!\[([^\]]*)\]\(([^\)]*)\)/g, (match, alt, src) => {
+      return src && src.endsWith(")") ? match : "";
+    });
+
+    // Remove incomplete table cells
+    text = text.replace(/\|([^\|]+)\|/g, (match, text) => {
+      return text ? match : "";
+    });
+
+    // Remove incomplete table cells (duplicate, can be removed)
+    text = text.replace(/\|([^\|]+)\|/g, (match, text) => {
+      return text ? match : "";
+    });
+
+    return text;
+  };
+
   if (!message || !messageId) {
     return null;
   }
@@ -35,36 +72,44 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
   const renderHr = () => (
     <hr className="my-4 border-gray-100 dark:border-white/10" />
   );
-
   const renderLink = (href: string, text: ReactNode, messageId: string) => {
-    if (text && href) {
+    if (text && isValidUrl(href)) {
+      const url = new URL(href).host;
+
       return (
         <HoverCard>
-          <HoverCardTrigger>
-            <a href={href} target="_blank" data-message-id={messageId}>
+          <HoverCardTrigger asChild>
+            <a
+              href={url}
+              target="_blank"
+              data-message-id={messageId}
+              className="font-normal text-blue-500 !no-underline dark:text-blue-400"
+            >
               {text}
             </a>
           </HoverCardTrigger>
           <HoverCardContent
             sideOffset={12}
-            className="flex max-w-[500px] cursor-pointer flex-col items-start rounded-xl bg-zinc-700 p-3 hover:bg-zinc-800"
+            className="flex max-w-[400px] cursor-pointer flex-col items-start rounded-lg p-2"
             onClick={() => {
               window.open(href, "_blank");
             }}
           >
-            <p className="flex w-full flex-row items-center gap-2 overflow-hidden whitespace-pre-wrap text-xs font-normal leading-7 text-zinc-200 dark:text-zinc-200">
-              <Link
-                size={16}
-                weight="bold"
-                className="flex-shrink-0 text-white"
-              />
-              {href}
+            <Flex gap="sm" items="start" className="w-full text-zinc-500">
+              <SearchFavicon link={url} className="!m-0 !mt-1" size="md" />
+              <Type
+                size="sm"
+                textColor="secondary"
+                className="line-clamp-2 flex-1"
+              >
+                {href}
+              </Type>
               <ArrowUpRight
                 size={16}
                 weight="bold"
-                className="flex-shrink-0 text-white"
+                className="mt-1 flex-shrink-0"
               />
-            </p>
+            </Flex>
           </HoverCardContent>
         </HoverCard>
       );
@@ -140,8 +185,9 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
           code: renderCode,
           codespan: renderCodespan,
         }}
+        openLinksInNewTab={true}
       >
-        {message}
+        {processedMessage}
       </Markdown>
     </article>
   );

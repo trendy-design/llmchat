@@ -10,6 +10,8 @@ export const getTestModelKey = (key: TProvider): TModelKey => {
       return "gemini-pro";
     case "ollama":
       return "phi3:latest";
+    case "groq":
+      return "llama3-8b-8192";
     default:
       throw new Error("Invalid base model");
   }

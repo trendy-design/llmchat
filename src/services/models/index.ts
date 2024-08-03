@@ -2,6 +2,7 @@ import { defaultPreferences } from "@/config";
 import { TModelItem, TModelKey, TPreferences, TProvider } from "@/types";
 import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { ChatGroq } from "@langchain/groq";
 import { ChatOllama } from "@langchain/ollama";
 import { ChatOpenAI } from "@langchain/openai";
 type ChatOpenAIConstructorParams = ConstructorParameters<typeof ChatOpenAI>[0];
@@ -12,6 +13,7 @@ type ChatGoogleGenerativeAIConstructorParams = ConstructorParameters<
   typeof ChatGoogleGenerativeAI
 >[0];
 type ChatOllamaConstructorParams = ConstructorParameters<typeof ChatOllama>[0];
+type ChatGroqConstructorParams = ConstructorParameters<typeof ChatGroq>[0];
 
 type TCreateInstance = {
   model: Omit<TModelItem, "provider">;
@@ -39,6 +41,10 @@ type TCreateInstance = {
       provider: "ollama";
       props?: Partial<ChatOllamaConstructorParams>;
     }
+  | {
+      provider: "groq";
+      props?: Partial<ChatGroqConstructorParams>;
+    }
 );
 
 export class ModelService {
@@ -53,6 +59,8 @@ export class ModelService {
       ...defaultPreferences,
       ...preferences,
     };
+
+    console.log("ollamaBaseUrl", ollamaBaseUrl);
 
     const maxTokens =
       rest.maxTokens <= model.maxOutputTokens
@@ -124,6 +132,16 @@ export class ModelService {
           temperature,
           ...props,
         });
+      case "groq":
+        return new ChatGroq({
+          model: model.key,
+          apiKey,
+          streaming: true,
+          maxTokens: maxTokens,
+          maxRetries: 2,
+          temperature,
+          ...props,
+        });
       default:
         throw new Error("Invalid model");
     }
@@ -141,6 +159,8 @@ export class ModelService {
         return "phi3:latest";
       case "llmchat":
         return "llmchat";
+      case "groq":
+        return "llama3-8b-8192";
     }
   }
 }

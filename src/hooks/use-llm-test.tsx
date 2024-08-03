@@ -9,25 +9,31 @@ export const useLLMTest = () => {
   const { getModelByKey } = useAssistantUtils();
   const [isCheckingApiKey, setIsCheckingApiKey] = useState(false);
   const { toast } = useToast();
-  const testLLM = async (model: TProvider, apiKey?: string) => {
+  const testLLM = async (provider: TProvider, apiKey?: string) => {
     try {
-      const modelKey = getTestModelKey(model);
+      console.log("provider", provider);
+      const modelKey = getTestModelKey(provider);
 
-      if (!apiKey) {
+      console.log("apikey", apiKey);
+
+      if (!apiKey && !["ollama"].includes(provider)) {
         return false;
       }
 
-      const selectedModelKey = getModelByKey(modelKey);
+      const selectedModelKey = getModelByKey(modelKey, provider);
 
+      console.log("selectedModelKey", selectedModelKey);
       if (!selectedModelKey) {
         return false;
       }
 
       const selectedModel = await modelService.createInstance({
         model: selectedModelKey,
-        provider: model,
+        provider: provider,
         apiKey,
       });
+
+      console.log("selectedModel", selectedModel);
 
       const data = await selectedModel
         .withListeners({

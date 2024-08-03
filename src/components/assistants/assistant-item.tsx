@@ -64,7 +64,9 @@ export const AssistantItem = ({
         {assistant.name}
         {model?.isNew && assistant.type !== "custom" && <Badge>New</Badge>}
         {model?.isFree && assistant.type !== "custom" && <Badge>Free</Badge>}
-        {model?.isSignUpRequired && assistant.type !== "custom" && <Badge variant="secondary">Login Required</Badge>}
+        {model?.isSignUpRequired && assistant.type !== "custom" && (
+          <Badge variant="secondary">Login Required</Badge>
+        )}
         <div className="flex flex-1"></div>
         {assistant.type !== "custom" && (
           <Flex gap="md" items="center">

@@ -13,9 +13,19 @@ import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import moment from "moment";
 import { useAssistantUtils, useTools } from ".";
 
+const getErrorMessage = (error: string) => {
+  if (error.includes("image_url") && error.includes("400")) {
+    return "This model does not support images";
+  }
+  if (error.includes("429")) {
+    return "Exceeded daily limit or API is running out of credits.";
+  }
+  return undefined;
+};
+
 export const useLLMRunner = () => {
   const { user, open: openSignIn } = useAuth();
-  const { store } = useChatContext();
+  const { store, refetch } = useChatContext();
   const setIsGenerating = store((state) => state.setIsGenerating);
   const setCurrentMessage = store((state) => state.setCurrentMessage);
   const updateCurrentMessage = store((state) => state.updateCurrentMessage);
@@ -26,14 +36,26 @@ export const useLLMRunner = () => {
   const { preferences, apiKeys, updatePreferences } = usePreferenceContext();
   const { getToolByKey } = useTools();
   const { toast } = useToast();
+  const removeLastMessage = store((state) => state.removeLastMessage);
 
   const invokeModel = async (config: TLLMRunConfig) => {
     if (!user && config.assistant.baseModel === "llmchat") {
       openSignIn();
       return;
     }
+
     resetState();
     setIsGenerating(true);
+
+    if (config.messageId) {
+      removeLastMessage();
+    }
+
+    //to avoid duplication not refetch when regenerating
+    if (!config?.messageId) {
+      refetch();
+    }
+
     const currentAbortController = new AbortController();
     setAbortController(currentAbortController);
     const { sessionId, messageId, input, context, image, assistant } = config;
@@ -67,21 +89,24 @@ export const useLLMRunner = () => {
       stop: false,
       stopReason: undefined,
       rawAI: undefined,
-      image: undefined,
+      image,
       tools: [],
       relatedQuestions: [],
       createdAt: moment().toISOString(),
       isLoading: true,
     });
 
-    const selectedModelKey = getModelByKey(modelKey);
+    const selectedModelKey = getModelByKey(modelKey, assistant.provider);
     if (!selectedModelKey) {
       throw new Error("Model not found");
     }
 
     const apiKey = apiKeys[selectedModelKey?.provider];
 
-    if (!apiKey) {
+    if (
+      !apiKey &&
+      !["ollama", "llmchat"].includes(selectedModelKey?.provider)
+    ) {
       updateCurrentMessage({
         isLoading: false,
         stop: true,
@@ -100,7 +125,7 @@ export const useLLMRunner = () => {
 
     const availableTools =
       selectedModelKey?.plugins
-        ?.filter((p) => plugins.includes(p))
+        ?.filter((p) => plugins.includes(p) || p === "webpage_reader")
         ?.map((p) =>
           getToolByKey(p)?.tool({
             updatePreferences,
@@ -162,6 +187,7 @@ export const useLLMRunner = () => {
       limit: messageLimit,
     });
 
+    console.log("chatHistory", chatHistory);
     try {
       const stream: any = await executor.invoke(
         {
@@ -223,18 +249,24 @@ export const useLLMRunner = () => {
 
                 const hasError: Record<string, boolean> = {
                   cancel: currentAbortController?.signal.aborted,
-                  rateLimit: err.message.includes("429"),
+                  rateLimit:
+                    err.message.includes("429") &&
+                    err.message.includes("llmchat"),
                   unauthorized: err.message.includes("401"),
                 };
+
                 const stopReason = Object.keys(hasError).find(
                   (value) => hasError[value],
                 ) as TStopReason;
+
+                console.log(err.message);
 
                 updateCurrentMessage({
                   isLoading: false,
                   rawHuman: input,
                   rawAI: streamedMessage,
                   stop: true,
+                  errorMessage: getErrorMessage(err.message),
                   stopReason: stopReason || "error",
                 });
               },
@@ -243,10 +275,13 @@ export const useLLMRunner = () => {
         },
       );
 
+      console.log("stream", stream);
+
       updateCurrentMessage({
         rawHuman: input,
         rawAI: stream?.content || stream?.output?.[0]?.text || stream?.output,
         isLoading: false,
+        image,
         stop: true,
         stopReason: "finish",
       });

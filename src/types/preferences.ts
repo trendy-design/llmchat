@@ -4,6 +4,13 @@ import { TToolKey } from "./tools";
 
 export type TApiKeys = Partial<Record<TProvider, string>>;
 
+export type TPreferencesState = {
+  preferences: TPreferences;
+  setPreferences: (preferences: Partial<TPreferences>) => void;
+  apiKeys: TApiKeys;
+  setApiKeys: (apiKeys: Partial<TProvider>) => void;
+};
+
 export type TPreferences = {
   defaultAssistant: TAssistant["key"];
   systemPrompt: string;

@@ -22,7 +22,7 @@ export type TSessionsContext = {
   activeSessionId?: string;
   setActiveSessionId: (id: string) => void;
   isAllSessionLoading: boolean;
-  createSession: (props: { redirect?: boolean }) => void;
+  createSession: () => void;
   refetchSessions?: () => void;
   addMessage: (parentId: string, message: TChatMessage) => void;
 } & ReturnType<typeof useChatSessionQueries>;

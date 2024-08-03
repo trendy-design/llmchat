@@ -75,9 +75,7 @@ export const CommandsProvider = ({ children }: TCommandsProvider) => {
       name: "New session",
       icon: CommentAdd01Icon,
       action: () => {
-        createSession({
-          redirect: true,
-        });
+        createSession();
         onClose();
       },
     },

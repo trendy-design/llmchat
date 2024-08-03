@@ -37,6 +37,7 @@ export const ChatInput = () => {
   const { store } = useChatContext();
   const session = store((state) => state.session);
   const messages = store((state) => state.messages);
+  const currentMessage = store((state) => state.currentMessage);
   const contextValue = store((state) => state.context);
   const setContextValue = store((state) => state.setContext);
   const stopGeneration = store((state) => state.stopGeneration);
@@ -88,7 +89,7 @@ export const ChatInput = () => {
     }
   }, [session?.id]);
 
-  const isFreshSession = !messages?.length;
+  const isFreshSession = !messages?.length && !currentMessage;
 
   const sendMessage = (input: string) => {
     const props = getAssistantByKey(preferences.defaultAssistant);
@@ -114,7 +115,7 @@ export const ChatInput = () => {
   }, [text]);
 
   const renderScrollToBottom = () => {
-    if (showButton && !recording && !transcribing) {
+    if (showButton && !recording && !transcribing && !isFreshSession) {
       return (
         <motion.span
           initial={{ scale: 0, opacity: 0 }}
@@ -227,6 +228,12 @@ export const ChatInput = () => {
                         onKeyDown={(e) => {
                           if (e.key === "Enter" && !e.shiftKey) {
                             sendMessage(editor.getText());
+                          }
+                          // scroll to bottom
+                          if (e.key === "Enter" && e.shiftKey) {
+                            e.preventDefault();
+                            e.currentTarget.scrollTop =
+                              e.currentTarget.scrollHeight;
                           }
                         }}
                         className="no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[120px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-sm outline-none focus:outline-none md:text-base [&>*]:leading-6 [&>*]:outline-none"
