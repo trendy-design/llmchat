@@ -44,13 +44,17 @@ export const useLLMRunner = () => {
       return;
     }
 
+    resetState();
+    setIsGenerating(true);
+
+    if (config.messageId) {
+      removeLastMessage();
+    }
+
     //to avoid duplication not refetch when regenerating
     if (!config?.messageId) {
       refetch();
     }
-
-    resetState();
-    setIsGenerating(true);
 
     const currentAbortController = new AbortController();
     setAbortController(currentAbortController);

@@ -20,44 +20,49 @@ export const RecentMessage = () => {
   const { isAtBottom, scrollToBottom } = useScrollToBottom();
 
   useEffect(() => {
-    if (!currentMessage) return;
-
     if (
-      currentMessage.stop &&
-      currentMessage.sessionId &&
-      !currentMessage?.relatedQuestions?.length
-    ) {
-      addMessageMutation.mutate(
-        {
+      !currentMessage ||
+      !currentMessage.stop ||
+      !currentMessage.sessionId ||
+      currentMessage.relatedQuestions?.length
+    )
+      return;
+
+    const processMessage = async () => {
+      try {
+        const messages = await addMessageMutation.mutateAsync({
           parentId: currentMessage.sessionId,
           message: currentMessage,
-        },
-        {
-          onSuccess: async (messages) => {
-            setIsGenerating(false);
-            if (messages?.[0].sessionId && messages?.length < 2) {
-              await generateTitleForSession(messages?.[0].sessionId as string);
-            }
-            console.log("start generating questions");
-            const questions = await generateRelatedQuestion(
-              currentMessage.sessionId,
-              currentMessage.id,
-            );
+        });
 
-            const message = {
-              ...currentMessage,
-              relatedQuestions: questions,
-            };
-            console.log("messageee", message);
-            setCurrentMessage(message);
-            addMessageMutation.mutate({
-              parentId: currentMessage.sessionId,
-              message: message,
-            });
-          },
-        },
-      );
-    }
+        setIsGenerating(false);
+
+        if (messages?.[0].sessionId && messages?.length < 2) {
+          await generateTitleForSession(messages[0].sessionId as string);
+        }
+
+        const questions = await generateRelatedQuestion(
+          currentMessage.sessionId,
+          currentMessage.id,
+        );
+
+        if (questions?.length > 0) {
+          const updatedMessage = {
+            ...currentMessage,
+            relatedQuestions: questions,
+          };
+          await addMessageMutation.mutateAsync({
+            parentId: currentMessage.sessionId,
+            message: updatedMessage,
+          });
+          setCurrentMessage(updatedMessage);
+        }
+      } catch (error) {
+        console.error("Error processing message:", error);
+      }
+    };
+
+    processMessage();
   }, [currentMessage]);
 
   const renderMessage = (message: TChatMessage) => {
@@ -70,8 +75,6 @@ export const RecentMessage = () => {
   };
 
   useEffect(() => {
-    console.log("isGenerating m");
-
     scrollToBottom();
   }, [
     isGenerating,

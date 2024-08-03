@@ -49,6 +49,9 @@ export const useTitleGenerator = () => {
 
     if (!message.rawAI || !message.rawHuman) return;
 
+    if (assistant.model.plugins?.length > 0) {
+    }
+
     const apiKey = apiKeys[assistant.model.provider];
     const selectedModel = await modelService.createInstance({
       model: assistant.model,
