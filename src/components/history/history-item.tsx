@@ -92,9 +92,7 @@ export const HistoryItem = ({
     removeSessionMutation.mutate(session.id, {
       onSuccess: () => {
         if (activeSessionId === session.id) {
-          createSession({
-            redirect: true,
-          });
+          createSession();
         }
         refetchSessions?.();
         setOpenDeleteConfirm(false);

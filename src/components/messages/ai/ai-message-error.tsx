@@ -1,5 +1,6 @@
 import { Button, Flex, Type } from "@/components/ui";
 import { Alert02Icon } from "@/components/ui/icons";
+import { usePreferenceContext } from "@/context";
 import { useAuth } from "@/context/auth";
 import { useAssistantUtils } from "@/hooks";
 import { useLLMRunner } from "@/hooks/use-llm-runner";
@@ -27,6 +28,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
 }) => {
   const { push } = useRouter();
   const { open: openSignIn } = useAuth();
+  const { apiKeys } = usePreferenceContext();
   const { getModelByKey } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
 
@@ -34,19 +36,23 @@ export const AIMessageError: FC<TAIMessageError> = ({
     return null;
   }
 
-  const model = getModelByKey(message?.runConfig?.assistant.baseModel);
+  const assistant = message.runConfig.assistant;
+
+  const model = getModelByKey(assistant.baseModel, assistant.provider);
 
   const errorConfigs: Record<string, ErrorConfig> = {
     apikey: {
-      message: "API Key is invalid or expired.",
+      message: apiKeys?.[assistant?.provider]
+        ? "API Key is invalid or expired."
+        : "Missing API Key",
       action: {
-        label: "Check API Key",
+        label: apiKeys?.[assistant?.provider] ? "Check API Key" : "Set API Key",
         onClick: () => push(`/settings/llms/${model?.provider}`),
       },
     },
     rateLimit: {
       message:
-        "Too many requests. Please try again later or use your own API key.",
+        "You have reached your daily free usage limit. Please try again later or use your own API key.",
       action: {
         label: "Open Settings",
         onClick: () => push("/settings/llms"),
@@ -61,6 +67,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
     },
     default: {
       message:
+        message?.errorMessage ||
         "An unexpected error occurred. Please try again or contact support.",
       action: {
         label: "Retry",
@@ -76,14 +83,23 @@ export const AIMessageError: FC<TAIMessageError> = ({
 
   return (
     <Flex
-      className="mb-4 rounded-lg bg-zinc-50 px-4 py-3 text-sm text-zinc-500 dark:bg-white/5"
+      className="mb-4 w-full rounded-lg bg-zinc-50 px-3 py-2 text-sm text-zinc-500 dark:bg-white/5"
       gap="sm"
       items="center"
+      justify="between"
     >
-      <Alert02Icon size={16} variant="solid" />
-      <Type textColor="secondary">{errorMessage}</Type>
+      <Flex items="start" gap="sm">
+        <Alert02Icon size={16} variant="solid" className="mt-0 md:mt-0.5" />
+        <Type textColor="secondary">{errorMessage}</Type>
+      </Flex>
+
       {action && (
-        <Button variant="ghost" size="sm" onClick={action.onClick}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={action.onClick}
+          rounded="full"
+        >
           {action.label}
         </Button>
       )}

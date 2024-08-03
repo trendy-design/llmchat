@@ -34,19 +34,22 @@ export type TPreferencesProvider = {
 };
 
 export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
+  const [preferences, setPreferences] = useState<TPreferences>();
+  const [apiKeys, setApiKeys] = useState<TApiKeys>({});
+
+  useEffect(() => {
+    setPreferences(defaultPreferences);
+  }, []);
+
   const {
     preferencesQuery,
     setPreferencesMutation,
     apiKeysQuery,
     setApiKeyMutation,
   } = usePreferencesQueries();
-  const [preferences, setPreferences] =
-    useState<TPreferences>(defaultPreferences);
-  const [apiKeys, setApiKeys] = useState<TApiKeys>({});
 
   useEffect(() => {
-    preferencesQuery.data &&
-      setPreferences({ ...defaultPreferences, ...preferencesQuery.data });
+    preferencesQuery.data && setPreferences(preferencesQuery.data);
   }, [preferencesQuery.data]);
 
   useEffect(() => {
@@ -57,22 +60,26 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
     newPreferences: Partial<TPreferences>,
     onSuccess?: (preference: TPreferences) => void,
   ) => {
-    setPreferences({ ...preferences, ...newPreferences });
+    setPreferences((existing) => ({
+      ...defaultPreferences,
+      ...existing,
+      ...newPreferences,
+    }));
     setPreferencesMutation.mutate(newPreferences, {
-      onSuccess: () => {
+      onSuccess: (preference) => {
         preferencesQuery.refetch();
-        onSuccess && onSuccess(preferences);
+        onSuccess && onSuccess(preference);
       },
     });
   };
 
   const updateApiKey = async (key: TProvider, value: string) => {
-    setApiKeys({ ...apiKeys, [key]: value });
+    setApiKeys((existing) => ({ ...existing, [key]: value }));
     setApiKeyMutation.mutate({ key, value });
   };
   useEffect(() => {
-    updateApiKey("ollama", "kdskdmkmsd");
-    updateApiKey("llmchat", "mlsdmldsm");
+    updateApiKey("ollama", "ollama");
+    updateApiKey("llmchat", "llmchat");
   }, []);
 
   const updateApiKeys = (newApiKeys: TApiKeys) => {
@@ -82,7 +89,7 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
   return (
     <PreferenceContext.Provider
       value={{
-        preferences,
+        preferences: { ...defaultPreferences, ...preferences },
         updatePreferences,
         apiKeys,
         updateApiKey,

@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 
 import { defaultPreferences } from "@/config";
 import { models } from "@/config/models";
+import { vectorSearchSystemPrompt } from "@/config/prompts";
 import { usePreferenceContext } from "@/context";
 import { constructPrompt } from "@/helper/promptUtil";
 import { useAttachment } from "@/hooks";
@@ -69,9 +70,7 @@ export default function Spaces() {
     });
 
     const prompt = await constructPrompt({
-      systemPrompt: `You're a helpful assistant. You can refer to given context to answer the query. You can't make up anything though you can inspire from the context. you must cite the source of the information you are using.
-        context: ${JSON.stringify(results.similarItems.map((item: any) => `Title: ${item.metadata.title} \n\n ${item.text} \n\n url: ${item.metadata.source}`))}
-        `,
+      systemPrompt: vectorSearchSystemPrompt(results.similarItems),
       memories: [],
 
       hasMessages: false,
@@ -226,13 +225,15 @@ export default function Spaces() {
     console.log("websiteUrl", websiteUrl);
     const response = await fetch(`/api/reader`, {
       method: "POST",
-      body: JSON.stringify({ url: websiteUrl }),
+      body: JSON.stringify({ urls: [websiteUrl] }),
     });
     const data = await response.json();
 
+    const results = data.results;
+
     createDocumentMutation.mutate(
       {
-        content: data,
+        content: results?.[0],
         isIndexed: false,
         meta: {
           source: data.url,

@@ -7,23 +7,20 @@ import {
   TSessionsContext,
   TSessionsProvider,
 } from "@/types";
-import { usePathname } from "next/navigation";
-import {
-  FC,
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FC, createContext, useContext, useEffect, useState } from "react";
 
 export const SessionContext = createContext<TSessionsContext | undefined>(
   undefined,
 );
 
 export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
-  const pathname = usePathname();
-  const store = useMemo(() => createSessionsStore(), []);
+  const store = createSessionsStore();
+  store?.persist?.onFinishHydration((state) => {
+    console.log(state);
+    if (!state?.activeSessionId) {
+      createSession();
+    }
+  });
   const [sessions, setSessions] = useState<TChatSession[]>([]);
   const activeSessionId = store((state) => state.activeSessionId);
   const setActiveSessionId = store((state) => state.setActiveSessionId);
@@ -32,33 +29,34 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
     useChatSessionQueriesProps;
 
   useEffect(() => {
-    sessionsQuery?.data && setSessions(sessionsQuery?.data || []);
-  }, [sessionsQuery?.data]);
-
-  const createSession = async (props: { redirect?: boolean }) => {
-    const { redirect } = props;
-    await createNewSessionMutation.mutateAsync(undefined, {
-      onSuccess: (data) => {
-        if (redirect) {
-          setActiveSessionId(data.id);
-        }
-      },
-    });
-  };
+    store.persist.rehydrate();
+  }, []);
 
   useEffect(() => {
-    console.log("pathname", pathname);
-    if (!activeSessionId && pathname !== "/") {
-      console.log("created");
-      // createSession({ redirect: true });
+    if (sessionsQuery?.data) {
+      setSessions(sessionsQuery.data);
     }
-  }, [activeSessionId]);
+  }, [sessionsQuery?.data]);
+
+  const createSession = async () => {
+    try {
+      const data = await createNewSessionMutation.mutateAsync(undefined);
+      console.log(store);
+      setActiveSessionId(data.id);
+    } catch (error) {
+      console.error("Failed to create session:", error);
+    }
+  };
 
   const addMessage = async (parentId: string, message: TChatMessage) => {
-    await addMessageMutation.mutateAsync({
-      parentId,
-      message,
-    });
+    try {
+      await addMessageMutation.mutateAsync({
+        parentId,
+        message,
+      });
+    } catch (error) {
+      console.error("Failed to add message:", error);
+    }
   };
 
   return (

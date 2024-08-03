@@ -8,7 +8,7 @@ import {
   Type,
 } from "@/components/ui";
 import { Copy01Icon, Delete01Icon, Tick01Icon } from "@/components/ui/icons";
-import { useChatContext, useSessions } from "@/context";
+import { useChatContext, usePreferenceContext, useSessions } from "@/context";
 import { useAssistantUtils, useClipboard } from "@/hooks";
 import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { TChatMessage } from "@/types";
@@ -23,8 +23,10 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
   message,
   canRegenerate,
 }) => {
+  const { updatePreferences } = usePreferenceContext();
   const { refetch, store } = useChatContext();
-  const removeLastMessage = store((state) => state.removeLastMessage);
+  const currentMessage = store((state) => state.currentMessage);
+  const setCurrentMessage = store((state) => state.setCurrentMessage);
   const { getAssistantByKey } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
   const { removeMessageByIdMutation } = useSessions();
@@ -47,12 +49,17 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
       return;
     }
 
+    updatePreferences({
+      defaultAssistant: assistant,
+    });
+
+    setCurrentMessage(undefined);
+
     invokeModel({
       ...message.runConfig,
       messageId: message.id,
       assistant: props.assistant,
     });
-    removeLastMessage();
   };
 
   return (
@@ -62,7 +69,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
       className="w-full opacity-100 transition-opacity"
     >
       {isGenerating && (
-        <Flex gap="sm">
+        <Flex gap="sm" items="center" className="py-1">
           <Spinner />
           <Type size="sm" textColor="tertiary">
             {!!rawAI?.length ? "Typing ..." : "Thinking ..."}
@@ -98,6 +105,10 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
                   },
                   {
                     onSuccess: () => {
+                      // if the current message is the one being deleted, set the current message to undefined
+                      if (message.id === currentMessage?.id) {
+                        setCurrentMessage(undefined);
+                      }
                       refetch();
                     },
                   },

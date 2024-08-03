@@ -53,7 +53,7 @@ export default function CommonPage() {
       description: "Number of previous messages to consider.",
       type: "number",
       min: 0,
-      max: 100,
+      max: 30,
       step: 1,
     },
     {

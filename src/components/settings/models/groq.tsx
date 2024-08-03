@@ -9,22 +9,22 @@ import { useEffect, useState } from "react";
 import { ApiKeyInfo } from "./api-key-info";
 import ApiKeyInput from "./api-key-input";
 
-export const GeminiSettings = () => {
+export const GroqSettings = () => {
   const [key, setKey] = useState<string>("");
   const { apiKeys, updateApiKey } = usePreferenceContext();
   const { checkApiKey, isCheckingApiKey } = useLLMTest();
 
   useEffect(() => {
-    setKey(apiKeys.gemini || "");
-  }, [apiKeys.gemini]);
+    setKey(apiKeys.groq || "");
+  }, [apiKeys.groq]);
 
   return (
-    <Flex direction="col" gap="sm">
+    <Flex direction="col" gap="md">
       <FormLabel
-        label="Google Gemini API Key"
+        label="Groq API Key"
         extra={() => (
           <Link
-            href={configs.geminiApiKeyUrl}
+            href={configs.groqApiKeyUrl}
             target="_blank"
             className="text-sm font-medium text-blue-400 hover:opacity-90"
           >
@@ -32,25 +32,26 @@ export const GeminiSettings = () => {
           </Link>
         )}
       />
+
       <ApiKeyInput
         value={key}
         setValue={setKey}
-        isDisabled={!!apiKeys.gemini}
-        placeholder="xxxxxxxxxxxxxxxxxxxxxxxx"
-        isLocked={!!apiKeys.gemini}
+        isDisabled={!!apiKeys.groq}
+        placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
+        isLocked={!!apiKeys.groq}
       />
 
       <Flex gap="sm">
-        {!apiKeys.gemini && (
+        {!apiKeys.groq && (
           <Button
             size="sm"
             variant="default"
             onClick={() => {
               checkApiKey({
-                model: "gemini",
+                model: "groq",
                 key,
                 onValidated: () => {
-                  updateApiKey("gemini", key);
+                  updateApiKey("groq", key);
                 },
                 onError: () => {
                   setKey("");
@@ -62,20 +63,19 @@ export const GeminiSettings = () => {
           </Button>
         )}
 
-        {apiKeys?.gemini && (
+        {apiKeys?.anthropic && (
           <Button
             size="sm"
             variant="secondary"
             onClick={() => {
               setKey("");
-              updateApiKey("gemini", "");
+              updateApiKey("groq", "");
             }}
           >
             Remove Key
           </Button>
         )}
       </Flex>
-
       <ApiKeyInfo />
     </Flex>
   );
