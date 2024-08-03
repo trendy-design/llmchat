@@ -17,7 +17,7 @@ const buttonVariants = cva(
         destructive:
           "bg-rose-500/80 dark:bg-rose-500/80 text-destructive-foreground hover:bg-red-500 dark:hover:opacity-90",
         bordered:
-          "border border-zinc-500/30 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 dark:hover:text-white hover:text-zinc-900",
+          "border border-zinc-500/10 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 dark:hover:text-white hover:text-zinc-900",
         secondary:
           "bg-black/10 text-zinc-700 dark:text-zinc-100 opacity-90 hover:opacity-100  dark:bg-white/10",
         ghost:
@@ -29,6 +29,7 @@ const buttonVariants = cva(
         default: "h-10 px-3 text-xs md:text-sm",
         sm: "h-9 px-3 text-xs md:text-sm",
         xs: "h-7 px-2 text-xs",
+        md: "h-11 px-3 text-xs md:text-sm font-semibold",
         lg: "h-12 md:h-14  px-8 text-xs md:text-base font-semibold",
         icon: "h-9 min-w-9 text-xs md:text-sm",
         iconSm: "h-8 min-w-8 text-xs md:text-sm",

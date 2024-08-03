@@ -1,24 +1,29 @@
-import { motion } from "framer-motion";
+import { ChatExamples } from "./chat-examples";
+import { Mdx } from "./mdx";
+import { ModelIcon } from "./model-icon";
+import { Flex } from "./ui";
 
 export const ChatGreeting = () => {
   return (
     <div className="flex w-full flex-row items-start justify-start gap-2 md:w-[720px]">
-      <motion.h1
-        className="py-2 text-left text-3xl font-semibold leading-9 tracking-tight text-zinc-800 dark:text-zinc-100"
-        initial={{ opacity: 0 }}
-        animate={{
-          opacity: 1,
-          transition: {
-            duration: 1,
-          },
-        }}
-      >
-        Good Morning,
-        <br />
-        <span className="text-zinc-300 dark:text-zinc-500">
-          How can I help you today?
-        </span>
-      </motion.h1>
+      <div className="mt-6 flex w-full flex-col items-start md:flex-row">
+        <div className="p-2 md:px-3 md:py-2">
+          <ModelIcon type="llmchat" size="sm" />
+        </div>
+        <Flex
+          direction="col"
+          gap="none"
+          items="start"
+          className="w-full flex-1 overflow-hidden p-2"
+        >
+          <Mdx
+            message={`Welcome to AI Chat! All of your chats are private, stored locally and not used to train AI models.`}
+            animate={true}
+            messageId={"intro-message"}
+          />
+          <ChatExamples />
+        </Flex>
+      </div>
     </div>
   );
 };

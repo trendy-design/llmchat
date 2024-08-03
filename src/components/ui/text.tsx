@@ -23,7 +23,7 @@ const typeVariants = cva("text flex", {
     weight: {
       regular: "font-normal",
       medium: "font-medium",
-      bold: "font-bold",
+      bold: "font-semibold",
     },
   },
 

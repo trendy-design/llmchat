@@ -1,5 +1,7 @@
 import { Button, Flex, Type } from "@/components/ui";
+import { StaggerContainer } from "@/components/ui/stagger-container";
 import { useChatContext, usePreferenceContext } from "@/context";
+import { slideUpVariant } from "@/helper/animations";
 import { useAssistantUtils } from "@/hooks";
 import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { TChatMessage } from "@/types";
@@ -36,21 +38,6 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
     });
   };
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 },
-  };
-
   if (
     !Array.isArray(message?.relatedQuestions) ||
     !message?.relatedQuestions?.length ||
@@ -61,12 +48,7 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
   }
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      exit="hidden"
-      variants={containerVariants}
-    >
+    <StaggerContainer>
       <Flex direction="col" gap="sm" className="w-full pt-6">
         <Type
           size="sm"
@@ -78,7 +60,7 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
         </Type>
         {message?.relatedQuestions?.map((question) => {
           return (
-            <motion.div key={question} variants={itemVariants}>
+            <motion.div key={question} variants={slideUpVariant}>
               <Button
                 size="sm"
                 className="h-auto text-wrap py-2 text-left"
@@ -91,6 +73,6 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
           );
         })}
       </Flex>
-    </motion.div>
+    </StaggerContainer>
   );
 };

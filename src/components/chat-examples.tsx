@@ -2,7 +2,11 @@ import { Flex } from "@/components/ui/flex";
 import { Type } from "@/components/ui/text";
 import { examplePrompts } from "@/config";
 import { useChatContext } from "@/context";
+import { slideUpVariant } from "@/helper/animations";
+import { SentIcon } from "@hugeicons/react";
+import { motion } from "framer-motion";
 import { Button } from "./ui";
+import { StaggerContainer } from "./ui/stagger-container";
 
 export const ChatExamples = () => {
   const { store } = useChatContext();
@@ -14,27 +18,42 @@ export const ChatExamples = () => {
       gap="md"
       justify="center"
       items="start"
-      className="w-full md:w-[700px] lg:w-[720px]"
+      className="w-full"
     >
-      <Type size="sm" textColor="tertiary" className="px-3">
-        Try Prompts
+      <Type size="base" weight="medium">
+        Try these example prompts or craft your own message below
       </Type>
-      <div className="flex w-full flex-row justify-start gap-3 overflow-x-auto p-1 md:grid md:grid-cols-2">
-        {examplePrompts?.slice(0, 4)?.map((prompt, index) => (
-          <Button
-            key={index}
-            variant="outlined"
-            className="justify-start"
-            onClick={() => {
-              editor?.commands?.clearContent();
-              editor?.commands?.setContent(prompt.content);
-              editor?.commands?.focus("end");
-            }}
-          >
-            {prompt.name}
-          </Button>
-        ))}
-      </div>
+      <StaggerContainer>
+        <div className="flex flex-row justify-start gap-3 overflow-x-auto p-1 md:grid md:grid-cols-2">
+          {examplePrompts?.slice(0, 6)?.map((prompt, index) => (
+            <motion.div
+              key={prompt.name}
+              variants={slideUpVariant}
+              className="w-full"
+            >
+              <Button
+                key={index}
+                variant="bordered"
+                size="md"
+                className="w-full justify-start gap-2"
+                onClick={() => {
+                  editor?.commands?.clearContent();
+                  editor?.commands?.setContent(prompt.content);
+                  editor?.commands?.focus("end");
+                }}
+              >
+                <SentIcon
+                  size={18}
+                  className="rotate-45 text-emerald-500"
+                  variant="solid"
+                  strokeWidth="2"
+                />
+                {prompt.name}
+              </Button>
+            </motion.div>
+          ))}
+        </div>
+      </StaggerContainer>
     </Flex>
   );
 };
