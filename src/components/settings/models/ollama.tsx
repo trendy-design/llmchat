@@ -1,8 +1,8 @@
-import { Mdx } from "@/components/mdx";
 import { FormLabel } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import { Flex } from "@/components/ui/flex";
 import { Input } from "@/components/ui/input";
+import { Mdx } from "@/components/ui/mdx";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { docs } from "@/config";

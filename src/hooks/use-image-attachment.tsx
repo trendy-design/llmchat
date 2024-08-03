@@ -1,13 +1,23 @@
-import { TAttachment } from "@/components/chat-input";
-import { Flex, Tooltip, Type } from "@/components/ui";
-import { Button } from "@/components/ui/button";
-import { ImageAdd01Icon } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
-import { X } from "@phosphor-icons/react";
-import Image from "next/image";
+import { TAttachment } from "@/types";
 import { ChangeEvent, useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
-import Resizer from "react-image-file-resizer";
+
+// const resizeFile = (file: File) =>
+//   new Promise((resolve) => {
+//     Resizer.imageFileResizer(
+//       file,
+//       1000,
+//       1000,
+//       "JPEG",
+//       100,
+//       0,
+//       (uri) => {
+//         resolve(uri);
+//       },
+//       "file",
+//     );
+//   });
 
 export type TRenderImageUpload = {
   showIcon?: boolean;
@@ -15,11 +25,7 @@ export type TRenderImageUpload = {
   tooltip?: string;
 };
 
-export type TUseImageAttachment = {
-  id: string;
-};
-
-export const useImageAttachment = ({ id }: TUseImageAttachment) => {
+export const useImageAttachment = () => {
   const [attachment, setAttachment] = useState<TAttachment>();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -29,22 +35,6 @@ export const useImageAttachment = ({ id }: TUseImageAttachment) => {
   }, []);
   const dropzonProps = useDropzone({ onDrop, multiple: false, noClick: true });
   const { toast } = useToast();
-
-  const resizeFile = (file: File) =>
-    new Promise((resolve) => {
-      Resizer.imageFileResizer(
-        file,
-        1000,
-        1000,
-        "JPEG",
-        100,
-        0,
-        (uri) => {
-          resolve(uri);
-        },
-        "file",
-      );
-    });
 
   const clearAttachment = () => {
     setAttachment(undefined);
@@ -77,7 +67,7 @@ export const useImageAttachment = ({ id }: TUseImageAttachment) => {
         ...prev,
         file,
       }));
-      const resizedFile = await resizeFile(file);
+      // const resizedFile = await resizeFile(file);
 
       reader.readAsDataURL(file);
     }
@@ -88,96 +78,11 @@ export const useImageAttachment = ({ id }: TUseImageAttachment) => {
     readImageFile(file);
   };
 
-  const handleFileSelect = () => {
-    document.getElementById(id)?.click();
-  };
-  const renderAttachedImage = () => {
-    if (attachment?.base64) {
-      return (
-        <div className="relative h-[60px] min-w-[60px] rounded-lg border border-black/10 shadow-md dark:border-white/10">
-          <Image
-            src={attachment.base64}
-            alt="uploaded image"
-            className="h-full w-full overflow-hidden rounded-lg object-cover"
-            width={0}
-            height={0}
-          />
-
-          <Button
-            size={"iconXS"}
-            variant="default"
-            onClick={clearAttachment}
-            className="absolute right-[-4px] top-[-4px] z-10 h-4 w-4 flex-shrink-0"
-          >
-            <X size={12} weight="bold" />
-          </Button>
-        </div>
-      );
-    }
-  };
-
-  const renderImageUpload = ({
-    showIcon,
-    label,
-    tooltip = "Attach an image",
-  }: TRenderImageUpload) => {
-    return (
-      <>
-        <input
-          type="file"
-          id={id}
-          className="hidden"
-          onChange={handleImageUpload}
-        />
-        <Tooltip content={tooltip}>
-          {showIcon ? (
-            <Button variant="ghost" size="iconSm" onClick={handleFileSelect}>
-              <ImageAdd01Icon size={18} strokeWidth={2} />
-            </Button>
-          ) : (
-            <Button variant="outlined" onClick={handleFileSelect}>
-              {label}
-            </Button>
-          )}
-        </Tooltip>
-      </>
-    );
-  };
-
-  const renderDropZone = () => {
-    return (
-      <>
-        <input {...dropzonProps.getInputProps()} />
-        {dropzonProps.isDragActive && (
-          <Flex
-            className="absolute inset-0 z-10 bg-white/50 backdrop-blur-sm dark:bg-black/50"
-            items="center"
-            justify="center"
-            gap="sm"
-          >
-            <ImageAdd01Icon
-              size={18}
-              strokeWidth={2}
-              className="text-zinc-500"
-            />
-            <Type size="sm" textColor="secondary">
-              Drag and drop an image here, or click to select an image
-            </Type>
-          </Flex>
-        )}
-      </>
-    );
-  };
-
   return {
     attachment,
-    ...dropzonProps,
+    dropzonProps,
     handleImageUpload,
-    handleFileSelect,
     clearAttachment,
-    renderAttachedImage,
-    renderImageUpload,
-    renderDropZone,
     setAttachment,
   };
 };

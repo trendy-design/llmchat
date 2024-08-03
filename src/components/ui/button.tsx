@@ -5,7 +5,7 @@ import * as React from "react";
 import { cn } from "@/helper/clsx";
 
 const buttonVariants = cva(
-  "inline-flex items-center gap-1 justify-center font-medium whitespace-nowrap rounded-md   transition-colors focus-visible:outline-none ",
+  "inline-flex items-center gap-1 justify-center font-medium whitespace-nowrap rounded-md transition-colors focus-visible:outline-none ",
   {
     variants: {
       variant: {
@@ -17,7 +17,7 @@ const buttonVariants = cva(
         destructive:
           "bg-rose-500/80 dark:bg-rose-500/80 text-destructive-foreground hover:bg-red-500 dark:hover:opacity-90",
         bordered:
-          "border border-zinc-500/10 bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-100 dark:hover:text-white hover:text-zinc-900",
+          "border border-zinc-800/10 dark:border-zinc-100/10 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100  opacity-80 hover:opacity-100",
         secondary:
           "bg-black/10 text-zinc-700 dark:text-zinc-100 opacity-90 hover:opacity-100  dark:bg-white/10",
         ghost:

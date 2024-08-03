@@ -156,10 +156,7 @@ export const AssistantModal: FC<TAssitantModal> = ({
                     onOpenChange={setOpenCreateAssistant}
                   >
                     <DialogPortal>
-                      <DialogOverlay
-                        onPointerOutCapture={(e) => e.preventDefault()}
-                        className="fixed inset-0 z-[600] bg-zinc-500/70 backdrop-blur-sm dark:bg-zinc-900/70"
-                      />
+                      <DialogOverlay className="fixed inset-0 z-[600] bg-zinc-500/70 backdrop-blur-sm dark:bg-zinc-900/70" />
                       <DialogContent
                         onInteractOutside={(e) => {
                           e.preventDefault();
