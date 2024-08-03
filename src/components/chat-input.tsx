@@ -229,6 +229,12 @@ export const ChatInput = () => {
                           if (e.key === "Enter" && !e.shiftKey) {
                             sendMessage(editor.getText());
                           }
+                          // scroll to bottom
+                          if (e.key === "Enter" && e.shiftKey) {
+                            e.preventDefault();
+                            e.currentTarget.scrollTop =
+                              e.currentTarget.scrollHeight;
+                          }
                         }}
                         className="no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[120px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-sm outline-none focus:outline-none md:text-base [&>*]:leading-6 [&>*]:outline-none"
                       />

@@ -25,6 +25,8 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
 }) => {
   const { updatePreferences } = usePreferenceContext();
   const { refetch, store } = useChatContext();
+  const currentMessage = store((state) => state.currentMessage);
+  const setCurrentMessage = store((state) => state.setCurrentMessage);
   const { getAssistantByKey } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
   const { removeMessageByIdMutation } = useSessions();
@@ -50,6 +52,8 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
     updatePreferences({
       defaultAssistant: assistant,
     });
+
+    setCurrentMessage(undefined);
 
     invokeModel({
       ...message.runConfig,
@@ -101,6 +105,10 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
                   },
                   {
                     onSuccess: () => {
+                      // if the current message is the one being deleted, set the current message to undefined
+                      if (message.id === currentMessage?.id) {
+                        setCurrentMessage(undefined);
+                      }
                       refetch();
                     },
                   },
