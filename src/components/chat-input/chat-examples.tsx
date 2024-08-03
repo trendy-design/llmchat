@@ -1,12 +1,12 @@
+import { Button } from "@/components/ui";
 import { Flex } from "@/components/ui/flex";
+import { StaggerContainer } from "@/components/ui/stagger-container";
 import { Type } from "@/components/ui/text";
 import { examplePrompts } from "@/config";
 import { useChatContext } from "@/context";
 import { slideUpVariant } from "@/helper/animations";
 import { SentIcon } from "@hugeicons/react";
 import { motion } from "framer-motion";
-import { Button } from "./ui";
-import { StaggerContainer } from "./ui/stagger-container";
 
 export const ChatExamples = () => {
   const { store } = useChatContext();
@@ -35,7 +35,7 @@ export const ChatExamples = () => {
                 key={index}
                 variant="bordered"
                 size="md"
-                className="w-full justify-start gap-2"
+                className="w-full justify-start gap-3 px-2"
                 onClick={() => {
                   editor?.commands?.clearContent();
                   editor?.commands?.setContent(prompt.content);
@@ -44,7 +44,7 @@ export const ChatExamples = () => {
               >
                 <SentIcon
                   size={18}
-                  className="rotate-45 text-emerald-500"
+                  className="rotate-45 text-emerald-400"
                   variant="solid"
                   strokeWidth="2"
                 />

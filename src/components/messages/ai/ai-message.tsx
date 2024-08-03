@@ -1,7 +1,7 @@
 import { useRef } from "react";
 
-import { Mdx } from "@/components/mdx";
 import { Flex, Tooltip } from "@/components/ui";
+import { Mdx } from "@/components/ui/mdx";
 import { useChatContext } from "@/context";
 import { useAssistantUtils } from "@/hooks";
 import { TChatMessage } from "@/types";

@@ -1,6 +1,5 @@
 "use client";
 
-import { Mdx } from "@/components/mdx";
 import {
   Badge,
   Button,
@@ -11,6 +10,7 @@ import {
   Spinner,
   Type,
 } from "@/components/ui";
+import { Mdx } from "@/components/ui/mdx";
 import {
   Delete01Icon,
   InformationCircleIcon,

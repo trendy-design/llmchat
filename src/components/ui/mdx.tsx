@@ -1,4 +1,4 @@
-import { CodeBlock } from "@/components/codeblock";
+import { CodeBlock } from "@/components/ui/codeblock";
 import {
   HoverCard,
   HoverCardContent,
@@ -11,8 +11,8 @@ import { ArrowUpRight } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import Markdown from "marked-react";
 import { FC, ReactNode, useEffect, useState } from "react";
-import { SearchFavicon } from "./tools/search-favicon";
-import { Flex, Type } from "./ui";
+import { Flex, Type } from ".";
+import { SearchFavicon } from "../tools/search-favicon";
 
 export type TMdx = {
   message?: string;

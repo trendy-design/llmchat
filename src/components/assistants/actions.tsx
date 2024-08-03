@@ -62,7 +62,7 @@ export const AssistantActions: FC<TAssistantActions> = ({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent
-        className="min-w-[200px] text-sm md:text-base z-[800]"
+        className="z-[800] min-w-[200px] text-sm md:text-base"
         align="end"
       >
         {actions.map((action) => (

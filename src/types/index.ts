@@ -1,4 +1,5 @@
 export * from "./assistants";
+export * from "./attachment";
 export * from "./documents";
 export * from "./export";
 export * from "./messages";

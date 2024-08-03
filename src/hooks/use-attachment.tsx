@@ -1,13 +1,11 @@
-import { TAttachment } from "@/components/chat-input";
 import { Button } from "@/components/ui/button";
 import { Pdf01Icon } from "@/components/ui/icons";
 import { useToast } from "@/components/ui/use-toast";
-import { usePreferenceContext } from "@/context";
+import { TAttachment } from "@/types";
 import { X } from "@phosphor-icons/react";
 import { ChangeEvent, useState } from "react";
 
 export const useAttachment = () => {
-  const { apiKeys } = usePreferenceContext();
   const [attachment, setAttachment] = useState<TAttachment>();
   const { toast } = useToast();
 

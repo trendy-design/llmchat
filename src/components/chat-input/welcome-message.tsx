@@ -1,9 +1,15 @@
+import { ModelIcon } from "../model-icon";
+import { Flex } from "../ui";
+import { Mdx } from "../ui/mdx";
 import { ChatExamples } from "./chat-examples";
-import { Mdx } from "./mdx";
-import { ModelIcon } from "./model-icon";
-import { Flex } from "./ui";
 
-export const ChatGreeting = () => {
+export type TWelcomeMessageProps = {
+  show: boolean;
+};
+
+export const WelcomeMessage = ({ show }: TWelcomeMessageProps) => {
+  if (!show) return null;
+
   return (
     <div className="flex w-full flex-row items-start justify-start gap-2 md:w-[720px]">
       <div className="mt-6 flex w-full flex-col items-start md:flex-row">

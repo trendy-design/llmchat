@@ -9,6 +9,8 @@ import { TAssistant } from "@/types";
 import { Plus } from "@phosphor-icons/react";
 import { useFormik } from "formik";
 import { useEffect, useRef } from "react";
+import { ImageAttachment } from "../chat-input/image-attachment";
+import { ImageUpload } from "../chat-input/image-upload";
 import { ModelSelect } from "../model-select";
 import { Flex } from "../ui";
 
@@ -28,10 +30,8 @@ export const CreateAssistant = ({
   const botTitleRef = useRef<HTMLInputElement | null>(null);
   const { assistants } = useAssistantUtils();
 
-  const { attachment, renderImageUpload, renderAttachedImage, setAttachment } =
-    useImageAttachment({
-      id: "assistant-icon-upload",
-    });
+  const { attachment, setAttachment, handleImageUpload, clearAttachment } =
+    useImageAttachment();
 
   const formik = useFormik<Omit<TAssistant, "key" | "provider">>({
     initialValues: {
@@ -127,10 +127,17 @@ export const CreateAssistant = ({
         <Flex direction="col" gap="sm">
           <FormLabel label="Icon" isOptional />
           <Flex direction="row" gap="sm" items="center">
-            {renderAttachedImage()}
-            {renderImageUpload({
-              label: "Upload Icon",
-            })}
+            <ImageAttachment
+              attachment={attachment}
+              clearAttachment={clearAttachment}
+            />
+            <ImageUpload
+              label="Upload Icon"
+              handleImageUpload={handleImageUpload}
+              id="assistant-icon-upload"
+              tooltip="Upload Icon"
+              showIcon={false}
+            />
           </Flex>
         </Flex>
 
@@ -140,6 +147,9 @@ export const CreateAssistant = ({
           </FormLabel>
           <Textarea
             name="systemPrompt"
+            onKeyDown={(e) => {
+              e.stopPropagation();
+            }}
             placeholder="You're a helpful Assistant. Your role is to help users with their queries."
             value={formik.values.systemPrompt}
             onChange={formik.handleChange}
