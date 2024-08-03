@@ -7,27 +7,30 @@ import {
   TSessionsContext,
   TSessionsProvider,
 } from "@/types";
-import {
-  FC,
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FC, createContext, useContext, useEffect, useState } from "react";
 
 export const SessionContext = createContext<TSessionsContext | undefined>(
   undefined,
 );
 
 export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
-  const store = useMemo(() => createSessionsStore(), []);
+  const store = createSessionsStore();
+  store?.persist?.onFinishHydration((state) => {
+    console.log(state);
+    if (!state?.activeSessionId) {
+      createSession();
+    }
+  });
   const [sessions, setSessions] = useState<TChatSession[]>([]);
   const activeSessionId = store((state) => state.activeSessionId);
   const setActiveSessionId = store((state) => state.setActiveSessionId);
   const useChatSessionQueriesProps = useChatSessionQueries();
   const { sessionsQuery, createNewSessionMutation, addMessageMutation } =
     useChatSessionQueriesProps;
+
+  useEffect(() => {
+    store.persist.rehydrate();
+  }, []);
 
   useEffect(() => {
     if (sessionsQuery?.data) {
@@ -38,23 +41,12 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
   const createSession = async () => {
     try {
       const data = await createNewSessionMutation.mutateAsync(undefined);
+      console.log(store);
       setActiveSessionId(data.id);
     } catch (error) {
       console.error("Failed to create session:", error);
     }
   };
-
-  // useEffect(() => {
-  //   if (!activeSessionId && pathname === "/chat") {
-  //     createSession();
-  //   }
-  // }, []);
-
-  useEffect(() => {
-    if (activeSessionId === undefined) {
-      createSession();
-    }
-  }, [activeSessionId]);
 
   const addMessage = async (parentId: string, message: TChatMessage) => {
     try {
