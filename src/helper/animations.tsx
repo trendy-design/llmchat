@@ -21,11 +21,10 @@ export const REVEAL_FAST_ANIMATION_VARIANTS = {
 };
 
 const slideUpVariant = {
-  initial: { y: 10, opacity: 0 },
-  animate: {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
     y: 0,
     opacity: 1,
-    transition: { duration: 0.5, ease: "easeInOut" },
   },
 };
 
