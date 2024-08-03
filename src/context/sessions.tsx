@@ -15,7 +15,7 @@ export const SessionContext = createContext<TSessionsContext | undefined>(
 
 export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
   const store = createSessionsStore();
-  store.persist.onFinishHydration((state) => {
+  store?.persist?.onFinishHydration((state) => {
     console.log(state);
     if (!state?.activeSessionId) {
       createSession();
@@ -58,6 +58,10 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
       console.error("Failed to add message:", error);
     }
   };
+
+  if (!activeSessionId || sessions?.length === 0) {
+    return null;
+  }
 
   return (
     <SessionContext.Provider
