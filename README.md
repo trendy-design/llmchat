@@ -1,9 +1,7 @@
+# LLMChat
+
 ![Frame 557](https://github.com/user-attachments/assets/32af8db7-96b7-48a6-8a69-ad63aecf3ed1)
 
-# All-in-One LLM Chat App
-
-
-Welcome to the All-in-One LLM App! For your info, this project is designed to run LLMs locally. All your chat sessions and API keys will be stored locally in your browser. This project is designed to provide a comprehensive solution for leveraging various language models in a user-friendly interface. Built with modern technologies, this application allows users to interact with multiple LLMs seamlessly.
 
 ## Tech Stack
 
