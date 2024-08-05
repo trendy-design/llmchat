@@ -7,6 +7,7 @@ import {
 } from "@/context"; // Consolidated context imports
 import { AuthProvider } from "@/context/auth";
 import { cn } from "@/helper/clsx";
+import { CSPostHogProvider } from "@/libs/posthog/provider";
 import type { Metadata, Viewport } from "next"; // Combined type imports
 import { ThemeProvider } from "next-themes";
 import { interVar } from "./fonts";
@@ -31,26 +32,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn(interVar.variable, "antialiased")}>
-      <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="dark"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ReactQueryProvider>
-            <AuthProvider>
-              <TooltipProvider>
-                <PreferenceProvider>
-                  <SessionsProvider>
-                    <MainLayout>{children}</MainLayout>
-                  </SessionsProvider>
-                </PreferenceProvider>
-              </TooltipProvider>
-            </AuthProvider>
-          </ReactQueryProvider>
-        </ThemeProvider>
-      </body>
+      <CSPostHogProvider>
+        <body>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ReactQueryProvider>
+              <AuthProvider>
+                <TooltipProvider>
+                  <PreferenceProvider>
+                    <SessionsProvider>
+                      <MainLayout>{children}</MainLayout>
+                    </SessionsProvider>
+                  </PreferenceProvider>
+                </TooltipProvider>
+              </AuthProvider>
+            </ReactQueryProvider>
+          </ThemeProvider>
+        </body>
+      </CSPostHogProvider>
     </html>
   );
 }

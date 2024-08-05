@@ -80,6 +80,7 @@
     "openai": "^4.47.1",
     "pdf-parse": "^1.1.1",
     "pdfjs-dist": "3.11.174",
+    "posthog-js": "^1.154.2",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
