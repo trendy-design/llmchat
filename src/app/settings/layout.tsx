@@ -10,7 +10,7 @@ import {
   VoiceIcon,
 } from "@/components/ui/icons";
 import { cn } from "@/helper/clsx";
-import { HugeiconsProps } from "@hugeicons/react";
+import { ArrowLeft02Icon, HugeiconsProps } from "@hugeicons/react";
 import { usePathname, useRouter } from "next/navigation";
 import { FC, ReactNode, RefAttributes, useEffect } from "react";
 
@@ -89,8 +89,16 @@ export default function SettingsPage({
 
   return (
     <div className="relative flex h-screen w-full flex-col overflow-hidden bg-white dark:bg-zinc-800 md:flex-row">
-      <div className="no-scrollbar absolute left-0 right-0 top-0 flex w-full flex-row items-end gap-1 overflow-x-auto border-zinc-500/10 bg-zinc-50/50 px-2 pb-2 pt-2 dark:bg-zinc-900/50 md:bottom-0 md:h-full md:w-[30vw] md:flex-col md:gap-0 md:overflow-y-auto md:pb-16 md:pt-8">
-        <div className="mt-[60px] flex w-full flex-row items-start justify-start gap-2 p-2 md:mt-0 md:w-[200px] md:flex-col md:p-4 md:pr-4">
+      <div className="no-scrollbar absolute left-0 right-0 top-0 flex w-full flex-row items-end gap-1 overflow-x-auto border-zinc-500/10 bg-zinc-50/50 px-2 pb-2 pt-2 dark:bg-zinc-900/50 md:bottom-0 md:h-full md:w-[30vw] md:flex-col md:gap-0 md:overflow-y-auto md:pb-16 md:pt-0">
+        <div className="mt-[60px] flex w-full flex-row items-start justify-start gap-1 p-2 md:mt-0 md:w-[200px] md:flex-col md:p-4 md:pr-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => push("/")}
+            className="w-full justify-start gap-2"
+          >
+            <ArrowLeft02Icon size={18} variant="solid" /> Back
+          </Button>
           <Flex
             direction="row"
             gap="xs"

@@ -22,7 +22,6 @@ import {
 } from "@/components/ui";
 import { useAuth } from "@/context/auth";
 import {
-  ArrowLeft02Icon,
   Comment01Icon,
   FolderLibraryIcon,
   Github01Icon,
@@ -44,22 +43,6 @@ export const Sidebar = () => {
   const { renderModal, setOpen: openFeedback } = useFeedback();
 
   const renderNewSession = () => {
-    if (!pathname.startsWith("/chat")) {
-      return (
-        <Tooltip content="New Session" side="left" sideOffset={4}>
-          <Button
-            size="icon"
-            variant="secondary"
-            className="h-8 min-w-8"
-            onClick={() => {
-              push("/chat");
-            }}
-          >
-            <ArrowLeft02Icon size={20} strokeWidth={2} />
-          </Button>
-        </Tooltip>
-      );
-    }
     return (
       <Tooltip content="New Session" side="left" sideOffset={4}>
         <Button

@@ -70,6 +70,7 @@ export const useChatSessionQueries = () => {
     useQuery({
       queryKey: ["messages", id],
       queryFn: () => messagesService.getMessages(id),
+      enabled: !!id,
     });
 
   const createNewSessionMutation = useMutation({
@@ -96,7 +97,7 @@ export const useChatSessionQueries = () => {
     }) => {
       const leftMessages = await messagesService.removeMessage(
         parentId,
-        messageId
+        messageId,
       );
       if (!leftMessages?.length) {
         await sessionsService.removeSessionById(parentId);
