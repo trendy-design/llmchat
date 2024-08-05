@@ -10,6 +10,7 @@ import { useState } from "react";
 import { HistorySidebar } from "../history/history-side-bar";
 
 import {
+  Badge,
   Button,
   DropdownMenu,
   DropdownMenuContent,
@@ -31,6 +32,7 @@ import {
 import Avatar from "boring-avatars";
 import { usePathname, useRouter } from "next/navigation";
 import { useFeedback } from "../feedback/use-feedback";
+import { ModelIcon } from "../model-icon";
 
 export const Sidebar = () => {
   const pathname = usePathname();
@@ -198,6 +200,8 @@ export const Sidebar = () => {
   return (
     <>
       <div className="group fixed z-10 flex w-full flex-row items-center justify-center gap-3 border-zinc-500/10 p-3 dark:border-zinc-500/5 md:h-screen md:w-auto md:flex-col md:border-r">
+        <ModelIcon type="llmchatlogo" size="sm" />
+        <Badge>Beta</Badge>
         <div className="flex flex-row items-center gap-2">
           {renderNewSession()}
         </div>
