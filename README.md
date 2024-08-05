@@ -1,3 +1,5 @@
+![llmchat](https://github.com/user-attachments/assets/598b1c11-eb55-4121-abfb-5bc4813db22a)
+
 # All-in-One LLM App
 
 Welcome to the All-in-One LLM App! For your info, this project is designed to run LLMs locally. All your chat sessions and API keys will be stored locally in your browser. This project is designed to provide a comprehensive solution for leveraging various language models in a user-friendly interface. Built with modern technologies, this application allows users to interact with multiple LLMs seamlessly.
