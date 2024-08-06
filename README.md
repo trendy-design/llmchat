@@ -1,6 +1,6 @@
 # LLMChat
 
-![Frame 557](https://github.com/user-attachments/assets/32af8db7-96b7-48a6-8a69-ad63aecf3ed1)
+![llmchatossbanner](https://github.com/user-attachments/assets/c4cd44b6-9967-4f3c-912b-6556ebb589d2)
 
 
 ## Tech Stack
