@@ -60,8 +60,6 @@ export class ModelService {
       ...preferences,
     };
 
-    console.log("ollamaBaseUrl", ollamaBaseUrl);
-
     const maxTokens =
       rest.maxTokens <= model.maxOutputTokens
         ? rest.maxTokens

@@ -12,8 +12,6 @@ export const ChatEditor: FC<TChatEditor> = ({ sendMessage }) => {
   const editor = store((state) => state.editor);
   const isGenerating = store((state) => state.isGenerating);
 
-  console.log(isGenerating);
-
   if (!editor) return null;
 
   const editorContainerClass =

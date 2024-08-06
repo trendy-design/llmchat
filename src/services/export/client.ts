@@ -77,7 +77,6 @@ export class ExportService {
     try {
       const parsedData = dataValidator.parse(JSON.parse(data), {
         errorMap: (issue: any, ctx: any) => {
-          console.log(issue, ctx);
           return { message: ctx.defaultError };
         },
       });
@@ -100,9 +99,6 @@ export class ExportService {
         ));
       prompts && (await this.promptsService.addPrompts(prompts));
       preferences && (await preferencesService.setPreferences(preferences));
-
-      console.log("API KEYS", apiKeys);
-
       apiKeys && (await preferencesService.setApiKeys(apiKeys));
 
       assistants && (await assistantsService.addAssistants(assistants));

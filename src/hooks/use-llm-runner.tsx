@@ -8,7 +8,6 @@ import { generateShortUUID } from "@/helper/utils";
 import { modelService } from "@/services/models";
 import { messagesService, sessionsService } from "@/services/sessions/client";
 import { TLLMRunConfig, TStopReason } from "@/types";
-import { LLMResult } from "@langchain/core/outputs";
 import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import moment from "moment";
 import { useAssistantUtils, useTools } from ".";
@@ -182,7 +181,6 @@ export const useLLMRunner = () => {
       limit: messageLimit,
     });
 
-    console.log("chatHistory", chatHistory);
     try {
       const stream: any = await executor.invoke(
         {
@@ -203,25 +201,9 @@ export const useLLMRunner = () => {
                 metadata,
                 name,
               ) {
-                console.log(
-                  "handleToolStart",
-                  tool,
-                  input,
-                  runId,
-                  parentRunId,
-                  tags,
-                  metadata,
-                  name,
-                );
-
-                console.log("handleToolStart", name);
                 name && addTool({ toolName: name, toolLoading: true });
               },
-              handleToolError: () => {},
-              handleToolEnd: () => {},
-              handleLLMEnd: async (output: LLMResult) => {
-                console.log("handleLLMEnd", output);
-              },
+
               handleLLMNewToken: async (token: string) => {
                 streamedMessage += token;
                 updateCurrentMessage({
@@ -231,9 +213,8 @@ export const useLLMRunner = () => {
                   stopReason: undefined,
                 });
               },
-              handleChainEnd: async () => {},
               handleLLMError: async (err: Error) => {
-                console.info("handleLLMError", err);
+                // Log this error
                 if (!currentAbortController?.signal.aborted) {
                   toast({
                     title: "Error",
@@ -254,8 +235,6 @@ export const useLLMRunner = () => {
                   (value) => hasError[value],
                 ) as TStopReason;
 
-                console.log(err.message);
-
                 updateCurrentMessage({
                   isLoading: false,
                   rawHuman: input,
@@ -269,8 +248,6 @@ export const useLLMRunner = () => {
           ],
         },
       );
-
-      console.log("stream", stream);
 
       updateCurrentMessage({
         rawHuman: input,

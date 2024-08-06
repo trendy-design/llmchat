@@ -26,7 +26,6 @@ export const createChatStore = () =>
     },
     removeLastMessage: () => {
       const { messages } = get();
-      console.log("removing last message", messages, messages.slice(0, -1));
       set({ messages: messages.slice(0, -1) });
     },
     setTools: (tools) => set({ currentTools: tools }),

@@ -6,7 +6,6 @@ export const useScrollToBottom = () => {
   const scrollToBottom = () => {
     const chatContainer = document.getElementById("chat-container");
     if (chatContainer) {
-      console.log("use scroll to bottom");
       chatContainer.scrollTop =
         chatContainer.scrollHeight - chatContainer.clientHeight + 100;
       setIsAtBottom(true);

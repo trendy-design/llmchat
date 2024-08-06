@@ -65,8 +65,6 @@ const readURL = async (url: string): Promise<TReaderResult> => {
         }
       }
     }
-
-    console.log("Using Jina as fallback.");
     return await fetchWithJina(url);
   } catch (error) {
     console.error("Error in readURL:", error);
@@ -104,8 +102,6 @@ const fetchWithJina = async (url: string): Promise<TReaderResult> => {
 
 export async function POST(req: NextRequest, resp: NextResponse) {
   const { urls } = await req.json();
-  console.log(urls);
-
   if (!urls?.length) {
     return NextResponse.json({
       success: false,
@@ -116,8 +112,6 @@ export async function POST(req: NextRequest, resp: NextResponse) {
   const results = await Promise.all(
     urls?.map(async (url: string) => await readURL(url)),
   );
-
-  console.log(results);
 
   return NextResponse.json({ results });
 }

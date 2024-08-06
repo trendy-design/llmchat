@@ -30,7 +30,6 @@ export const AuthProvider = ({ children }: TAuthProvider) => {
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
       data.user && setUser(data.user);
-      console.log("user", data.user);
     });
   }, []);
 

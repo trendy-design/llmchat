@@ -55,8 +55,6 @@ async function generate({ audio, language }) {
   const [tokenizer, processor, model] =
     await AutomaticSpeechRecognitionPipeline.getInstance();
 
-  console.log(":SD", model);
-
   let startTime;
   let numTokens = 0;
   const callback_function = (output) => {

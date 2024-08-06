@@ -18,7 +18,6 @@ export const ChatScrollAnchor = ({
     if (isAtBottom && trackVisibility && !inView) {
       const chatContainer = document.getElementById("chat-container");
       if (chatContainer) {
-        console.log("scroll to bottom");
         chatContainer.scrollTop =
           chatContainer.scrollHeight - chatContainer.clientHeight;
       }
