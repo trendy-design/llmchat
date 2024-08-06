@@ -26,7 +26,6 @@ export const OllamaSettings = () => {
     try {
       const response = await fetch(url + "/api/tags");
       if (response.status === 200) {
-        console.log(response);
         toast({
           title: "Success",
           description: "Ollama server endpoint is valid",

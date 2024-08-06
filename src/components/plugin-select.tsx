@@ -60,13 +60,11 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
           <Type
             size="sm"
             weight="medium"
-            className="border-b border-zinc-500/20 px-3 py-2"
+            className="border-b border-zinc-500/20 px-3 py-2 gap-2"
           >
             Plugins <Badge>Beta</Badge>
           </Type>
-          <p className="flex flex-row gap-2 border-b border-zinc-500/20 px-3 py-2 text-sm font-medium">
-            Plugins <Badge>Beta</Badge>
-          </p>
+        
           <div className="flex flex-col p-1">
             {availableTools.map((tool) => {
               const Icon = tool.icon;

@@ -188,7 +188,7 @@ export const AssistantModal: FC<TAssitantModal> = ({
                                 setOpenCreateAssistant(false);
                               },
                               onError: (error) => {
-                                console.log("error", error);
+                                // Log this error
                               },
                             });
                           }}

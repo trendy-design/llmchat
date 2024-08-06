@@ -34,7 +34,6 @@ export const ChatProvider: FC<TChatProvider> = ({ children, sessionId }) => {
 
   useEffect(() => {
     if (messages?.data) {
-      console.log("messages", messages);
       setMessages(messages.data);
     }
   }, [messages?.data]);

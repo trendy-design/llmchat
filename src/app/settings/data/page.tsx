@@ -35,17 +35,13 @@ export default function DataSettings() {
   function handleFileSelect(event: ChangeEvent<HTMLInputElement>) {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
-    console.log(file);
 
     if (file) {
       const reader = new FileReader();
       reader.onload = async function (e) {
         const content = e.target?.result as string;
-        console.log(content);
         try {
           exportService.processImport(content);
-
-          console.log("imported");
 
           toast({
             title: "Data Imported",
@@ -53,7 +49,7 @@ export default function DataSettings() {
             variant: "default",
           });
         } catch (e) {
-          console.error(e);
+          // Log this error
           toast({
             title: "Invalid JSON",
             description: "The JSON file you uploaded is invalid",

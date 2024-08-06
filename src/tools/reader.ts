@@ -37,9 +37,6 @@ const readerTool = (args: TToolArg) => {
             const chunks = await textSplitter.createDocuments([
               result?.markdown,
             ]);
-            console.log("chunks", chunks?.[0]?.pageContent?.length);
-
-            console.log("rawchunks", result?.markdown?.length);
 
             return `title: ${result?.title},markdown: ${chunks?.[0]?.pageContent},url: ${result?.url}`;
           }),
@@ -60,7 +57,6 @@ const readerTool = (args: TToolArg) => {
         });
         return searchPrompt;
       } catch (error) {
-        console.log("error", error);
         sendToolResponse({
           toolName: "webpage_reader",
           toolArgs: {

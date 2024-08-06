@@ -58,8 +58,6 @@ export default function Spaces() {
 
   const handleSearch = async () => {
     const results = await vectorStore.similaritySearch({ query: search });
-    console.log("results", results.similarItems);
-
     const model = models.find((model) => model.key === "gpt-3.5-turbo");
     if (!model) return;
 
@@ -80,7 +78,6 @@ export default function Spaces() {
 
     const response = await chain.invoke({ input: search, chat_history: [] });
 
-    console.log("results", response.content);
     setResults(response.content as string);
   };
 
@@ -96,7 +93,6 @@ export default function Spaces() {
   };
 
   const extractWebsiteContent = async (data: any, documentId: string) => {
-    console.log("data", data);
     const textSplitter = new RecursiveCharacterTextSplitter({
       chunkSize: 1400,
       chunkOverlap: 100,
@@ -112,7 +108,6 @@ export default function Spaces() {
       const chunks = await textSplitter.splitDocuments([
         new Document({ pageContent: data.markdown }),
       ]);
-      console.log("chunks", chunks);
 
       const chunksWithMetadata = chunks?.map((chunk) => ({
         chunk: {
@@ -123,8 +118,6 @@ export default function Spaces() {
           },
         },
       }));
-
-      console.log("chunksWithMetadata", chunksWithMetadata);
 
       await Promise.all(
         chunksWithMetadata.map(async (page) => {
@@ -141,7 +134,7 @@ export default function Spaces() {
         isFailed: false,
       });
     } catch (error) {
-      console.log("error", error);
+      // Log this error
       await updateDocumentStatus(documentId, {
         isFailed: true,
         isIndexing: false,
@@ -156,7 +149,6 @@ export default function Spaces() {
     );
     worker.postMessage({ file, documentId });
     worker.onmessage = async (event) => {
-      console.log("event", event);
       const { pages = [], documentId } = event?.data;
       try {
         await updateDocumentStatus(documentId, {
@@ -190,7 +182,6 @@ export default function Spaces() {
   };
 
   useEffect(() => {
-    console.log("attachment", attachment);
     if (attachment?.file) {
       createDocumentMutation.mutate(
         {
@@ -210,7 +201,7 @@ export default function Spaces() {
               extractContent(data.content, data.id);
           },
           onError(error) {
-            console.log("error", error);
+            // Log this error
           },
         },
       );
@@ -221,8 +212,6 @@ export default function Spaces() {
 
   const handleWebsiteIndex = async () => {
     if (!websiteUrl) return;
-
-    console.log("websiteUrl", websiteUrl);
     const response = await fetch(`/api/reader`, {
       method: "POST",
       body: JSON.stringify({ urls: [websiteUrl] }),
@@ -248,11 +237,7 @@ export default function Spaces() {
         },
       },
     );
-
-    console.log("data", data);
   };
-
-  console.log("error", error);
 
   return (
     <Flex className="w-full pt-8" items="center" direction="col" gap="md">

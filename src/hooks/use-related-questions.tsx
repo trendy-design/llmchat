@@ -73,8 +73,6 @@ export const useRelatedQuestions = () => {
         format_instructions: parser.getFormatInstructions(),
       });
 
-      console.log("RELATED", generation);
-
       return generation?.questions || [];
     } catch (error) {
       console.error(error);
