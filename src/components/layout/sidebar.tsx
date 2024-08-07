@@ -6,7 +6,6 @@ import {
 } from "@/components/ui/icons";
 import { useSessions } from "@/context";
 import { useTheme } from "next-themes";
-import { useState } from "react";
 import { HistorySidebar } from "../history/history-side-bar";
 
 import {
@@ -29,16 +28,14 @@ import {
   TwitterIcon,
 } from "@hugeicons/react";
 import Avatar from "boring-avatars";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useFeedback } from "../feedback/use-feedback";
 import { ModelIcon } from "../model-icon";
 
 export const Sidebar = () => {
-  const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const { open: openSignIn, logout, user } = useAuth();
   const { push } = useRouter();
-  const [isOpen, setIsOpen] = useState(false);
   const { createSession } = useSessions();
   const { renderModal, setOpen: openFeedback } = useFeedback();
 
@@ -51,7 +48,6 @@ export const Sidebar = () => {
           className="h-8 min-w-8"
           onClick={() => {
             push("/chat");
-
             createSession();
           }}
         >
@@ -183,8 +179,16 @@ export const Sidebar = () => {
   return (
     <>
       <div className="group fixed z-10 flex w-full flex-row items-center justify-center gap-3 border-zinc-500/10 p-3 dark:border-zinc-500/5 md:h-screen md:w-auto md:flex-col md:border-r">
-        <ModelIcon type="llmchatlogo" size="sm" />
-        <Badge>Beta</Badge>
+        <Flex
+          direction="col"
+          items="center"
+          gap="sm"
+          onClick={() => push("/")}
+          className="cursor-pointer"
+        >
+          <ModelIcon type="llmchatlogo" size="sm" />
+          <Badge>Beta</Badge>
+        </Flex>
         <div className="flex flex-row items-center gap-2">
           {renderNewSession()}
         </div>
