@@ -33,6 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={cn(interVar.variable, "antialiased")}>
+      <head>
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+      </head>
       <CSPostHogProvider>
         <body>
           <ThemeProvider
