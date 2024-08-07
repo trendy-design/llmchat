@@ -1,45 +1,51 @@
-import { usePreferenceContext } from "@/context";
 import { HugeiconsProps } from "@hugeicons/react";
+import { DynamicStructuredTool } from "@langchain/core/tools";
 import { FC, ReactNode, RefAttributes } from "react";
 import { TModelItem } from "./models";
-import { TApiKeys, TPreferences } from "./preferences";
 
 export const toolKeys = ["calculator", "web_search"];
 
-export type TToolResponse = {
-  toolName: string;
-  toolLoading?: boolean;
-  toolArgs?: any;
-  toolResponse?: any;
-  toolRenderArgs?: any;
-};
+export type ToolExecutionFunction = (
+  args: ToolExecutionContext,
+) => DynamicStructuredTool;
 
-export type TToolConfig = {
-  key: TToolKey;
-  description: string;
-  name: string;
-  loadingMessage?: string;
-  resultMessage?: string;
-  isBeta?: boolean;
-  enforceTool?: boolean;
-  renderUI?: (args: any) => ReactNode;
-  showInMenu?: boolean;
-  validate?: () => Promise<boolean>;
-  validationFailedAction?: () => void;
-  tool: (args: TToolArg) => any;
-  icon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
-  smallIcon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
-};
-
-export type TToolArg = {
-  updatePreferences: ReturnType<
-    typeof usePreferenceContext
-  >["updatePreferences"];
-  preferences: TPreferences;
-  apiKeys: TApiKeys;
+export type ToolExecutionContext = {
+  apiKeys: Record<string, string>;
+  updateToolExecutionState: (state: ToolExecutionState) => void;
+  preferences: Record<string, any>;
+  updatePreferences?: (preferences: Record<string, any>) => void;
   model: TModelItem;
-  sendToolResponse: (response: TToolResponse) => void;
 };
 
-export type TToolKey = (typeof toolKeys)[number];
+export type ToolExecutionState = {
+  toolName: string;
+  executionArgs: Record<string, any>;
+  renderData?: Record<string, any>;
+  executionResult?: any;
+  isLoading: boolean;
+};
+
+export type ToolValidationContext = {
+  apiKeys: Record<string, string>;
+  preferences: Record<string, any>;
+};
+
+export type ToolDefinition = {
+  key: ToolKey;
+  description: string;
+  displayName: string;
+  executionFunction: ToolExecutionFunction;
+  loadingMessage?: string;
+  successMessage?: string;
+  isBeta?: boolean;
+  isEnforced?: boolean;
+  renderComponent?: (args: any) => ReactNode;
+  isVisibleInMenu?: boolean;
+  validateAvailability?: (context: ToolValidationContext) => Promise<boolean>;
+  onValidationFailed?: () => void;
+  icon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
+  compactIcon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
+};
+
+export type ToolKey = (typeof toolKeys)[number];
 export type IconSize = "sm" | "md" | "lg";

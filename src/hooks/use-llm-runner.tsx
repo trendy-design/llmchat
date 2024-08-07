@@ -34,7 +34,7 @@ export const useLLMRunner = () => {
   const setAbortController = store((state) => state.setAbortController);
   const { getModelByKey } = useAssistantUtils();
   const { preferences, apiKeys, updatePreferences } = usePreferenceContext();
-  const { getToolByKey } = useTools();
+  const { getAvailableTools } = useTools();
   const { toast } = useToast();
 
   const invokeModel = async (config: TLLMRunConfig) => {
@@ -70,7 +70,6 @@ export const useLLMRunner = () => {
 
     const allPreviousMessages =
       messages?.filter((m) => m.id !== messageId) || [];
-    const plugins = preferences.defaultPlugins || [];
     const messageLimit =
       preferences.messageLimit || defaultPreferences.messageLimit;
 
@@ -117,19 +116,7 @@ export const useLLMRunner = () => {
       systemPrompt: injectPresetValues(assistant.systemPrompt),
     });
 
-    const availableTools =
-      selectedModelKey?.plugins
-        ?.filter((p) => plugins.includes(p) || p === "webpage_reader")
-        ?.map((p) =>
-          getToolByKey(p)?.tool({
-            updatePreferences,
-            preferences,
-            model: selectedModelKey,
-            apiKeys,
-            sendToolResponse: addTool,
-          }),
-        )
-        ?.filter((t): t is any => !!t) || [];
+    const availableTools = getAvailableTools(selectedModelKey);
 
     const selectedModel = await modelService.createInstance({
       model: selectedModelKey,

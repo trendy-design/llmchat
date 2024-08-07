@@ -1,39 +1,35 @@
 import { ToolBadge } from "@/components/tools/tool-badge";
 import { Flex } from "@/components/ui";
 import { useTools } from "@/hooks";
-import { TToolResponse } from "@/types";
+import { ToolExecutionState } from "@/types";
 
-type TAIToolMessage = {
-  tool: TToolResponse;
+type AIToolMessageProps = {
+  tool: ToolExecutionState;
 };
 
-export const AIToolMessage = ({ tool }: TAIToolMessage) => {
-  const { getToolInfoByKey } = useTools();
+export const AIToolMessage = ({ tool }: AIToolMessageProps) => {
+  const { getToolByKey } = useTools();
 
-  const toolUsed = tool?.toolName
-    ? getToolInfoByKey(tool?.toolName)
-    : undefined;
+  const toolUsed = tool.toolName ? getToolByKey(tool.toolName) : undefined;
 
   if (!toolUsed) {
     return null;
   }
 
-  const Icon = toolUsed.smallIcon;
+  const Icon = toolUsed.compactIcon;
 
   return (
     <Flex direction="col" items="start" gap="sm" className="mb-4 w-full">
-      {toolUsed?.resultMessage && (
+      {toolUsed.successMessage && (
         <ToolBadge
           icon={Icon}
-          isLoading={tool?.toolLoading}
+          isLoading={tool.isLoading}
           loadingPlaceholder={toolUsed.loadingMessage}
-          text={toolUsed.resultMessage}
+          text={toolUsed.successMessage}
         />
       )}
 
-      {toolUsed &&
-        tool?.toolRenderArgs &&
-        toolUsed?.renderUI?.(tool?.toolRenderArgs)}
+      {tool.renderData && toolUsed.renderComponent?.(tool.renderData)}
     </Flex>
   );
 };

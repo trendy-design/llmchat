@@ -1,18 +1,21 @@
-import { TToolArg } from "@/types";
+import { GeneratedImage } from "@/components/generated-image";
+import { ToolDefinition, ToolExecutionContext } from "@/types";
+import { AiImageIcon } from "@hugeicons/react";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { DallEAPIWrapper } from "@langchain/openai";
 import { z } from "zod";
 
-const dalleTool = (args: TToolArg) => {
-  const { apiKeys, sendToolResponse, preferences } = args;
-  const imageGenerationSchema = z.object({
-    imageDescription: z.string(),
-  });
+const dalleInputSchema = z.object({
+  imageDescription: z.string(),
+});
+
+const dalleFunction = (context: ToolExecutionContext) => {
+  const { apiKeys, updateToolExecutionState, preferences } = context;
 
   return new DynamicStructuredTool({
     name: "image_generation",
     description: "Useful for when you asked for image based on description.",
-    schema: imageGenerationSchema,
+    schema: dalleInputSchema,
     func: async ({ imageDescription }, runManager) => {
       try {
         const tool = new DallEAPIWrapper({
@@ -29,27 +32,27 @@ const dalleTool = (args: TToolArg) => {
           throw new Error("Invalid response");
         }
 
-        sendToolResponse({
+        updateToolExecutionState({
           toolName: "image_generation",
-          toolArgs: {
+          executionArgs: {
             imageDescription,
           },
-          toolRenderArgs: {
+          renderData: {
             image: result,
             query: imageDescription,
           },
-          toolResponse: result,
-          toolLoading: false,
+          executionResult: result,
+          isLoading: false,
         });
         const searchPrompt = "";
         return searchPrompt;
       } catch (error) {
-        sendToolResponse({
+        updateToolExecutionState({
           toolName: "image_generation",
-          toolArgs: {
+          executionArgs: {
             imageDescription,
           },
-          toolLoading: false,
+          isLoading: false,
         });
         return "Error performing search. Must not use duckduckgo_search tool now. Ask user to check API keys.";
       }
@@ -57,4 +60,21 @@ const dalleTool = (args: TToolArg) => {
   });
 };
 
-export { dalleTool };
+const dalleToolDefinition: ToolDefinition = {
+  key: "image_generation",
+  description: "Generate images",
+  executionFunction: dalleFunction,
+  displayName: "Image Generation",
+  isBeta: true,
+  isVisibleInMenu: true,
+  validateAvailability: async () => Promise.resolve(true),
+  renderComponent: ({ image, query }) => {
+    return <GeneratedImage image={image} />;
+  },
+  loadingMessage: "Generating Image ...",
+  successMessage: "Generated Image",
+  icon: AiImageIcon,
+  compactIcon: AiImageIcon,
+};
+
+export { dalleToolDefinition };
