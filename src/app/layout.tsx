@@ -14,8 +14,9 @@ import { interVar } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AI Chat",
-  description: "Most intutive all-in-one AI chat client",
+  title: "LLMChat - Most intuitive All-in-one AI chat interface",
+  description:
+    "LLMChat is advanced AI chat interface with multiple AI models including local models.",
 };
 
 export const viewport: Viewport = {
