@@ -49,10 +49,10 @@ export const runConfigSchema = z.object({
 export const toolsSchema = z.array(
   z.object({
     toolName: z.string(),
-    toolLoading: z.boolean().optional(),
-    toolArgs: z.any().optional(),
-    toolResponse: z.any().optional(),
-    toolRenderArgs: z.any().optional(),
+    isLoading: z.boolean(),
+    executionArgs: z.any().optional(),
+    executionResult: z.any().optional(),
+    renderData: z.any().optional(),
   }),
 );
 

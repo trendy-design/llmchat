@@ -2,7 +2,7 @@ import { useEditor } from "@tiptap/react";
 import { StoreApi, UseBoundStore } from "zustand";
 import { TChatMessage } from "./messages";
 import { TChatSession } from "./sessions";
-import { TToolResponse } from "./tools";
+import { ToolExecutionState } from "./tools";
 
 export type TChatState = {
   session?: TChatSession;
@@ -10,7 +10,7 @@ export type TChatState = {
 
   messages: TChatMessage[];
   setMessages: (messages: TChatMessage[]) => void;
-  currentTools: TToolResponse[];
+  currentTools: ToolExecutionState[];
   isGenerating: boolean;
   editor?: ReturnType<typeof useEditor>;
   context?: string;
@@ -20,8 +20,8 @@ export type TChatState = {
   addMessage: (message: TChatMessage) => void;
   setCurrentMessage: (message?: TChatMessage) => void;
   updateCurrentMessage: (message: Partial<TChatMessage>) => void;
-  addTool: (tool: TToolResponse) => void;
-  setTools: (tools: TToolResponse[]) => void;
+  addTool: (tool: ToolExecutionState) => void;
+  setTools: (tools: ToolExecutionState[]) => void;
   setIsGenerating: (isGenerating: boolean) => void;
   abortController?: AbortController;
   setAbortController: (abortController: AbortController) => void;

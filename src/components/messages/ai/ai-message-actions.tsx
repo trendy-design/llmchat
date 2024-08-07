@@ -32,7 +32,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
   const { removeMessageByIdMutation } = useSessions();
 
   const { tools, runConfig, isLoading, rawAI } = message;
-  const isToolRunning = !!tools?.filter((t) => !!t?.toolLoading)?.length;
+  const isToolRunning = !!tools?.filter((t) => !!t?.isLoading)?.length;
   const isGenerating = isLoading && !isToolRunning;
   const removeLastMessage = store((state) => state.removeLastMessage);
 
