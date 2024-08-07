@@ -1,7 +1,7 @@
 import { ModelIcon } from "@/components/model-icon";
 import { providers } from "@/config/models";
 import { ComponentProps } from "react";
-import { TToolKey } from "./tools";
+import { ToolKey } from "./tools";
 
 export type TProvider = (typeof providers)[number];
 
@@ -34,7 +34,7 @@ export type TModelItem = {
   icon: ComponentProps<typeof ModelIcon>["type"];
   vision?: boolean;
   tokens: number;
-  plugins: TToolKey[];
+  plugins: ToolKey[];
   provider: TProvider;
   maxOutputTokens: number;
 };

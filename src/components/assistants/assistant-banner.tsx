@@ -8,7 +8,6 @@ export type AssistantBannerProps = {
 };
 
 export const AssistantBanner: FC<AssistantBannerProps> = ({
-  openCreateAssistant,
   setOpenCreateAssistant,
 }) => {
   return (

@@ -1,16 +1,18 @@
 import { webPageReaderPrompt } from "@/config/prompts";
-import { TToolArg } from "@/types";
+import { ToolDefinition, ToolExecutionContext } from "@/types";
+import { Book01Icon } from "@hugeicons/react";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import axios from "axios";
 import { z } from "zod";
 
-const readerTool = (args: TToolArg) => {
-  const { sendToolResponse } = args;
-  const webSearchSchema = z.object({
-    url: z.string().url().describe("URL of the page to be read"),
-    question: z.string().describe("Question to be asked to the webpage"),
-  });
+const webSearchSchema = z.object({
+  url: z.string().url().describe("URL of the page to be read"),
+  question: z.string().describe("Question to be asked to the webpage"),
+});
+
+const readerFunction = (context: ToolExecutionContext) => {
+  const { updateToolExecutionState } = context;
 
   return new DynamicStructuredTool({
     name: "webpage_reader",
@@ -42,27 +44,27 @@ const readerTool = (args: TToolArg) => {
           }),
         );
 
-        const searchPrompt = `Information: \n\n ${information.join("\n\n")} \n\n Based on the information please answer the given question with  proper citations. Question: ${question}`;
-        sendToolResponse({
+        const searchPrompt = `Information: \n\n ${information.join("\n\n")} \n\n Based on the information please answer the given question with proper citations. Question: ${question}`;
+        updateToolExecutionState({
           toolName: "webpage_reader",
-          toolArgs: {
+          executionArgs: {
             url,
           },
-          toolRenderArgs: {
+          renderData: {
             url,
             information,
           },
-          toolResponse: information,
-          toolLoading: false,
+          executionResult: information,
+          isLoading: false,
         });
         return searchPrompt;
       } catch (error) {
-        sendToolResponse({
+        updateToolExecutionState({
           toolName: "webpage_reader",
-          toolArgs: {
+          executionArgs: {
             url,
           },
-          toolLoading: false,
+          isLoading: false,
         });
         return "Error reading webpage. Must not use webpage_reader tool now. Ask user to check API keys.";
       }
@@ -70,4 +72,20 @@ const readerTool = (args: TToolArg) => {
   });
 };
 
-export { readerTool };
+const readerToolDefinition: ToolDefinition = {
+  key: "webpage_reader",
+  description: "Read and analyze web pages",
+  executionFunction: readerFunction,
+  displayName: "Web Page Reader",
+  isBeta: false,
+  isVisibleInMenu: false,
+  validateAvailability: async (context) => {
+    return true;
+  },
+  loadingMessage: "Reading webpage...",
+  successMessage: "Webpage read successfully",
+  icon: Book01Icon,
+  compactIcon: Book01Icon,
+};
+
+export { readerToolDefinition };
