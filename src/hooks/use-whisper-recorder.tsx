@@ -1,5 +1,3 @@
-import { Flex } from "@/components/ui";
-import { AudioWaveSpinner } from "@/components/ui/audio-wave";
 import { Button } from "@/components/ui/button";
 import { RecordIcon, StopIcon } from "@/components/ui/icons";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -12,6 +10,7 @@ const WHISPER_SAMPLING_RATE = 16_000;
 const MAX_AUDIO_LENGTH = 60; // seconds
 const MAX_SAMPLES = WHISPER_SAMPLING_RATE * MAX_AUDIO_LENGTH;
 
+// WIP: Experimenting with local whisper
 export const useWhisperRecorder = () => {
   const { push } = useRouter();
   const [text, setText] = useState<string>("");
@@ -214,23 +213,7 @@ export const useWhisperRecorder = () => {
     };
   }, []);
 
-  const renderListeningIndicator = () => {
-    if (transcribing) {
-      return (
-        <Flex items="center" gap="sm" className="opacity-50">
-          <AudioWaveSpinner /> <p>Transcribing ...</p>
-        </Flex>
-      );
-    }
-    if (recording) {
-      return (
-        <Flex items="center" gap="sm" className="opacity-50">
-          <AudioWaveSpinner />
-          <p>Listening ...</p>
-        </Flex>
-      );
-    }
-  };
+  const renderListeningIndicator = () => {};
 
   const renderDownloadButton = () => {
     return (
