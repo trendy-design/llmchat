@@ -188,7 +188,7 @@ export const useLLMRunner = () => {
                 metadata,
                 name,
               ) {
-                name && addTool({ toolName: name, toolLoading: true });
+                name && addTool({ toolName: name, isLoading: true });
               },
 
               handleLLMNewToken: async (token: string) => {
