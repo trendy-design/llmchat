@@ -10,6 +10,7 @@ import { isValidUrl } from "@/helper/utils";
 import { ArrowUpRight } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import Markdown from "marked-react";
+import Link from "next/link";
 import { FC, ReactNode, useEffect, useState } from "react";
 import { Flex, Type } from ".";
 import { SearchFavicon } from "../tools/search-favicon";
@@ -79,14 +80,14 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
       return (
         <HoverCard>
           <HoverCardTrigger asChild>
-            <a
-              href={url}
+            <Link
+              href={href}
               target="_blank"
               data-message-id={messageId}
               className="font-normal text-blue-500 !no-underline dark:text-blue-400"
             >
               {text}
-            </a>
+            </Link>
           </HoverCardTrigger>
           <HoverCardContent
             sideOffset={12}

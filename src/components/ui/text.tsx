@@ -16,7 +16,7 @@ const typeVariants = cva("text flex", {
     },
     textColor: {
       primary: "text-zinc-800 dark:text-zinc-50",
-      secondary: "text-zinc-600 dark:text-zinc-300",
+      secondary: "text-zinc-600 dark:text-zinc-200",
       tertiary: "text-zinc-500",
       white: "text-white",
     },
