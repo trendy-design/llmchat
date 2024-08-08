@@ -72,7 +72,11 @@ export const Sidebar = () => {
     return (
       <Tooltip content="Spaces (coming soon)" side="left" sideOffset={4}>
         <Button size="iconSm" variant="ghost">
-          <FolderLibraryIcon size={20} strokeWidth={2} />
+          <FolderLibraryIcon
+            size={20}
+            strokeWidth={2}
+            className="text-zinc-500"
+          />
         </Button>
       </Tooltip>
     );
@@ -160,7 +164,7 @@ export const Sidebar = () => {
             className="mt-1 w-full border-t border-zinc-500/10 p-1"
           >
             <Type size="sm" textColor="secondary">
-              Follow us on{" "}
+              Follow us on
             </Type>
             <Flex>
               <Button size="iconSm" variant="ghost">
