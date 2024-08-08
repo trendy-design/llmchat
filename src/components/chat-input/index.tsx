@@ -73,7 +73,7 @@ export const ChatInput = () => {
         <WelcomeMessage show={isFreshSession} />
         <FlexSpacer />
         <Flex items="center" justify="center" gap="sm" className="mb-2">
-          <ScrollToBottomButton show={isFreshSession} />
+          <ScrollToBottomButton />
           <StopGenerationButton />
         </Flex>
         <SelectedContext />
