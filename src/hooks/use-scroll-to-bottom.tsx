@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export const useScrollToBottom = () => {
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const [needsScroll, setNeedsScroll] = useState(false);
 
   const scrollToBottom = () => {
     const chatContainer = document.getElementById("chat-container");
@@ -20,6 +21,7 @@ export const useScrollToBottom = () => {
         chatContainer.scrollTop + 1;
 
       setIsAtBottom(isAtBottom);
+      setNeedsScroll(chatContainer.scrollHeight > chatContainer.clientHeight);
     }
   };
 
@@ -36,7 +38,7 @@ export const useScrollToBottom = () => {
   }, []);
 
   return {
-    showButton: !isAtBottom,
+    showScrollToBottom: !isAtBottom && needsScroll,
     scrollToBottom,
     isAtBottom,
   };

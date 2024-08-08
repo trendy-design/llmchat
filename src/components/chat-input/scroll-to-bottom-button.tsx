@@ -9,9 +9,9 @@ export type TScrollToBottomButton = {
 };
 
 export const ScrollToBottomButton: FC<TScrollToBottomButton> = ({ show }) => {
-  const { scrollToBottom, showButton } = useScrollToBottom();
+  const { scrollToBottom, showScrollToBottom } = useScrollToBottom();
 
-  if (!showButton || !show) return null;
+  if (!showScrollToBottom || !show) return null;
 
   return (
     <motion.span
