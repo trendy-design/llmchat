@@ -38,7 +38,7 @@ export const useScrollToBottom = () => {
   }, []);
 
   return {
-    showScrollToBottom: !isAtBottom && needsScroll,
+    showScrollToBottom: !isAtBottom,
     scrollToBottom,
     isAtBottom,
   };
