@@ -14,6 +14,7 @@ import { AiIdeaIcon, SentIcon } from "@hugeicons/react";
 import { useEffect, useState } from "react";
 import { PluginSelect } from "../plugin-select";
 import { ImageUpload } from "./image-upload";
+import { SpaceSelector } from "./space-selector";
 
 export type TChatActions = {
   sendMessage: (message: string) => void;
@@ -79,6 +80,7 @@ export const ChatActions = ({
           showIcon
           handleImageUpload={handleImageUpload}
         />
+        <SpaceSelector />
       </Flex>
 
       <Flex gap="xs" items="center">

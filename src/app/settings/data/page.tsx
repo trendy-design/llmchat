@@ -24,13 +24,7 @@ export default function DataSettings() {
 
   const { clearSessionsMutation, createSession } = useSessions();
 
-  const {
-    preferences,
-    apiKeys,
-    updatePreferences,
-    updateApiKey,
-    updateApiKeys,
-  } = usePreferenceContext();
+  const { updatePreferences } = usePreferenceContext();
 
   function handleFileSelect(event: ChangeEvent<HTMLInputElement>) {
     const input = event.target as HTMLInputElement;
