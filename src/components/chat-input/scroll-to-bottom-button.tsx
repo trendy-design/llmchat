@@ -1,17 +1,12 @@
 import { useScrollToBottom } from "@/hooks";
 import { ArrowDown02Icon } from "@hugeicons/react";
 import { motion } from "framer-motion";
-import { FC } from "react";
 import { Button } from "../ui/button";
 
-export type TScrollToBottomButton = {
-  show: boolean;
-};
-
-export const ScrollToBottomButton: FC<TScrollToBottomButton> = ({ show }) => {
+export const ScrollToBottomButton = () => {
   const { scrollToBottom, showScrollToBottom } = useScrollToBottom();
 
-  if (!showScrollToBottom || !show) return null;
+  if (!showScrollToBottom) return null;
 
   return (
     <motion.span
