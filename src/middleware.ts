@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const ratelimit = new Ratelimit({
   redis: kv,
-  limiter: Ratelimit.slidingWindow(90, "1 d"),
+  limiter: Ratelimit.slidingWindow(20, "1 d"),
 });
 
 export const config = {

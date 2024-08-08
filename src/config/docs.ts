@@ -13,8 +13,13 @@ To ensure proper functionality, you'll need to configure cross-origin settings d
    \`\`\`bash
    launchctl setenv OLLAMA_ORIGINS "\\*"
    \`\`\`
-  `;
+  
+3. Restart the Ollama service to apply the changes.
 
+#### Troubleshooting
+
+If you encounter any issues, please refer to the [Ollama troubleshooting guide](https://ollama.com/troubleshooting).
+`;
 const windowsOllamaConfig = `
   #### Step 1: Install and Start Ollama Locally
 
@@ -28,7 +33,7 @@ const windowsOllamaConfig = `
   2. Create a new environment variable named \`OLLAMA_ORIGINS\` for your user account.
   3. Set the value to \`*\`, and click **OK/Apply** to save.
   
-  Please restart the Ollama service after completion.
+  Important: Please restart the Ollama service after completion.
   `;
 
 export const docs = {
