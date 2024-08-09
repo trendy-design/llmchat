@@ -1,6 +1,6 @@
 import { Button, Flex, Type } from "@/components/ui";
 import { Alert02Icon } from "@/components/ui/icons";
-import { usePreferenceContext } from "@/context";
+import { useChatContext, usePreferenceContext } from "@/context";
 import { useAuth } from "@/context/auth";
 import { useAssistantUtils } from "@/hooks";
 import { useLLMRunner } from "@/hooks/use-llm-runner";
@@ -26,6 +26,11 @@ export const AIMessageError: FC<TAIMessageError> = ({
   stopReason,
   message,
 }) => {
+  const { store } = useChatContext();
+  const currentMessage = store((state) => state.currentMessage);
+  const removeLastMessage = store((state) => state.removeLastMessage);
+  const setCurrentMessage = store((state) => state.setCurrentMessage);
+
   const { push } = useRouter();
   const { open: openSignIn } = useAuth();
   const { apiKeys } = usePreferenceContext();
@@ -72,7 +77,11 @@ export const AIMessageError: FC<TAIMessageError> = ({
       action: {
         label: "Retry",
         onClick: () => {
-          invokeModel(message.runConfig);
+          if (currentMessage?.id !== message.id) {
+            removeLastMessage();
+          }
+          setCurrentMessage(undefined);
+          invokeModel({ ...message.runConfig, messageId: message.id });
         },
       },
     },
