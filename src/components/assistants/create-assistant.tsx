@@ -89,6 +89,11 @@ export const CreateAssistant = ({
     formik.resetForm();
   };
 
+  const handleClearAttachment = () => {
+    clearAttachment();
+    formik.setFieldValue("iconURL", "");
+  };
+
   return (
     <div className="relative flex h-full w-full flex-col items-start overflow-hidden rounded-lg bg-white dark:border dark:border-white/10 dark:bg-zinc-800">
       <div className="flex w-full flex-row items-center gap-3 border-b border-zinc-500/20 px-4 py-3">
@@ -129,7 +134,7 @@ export const CreateAssistant = ({
           <Flex direction="row" gap="sm" items="center">
             <ImageAttachment
               attachment={attachment}
-              clearAttachment={clearAttachment}
+              clearAttachment={handleClearAttachment}
             />
             <ImageUpload
               label="Upload Icon"
