@@ -1,3 +1,4 @@
+import { FormLabel } from "@/components/ui";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -9,10 +10,13 @@ import { Flex } from "@/components/ui/flex";
 import { Input } from "@/components/ui/input";
 import { Type } from "@/components/ui/text";
 import { useToast } from "@/components/ui/use-toast";
+import { configs } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
-import { ArrowRight, CaretDown, Info } from "@phosphor-icons/react";
+import { CaretDown } from "@phosphor-icons/react";
 import axios from "axios";
+import Link from "next/link";
 import { useEffect } from "react";
+import ApiKeyInput from "../models/api-key-input";
 
 export const WebSearchPlugin = () => {
   const { toast } = useToast();
@@ -81,15 +85,21 @@ export const WebSearchPlugin = () => {
         </DropdownMenu>
       </Flex>
       {preferences.defaultWebSearchEngine === "google" && (
-        <Flex direction="col" gap="sm" className="w-full">
+        <Flex direction="col" gap="md" className="w-full">
           <Flex direction="col" gap="sm" className="w-full">
-            <Type
-              size="xs"
-              className="flex flex-row items-center gap-2"
-              textColor="secondary"
-            >
-              Google Search Engine ID <Info weight="regular" size={14} />
-            </Type>
+            <FormLabel
+              label="Google Search Engine ID"
+              extra={() => (
+                <Link
+                  href={configs.googleSearchApiUrl}
+                  target="_blank"
+                  className="text-sm font-medium text-blue-400 hover:opacity-90"
+                >
+                  Get your ID here
+                </Link>
+              )}
+            />
+
             <Input
               name="googleSearchEngineId"
               type="text"
@@ -101,40 +111,32 @@ export const WebSearchPlugin = () => {
             />
           </Flex>
           <Flex direction="col" gap="sm" className="w-full">
-            <Type
-              size="xs"
-              className="flex flex-row items-center gap-2"
-              textColor="secondary"
-            >
-              Google Search Api Key <Info weight="regular" size={14} />
-            </Type>
-            <Input
-              name="googleSearchApiKey"
-              type="text"
+            <FormLabel
+              label="Google Search Api Key"
+              extra={() => (
+                <Link
+                  href={configs.googleSearchEngineApiKeyUrl}
+                  target="_blank"
+                  className="text-sm font-medium text-blue-400 hover:opacity-90"
+                >
+                  Get your API key here
+                </Link>
+              )}
+            />
+
+            <ApiKeyInput
               value={preferences.googleSearchApiKey}
-              autoComplete="off"
-              onChange={(e) => {
-                updatePreferences({ googleSearchApiKey: e.target.value });
+              setValue={(value) => {
+                updatePreferences({ googleSearchApiKey: value });
               }}
+              isDisabled={false}
+              placeholder="Api Key"
+              isLocked={false}
             />
           </Flex>
-          <Flex gap="sm">
-            <Button onClick={handleRunTest} size="sm">
-              Run check
-            </Button>
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => {
-                window.open(
-                  "https://programmablesearchengine.google.com/controlpanel/create",
-                  "_blank",
-                );
-              }}
-            >
-              Get your API key here <ArrowRight size={16} weight="bold" />
-            </Button>
-          </Flex>
+          <Button onClick={handleRunTest} size="sm">
+            Check Connection
+          </Button>
         </Flex>
       )}
     </Flex>

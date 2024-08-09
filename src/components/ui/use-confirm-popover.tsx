@@ -1,3 +1,4 @@
+import { HugeIcon } from "@/types/icons";
 import { useState } from "react";
 import { Button } from "./button";
 import { Flex } from "./flex";

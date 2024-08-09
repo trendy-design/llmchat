@@ -25,8 +25,8 @@ const getErrorMessage = (error: string) => {
 export const useLLMRunner = () => {
   const { user, open: openSignIn } = useAuth();
   const { store, refetch } = useChatContext();
+  const editor = store((state) => state.editor);
   const setIsGenerating = store((state) => state.setIsGenerating);
-  const currentMessage = store((state) => state.currentMessage);
   const setCurrentMessage = store((state) => state.setCurrentMessage);
   const updateCurrentMessage = store((state) => state.updateCurrentMessage);
   const addTool = store((state) => state.addTool);
@@ -42,6 +42,7 @@ export const useLLMRunner = () => {
       openSignIn();
       return;
     }
+    editor?.commands.clearContent();
 
     //to avoid duplication not refetch when regenerating
     if (!config?.messageId) {

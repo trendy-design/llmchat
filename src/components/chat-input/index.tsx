@@ -53,7 +53,6 @@ export const ChatInput = () => {
       assistant: props.assistant,
     });
     clearAttachment();
-    editor?.commands.clearContent();
   };
 
   const chatInputBackgroundContainer = cn(
