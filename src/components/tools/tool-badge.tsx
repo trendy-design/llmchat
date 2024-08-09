@@ -1,9 +1,8 @@
-import { HugeiconsProps } from "@hugeicons/react";
-import { FC, RefAttributes } from "react";
+import { HugeIcon } from "@/types/icons";
 import { Flex, Spinner, Type } from "../ui";
 
 export type ToolBadgeProps = {
-  icon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
+  icon: HugeIcon;
   isLoading?: boolean;
   loadingPlaceholder?: string;
   text: string;

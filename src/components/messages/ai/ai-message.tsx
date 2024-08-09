@@ -33,11 +33,12 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
 
   return (
     <div className="mt-6 flex w-full flex-col items-start md:flex-row">
-      <div className="p-2 md:px-3 md:py-2">
-        <Tooltip content={runConfig.assistant.name}>
+      <Tooltip content={runConfig.assistant.name}>
+        <div className="p-2 md:px-3 md:py-2">
           {getAssistantIcon(runConfig.assistant.key, "sm")}
-        </Tooltip>
-      </div>
+        </div>
+      </Tooltip>
+
       <Flex
         ref={messageRef}
         direction="col"

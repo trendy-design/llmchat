@@ -1,6 +1,6 @@
-import { HugeiconsProps } from "@hugeicons/react";
 import { DynamicStructuredTool } from "@langchain/core/tools";
-import { FC, ReactNode, RefAttributes } from "react";
+import { ReactNode } from "react";
+import { HugeIcon } from "./icons";
 import { TModelItem } from "./models";
 
 export const toolKeys = ["calculator", "web_search"];
@@ -43,8 +43,8 @@ export type ToolDefinition = {
   isVisibleInMenu?: boolean;
   validateAvailability?: (context: ToolValidationContext) => Promise<boolean>;
   onValidationFailed?: () => void;
-  icon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
-  compactIcon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
+  icon: HugeIcon;
+  compactIcon: HugeIcon;
 };
 
 export type ToolKey = (typeof toolKeys)[number];

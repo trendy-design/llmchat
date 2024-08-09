@@ -1,4 +1,6 @@
+import { constants } from "@/config";
 import { cn } from "@/helper/clsx";
+import Avatar from "boring-avatars";
 import Image from "next/image";
 export type ModelIconType =
   | "gpt3"
@@ -7,7 +9,7 @@ export type ModelIconType =
   | "gemini"
   | "openai"
   | "llmchat"
-  | "llmchatAccent"
+  | "assistant"
   | "websearch"
   | "calculator"
   | "duckduckgo_search"
@@ -20,8 +22,9 @@ export type TModelIcon = {
   type: ModelIconType;
   size: "sm" | "md" | "lg";
   base64?: string;
+  name?: string;
 };
-export const ModelIcon = ({ type, size, base64 }: TModelIcon) => {
+export const ModelIcon = ({ type, size, base64, name }: TModelIcon) => {
   const iconSrc = {
     gpt3: "/icons/gpt3.svg",
     gpt4: "/icons/gpt4.svg",
@@ -29,7 +32,6 @@ export const ModelIcon = ({ type, size, base64 }: TModelIcon) => {
     gemini: "/icons/gemini.svg",
     openai: "/icons/openai.svg",
     llmchat: "/icons/llmchat.svg",
-    llmchatAccent: "/icons/llmchat-accent.svg",
     websearch: "/icons/websearch.svg",
     calculator: "/icons/calculator.svg",
     duckduckgo_search: "/icons/duckduckgo.svg",
@@ -54,6 +56,27 @@ export const ModelIcon = ({ type, size, base64 }: TModelIcon) => {
         )}
         sizes="100vw"
       />
+    );
+  }
+
+  if (type === "assistant") {
+    return (
+      <div
+        className={cn(
+          "relative overflow-hidden rounded-full",
+          size === "sm" && "h-6 w-6",
+          size === "md" && "h-8 w-8",
+          size === "lg" && "h-10 w-10",
+        )}
+      >
+        <Avatar
+          name={name || "assistant"}
+          variant="marble"
+          square
+          size={40}
+          colors={constants.avatarColors}
+        />
+      </div>
     );
   }
 

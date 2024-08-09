@@ -1,5 +1,4 @@
-import { HugeiconsProps } from "@hugeicons/react";
-import { FC, RefAttributes, useState } from "react";
+import { useState } from "react";
 import { Button } from "./button";
 import { Flex } from "./flex";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
@@ -9,7 +8,7 @@ export type TPopoverConfirm = {
   onConfirm: (dismiss: () => void) => void;
   confimBtnText?: string;
   confimBtnVariant?: "destructive" | "default";
-  confirmIcon?: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
+  confirmIcon?: HugeIcon;
   onCancel?: () => void;
   children: React.ReactNode;
 };

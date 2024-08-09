@@ -11,7 +11,7 @@ import { ArrowUpRight } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 import Markdown from "marked-react";
 import Link from "next/link";
-import { FC, ReactNode, useEffect, useState } from "react";
+import { FC, ReactNode } from "react";
 import { Flex, Type } from ".";
 import { SearchFavicon } from "../tools/search-favicon";
 
@@ -23,39 +23,39 @@ export type TMdx = {
 };
 
 const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
-  const [processedMessage, setProcessedMessage] = useState("");
+  // const [processedMessage, setProcessedMessage] = useState("");
 
-  useEffect(() => {
-    if (message) {
-      // Process the message to hide incomplete Markdown elements
-      const processed = hideIncompleteMarkdown(message);
-      setProcessedMessage(processed);
-    }
-  }, [message]);
+  // useEffect(() => {
+  //   if (message) {
+  //     // Process the message to hide incomplete Markdown elements
+  //     const processed = hideIncompleteMarkdown(message);
+  //     setProcessedMessage(processed);
+  //   }
+  // }, [message]);
 
-  const hideIncompleteMarkdown = (text: string) => {
-    // Remove incomplete links
-    text = text.replace(/\[([^\]]*)\](\([^\)]*\)?)?/g, (match, text, url) => {
-      return url && url.endsWith(")") ? match : "";
-    });
+  // const hideIncompleteMarkdown = (text: string) => {
+  //   // Remove incomplete links
+  //   text = text.replace(/\[([^\]]*)\](\([^\)]*\)?)?/g, (match, text, url) => {
+  //     return url && url.endsWith(")") ? match : "";
+  //   });
 
-    // Remove incomplete images
-    text = text.replace(/!\[([^\]]*)\]\(([^\)]*)\)/g, (match, alt, src) => {
-      return src && src.endsWith(")") ? match : "";
-    });
+  //   // Remove incomplete images
+  //   text = text.replace(/!\[([^\]]*)\]\(([^\)]*)\)/g, (match, alt, src) => {
+  //     return src && src.endsWith(")") ? match : "";
+  //   });
 
-    // Remove incomplete table cells
-    text = text.replace(/\|([^\|]+)\|/g, (match, text) => {
-      return text ? match : "";
-    });
+  //   // Remove incomplete table cells
+  //   text = text.replace(/\|([^\|]+)\|/g, (match, text) => {
+  //     return text ? match : "";
+  //   });
 
-    // Remove incomplete table cells (duplicate, can be removed)
-    text = text.replace(/\|([^\|]+)\|/g, (match, text) => {
-      return text ? match : "";
-    });
+  //   // Remove incomplete table cells (duplicate, can be removed)
+  //   text = text.replace(/\|([^\|]+)\|/g, (match, text) => {
+  //     return text ? match : "";
+  //   });
 
-    return text;
-  };
+  //   return text;
+  // };
 
   if (!message || !messageId) {
     return null;
@@ -188,7 +188,7 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
         }}
         openLinksInNewTab={true}
       >
-        {processedMessage}
+        {message}
       </Markdown>
     </article>
   );
