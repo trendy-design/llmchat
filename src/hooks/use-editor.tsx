@@ -43,7 +43,7 @@ export const useChatEditor = () => {
         // setOpenPromptsBotCombo(true);
       } else {
         const newHTML = html.replace(
-          /\[(.*?)\]/g,
+          /<var>(.*?)<\/var>/g,
           (_, content) => ` <mark class="prompt-highlight">${content}</mark> `,
         );
 
