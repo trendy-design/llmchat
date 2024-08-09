@@ -76,7 +76,7 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
       <Tooltip content="Plugins">
         <PopoverTrigger asChild>
           <Button variant="ghost" size="sm">
-            <PuzzleIcon size={18} variant="stroke" strokeWidth="2" />
+            <PuzzleIcon size={16} variant="stroke" strokeWidth="2" />
             <Badge>{selectedPlugins.length}</Badge>
           </Button>
         </PopoverTrigger>
@@ -88,7 +88,7 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
         <Type
           size="sm"
           weight="medium"
-          className="gap-2 border-b border-zinc-500/20 px-3 py-2"
+          className="gap-2 border-b border-zinc-500/10 px-3 py-2"
         >
           Plugins <Badge>Beta</Badge>
         </Type>

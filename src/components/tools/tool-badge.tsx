@@ -16,17 +16,13 @@ export const ToolBadge = ({
 }: ToolBadgeProps) => {
   const Icon = icon;
   return (
-    <Flex
-      items="center"
-      gap="sm"
-      className="rounded-full bg-zinc-500/10 px-3 py-1.5"
-    >
+    <Flex items="center" gap="sm" className="rounded-full">
       {isLoading ? (
         <Spinner />
       ) : (
-        <Icon size={14} strokeWidth={2} className="text-zinc-500" />
+        <Icon size={16} strokeWidth={2} className="text-zinc-500" />
       )}
-      <Type size="sm" textColor="secondary">
+      <Type size="base" textColor="secondary">
         {isLoading ? loadingPlaceholder : text}
       </Type>
     </Flex>

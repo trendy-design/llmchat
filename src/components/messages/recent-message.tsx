@@ -2,11 +2,9 @@ import { useChatContext, useSessions } from "@/context";
 import { useScrollToBottom } from "@/hooks";
 import { useRelatedQuestions } from "@/hooks/use-related-questions";
 import { useTitleGenerator } from "@/hooks/use-title-generator";
-import { TChatMessage } from "@/types";
 import { useEffect } from "react";
 import { ChatScrollAnchor } from "../chat-scroll-anchor";
-import { AIMessage } from "./ai/ai-message";
-import { HumanMessage } from "./human-message";
+import { Message } from "./message";
 
 export const RecentMessage = () => {
   const { store } = useChatContext();
@@ -65,15 +63,6 @@ export const RecentMessage = () => {
     processMessage();
   }, [currentMessage]);
 
-  const renderMessage = (message: TChatMessage) => {
-    return (
-      <div className="flex w-full flex-col items-end gap-1" key={message.id}>
-        <HumanMessage chatMessage={message} isLast={true} />
-        <AIMessage message={message} isLast={true} />
-      </div>
-    );
-  };
-
   useEffect(() => {
     scrollToBottom();
   }, [
@@ -85,7 +74,9 @@ export const RecentMessage = () => {
 
   return (
     <>
-      {currentMessage ? renderMessage(currentMessage) : null}
+      {currentMessage ? (
+        <Message message={currentMessage} isLast={true} />
+      ) : null}
       <ChatScrollAnchor
         isAtBottom={isAtBottom}
         trackVisibility={!currentMessage?.stop}

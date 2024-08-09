@@ -74,7 +74,7 @@ const googleSearchFunction = (context: ToolExecutionContext) => {
           },
           isLoading: false,
         });
-        return "Error performing Google search. Ask user to check API keys.";
+        return "I apologize, but I encountered an error while performing the web search. This could be due to network issues or API key problems. Please try again later or contact support if the issue persists. In the meantime, I'll do my best to answer your question based on my existing knowledge.";
       }
     },
   });
@@ -97,7 +97,7 @@ const googleSearchToolDefinition: ToolDefinition = {
     return <SearchResults searchResults={searchResults} query={query} />;
   },
   loadingMessage: "Searching on Google...",
-  successMessage: "Results from Google search",
+  successMessage: "Search Results from Google",
   icon: Globe02Icon,
   compactIcon: Globe02Icon,
 };

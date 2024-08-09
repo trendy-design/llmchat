@@ -23,6 +23,7 @@ const config = {
       },
       colors: {
         zinc: {
+          "25": "hsl(0, 0%, 97.5%, <alpha-value>)",
           "50": "hsl(0, 0%, 93.7%, <alpha-value>)",
           "100": "hsl(0, 0%, 87.8%, <alpha-value>)",
           "200": "hsl(0, 0%, 77%, <alpha-value>)",
@@ -71,7 +72,7 @@ const config = {
         },
       },
       fontSize: {
-        xs: "0.75rem",
+        xs: "0.80rem",
         sm: "0.875rem",
         base: "0.925rem",
         lg: "1.115rem",

@@ -39,7 +39,7 @@ export const PopOverConfirmProvider = ({
               e.stopPropagation();
             }}
           >
-            {Icon && <Icon size={16} strokeWidth={2} />}
+            {Icon && <Icon size={14} strokeWidth={2} />}
 
             {confimBtnText}
           </Button>

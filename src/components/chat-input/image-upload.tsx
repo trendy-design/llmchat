@@ -32,7 +32,7 @@ export const ImageUpload: FC<TImageUpload> = ({
       <Tooltip content={tooltip}>
         {showIcon ? (
           <Button variant="ghost" size="iconSm" onClick={handleFileSelect}>
-            <ImageAdd01Icon size={18} strokeWidth={2} />
+            <ImageAdd01Icon size={16} strokeWidth={2} />
           </Button>
         ) : (
           <Button variant="outlined" onClick={handleFileSelect}>

@@ -1,14 +1,11 @@
-import { webPageReaderPrompt } from "@/config/prompts";
 import { ToolDefinition, ToolExecutionContext } from "@/types";
 import { Book01Icon } from "@hugeicons/react";
 import { DynamicStructuredTool } from "@langchain/core/tools";
-import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import axios from "axios";
 import { z } from "zod";
 
 const webSearchSchema = z.object({
   url: z.string().url().describe("URL of the page to be read"),
-  question: z.string().describe("Question to be asked to the webpage"),
 });
 
 const readerFunction = (context: ToolExecutionContext) => {
@@ -16,9 +13,9 @@ const readerFunction = (context: ToolExecutionContext) => {
 
   return new DynamicStructuredTool({
     name: "webpage_reader",
-    description: webPageReaderPrompt,
+    description: "Read the content of a web page via its URL.",
     schema: webSearchSchema,
-    func: async ({ url, question }, runManager) => {
+    func: async ({ url }, runManager) => {
       try {
         const readerResults = await axios.post("/api/reader", {
           urls: [url],
@@ -29,22 +26,16 @@ const readerFunction = (context: ToolExecutionContext) => {
         );
 
         const information = await Promise.all(
-          results?.map(async (result: any) => {
-            const textSplitter = new RecursiveCharacterTextSplitter({
-              chunkSize: 4000,
-              chunkOverlap: 200,
-              separators: ["\n\n"],
-            });
-
-            const chunks = await textSplitter.createDocuments([
-              result?.markdown,
-            ]);
-
-            return `title: ${result?.title},markdown: ${chunks?.[0]?.pageContent},url: ${result?.url}`;
+          results?.map((result: any) => {
+            const truncatedMarkdown = result?.markdown
+              .split(" ")
+              .slice(0, 3000)
+              .join(" ");
+            return `title: ${result?.title},markdown: ${truncatedMarkdown},url: ${result?.url}`;
           }),
         );
 
-        const searchPrompt = `Information: \n\n ${information.join("\n\n")} \n\n Based on the information please answer the given question with proper citations. Question: ${question}`;
+        const searchPrompt = `summarize the information in a concise manner\n\n ${information.join("\n\n")}`;
         updateToolExecutionState({
           toolName: "webpage_reader",
           executionArgs: {
@@ -66,7 +57,7 @@ const readerFunction = (context: ToolExecutionContext) => {
           },
           isLoading: false,
         });
-        return "Error reading webpage. Must not use webpage_reader tool now. Ask user to check API keys.";
+        return "I apologize, but I encountered an error while performing the web search. This could be due to network issues or API key problems. Please try again later or contact support if the issue persists. In the meantime, I'll do my best to answer your question based on my existing knowledge.";
       }
     },
   });
@@ -78,7 +69,7 @@ const readerToolDefinition: ToolDefinition = {
   executionFunction: readerFunction,
   displayName: "Web Page Reader",
   isBeta: false,
-  isVisibleInMenu: false,
+  isVisibleInMenu: true,
   validateAvailability: async (context) => {
     return true;
   },

@@ -2,8 +2,7 @@ import { useChatContext } from "@/context";
 import { useScrollToBottom } from "@/hooks";
 import { TChatMessage } from "@/types";
 import { useEffect, useMemo } from "react";
-import { AIMessage } from "./ai/ai-message";
-import { HumanMessage } from "./human-message";
+import { Message } from "./message";
 
 export const PreviousMessages = () => {
   const { store } = useChatContext();
@@ -13,13 +12,7 @@ export const PreviousMessages = () => {
 
   const renderMessage = (message: TChatMessage, index: number) => {
     const isLast = !currentMessage && messages.length - 1 === index;
-    return (
-      <div className="flex w-full flex-col items-end gap-1" key={message.id}>
-        <HumanMessage chatMessage={message} isLast={isLast} />
-
-        <AIMessage message={message} isLast={isLast} />
-      </div>
-    );
+    return <Message message={message} isLast={isLast} />;
   };
 
   useEffect(() => {

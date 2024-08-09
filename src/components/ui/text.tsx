@@ -46,6 +46,7 @@ export const Type = React.forwardRef<HTMLParagraphElement, TypeProps>(
       <p
         className={cn(typeVariants({ size, textColor, className, weight }))}
         ref={ref}
+        {...props}
       >
         {props.children}
       </p>
