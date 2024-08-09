@@ -42,6 +42,7 @@ export default function DataSettings() {
             description: "The JSON file you uploaded has been imported",
             variant: "default",
           });
+          window.location.reload();
         } catch (e) {
           // Log this error
           toast({
@@ -91,13 +92,13 @@ export default function DataSettings() {
               Reset Preferences
             </Type>
             <PopOverConfirmProvider
-              title="Are you sure you want to reset all chat sessions and preferences? This action cannot be undone."
+              title="Are you sure you want to reset all preferences? This action cannot be undone."
               confimBtnText="Reset All"
               onConfirm={(dismiss) => {
                 updatePreferences(defaultPreferences);
                 toast({
                   title: "Reset successful",
-                  description: "All chat data has been reseted",
+                  description: "All preferences have been reset",
                   variant: "default",
                 });
               }}
