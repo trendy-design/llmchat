@@ -7,10 +7,10 @@ import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 import { Flex } from "../ui";
-import { FlexSpacer } from "../ui/flex-spacer";
 import { AudioRecorder } from "./audio-recorder";
 import { ChatActions } from "./chat-actions";
 import { ChatEditor } from "./chat-editor";
+import { ChatExamples } from "./chat-examples";
 import { ImageAttachment } from "./image-attachment";
 import { ImageDropzoneRoot } from "./image-dropzone-root";
 import { ScrollToBottomButton } from "./scroll-to-bottom-button";
@@ -62,7 +62,7 @@ export const ChatInput = () => {
   );
 
   const chatContainer = cn(
-    "flex w-full flex-col gap-1 md:w-[700px] lg:w-[720px]",
+    "flex w-full flex-col items-center relative justify-center gap-1 md:w-[700px] lg:w-[720px]",
     isFreshSession && "h-screen",
   );
 
@@ -70,7 +70,6 @@ export const ChatInput = () => {
     <div className={chatInputBackgroundContainer}>
       <div className={chatContainer}>
         <WelcomeMessage show={isFreshSession} />
-        <FlexSpacer />
         <Flex items="center" justify="center" gap="sm" className="mb-2">
           <ScrollToBottomButton />
           <StopGenerationButton />
@@ -99,6 +98,7 @@ export const ChatInput = () => {
             />
           </ImageDropzoneRoot>
         </motion.div>
+        {isFreshSession && <ChatExamples />}
       </div>
     </div>
   );

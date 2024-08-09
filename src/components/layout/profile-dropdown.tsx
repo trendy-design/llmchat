@@ -41,7 +41,7 @@ export const ProfileDropdownItem = ({
   const Icon = icon;
   return (
     <DropdownMenuItem key={key} onClick={onClick}>
-      <Icon size={18} variant="stroke" strokeWidth="2" />
+      <Icon size={16} variant="stroke" strokeWidth="2" />
       {label}
     </DropdownMenuItem>
   );
@@ -82,7 +82,7 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
               <Avatar
                 name={user?.email || "LLMChat"}
                 variant="beam"
-                size={28}
+                size={24}
                 colors={constants.avatarColors}
               />
             </div>

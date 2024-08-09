@@ -16,7 +16,7 @@ export const HistorySidebar = () => {
       <Tooltip content="Chat History" side="left" sideOffset={4}>
         <Drawer.Trigger asChild>
           <Button variant="ghost" size="iconSm">
-            <MessageMultiple02Icon size={20} strokeWidth={2} />
+            <MessageMultiple02Icon size={18} strokeWidth={2} />
           </Button>
         </Drawer.Trigger>
       </Tooltip>

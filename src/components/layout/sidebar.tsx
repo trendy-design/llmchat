@@ -23,7 +23,7 @@ export const SidebarItem = ({
   return (
     <Tooltip content={tooltip} side="left" sideOffset={4}>
       <Button size="iconSm" variant="ghost" onClick={onClick}>
-        <Icon size={20} strokeWidth={2} />
+        <Icon size={18} strokeWidth={2} />
       </Button>
     </Tooltip>
   );
