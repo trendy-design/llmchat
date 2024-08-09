@@ -21,7 +21,11 @@ export const useScrollToBottom = () => {
         chatContainer.scrollTop + 1;
 
       setIsAtBottom(isAtBottom);
-      setNeedsScroll(chatContainer.scrollHeight > chatContainer.clientHeight);
+      const scrollThreshold = 100;
+      setNeedsScroll(
+        chatContainer.scrollHeight >
+          chatContainer.clientHeight + scrollThreshold,
+      );
     }
   };
 
@@ -38,7 +42,7 @@ export const useScrollToBottom = () => {
   }, []);
 
   return {
-    showScrollToBottom: !isAtBottom,
+    showScrollToBottom: !isAtBottom && needsScroll,
     scrollToBottom,
     isAtBottom,
   };

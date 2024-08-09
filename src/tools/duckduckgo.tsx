@@ -1,10 +1,15 @@
 import { SearchResults } from "@/components/tools/search-results";
-import { duckDuckGoSearchPropmt, duckDuckGoToolPrompt } from "@/config/prompts";
 import { ToolDefinition, ToolExecutionContext } from "@/types";
 import { Globe02Icon } from "@hugeicons/react";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import axios from "axios";
 import { z } from "zod";
+
+const duckDuckGoToolPrompt =
+  "A search engine optimized for comprehensive, accurate, and trusted results. Useful for when you need to answer questions about current events. Input should be a search query. Don't use tool if already used it to answer the question.";
+
+const duckDuckGoSearchPropmt = (input: string, information: string) =>
+  `Answer the following question from the information provided. Question: ${input} \n\n Information: \n\n ${information}`;
 
 const webSearchSchema = z.object({
   input: z.string(),
@@ -59,7 +64,7 @@ const duckduckGoFunction = (context: ToolExecutionContext) => {
           },
           isLoading: false,
         });
-        return "Error performing search. Must not use duckduckgo_search tool now. Ask user to check API keys.";
+        return "I apologize, but I encountered an error while performing the web search. This could be due to network issues or API key problems. Please try again later or contact support if the issue persists. In the meantime, I'll do my best to answer your question based on my existing knowledge.";
       }
     },
   });
@@ -77,7 +82,7 @@ const duckduckGoToolDefinition: ToolDefinition = {
     return <SearchResults searchResults={searchResults} query={query} />;
   },
   loadingMessage: "Searching on DuckDuckGo...",
-  successMessage: "Results from DuckDuckGo search",
+  successMessage: "Search Results from DuckDuckGo",
   icon: Globe02Icon,
   compactIcon: Globe02Icon,
 };

@@ -1,3 +1,4 @@
+import { WelcomeMessage } from "../welcome-message";
 import { PreviousMessages } from "./previous-messages";
 import { RecentMessage } from "./recent-message";
 
@@ -8,7 +9,8 @@ export const ChatMessages = () => {
       id="chat-container"
     >
       <div className="flex w-full flex-1 flex-col gap-24 p-2 md:w-[700px] lg:w-[720px]">
-        <div className="flex w-full flex-col items-start gap-8">
+        <div className="flex w-full flex-col items-start px-4">
+          <WelcomeMessage show={true} />
           <PreviousMessages />
           <RecentMessage />
         </div>

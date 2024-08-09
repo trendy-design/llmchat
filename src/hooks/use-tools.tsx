@@ -14,10 +14,10 @@ export const useTools = () => {
   const addTool = store((state) => state.addTool);
 
   const tools: ToolDefinition[] = [
-    dalleToolDefinition,
     preferences.defaultWebSearchEngine === "duckduckgo"
       ? duckduckGoToolDefinition
       : googleSearchToolDefinition,
+    dalleToolDefinition,
     memoryToolDefinition,
     readerToolDefinition,
   ];

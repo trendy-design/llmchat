@@ -90,11 +90,11 @@ export const ChatActions = ({
           className="gap-2 pl-1.5 pr-3 text-xs md:text-sm"
           size="sm"
         >
-          <AiIdeaIcon size={18} variant="stroke" strokeWidth="2" />
+          <AiIdeaIcon size={16} variant="stroke" strokeWidth="2" />
           <span className="hidden md:flex">Prompts</span>
         </Button>
         <Button
-          size="icon"
+          size="iconSm"
           variant={hasTextInput ? "default" : "secondary"}
           disabled={!hasTextInput || isGenerating}
           className={sendButtonClasses}

@@ -39,13 +39,13 @@ export const useChatEditor = () => {
       const { editor } = props;
       const text = editor.getText();
       const html = editor.getHTML();
+      console.log("text", html);
       if (text === "/") {
         // setOpenPromptsBotCombo(true);
       } else {
-        const newHTML = html.replace(
-          /<var>(.*?)<\/var>/g,
-          (_, content) => ` <mark class="prompt-highlight">${content}</mark> `,
-        );
+        const newHTML = html.replace(/::((?:(?!::).)+)::/g, (_, content) => {
+          return ` <mark class="prompt-highlight">${content}</mark> `;
+        });
 
         if (newHTML !== html) {
           editor.commands.setContent(newHTML, true, {

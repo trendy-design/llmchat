@@ -16,14 +16,14 @@ export const ChatExamples = () => {
       gap="sm"
       justify="center"
       items="start"
-      className="mt-4 w-full"
+      className="w-full"
     >
       <Type size="sm" textColor="tertiary">
         Try these example prompts or craft your own message
       </Type>
       <StaggerContainer>
-        <div className="flex flex-row justify-start gap-1 overflow-x-auto md:grid md:grid-cols-3">
-          {examplePrompts?.slice(0, 6)?.map((prompt, index) => (
+        <div className="flex flex-row justify-start gap-1 overflow-x-auto md:grid md:grid-cols-2">
+          {examplePrompts?.slice(0, 4)?.map((prompt, index) => (
             <motion.div
               key={prompt.name}
               variants={slideUpVariant}

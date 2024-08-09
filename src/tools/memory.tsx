@@ -10,18 +10,22 @@ import { z } from "zod";
 const memoryParser = StructuredOutputParser.fromZodSchema(
   z.object({
     memories: z
-      .array(z.string().describe("key information point"))
-      .describe("list of key informations"),
+      .array(
+        z.string().describe("A single piece of key information about the user"),
+      )
+      .describe("List of key information about the user"),
   }),
 );
 
 const memoryToolSchema = z.object({
   memory: z
-    .array(z.string().describe("key information"))
+    .array(
+      z.string().describe("A single piece of key information about the user"),
+    )
     .describe(
-      "key informations about the user, any user preference to personalize future interactions.",
+      "New key information about the user or their preferences to be added or updated",
     ),
-  question: z.string().describe("question user asked"),
+  question: z.string().describe("The question or request made by the user"),
 });
 
 const memoryFunction = (context: ToolExecutionContext) => {
@@ -36,7 +40,7 @@ const memoryFunction = (context: ToolExecutionContext) => {
   return new DynamicStructuredTool({
     name: "memory",
     description:
-      "Useful when user gives key information, preferences about them for personalize future interactions. user could specifically asked to remember something.",
+      "Manages user information and preferences to personalize future interactions. Use when the user provides key information or explicitly asks to remember something.",
     schema: memoryToolSchema,
     func: async ({ memory, question }, runManager) => {
       try {
@@ -50,14 +54,14 @@ const memoryFunction = (context: ToolExecutionContext) => {
 
         const chain = RunnableSequence.from([
           PromptTemplate.fromTemplate(
-            `User's request: "{question}"
-            New information: {new_memory}
+            `User request: "{question}"
+            New info: {new_memory}
             Existing memories: {existing_memory}
             
-            Update, delete, or add memories based on the new information:
-            1. Update existing memories with new details.
-            2. Delete memories if requested.
-            3. Add new memories if they are unique.
+            Update memories:
+            1. Update existing with new details
+            2. Remove if requested
+            3. Add new unique memories
             
             {format_instructions}`,
           ),
@@ -111,7 +115,7 @@ const memoryFunction = (context: ToolExecutionContext) => {
 
 const memoryToolDefinition: ToolDefinition = {
   key: "memory",
-  description: "Update and manage user memories",
+  description: "Personalize future interactions",
   executionFunction: memoryFunction,
   displayName: "Memory",
   isBeta: false,

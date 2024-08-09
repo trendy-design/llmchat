@@ -100,7 +100,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
         </Flex>
       )}
       {!isLoading && (
-        <div className="flex flex-row gap-1">
+        <Flex gap="xs" items="center" className="w-full">
           <Tooltip content="Copy">
             <Button
               variant="ghost"
@@ -109,9 +109,9 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
               onClick={handleCopyContent}
             >
               {showCopied ? (
-                <Tick01Icon size={18} variant="stroke" strokeWidth="2" />
+                <Tick01Icon size={16} variant="stroke" strokeWidth="2" />
               ) : (
-                <Copy01Icon size={18} variant="stroke" strokeWidth="2" />
+                <Copy01Icon size={16} variant="stroke" strokeWidth="2" />
               )}
             </Button>
           </Tooltip>
@@ -123,17 +123,21 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
               onConfirm={handleDeleteMessage}
             >
               <Button variant="ghost" size="iconSm" rounded="lg">
-                <Delete01Icon size={18} variant="stroke" strokeWidth="2" />
+                <Delete01Icon size={16} variant="stroke" strokeWidth="2" />
               </Button>
             </PopOverConfirmProvider>
           </Tooltip>
-          {canRegenerate && (
+          {canRegenerate ? (
             <RegenerateWithModelSelect
               assistant={runConfig?.assistant}
               onRegenerate={handleRegenerate}
             />
+          ) : (
+            <Type size="xs" textColor="tertiary" className="px-2">
+              {message.runConfig?.assistant?.name}
+            </Type>
           )}
-        </div>
+        </Flex>
       )}
     </Flex>
   );

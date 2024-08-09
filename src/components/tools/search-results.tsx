@@ -20,18 +20,18 @@ export const SearchResults = ({ searchResults, query }: TSearchResults) => {
   }
 
   return (
-    <Flex direction="col" gap="sm" className="w-full">
+    <Flex direction="col" gap="md" className="w-full">
       {query && <ToolBadge icon={Search01Icon} text={query} />}
 
       {Array.isArray(searchResults) && (
         <Flex
-          gap="sm"
+          gap="xs"
           className="no-scrollbar mb-4 w-full overflow-x-auto"
           items="stretch"
         >
           {searchResults?.map((result) => (
             <Flex
-              className="min-w-[200px] cursor-pointer rounded-lg bg-zinc-500/10 p-2 hover:bg-zinc-500/20"
+              className="min-w-[200px] cursor-pointer rounded-lg bg-zinc-500/10 p-2.5 hover:bg-zinc-500/20"
               direction="col"
               key={result.link}
               justify="between"
@@ -45,7 +45,7 @@ export const SearchResults = ({ searchResults, query }: TSearchResults) => {
               </Type>
               <Flex direction="row" items="center" gap="sm">
                 <SearchFavicon link={new URL(result.link).host} />
-                <Type size="xs" textColor="secondary">
+                <Type size="xs" textColor="secondary" className="line-clamp-1">
                   {new URL(result.link).host}
                 </Type>
               </Flex>

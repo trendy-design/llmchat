@@ -21,10 +21,17 @@ export type ModelIconType =
 export type TModelIcon = {
   type: ModelIconType;
   size: "sm" | "md" | "lg";
+  rounded?: boolean;
   base64?: string;
   name?: string;
 };
-export const ModelIcon = ({ type, size, base64, name }: TModelIcon) => {
+export const ModelIcon = ({
+  type,
+  size,
+  base64,
+  name,
+  rounded = true,
+}: TModelIcon) => {
   const iconSrc = {
     gpt3: "/icons/gpt3.svg",
     gpt4: "/icons/gpt4.svg",
@@ -53,6 +60,7 @@ export const ModelIcon = ({ type, size, base64, name }: TModelIcon) => {
           size === "sm" && "h-6 w-6",
           size === "md" && "h-8 w-8",
           size === "lg" && "h-10 w-10",
+          rounded && "rounded-full",
         )}
         sizes="100vw"
       />
@@ -63,10 +71,11 @@ export const ModelIcon = ({ type, size, base64, name }: TModelIcon) => {
     return (
       <div
         className={cn(
-          "relative overflow-hidden rounded-full",
+          "relative overflow-hidden rounded-md",
           size === "sm" && "h-6 w-6",
           size === "md" && "h-8 w-8",
           size === "lg" && "h-10 w-10",
+          rounded && "rounded-full",
         )}
       >
         <Avatar
@@ -83,10 +92,11 @@ export const ModelIcon = ({ type, size, base64, name }: TModelIcon) => {
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-full",
+        "relative overflow-hidden rounded-md",
         size === "sm" && "h-6 w-6",
         size === "md" && "h-8 w-8",
         size === "lg" && "h-10 w-10",
+        rounded && "rounded-full",
       )}
     >
       <Image
@@ -94,7 +104,7 @@ export const ModelIcon = ({ type, size, base64, name }: TModelIcon) => {
         width={0}
         height={0}
         alt={type}
-        className={"relative h-full w-full rounded-md object-cover"}
+        className={"relative h-full w-full object-cover"}
         sizes="100vw"
       />
     </div>
