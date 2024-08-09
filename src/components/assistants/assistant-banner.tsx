@@ -26,7 +26,7 @@ export const AssistantBanner: FC<AssistantBannerProps> = ({
           </Type>
         </Flex>
         <Type size="sm" textColor="secondary">
-          Experience the advanced capabilities of AI with Custom Assistants
+          Customize a version of the model to fit your needs
         </Type>
       </Flex>
 
@@ -36,7 +36,7 @@ export const AssistantBanner: FC<AssistantBannerProps> = ({
           setOpenCreateAssistant(true);
         }}
       >
-        <Add01Icon size={16} strokeWidth={2} /> Create your own assistant
+        <Add01Icon size={16} strokeWidth={2} /> Create Assistant
       </Button>
     </Flex>
   );

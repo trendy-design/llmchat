@@ -158,6 +158,7 @@ export const AssistantModal: FC<TAssitantModal> = ({
                     <DialogPortal>
                       <DialogOverlay className="fixed inset-0 z-[600] bg-zinc-500/70 backdrop-blur-sm dark:bg-zinc-900/70" />
                       <DialogContent
+                        ariaTitle="Create Assistant"
                         onInteractOutside={(e) => {
                           e.preventDefault();
                         }}
