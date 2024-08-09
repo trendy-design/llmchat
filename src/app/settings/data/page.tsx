@@ -62,11 +62,11 @@ export default function DataSettings() {
         <SettingCard className="p-5">
           <Flex items="center" justify="between">
             <Type textColor="primary" weight="medium">
-              Clear all chat sessions
+              Clear Chat History
             </Type>
             <PopOverConfirmProvider
-              title="Are you sure you want to clear all chat sessions? This action cannot be undone."
-              confimBtnText="Clear All"
+              title="Are you sure you want to clear entire chat history? This action cannot be undone."
+              confimBtnText="Clear"
               onConfirm={() => {
                 clearSessionsMutation.mutate(undefined, {
                   onSuccess: () => {
@@ -76,36 +76,29 @@ export default function DataSettings() {
                       variant: "default",
                     });
                     createSession();
-                    //     dismiss();
                   },
                 });
               }}
             >
               <Button variant="destructive" size="sm">
-                Clear All
+                Clear
               </Button>
             </PopOverConfirmProvider>
           </Flex>
           <div className="my-4 h-[1px] w-full bg-zinc-500/10" />
           <Flex items="center" justify="between">
             <Type textColor="primary" weight="medium">
-              Clear all chat sessions and preferences
+              Reset Preferences
             </Type>
             <PopOverConfirmProvider
               title="Are you sure you want to reset all chat sessions and preferences? This action cannot be undone."
               confimBtnText="Reset All"
               onConfirm={(dismiss) => {
-                clearSessionsMutation.mutate(undefined, {
-                  onSuccess: () => {
-                    updatePreferences(defaultPreferences);
-                    toast({
-                      title: "Reset successful",
-                      description: "All chat data has been reseted",
-                      variant: "default",
-                    });
-                    createSession();
-                    dismiss();
-                  },
+                updatePreferences(defaultPreferences);
+                toast({
+                  title: "Reset successful",
+                  description: "All chat data has been reseted",
+                  variant: "default",
                 });
               }}
             >
@@ -164,7 +157,7 @@ export default function DataSettings() {
               size="sm"
               onClick={() => {
                 exportService.processExport().then((data) => {
-                  generateAndDownloadJson(data, "chats.so.json");
+                  generateAndDownloadJson(data, "llmchat.json");
                 });
               }}
             >
