@@ -6,4 +6,6 @@ export const links = {
   googleSearchApiUrl:
     "https://programmablesearchengine.google.com/controlpanel/create",
   groqApiKeyUrl: "https://console.groq.com/keys",
+  googleSearchEngineApiKeyUrl:
+    "https://developers.google.com/custom-search/v1/introduction",
 };

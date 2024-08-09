@@ -10,8 +10,12 @@ import { usePreferenceContext } from "@/context/preferences";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export const OllamaSettings = () => {
-  const { refresh } = useRouter();
+export type OllamaSettingsProps = {
+  onRefresh: () => void;
+};
+
+export const OllamaSettings = ({ onRefresh }: OllamaSettingsProps) => {
+  const { push } = useRouter();
   const [url, setURL] = useState<string>("");
   const { preferences, updatePreferences } = usePreferenceContext();
   const { toast } = useToast();
@@ -33,7 +37,7 @@ export const OllamaSettings = () => {
           description: "Ollama server endpoint is valid",
         });
         updatePreferences({ ollamaBaseUrl: url });
-        refresh();
+        onRefresh();
       } else {
         throw new Error("Response status is not 200");
       }
@@ -44,6 +48,7 @@ export const OllamaSettings = () => {
         description: "Invalid Ollama server endpoint",
         variant: "destructive",
       });
+      onRefresh();
     }
   };
 
