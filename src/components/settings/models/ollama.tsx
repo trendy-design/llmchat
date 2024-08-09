@@ -7,9 +7,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { docs } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export const OllamaSettings = () => {
+  const { refresh } = useRouter();
   const [url, setURL] = useState<string>("");
   const { preferences, updatePreferences } = usePreferenceContext();
   const { toast } = useToast();
@@ -31,6 +33,7 @@ export const OllamaSettings = () => {
           description: "Ollama server endpoint is valid",
         });
         updatePreferences({ ollamaBaseUrl: url });
+        refresh();
       } else {
         throw new Error("Response status is not 200");
       }

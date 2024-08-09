@@ -10,13 +10,14 @@ import {
   VoiceIcon,
 } from "@/components/ui/icons";
 import { cn } from "@/helper/clsx";
-import { ArrowLeft02Icon, HugeiconsProps } from "@hugeicons/react";
+import { HugeIcon } from "@/types/icons";
+import { ArrowLeft02Icon } from "@hugeicons/react";
 import { usePathname, useRouter } from "next/navigation";
-import { FC, ReactNode, RefAttributes, useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 
 export type TSettingMenu = {
   name: string;
-  icon: FC<Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>>;
+  icon: HugeIcon;
   route: string;
 };
 
