@@ -8,11 +8,13 @@ import {
   HelpCircleIcon,
   Logout01Icon,
   Moon02Icon,
+  Settings03Icon,
   Sun01Icon,
   TwitterIcon,
 } from "@hugeicons/react";
 import Avatar from "boring-avatars";
 import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
 import { FC } from "react";
 import { useFeedback } from "../feedback/use-feedback";
 import {
@@ -52,12 +54,20 @@ export type ProfileDropdownProps = {
 };
 
 export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
+  const { push } = useRouter();
   const { theme, setTheme } = useTheme();
   const { open: openSignIn, logout, user } = useAuth();
 
   const { renderModal, setOpen: openFeedback } = useFeedback();
 
   const menuItems = [
+    {
+      label: "Settings",
+      onClick: () => {
+        push("/settings");
+      },
+      icon: Settings03Icon,
+    },
     {
       label: "Feedback",
       onClick: () => {
@@ -71,17 +81,17 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
   return (
     <>
       <DropdownMenu>
-        <Tooltip content="More" side="left" sideOffset={4}>
+        <Tooltip content="More" side="bottom" sideOffset={4}>
           <DropdownMenuTrigger asChild>
             <div
               className={cn(
-                "cursor-pointer rounded-full p-1 outline-none ring-2 ring-zinc-500/20 hover:ring-zinc-500/30 focus:outline-none focus:ring-zinc-500/30",
+                "cursor-pointer rounded-full p-0.5 outline-none ring-2 ring-zinc-500/20 hover:ring-zinc-500/30 focus:outline-none focus:ring-zinc-500/30",
                 className,
               )}
             >
               <Avatar
                 name={user?.email || "LLMChat"}
-                variant="beam"
+                variant="marble"
                 size={24}
                 colors={constants.avatarColors}
               />
@@ -89,28 +99,37 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
           </DropdownMenuTrigger>
         </Tooltip>
         <DropdownMenuContent
-          className="mr-2 min-w-[250px] p-1 text-sm md:text-base"
+          className="min-w-[250px] p-1 text-sm md:text-base"
           align="end"
-          side="left"
+          side="bottom"
           sideOffset={4}
         >
-          <Flex className="items-center p-2" gap="md">
-            <Avatar
-              name={user?.email || "LLMChat"}
-              variant="beam"
-              size={24}
-              colors={["#4A2BE2", "#D5EC77", "#3EE2DE", "#AF71FF", "#F882B3"]}
-            />
-            {user ? (
+          {user ? (
+            <Flex className="items-center p-2" gap="md">
+              <Avatar
+                name={user?.email || "LLMChat"}
+                variant="beam"
+                size={24}
+                colors={["#4A2BE2", "#D5EC77", "#3EE2DE", "#AF71FF", "#F882B3"]}
+              />
+
               <Type size="sm" weight="medium" className="line-clamp-1">
                 {user?.email}
               </Type>
-            ) : (
-              <Button onClick={openSignIn} rounded="full" size="sm">
+            </Flex>
+          ) : (
+            <Flex className="p-1">
+              <Button
+                onClick={openSignIn}
+                rounded="full"
+                size="sm"
+                className="w-full"
+              >
                 Sign In
               </Button>
-            )}
-          </Flex>
+            </Flex>
+          )}
+          <DropdownMenuSeparator />
 
           {menuItems.map((item, index) => {
             const Icon = item.icon;

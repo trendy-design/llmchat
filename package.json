@@ -85,6 +85,7 @@
     "react-image-file-resizer": "^0.4.8",
     "react-intersection-observer": "^9.13.0",
     "recharts": "^2.12.7",
+    "remark-html": "^16.0.1",
     "selection-popover": "^0.3.0",
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",

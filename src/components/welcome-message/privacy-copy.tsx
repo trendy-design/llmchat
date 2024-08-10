@@ -3,7 +3,7 @@ export const PrivacyCopy = () => {
     <>
       We&apos;re{" "}
       <a
-        href="/privacy-policy"
+        href="/privacy"
         className="underline decoration-zinc-500 underline-offset-4"
       >
         privacy-first

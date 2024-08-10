@@ -1,6 +1,6 @@
 import { cn } from "@/helper/clsx";
 import { ComponentProps, FC } from "react";
-import { Flex } from "../ui";
+import { Flex, Type } from "../ui";
 
 export type TSettingsContainer = {
   children: React.ReactNode;
@@ -18,9 +18,13 @@ export const SettingsContainer: FC<
       )}
       {...props}
     >
-      <p className="pb-2 pt-4 text-xl font-semibold text-zinc-800 dark:text-zinc-50">
+      <Type
+        size="lg"
+        weight="medium"
+        className="w-full border-b border-zinc-500/10 pb-4"
+      >
         {title}
-      </p>
+      </Type>
       {children}
     </Flex>
   );

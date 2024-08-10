@@ -5,7 +5,6 @@ import { HistorySidebar } from "../history/history-side-bar";
 import { ModelIcon } from "@/components/model-icon";
 import { Badge, Button, Flex, Tooltip } from "@/components/ui";
 import { HugeIcon } from "@/types/icons";
-import { FolderLibraryIcon, Settings03Icon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 import { ProfileDropdown } from "./profile-dropdown";
 
@@ -21,7 +20,7 @@ export const SidebarItem = ({
   if (!icon) return null;
   const Icon = icon;
   return (
-    <Tooltip content={tooltip} side="left" sideOffset={4}>
+    <Tooltip content={tooltip} side="bottom" sideOffset={4}>
       <Button size="iconSm" variant="ghost" onClick={onClick}>
         <Icon size={18} strokeWidth={2} />
       </Button>
@@ -34,15 +33,15 @@ export const Sidebar = () => {
   const { createSession } = useSessions();
 
   return (
-    <div className="group fixed z-10 flex w-full flex-row items-center justify-center gap-2.5 border-zinc-500/10 p-2.5 dark:border-zinc-500/5 md:h-screen md:w-auto md:flex-col md:border-r">
+    <div className="group fixed left-0 right-0 top-0 z-10 flex w-full flex-row items-center justify-center gap-2.5 border-zinc-500/10 py-2 pl-4 pr-2 dark:border-zinc-500/5 md:border-r">
       <Flex
-        direction="col"
+        direction="row"
         items="center"
         gap="sm"
         onClick={() => push("/")}
         className="cursor-pointer"
       >
-        <ModelIcon type="llmchatlogo" size="sm" />
+        <ModelIcon type="llmchatlogo" size="xs" rounded={false} />
         <Badge>Beta</Badge>
       </Flex>
 
@@ -55,19 +54,9 @@ export const Sidebar = () => {
         }}
       />
 
-      <HistorySidebar />
-      <SidebarItem
-        tooltip="Spaces (coming soon)"
-        icon={FolderLibraryIcon}
-        onClick={() => {}}
-      />
-
       <Flex className="flex-1" />
-      <SidebarItem
-        tooltip="Settings"
-        icon={Settings03Icon}
-        onClick={() => push("/settings")}
-      />
+      <HistorySidebar />
+
       <ProfileDropdown />
     </div>
   );
