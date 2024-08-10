@@ -15,7 +15,7 @@ const AccordionItem = React.forwardRef<
   <AccordionPrimitive.Item
     ref={ref}
     className={cn(
-      "mb-2 rounded-xl bg-zinc-50 px-4 no-underline dark:bg-white/5",
+      "mb-2 rounded-lg bg-zinc-50 px-4 no-underline dark:bg-white/5",
       className,
     )}
     {...props}
@@ -38,7 +38,7 @@ const AccordionTrigger = React.forwardRef<
     >
       {children}
       <ArrowDown01Icon
-        size={20}
+        size={16}
         strokeWidth={2}
         className="shrink-0 text-zinc-500 transition-transform duration-200 dark:text-zinc-400"
       />
