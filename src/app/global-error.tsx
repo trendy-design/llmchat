@@ -1,17 +1,28 @@
 "use client";
 
-export default function GlobalError({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string };
-  reset: () => void;
-}) {
+import { Type } from "@/components/ui";
+import * as Sentry from "@sentry/nextjs";
+import Error from "next/error";
+import { useEffect } from "react";
+
+export default function GlobalError({ error }: { error: Error }) {
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
   return (
     <html>
       <body>
-        <h2>Something went wrong!</h2>
-        <button onClick={() => reset()}>Try again</button>
+        <div className="bg-zinc-25 flex h-screen w-screen flex-col items-center justify-center">
+          <div className="flex w-[300px] flex-col gap-2">
+            <Type size="base">Oops! Something went wrong.</Type>
+            <Type size="sm" textColor="secondary">
+              It seems we encountered an unexpected error. Please try refreshing
+              the page or check back later. If the problem persists, feel free
+              to <a href="mailto:hello@llmchat.com">contact team</a>.
+            </Type>
+          </div>
+        </div>
       </body>
     </html>
   );
