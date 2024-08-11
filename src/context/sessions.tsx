@@ -7,14 +7,21 @@ import {
   TSessionsContext,
   TSessionsProvider,
 } from "@/types";
-import { FC, createContext, useContext, useEffect, useState } from "react";
+import {
+  FC,
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 export const SessionContext = createContext<TSessionsContext | undefined>(
   undefined,
 );
 
 export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
-  const store = createSessionsStore();
+  const store = useMemo(() => createSessionsStore(), []);
   store?.persist?.onFinishHydration((state) => {
     if (!state?.activeSessionId) {
       createSession();

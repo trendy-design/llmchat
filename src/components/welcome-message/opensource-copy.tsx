@@ -8,7 +8,7 @@ export const OpenSourceCopy = () => {
 
   return (
     <>
-      We&apos;re open source and adding new features every week. Check out{" "}
+      We&apos;re shipping new features every week. Check out{" "}
       <a href="https://git.new/llmchat" className={linkClass}>
         what&apos;s coming
       </a>{" "}
