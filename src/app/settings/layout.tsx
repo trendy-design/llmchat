@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/icons";
 import { cn } from "@/helper/clsx";
 import { HugeIcon } from "@/types/icons";
+import { ArrowLeft01Icon } from "@hugeicons/react";
 import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect } from "react";
 
@@ -76,7 +77,7 @@ export default function SettingsPage({
         key={menu.route}
         onClick={() => push(menu.route)}
         className="w-full justify-start gap-2"
-        size="default"
+        size="sm"
       >
         <Icon size={16} strokeWidth={2} className="dark:text-zinc-500" />
         <span className={cn("text-xs font-medium md:flex md:text-sm")}>
@@ -95,6 +96,19 @@ export default function SettingsPage({
           justify="start"
           className="w-[180px] pt-[60px]"
         >
+          <Button
+            className="w-full"
+            variant="outlined"
+            size="sm"
+            onClick={() => {
+              push("/chat");
+            }}
+          >
+            <ArrowLeft01Icon size={16} />
+            Back
+          </Button>
+          <div className="h-2" />
+
           {settingMenu.map(renderMenuItem)}
         </Flex>
         <Flex className="no-scrollbar h-full w-full flex-1 overflow-y-auto px-4 py-[60px]">
