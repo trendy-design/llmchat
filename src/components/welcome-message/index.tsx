@@ -10,7 +10,7 @@ import {
 } from "@hugeicons/react";
 import Image from "next/image";
 import { ChatExamples } from "../chat-input/chat-examples";
-import { Button, Flex, Type } from "../ui";
+import { Flex, Type } from "../ui";
 import { AiModelsCopy } from "./ai-models-copy";
 import { CustomAssistantCopy } from "./custom-assistant-copy";
 import { OpenSourceCopy } from "./opensource-copy";
@@ -126,13 +126,6 @@ export const WelcomeMessage = ({ show }: TWelcomeMessageProps) => {
             }}
           />
           <ChatExamples />
-          <Button
-            onClick={() => {
-              throw new Error("Test error");
-            }}
-          >
-            Throw error
-          </Button>
         </Flex>
       </div>
     </div>

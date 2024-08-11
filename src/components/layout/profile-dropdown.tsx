@@ -64,7 +64,7 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
     {
       label: "Settings",
       onClick: () => {
-        push("/settings");
+        push("/settings/common");
       },
       icon: Settings03Icon,
     },
