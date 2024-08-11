@@ -49,7 +49,9 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
   } = usePreferencesQueries();
 
   useEffect(() => {
-    preferencesQuery.data && setPreferences(preferencesQuery.data);
+    preferencesQuery.data
+      ? setPreferences(preferencesQuery.data)
+      : setPreferences(defaultPreferences);
   }, [preferencesQuery.data]);
 
   useEffect(() => {
