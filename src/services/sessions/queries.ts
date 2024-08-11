@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 export const useChatSessionQueries = () => {
   const sessionsQuery = useQuery({
     queryKey: ["chat-sessions"],
-    queryFn: sessionsService.getSessions,
+    queryFn: () => sessionsService.getSessions(),
   });
 
   const setSessionMutation = useMutation({

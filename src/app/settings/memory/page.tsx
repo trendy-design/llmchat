@@ -14,7 +14,7 @@ export default function MemorySettings() {
 
   const renderMemory = (memory: string) => {
     return (
-      <SettingCard className="flex flex-row items-center py-1 pl-4 pr-2">
+      <SettingCard className="flex flex-row items-center py-2 pl-4 pr-2">
         <Type size="sm" className="flex-1">
           {memory}
         </Type>
