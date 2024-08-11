@@ -25,7 +25,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
 }) => {
   const { updatePreferences } = usePreferenceContext();
   const { refetch, store } = useChatContext();
-  const currentMessage = store((state) => state.currentMessage);
+  const currentMessageId = store((state) => state.currentMessage?.id);
   const setCurrentMessage = store((state) => state.setCurrentMessage);
   const { getAssistantByKey } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
@@ -52,7 +52,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
       },
       {
         onSettled: () => {
-          if (currentMessage?.id === message.id) {
+          if (currentMessageId === message.id) {
             setCurrentMessage(undefined);
           } else {
             removeLastMessage();
@@ -73,7 +73,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
       defaultAssistant: assistant,
     });
 
-    if (currentMessage?.id !== message.id) {
+    if (currentMessageId !== message.id) {
       removeLastMessage();
     }
     setCurrentMessage(undefined);
