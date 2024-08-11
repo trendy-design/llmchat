@@ -24,7 +24,7 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
       >
         {rawHuman}
       </Type>
-      {rawHuman?.split("\n").length > 2 && (
+      {rawHuman && (
         <Type
           onClick={(e) => {
             setIsExpanded(!isExpanded);
