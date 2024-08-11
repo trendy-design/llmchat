@@ -1,7 +1,7 @@
 const macosOllamaConfig = `
 #### Step 1: Install and Launch Ollama Locally
 
-Ensure you have Ollama installed on your machine. If you haven't downloaded it yet, please visit the [official website](#) to get started.
+Ensure you have Ollama installed on your machine. If you haven't downloaded it yet, please visit the [official website](https://ollama.com/download) to get started.
 
 #### Step 2: Set Up Cross-Origin Access for Ollama
 
@@ -11,14 +11,23 @@ To ensure proper functionality, you'll need to configure cross-origin settings d
 2. Enter the following command and press **Enter**:
 
    \`\`\`bash
-   launchctl setenv OLLAMA_ORIGINS "\\*"
+   launchctl setenv OLLAMA_ORIGINS "*"
    \`\`\`
   
-3. Restart the Ollama service to apply the changes.
+Important: Please restart the Ollama service after completion.
 
-#### Troubleshooting
+#### Step 3: Pull the model of your choice
 
-If you encounter any issues, please refer to the [Ollama troubleshooting guide](https://ollama.com/troubleshooting).
+\`\`\`bash
+ollama pull llama3:latest
+\`\`\`
+
+Once the model is pulled, you can start using it in the chat.
+
+#### Troubleshooting 
+
+After following the steps above, if you are still unable to connect, please restart your ollama service and browser.
+
 `;
 const windowsOllamaConfig = `
   #### Step 1: Install and Start Ollama Locally
@@ -32,6 +41,15 @@ const windowsOllamaConfig = `
   1. On Windows, go to **Control Panel** and edit system environment variables.
   2. Create a new environment variable named \`OLLAMA_ORIGINS\` for your user account.
   3. Set the value to \`*\`, and click **OK/Apply** to save.
+
+  #### Step 3: Pull the latest model
+
+\`\`\`bash
+ollama pull llama3:latest
+\`\`\`
+
+Once the model is pulled, you can start using it in the chat.
+
   
   Important: Please restart the Ollama service after completion.
   `;

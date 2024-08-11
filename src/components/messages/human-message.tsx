@@ -1,7 +1,7 @@
 import { cn } from "@/helper/clsx";
 import { TChatMessage } from "@/types";
 import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Type } from "../ui";
 
 export type THumanMessage = {
@@ -10,7 +10,17 @@ export type THumanMessage = {
 
 export const HumanMessage = ({ chatMessage }: THumanMessage) => {
   const { rawHuman } = chatMessage;
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showReadMore, setShowReadMore] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (contentRef.current) {
+      setShowReadMore(
+        contentRef.current.scrollHeight > contentRef.current.clientHeight,
+      );
+    }
+  }, [rawHuman]);
 
   if (!rawHuman) return null;
 
@@ -21,10 +31,11 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
         className={cn("relative text-left leading-7", {
           "line-clamp-2": !isExpanded,
         })}
+        ref={contentRef}
       >
         {rawHuman}
       </Type>
-      {rawHuman && (
+      {showReadMore && (
         <Type
           onClick={(e) => {
             setIsExpanded(!isExpanded);
@@ -33,11 +44,16 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
           className="items-center gap-1 py-1 opacity-60 hover:underline hover:opacity-100"
         >
           {isExpanded ? (
-            <ArrowUp01Icon className="h-4 w-4" />
+            <>
+              <ArrowUp01Icon className="h-4 w-4" />
+              Read Less
+            </>
           ) : (
-            <ArrowDown01Icon className="h-4 w-4" />
+            <>
+              <ArrowDown01Icon className="h-4 w-4" />
+              Read More
+            </>
           )}
-          {isExpanded ? "Read Less" : "Read More"}
         </Type>
       )}
     </div>
