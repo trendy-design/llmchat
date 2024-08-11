@@ -28,6 +28,7 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
     <div className="relative w-full">
       <Type
         size="lg"
+        weight="medium"
         className={cn("relative text-left leading-7", {
           "line-clamp-2": !isExpanded,
         })}

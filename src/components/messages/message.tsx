@@ -1,3 +1,4 @@
+import { cn } from "@/helper/clsx";
 import { TChatMessage } from "@/types";
 import { Add01Icon, MinusSignIcon } from "@hugeicons/react";
 import {
@@ -58,7 +59,10 @@ export const Message: FC<TMessage> = ({ message, isLast }) => {
       <AccordionItem
         value={message.id}
         key={message.id}
-        className="flex w-full flex-col items-start gap-1 border-b border-zinc-500/10 py-8"
+        className={cn(
+          "flex w-full flex-col items-start gap-1 border-b border-zinc-500/15 py-8",
+          isLast && "border-b-0",
+        )}
       >
         <CustomTrigger>
           <Flex direction="col" gap="md" items="start">

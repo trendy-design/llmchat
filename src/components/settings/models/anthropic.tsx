@@ -4,7 +4,6 @@ import { Flex } from "@/components/ui/flex";
 import { configs } from "@/config";
 import { usePreferenceContext } from "@/context/preferences";
 import { useLLMTest } from "@/hooks/use-llm-test";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ApiKeyInfo } from "./api-key-info";
 import ApiKeyInput from "./api-key-input";
@@ -22,15 +21,8 @@ export const AnthropicSettings = () => {
     <Flex direction="col" gap="md">
       <FormLabel
         label="Anthropic API Key"
-        extra={() => (
-          <Link
-            href={configs.anthropicApiKeyUrl}
-            target="_blank"
-            className="text-sm font-medium text-blue-400 hover:opacity-90"
-          >
-            Get API key here
-          </Link>
-        )}
+        link={configs.anthropicApiKeyUrl}
+        linkText="Get API key here"
       />
 
       <ApiKeyInput
