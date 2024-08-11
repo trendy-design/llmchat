@@ -5,8 +5,8 @@ import {
   AiChat02Icon,
   AiLockIcon,
   AiMagicIcon,
-  Github01Icon,
   PuzzleIcon,
+  Rocket01Icon,
 } from "@hugeicons/react";
 import Image from "next/image";
 import { ChatExamples } from "../chat-input/chat-examples";
@@ -44,7 +44,7 @@ const welcomePoints: WelcomePoint[] = [
     text: <PrivacyCopy />,
   },
   {
-    icon: Github01Icon,
+    icon: Rocket01Icon,
     text: <OpenSourceCopy />,
   },
 ];
