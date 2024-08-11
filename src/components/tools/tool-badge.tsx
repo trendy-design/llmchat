@@ -22,7 +22,7 @@ export const ToolBadge = ({
       ) : (
         <Icon size={16} strokeWidth={2} className="text-zinc-500" />
       )}
-      <Type size="base" textColor="secondary">
+      <Type size="sm" textColor="secondary">
         {isLoading ? loadingPlaceholder : text}
       </Type>
     </Flex>

@@ -32,7 +32,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn(interVar.variable, "antialiased")}>
+    <html lang="en" className={cn(interVar.variable, "antialiased", "light")}>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
@@ -40,7 +40,7 @@ export default function RootLayout({
         <body>
           <ThemeProvider
             attribute="class"
-            defaultTheme="dark"
+            defaultTheme="light"
             enableSystem
             disableTransitionOnChange
           >

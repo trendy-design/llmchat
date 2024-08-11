@@ -89,7 +89,7 @@ export default function SettingsPage({
 
   return (
     <Flex justify="center" className="w-full">
-      <Flex className="relative h-[100dvh] w-[800px]">
+      <Flex className="relative h-[100dvh] w-[820px]">
         <Flex
           direction="col"
           gap="xs"
@@ -98,7 +98,7 @@ export default function SettingsPage({
         >
           <Button
             className="w-full"
-            variant="outlined"
+            variant="bordered"
             size="sm"
             onClick={() => {
               push("/chat");
