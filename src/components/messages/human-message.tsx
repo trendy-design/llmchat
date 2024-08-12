@@ -29,7 +29,7 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
       <Type
         size="lg"
         weight="medium"
-        className={cn("relative text-left leading-7", {
+        className={cn("relative whitespace-break-spaces text-left leading-7", {
           "line-clamp-2": !isExpanded,
         })}
         ref={contentRef}

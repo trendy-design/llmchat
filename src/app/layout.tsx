@@ -15,9 +15,19 @@ import { interVar } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LLMChat - Most intuitive All-in-one AI chat interface",
-  description:
-    "LLMChat is advanced AI chat interface with multiple AI models including local models.",
+  title: "LLMChat - Your Ultimate AI Chat Experience",
+  description: "Chat with top LLMs in a minimal, privacy-focused UI.",
+  openGraph: {
+    title: "LLMChat - Your Ultimate AI Chat Experience",
+    siteName: "llmchat.co",
+    description: "Chat with top LLMs in a minimal, privacy-focused UI.",
+    url: "https://llmchat.co",
+  },
+  twitter: {
+    title: "LLMChat - Your Ultimate AI Chat Experience",
+    site: "llmchat.co",
+    description: "Chat with top LLMs in a minimal, privacy-focused UI.",
+  },
 };
 
 export const viewport: Viewport = {
