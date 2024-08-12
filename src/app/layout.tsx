@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     url: "https://llmchat.co",
   },
   twitter: {
+    card: "summary_large_image",
     title: "LLMChat - Your Ultimate AI Chat Experience",
     site: "llmchat.co",
     description: "Chat with top LLMs in a minimal, privacy-focused UI.",
