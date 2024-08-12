@@ -22,7 +22,7 @@ export const ChatExamples = () => {
         Try these example prompts or craft your own message
       </Type>
       <StaggerContainer>
-        <div className="flex flex-row justify-start gap-1 overflow-x-auto md:grid md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-1 overflow-x-auto md:grid-cols-2">
           {examplePrompts?.slice(0, 4)?.map((prompt, index) => (
             <motion.div
               key={prompt.name}

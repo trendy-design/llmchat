@@ -29,7 +29,6 @@ export const useImageAttachment = () => {
   const [attachment, setAttachment] = useState<TAttachment>();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log("ACCEPTED FILES", acceptedFiles);
     const file = acceptedFiles?.[0];
     readImageFile(file);
   }, []);
