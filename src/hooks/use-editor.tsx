@@ -39,7 +39,6 @@ export const useChatEditor = () => {
       const { editor } = props;
       const text = editor.getText();
       const html = editor.getHTML();
-      console.log("text", html);
       if (text === "/") {
         // setOpenPromptsBotCombo(true);
       } else {

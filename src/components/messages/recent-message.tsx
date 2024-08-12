@@ -10,12 +10,21 @@ export const RecentMessage = () => {
   const { store } = useChatContext();
   const currentMessage = store((state) => state.currentMessage);
   const isGenerating = store((state) => state.isGenerating);
+  const prevMessagesIds = store((state) =>
+    state.messages.map((message) => message.id),
+  );
   const setIsGenerating = store((state) => state.setIsGenerating);
   const setCurrentMessage = store((state) => state.setCurrentMessage);
   const { generateTitleForSession } = useTitleGenerator();
   const { generateRelatedQuestion } = useRelatedQuestions();
   const { addMessageMutation } = useSessions();
   const { isAtBottom, scrollToBottom } = useScrollToBottom();
+
+  useEffect(() => {
+    if (currentMessage?.id && prevMessagesIds?.includes(currentMessage?.id)) {
+      setCurrentMessage(undefined);
+    }
+  }, [currentMessage?.id, prevMessagesIds?.length]);
 
   useEffect(() => {
     if (
