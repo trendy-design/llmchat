@@ -3,12 +3,13 @@ import { useSessions } from "@/context";
 import { HistorySidebar } from "../history/history-side-bar";
 
 import { ModelIcon } from "@/components/model-icon";
-import { Badge, Button, Flex, Tooltip } from "@/components/ui";
+import { Button, Flex, Tooltip } from "@/components/ui";
 import { HugeIcon } from "@/types/icons";
 import { useRouter } from "next/navigation";
+import { BetaTag } from "../ui/beta-tag";
 import { ProfileDropdown } from "./profile-dropdown";
 
-export const SidebarItem = ({
+export const NavbarItem = ({
   tooltip,
   icon,
   onClick,
@@ -28,7 +29,7 @@ export const SidebarItem = ({
   );
 };
 
-export const Sidebar = () => {
+export const Navbar = () => {
   const { push } = useRouter();
   const { createSession } = useSessions();
 
@@ -42,10 +43,10 @@ export const Sidebar = () => {
         className="cursor-pointer"
       >
         <ModelIcon type="llmchatlogo" size="xs" rounded={false} />
-        <Badge>Beta</Badge>
+        <BetaTag />
       </Flex>
 
-      <SidebarItem
+      <NavbarItem
         tooltip="New Session"
         icon={PlusSignIcon}
         onClick={() => {

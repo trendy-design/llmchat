@@ -15,6 +15,7 @@ import { useTools } from "@/hooks/use-tools";
 import { ToolKey } from "@/types";
 import { PuzzleIcon } from "@hugeicons/react";
 import { FC, useEffect, useState } from "react";
+import { BetaTag } from "./ui/beta-tag";
 
 export type TPluginSelect = {
   selectedAssistantKey: string;
@@ -88,9 +89,9 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
         <Type
           size="sm"
           weight="medium"
-          className="gap-2 border-b border-zinc-500/10 px-3 py-2"
+          className="items-center gap-2 border-b border-zinc-500/10 px-3 py-2"
         >
-          Plugins <Badge>Beta</Badge>
+          Plugins <BetaTag />
         </Type>
         <div className="flex flex-col p-1">
           {availableTools.map((tool) => (
