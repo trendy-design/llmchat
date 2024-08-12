@@ -10,6 +10,7 @@ import { cn } from "@/helper/clsx";
 import { CSPostHogProvider } from "@/libs/posthog/provider";
 import type { Metadata, Viewport } from "next"; // Combined type imports
 import { ThemeProvider } from "next-themes";
+import Script from "next/script";
 import { interVar } from "./fonts";
 import "./globals.css";
 
@@ -35,6 +36,11 @@ export default function RootLayout({
     <html lang="en" className={cn(interVar.variable, "antialiased", "light")}>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <Script
+          defer
+          data-domain="llmchat.co"
+          src="https://plausible.io/js/script.js"
+        />
       </head>
       <CSPostHogProvider>
         <body>
