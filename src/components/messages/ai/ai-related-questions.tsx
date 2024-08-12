@@ -26,7 +26,6 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
   const { invokeModel } = useLLMRunner();
 
   const handleOnClick = (question: string) => {
-    console.log("question", question);
     const assistant = preferences.defaultAssistant;
 
     const props = getAssistantByKey(assistant);

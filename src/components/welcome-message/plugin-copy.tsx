@@ -25,7 +25,7 @@ const PluginItem = ({
     <ExplainationCard explanation={explanation}>
       <div
         className={cn(
-          "mx-1 flex flex-row items-center gap-1 rounded-full border border-zinc-500/20 bg-white px-2 py-1 text-sm font-medium shadow-sm dark:bg-zinc-800",
+          "mx-1 flex flex-row items-center gap-1 rounded-full border border-zinc-500/20 bg-white px-2 py-0.5 text-sm font-medium shadow-sm dark:bg-zinc-800 md:px-2 md:py-1",
           "transition-all duration-300 ease-in-out",
           "transition-transform hover:z-10 hover:scale-105",
 
