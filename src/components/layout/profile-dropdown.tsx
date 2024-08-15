@@ -75,7 +75,13 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
       },
       icon: Comment01Icon,
     },
-    { label: "Support", onClick: () => {}, icon: HelpCircleIcon },
+    {
+      label: "Support",
+      onClick: () => {
+        window.open("mailto:support@llmchat.co", "_blank");
+      },
+      icon: HelpCircleIcon,
+    },
   ];
 
   return (
@@ -145,12 +151,16 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
           <DropdownMenuSeparator />
           <ProfileDropdownItem
             label="Twitter"
-            onClick={() => {}}
+            onClick={() => {
+              window.open("https://x.com/llmchat_co", "_blank");
+            }}
             icon={TwitterIcon}
           />
           <ProfileDropdownItem
             label="Github"
-            onClick={() => {}}
+            onClick={() => {
+              window.open("https://git.new/llmchat", "_blank");
+            }}
             icon={Github01Icon}
           />
           <DropdownMenuSeparator />
