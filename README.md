@@ -1,5 +1,5 @@
 
-![llmchatossbanner](https://github.com/user-attachments/assets/e5916acd-ba44-4b5b-99ea-52327642de16)
+![og_6x](https://github.com/user-attachments/assets/4813a6b5-3294-4056-88bb-c536a45c220c)
 
 <h1 align="center">LLMChat</h1>
 <p align="center">Most intuitive All-in-one AI chat interface.</p>
