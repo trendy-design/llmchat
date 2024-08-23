@@ -17,7 +17,7 @@ export const ImageDropzone: FC<TImageDropzone> = ({ dropzonProps }) => {
           justify="center"
           gap="sm"
         >
-          <ImageAdd01Icon size={18} strokeWidth={2} className="text-zinc-500" />
+          <ImageAdd01Icon size={16} strokeWidth={2} className="text-zinc-500" />
           <Type size="sm" textColor="secondary">
             Drag and drop an image here, or click to select an image
           </Type>

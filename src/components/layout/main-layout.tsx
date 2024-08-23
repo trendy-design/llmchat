@@ -7,7 +7,7 @@ export type MainLayoutProps = {
 };
 export const MainLayout = ({ children }: MainLayoutProps) => {
   return (
-    <div className="bg-zinc-25 flex min-h-[100dvh] w-full flex-col justify-start dark:bg-zinc-800 md:flex-row">
+    <div className="flex min-h-[100dvh] w-full flex-col justify-start bg-white dark:bg-zinc-800 md:flex-row">
       <Navbar />
       {children}
       <Toaster />

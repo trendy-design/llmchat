@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { push } = useRouter();
+
   return (
     <main className="relative flex min-h-screen w-screen flex-col items-center justify-start gap-2 pt-[10vh]">
       <Flex direction="col" items="center" gap="md" className="">

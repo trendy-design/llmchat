@@ -11,7 +11,7 @@ const buttonVariants = cva(
       variant: {
         default:
           "dark:bg-zinc-100 dark:text-zinc-800 text-white bg-zinc-800 hover:opacity-90",
-        accent: "text-emerald-500 bg-emerald-500/10 hover:bg-emerald-500/20",
+        accent: "text-cyan-600 bg-cyan-600/10 hover:bg-cyan-600/20",
         outlined:
           "dark:bg-zinc-800 dark:text-white text-zinc-800 bg-white outline outline-zinc-800/10  dark:outline-white/5  hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50",
         destructive:
@@ -27,7 +27,7 @@ const buttonVariants = cva(
       },
       size: {
         default: "h-10 px-3 text-xs md:text-sm",
-        sm: "h-9 px-3 text-xs md:text-sm",
+        sm: "h-8 px-3 text-xs md:text-sm",
         xs: "h-7 px-2 text-xs",
         md: "h-11 px-3 text-xs md:text-sm font-semibold",
         lg: "h-12 md:h-14  px-8 text-xs md:text-base font-semibold",

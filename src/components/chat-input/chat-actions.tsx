@@ -51,7 +51,7 @@ export const ChatActions = ({
   const hasTextInput = !!editor?.getText();
 
   const sendButtonClasses = cn({
-    "bg-zinc-800 text-white dark:bg-emerald-500/20 dark:text-emerald-400 dark:outline-emerald-400":
+    "bg-zinc-800 text-white dark:bg-cyan-600/20 dark:text-cyan-400 dark:outline-cyan-400":
       hasTextInput,
   });
   return (
@@ -103,7 +103,7 @@ export const ChatActions = ({
           }}
         >
           <SentIcon
-            size={18}
+            size={16}
             className="-translate-x-0.5 rotate-45"
             variant="solid"
             strokeWidth="2"

@@ -61,7 +61,7 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
     },
   });
   const feedbackOptions = [
-    { type: "positive", icon: SmileIcon, color: "text-emerald-400" },
+    { type: "positive", icon: SmileIcon, color: "text-cyan-400" },
     { type: "neutral", icon: NeutralIcon, color: "" },
     { type: "negative", icon: Sad01Icon, color: "text-rose-400" },
   ];

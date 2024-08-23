@@ -25,30 +25,30 @@ export const SearchResults = ({ searchResults, query }: TSearchResults) => {
 
       {Array.isArray(searchResults) && (
         <Flex
-          gap="xs"
+          gap="sm"
           className="no-scrollbar mb-4 w-full overflow-x-auto"
           items="stretch"
         >
           {searchResults?.map((result) => (
             <Flex
-              className="min-w-[200px] cursor-pointer rounded-lg bg-zinc-500/10 p-2.5 hover:bg-zinc-500/20"
+              className="min-w-[200px] cursor-pointer rounded-md border bg-zinc-500/5 p-2.5 hover:bg-zinc-500/10"
               direction="col"
               key={result.link}
               justify="between"
               onClick={() => {
                 window?.open(result?.link, "_blank");
               }}
-              gap="xs"
+              gap="sm"
             >
-              <Type size="sm" className="line-clamp-2">
-                {result.title}
-              </Type>
               <Flex direction="row" items="center" gap="sm">
                 <SearchFavicon link={new URL(result.link).host} />
                 <Type size="xs" textColor="secondary" className="line-clamp-1">
                   {new URL(result.link).host}
                 </Type>
               </Flex>
+              <Type size="sm" className="line-clamp-2">
+                {result.title}
+              </Type>
             </Flex>
           ))}
         </Flex>

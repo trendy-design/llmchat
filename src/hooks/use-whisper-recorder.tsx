@@ -171,7 +171,7 @@ export const useWhisperRecorder = () => {
             className="group"
           >
             <StopIcon
-              size={18}
+              size={16}
               variant="solid"
               strokeWidth="2"
               className="text-rose-400/80"
@@ -185,7 +185,7 @@ export const useWhisperRecorder = () => {
     return (
       <Tooltip content="Record">
         <Button size="icon" variant="ghost" onClick={startVoiceRecording}>
-          <RecordIcon size={18} variant="stroke" strokeWidth="2" />
+          <RecordIcon size={16} variant="stroke" strokeWidth="2" />
         </Button>
       </Tooltip>
     );

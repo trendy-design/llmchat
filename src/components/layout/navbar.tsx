@@ -5,6 +5,7 @@ import { HistorySidebar } from "../history/history-side-bar";
 import { ModelIcon } from "@/components/model-icon";
 import { Button, Flex, Tooltip } from "@/components/ui";
 import { HugeIcon } from "@/types/icons";
+import { Github01Icon } from "@hugeicons/react";
 import { useRouter } from "next/navigation";
 import { BetaTag } from "../ui/beta-tag";
 import { ProfileDropdown } from "./profile-dropdown";
@@ -23,7 +24,7 @@ export const NavbarItem = ({
   return (
     <Tooltip content={tooltip} side="bottom" sideOffset={4}>
       <Button size="iconSm" variant="ghost" onClick={onClick}>
-        <Icon size={18} strokeWidth={2} />
+        <Icon size={16} strokeWidth={2} />
       </Button>
     </Tooltip>
   );
@@ -56,6 +57,13 @@ export const Navbar = () => {
       />
 
       <Flex className="flex-1" />
+      <NavbarItem
+        tooltip="Github"
+        icon={Github01Icon}
+        onClick={() => {
+          window.open("https://git.new/llmchat", "_blank");
+        }}
+      />
       <HistorySidebar />
 
       <ProfileDropdown />
