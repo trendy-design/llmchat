@@ -103,16 +103,17 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
         <Flex gap="xs" items="center" className="w-full">
           <Tooltip content="Copy">
             <Button
-              variant="ghost"
-              size="iconSm"
+              variant="secondary"
+              size="sm"
               rounded="lg"
               onClick={handleCopyContent}
             >
               {showCopied ? (
-                <Tick01Icon size={16} variant="stroke" strokeWidth="2" />
+                <Tick01Icon size={14} variant="stroke" strokeWidth="2" />
               ) : (
-                <Copy01Icon size={16} variant="stroke" strokeWidth="2" />
+                <Copy01Icon size={14} variant="stroke" strokeWidth="2" />
               )}
+              Copy
             </Button>
           </Tooltip>
 
@@ -122,8 +123,9 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
               confimBtnVariant="destructive"
               onConfirm={handleDeleteMessage}
             >
-              <Button variant="ghost" size="iconSm" rounded="lg">
-                <Delete01Icon size={16} variant="stroke" strokeWidth="2" />
+              <Button variant="secondary" size="sm" rounded="lg">
+                <Delete01Icon size={14} variant="stroke" strokeWidth="2" />
+                Delete
               </Button>
             </PopOverConfirmProvider>
           </Tooltip>
@@ -133,7 +135,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
               onRegenerate={handleRegenerate}
             />
           ) : (
-            <Type size="xs" textColor="tertiary" className="px-2">
+            <Type size="sm" textColor="tertiary" className="px-2">
               {message.runConfig?.assistant?.name}
             </Type>
           )}

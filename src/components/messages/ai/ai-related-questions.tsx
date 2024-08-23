@@ -6,7 +6,7 @@ import { slideUpVariant } from "@/helper/animations";
 import { useAssistantUtils } from "@/hooks";
 import { useLLMRunner } from "@/hooks/use-llm-runner";
 import { TChatMessage } from "@/types";
-import { ArrowRight02Icon, MessageAdd01Icon } from "@hugeicons/react";
+import { ArrowRight02Icon, RepeatIcon } from "@hugeicons/react";
 import { motion } from "framer-motion";
 import { FC } from "react";
 
@@ -55,17 +55,17 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
         gap="sm"
         className="mt-4 w-full border-t border-zinc-500/10 pt-8"
       >
-        <ToolBadge icon={MessageAdd01Icon} text={"Related"} />
+        <ToolBadge icon={RepeatIcon} text={"Related"} />
         {message?.relatedQuestions?.map((question) => {
           return (
             <motion.div key={question} variants={slideUpVariant}>
               <Type
                 className="cursor-pointer items-center gap-2 py-0.5 decoration-zinc-500 underline-offset-4 opacity-70 hover:underline hover:opacity-100"
-                size="base"
+                size="sm"
                 onClick={() => handleOnClick(question)}
                 weight="medium"
               >
-                <ArrowRight02Icon size={18} strokeWidth={2} />
+                <ArrowRight02Icon size={16} strokeWidth={2} />
                 {question}
               </Type>
             </motion.div>

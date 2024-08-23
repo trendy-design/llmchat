@@ -139,7 +139,7 @@ export const CommandsProvider = ({ children }: TCommandsProvider) => {
               >
                 <div className="flex h-6 w-6 items-center justify-center">
                   <action.icon
-                    size={18}
+                    size={16}
                     strokeWidth="2"
                     className="flex-shrink-0"
                   />

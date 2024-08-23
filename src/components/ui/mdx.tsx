@@ -1,3 +1,4 @@
+import { ibmPlex } from "@/app/fonts";
 import { CodeBlock } from "@/components/ui/codeblock";
 import {
   HoverCard,
@@ -61,10 +62,6 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
     return null;
   }
 
-  const renderParagraph = (children: ReactNode) => <p>{children}</p>;
-
-  const renderEm = (children: ReactNode) => <em>{children}</em>;
-
   const renderHeading = (children: ReactNode, level: number) => {
     const Heading = `h${level}` as keyof JSX.IntrinsicElements;
     return <Heading>{children}</Heading>;
@@ -84,7 +81,7 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
               href={href}
               target="_blank"
               data-message-id={messageId}
-              className="font-normal text-blue-500 !no-underline dark:text-blue-400"
+              className="font-normal text-cyan-600 !no-underline dark:text-cyan-600"
             >
               {text}
             </Link>
@@ -128,15 +125,6 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
     </blockquote>
   );
 
-  const renderList = (children: ReactNode, ordered: boolean) =>
-    ordered ? <ol>{children}</ol> : <ul>{children}</ul>;
-
-  const renderListItem = (children: ReactNode) => (
-    <li>
-      <p>{children}</p>
-    </li>
-  );
-
   const renderStrong = (children: ReactNode) => <strong>{children}</strong>;
 
   const renderCode = (code: string, lang: string) => (
@@ -146,16 +134,19 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
   );
 
   const renderCodespan = (code: string) => (
-    <span className="rounded-md bg-zinc-50 px-2 py-1 text-sm font-medium text-zinc-800 dark:bg-white/10 dark:text-white md:text-base">
+    <span
+      style={ibmPlex.style}
+      className="rounded-md border bg-zinc-50 px-1 py-0.5 text-xs text-zinc-800 dark:bg-white/10 dark:text-white"
+    >
       {code}
     </span>
   );
 
   const articleClass = cn(
-    "prose dark:prose-invert pt-2 pb-8 max-w-full prose-p:text-[0.925rem] prose-p:font-[350] prose-zinc prose-h3:font-medium prose-h4:font-medium prose-h5:font-medium prose-h6:font-medium prose-h3:text-base md:prose-h3:text-lg prose-h4:text-sm md:prose-h4:text-base prose-h5:text-sm md:prose-h5:text-base prose-h6:text-sm md:prose-h6:text-base prose-heading:font-medium prose-strong:font-medium prose-headings:text-lg prose-th:text-sm",
+    "prose dark:prose-invert pt-2 pb-8 max-w-full prose-zinc prose-h3:font-medium prose-h4:font-medium prose-h5:font-medium prose-h6:font-medium prose-h3:text-base md:prose-h3:text-lg prose-h4:text-sm md:prose-h4:text-base prose-h5:text-sm md:prose-h5:text-base prose-h6:text-sm md:prose-h6:text-base prose-heading:font-medium prose-strong:font-medium prose-headings:text-lg prose-th:text-sm",
     {
       "prose-sm": size === "sm",
-      "prose-sm md:prose-base": size === "base",
+      "prose-sm md:prose-sm": size === "base",
       "prose-xs": size === "xs",
     },
   );
@@ -173,15 +164,13 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
               {text}
             </motion.span>
           ),
-          paragraph: renderParagraph,
-          em: renderEm,
+
           heading: renderHeading,
           hr: renderHr,
           link: (href, text) => renderLink(href, text, messageId),
           image: renderImage,
           blockquote: renderBlockquote,
-          list: renderList,
-          listItem: renderListItem,
+
           strong: renderStrong,
           code: renderCode,
           codespan: renderCodespan,

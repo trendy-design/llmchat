@@ -118,7 +118,7 @@ export default function LLMsSettings() {
                 className={cn(
                   "!rotate-0 px-2",
                   model.connected
-                    ? "text-emerald-500 dark:text-emerald-400"
+                    ? "text-cyan-600 dark:text-cyan-400"
                     : "text-zinc-500",
                 )}
               >

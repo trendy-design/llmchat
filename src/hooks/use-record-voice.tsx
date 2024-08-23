@@ -202,7 +202,7 @@ export const useRecordVoice = () => {
   //               }}
   //               className="group"
   //             >
-  //               <Cancel01Icon size={18} strokeWidth="2" />
+  //               <Cancel01Icon size={16} strokeWidth="2" />
   //               Cancel
   //             </Button>
   //             <Button
@@ -213,7 +213,7 @@ export const useRecordVoice = () => {
   //               }}
   //               className="group"
   //             >
-  //               <Tick01Icon size={18} strokeWidth="2" />
+  //               <Tick01Icon size={16} strokeWidth="2" />
   //               Done
   //             </Button>
   //           </Flex>

@@ -89,7 +89,7 @@ export const WelcomeMessage = ({ show }: TWelcomeMessageProps) => {
               return (
                 <Type
                   key={index}
-                  size="base"
+                  size="sm"
                   textColor="secondary"
                   className="flex gap-3"
                 >

@@ -56,7 +56,7 @@ export const PromptLibrary = ({
             className="w-full"
             onSelect={onCreate}
           >
-            <Edit02Icon size={18} variant="stroke" strokeWidth="2" />
+            <Edit02Icon size={16} variant="stroke" strokeWidth="2" />
             Create Prompt
           </CommandItem>
           {!!localPrompts?.length && (

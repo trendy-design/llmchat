@@ -72,9 +72,9 @@ const config = {
         },
       },
       fontSize: {
-        xs: "0.80rem",
-        sm: "0.875rem",
-        base: "0.925rem",
+        xs: "0.75rem",
+        sm: "0.85rem",
+        base: "1rem",
         lg: "1.115rem",
         xl: "1.25rem",
         "2xl": "1.563rem",
@@ -84,7 +84,7 @@ const config = {
       },
 
       fontWeight: {
-        normal: "350",
+        normal: "400",
         medium: "450",
         semibold: "550",
         bold: "650",

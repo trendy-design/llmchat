@@ -18,13 +18,13 @@ export const SpaceSelector: FC<SpaceSelector> = () => {
       <Popover>
         <PopoverTrigger>
           <Button size="iconSm" variant="ghost">
-            <FolderLibraryIcon size={18} strokeWidth={2} />
+            <FolderLibraryIcon size={16} strokeWidth={2} />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-64">
           <Flex className="p-4" direction="col" items="center" justify="center">
             <FolderLibraryIcon
-              size={18}
+              size={16}
               strokeWidth={2}
               className="mb-2 text-zinc-500"
             />
