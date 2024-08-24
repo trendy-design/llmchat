@@ -1,4 +1,3 @@
-import { IBM_Plex_Mono } from "next/font/google";
 import localFont from "next/font/local";
 
 export const interVar = localFont({
@@ -8,8 +7,7 @@ export const interVar = localFont({
 
 // export const inter = Inter({ subsets: ["latin"] });
 
-export const ibmPlex = IBM_Plex_Mono({
-  weight: ["400"],
-  subsets: ["latin"],
-  variable: "--font-ibm-plex-sans",
+export const mono = localFont({
+  src: "./JetBrainsMono-Regular.woff2",
+  variable: "--font-mono",
 });

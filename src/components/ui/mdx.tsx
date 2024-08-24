@@ -1,4 +1,4 @@
-import { ibmPlex } from "@/app/fonts";
+import { mono } from "@/app/fonts";
 import { CodeBlock } from "@/components/ui/codeblock";
 import {
   HoverCard,
@@ -148,7 +148,7 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
 
   const renderCodespan = (code: string) => (
     <span
-      style={ibmPlex.style}
+      style={mono.style}
       className="rounded-md border bg-zinc-50 px-1 py-0.5 text-xs text-zinc-800 dark:bg-white/10 dark:text-white"
     >
       {code}
@@ -163,6 +163,8 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
       "prose-xs": size === "xs",
     },
   );
+
+  const renderBr = () => <br />;
 
   return (
     <article className={articleClass} id={`message-${messageId}`}>
@@ -181,6 +183,7 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
           em: renderEm,
           heading: renderHeading,
           hr: renderHr,
+          br: renderBr,
           link: (href, text) => renderLink(href, text, messageId),
           image: renderImage,
           blockquote: renderBlockquote,

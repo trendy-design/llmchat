@@ -51,16 +51,23 @@ export const ChatInput = () => {
   };
 
   const chatInputBackgroundContainer = cn(
-    "absolute bottom-0 right-0 left-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-6 pt-6 md:justify-end md:px-4",
-    "bg-gradient-to-t from-white from-70% to-transparent transition-all duration-1000 ease-in-out dark:from-zinc-800",
+    "absolute bottom-0 right-0 left-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-4 pt-16 md:justify-end md:px-4",
+    "transition-all duration-1000 ease-in-out",
   );
 
   const chatContainer = cn(
-    "flex w-full flex-col items-center relative justify-center gap-1 md:w-[700px] lg:w-[720px]",
+    "flex w-full flex-col gap-1 md:w-[640px] lg:w-[700px] z-10",
   );
 
   return (
     <div className={chatInputBackgroundContainer}>
+      <div
+        className="absolute bottom-0 left-0 right-0 h-[200px] bg-gradient-to-t from-white from-70% to-transparent backdrop-blur-sm dark:bg-zinc-800/50 dark:from-zinc-800"
+        style={{
+          maskImage: "linear-gradient(to top, black 25%, transparent)",
+          WebkitMaskImage: "linear-gradient(to top, black 25%, transparent)",
+        }}
+      />
       <div className={chatContainer}>
         <FlexSpacer />
         <Flex items="center" justify="center" gap="sm" className="mb-2">
@@ -72,7 +79,7 @@ export const ChatInput = () => {
           variants={slideUpVariant}
           initial="initial"
           animate={editor?.isEditable ? "animate" : "initial"}
-          className="flex w-full flex-shrink-0 overflow-hidden rounded-lg border bg-white shadow-sm dark:border-white/5 dark:bg-white/5"
+          className="flex w-full flex-shrink-0 overflow-hidden rounded-lg border bg-white shadow-sm dark:border-white/10 dark:bg-zinc-800"
         >
           <ImageDropzoneRoot dropzoneProps={dropzonProps}>
             <Flex direction="col" className="w-full">

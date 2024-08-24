@@ -31,7 +31,7 @@ export const SearchResults = ({ searchResults, query }: TSearchResults) => {
         >
           {searchResults?.map((result) => (
             <Flex
-              className="min-w-[200px] cursor-pointer rounded-md border bg-zinc-500/5 p-2.5 hover:bg-zinc-500/10"
+              className="min-w-[200px] cursor-pointer rounded-md bg-zinc-500/10 p-2.5 hover:opacity-80"
               direction="col"
               key={result.link}
               justify="between"
@@ -42,11 +42,11 @@ export const SearchResults = ({ searchResults, query }: TSearchResults) => {
             >
               <Flex direction="row" items="center" gap="sm">
                 <SearchFavicon link={new URL(result.link).host} />
-                <Type size="xs" textColor="secondary" className="line-clamp-1">
+                <Type size="xs" className="line-clamp-1 w-full" weight="medium">
                   {new URL(result.link).host}
                 </Type>
               </Flex>
-              <Type size="sm" className="line-clamp-2">
+              <Type size="xs" className="line-clamp-2" textColor="secondary">
                 {result.title}
               </Type>
             </Flex>
