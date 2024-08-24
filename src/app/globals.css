@@ -30,6 +30,105 @@
     --color-zinc-800: 9 9 10;
     --color-zinc-900: 6 6 7;
 
+
+    --color-gray-100-value: 0,0%,95%;
+    --color-gray-200-value: 0,0%,92%;
+    --color-gray-300-value: 0,0%,90%;
+    --color-gray-400-value: 0,0%,92%;
+    --color-gray-500-value: 0,0%,79%;
+    --color-gray-600-value: 0,0%,66%;
+    --color-gray-700-value: 0,0%,56%;
+    --color-gray-800-value: 0,0%,49%;
+    --color-gray-900-value: 0,0%,40%;
+    --color-gray-1000-value: 0,0%,9%;
+    --color-blue-100-value: 212,100%,97%;
+    --color-blue-200-value: 210,100%,96%;
+    --color-blue-300-value: 210,100%,94%;
+    --color-blue-400-value: 209,100%,90%;
+    --color-blue-500-value: 209,100%,80%;
+    --color-blue-600-value: 208,100%,66%;
+    --color-blue-700-value: 212,100%,48%;
+    --color-blue-800-value: 212,100%,41%;
+    --color-blue-900-value: 211,100%,42%;
+    --color-blue-1000-value: 211,100%,15%;
+    --color-red-100-value: 0,100%,97%;
+    --color-red-200-value: 0,100%,96%;
+    --color-red-300-value: 0,100%,95%;
+    --color-red-400-value: 0,90%,92%;
+    --color-red-500-value: 0,82%,85%;
+    --color-red-600-value: 359,90%,71%;
+    --color-red-700-value: 358,75%,59%;
+    --color-red-800-value: 358,70%,52%;
+    --color-red-900-value: 358,66%,48%;
+    --color-red-1000-value: 355,49%,15%;
+    --color-amber-100-value: 39,100%,95%;
+    --color-amber-200-value: 44,100%,92%;
+    --color-amber-300-value: 43,96%,90%;
+    --color-amber-400-value: 42,100%,78%;
+    --color-amber-500-value: 38,100%,71%;
+    --color-amber-600-value: 36,90%,62%;
+    --color-amber-700-value: 39,100%,57%;
+    --color-amber-800-value: 35,100%,52%;
+    --color-amber-900-value: 30,100%,32%;
+    --color-amber-1000-value: 20,79%,17%;
+    --color-green-100-value: 120,60%,96%;
+    --color-green-200-value: 120,60%,95%;
+    --color-green-300-value: 120,60%,91%;
+    --color-green-400-value: 122,60%,86%;
+    --color-green-500-value: 124,60%,75%;
+    --color-green-600-value: 125,60%,64%;
+    --color-green-700-value: 131,41%,46%;
+    --color-green-800-value: 132,43%,39%;
+    --color-green-900-value: 133,50%,32%;
+    --color-green-1000-value: 128,29%,15%;
+    --color-teal-100-value: 169,70%,96%;
+    --color-teal-200-value: 167,70%,94%;
+    --color-teal-300-value: 168,70%,90%;
+    --color-teal-400-value: 170,70%,85%;
+    --color-teal-500-value: 170,70%,72%;
+    --color-teal-600-value: 170,70%,57%;
+    --color-teal-700-value: 173,80%,36%;
+    --color-teal-800-value: 173,83%,30%;
+    --color-teal-900-value: 174,91%,25%;
+    --color-teal-1000-value: 171,80%,13%;
+    --color-purple-100-value: 276,100%,97%;
+    --color-purple-200-value: 277,87%,97%;
+    --color-purple-300-value: 274,78%,95%;
+    --color-purple-400-value: 276,71%,92%;
+    --color-purple-500-value: 274,70%,82%;
+    --color-purple-600-value: 273,72%,73%;
+    --color-purple-700-value: 272,51%,54%;
+    --color-purple-800-value: 272,47%,45%;
+    --color-purple-900-value: 274,71%,43%;
+    --color-purple-1000-value: 276,100%,15%;
+    --color-pink-100-value: 330,100%,96%;
+    --color-pink-200-value: 340,90%,96%;
+    --color-pink-300-value: 340,82%,94%;
+    --color-pink-400-value: 341,76%,91%;
+    --color-pink-500-value: 340,75%,84%;
+    --color-pink-600-value: 341,75%,73%;
+    --color-pink-700-value: 336,80%,58%;
+    --color-pink-800-value: 336,74%,51%;
+    --color-pink-900-value: 336,65%,45%;
+    --color-pink-1000-value: 333,74%,15%;
+    --color-gray-alpha-100: rgba(0,0,0,.05);
+    --color-gray-alpha-200: rgba(0,0,0,.08);
+    --color-gray-alpha-300: rgba(0,0,0,.1);
+    --color-gray-alpha-400: rgba(0,0,0,.08);
+    --color-gray-alpha-500: rgba(0,0,0,.21);
+    --color-gray-alpha-600: rgba(0,0,0,.34);
+    --color-gray-alpha-700: rgba(0,0,0,.44);
+    --color-gray-alpha-800: rgba(0,0,0,.51);
+    --color-gray-alpha-900: rgba(0,0,0,.61);
+    --color-gray-alpha-1000: rgba(0,0,0,.91);
+    --color-background-100: #fff;
+    --color-background-200: #fafafa;
+    --color-focus-border: 0 0 0 1px var(--color-gray-alpha-600),0px 0px 0px 4px rgba(0,0,0,.16);
+    --color-focus-color: var(--color-blue-700);
+    --vaul-overlay-background: 255,255,255;
+    --vaul-overlay-background-start: transparent;
+    --vaul-overlay-background-end: rgba(0,0,0,.4)
+
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
 
@@ -224,26 +323,28 @@ code.hljs {
 
 .dark .hljs-comment,
 .dark .hljs-quote {
-  color: #5c6370;
+  color: hsl(var(--color-gray-400-value));
   font-style: italic
 }
 
 .hljs-comment,
 .hljs-quote {
-  color: #5c6370;
+  color: hsl(var(--color-gray-900-value));
   font-style: italic
 }
+
+
 
 .dark .hljs-doctag,
 .dark .hljs-keyword,
 .dark .hljs-formula {
-  color: #e48bfe
+    color: hsl(var(--color-purple-500-value));
 }
 
 .hljs-doctag,
 .hljs-keyword,
 .hljs-formula {
-  color: #d665ee
+  color: hsl(var(--color-purple-700-value));
 }
 
 
@@ -252,7 +353,7 @@ code.hljs {
 .dark .hljs-selector-tag,
 .dark .hljs-deletion,
 .dark .hljs-subst {
-  color: #41e696
+  color: hsl(var(--color-teal-500-value));
 }
 
 .hljs-section,
@@ -260,15 +361,15 @@ code.hljs {
 .hljs-selector-tag,
 .hljs-deletion,
 .hljs-subst {
-  color: #37ba7a
+  color: hsl(var(--color-teal-700-value));
 }
 
 .dark .hljs-literal {
-  color: #58d7e8
+    color: hsl(var(--color-blue-500-value));
 }
 
 .hljs-literal {
-  color: #58d7e8
+  color: hsl(var(--color-blue-700-value));
 }
 
 .dark .hljs-string,
@@ -276,7 +377,7 @@ code.hljs {
 .dark .hljs-addition,
 .dark .hljs-attribute,
 .dark .hljs-meta .hljs-string {
-  color: #85beff
+  color: hsl(var(--color-blue-500-value));
 }
 
 .hljs-string,
@@ -284,7 +385,7 @@ code.hljs {
 .hljs-addition,
 .hljs-attribute,
 .hljs-meta .hljs-string {
-  color: #5ca4f6
+  color: hsl(var(--color-blue-700-value));
 }
 
 
@@ -296,7 +397,7 @@ code.hljs {
 .dark .hljs-selector-attr,
 .dark .hljs-selector-pseudo,
 .dark .hljs-number {
-  color: #e783e9
+  color: hsl(var(--color-red-500-value));
 }
 
 .hljs-attr,
@@ -307,7 +408,7 @@ code.hljs {
 .hljs-selector-attr,
 .hljs-selector-pseudo,
 .hljs-number {
-  color: #e783e9
+  color: hsl(var(--color-red-700-value));
 }
 
 
@@ -317,7 +418,7 @@ code.hljs {
 .dark .hljs-meta,
 .dark .hljs-selector-id,
 .dark .hljs-title {
-  color: #61aeee
+  color: hsl(var(--color-blue-500-value));
 }
 
 .hljs-symbol,
@@ -326,19 +427,19 @@ code.hljs {
 .hljs-meta,
 .hljs-selector-id,
 .hljs-title {
-  color: #61aeee
+  color: hsl(var(--color-blue-700-value));
 }
 
 .dark .hljs-built_in,
 .dark .hljs-title.class_,
 .dark .hljs-class .hljs-title {
-  color: #e6c07b
+  color: hsl(var(--color-red-500-value));
 }
 
 .hljs-built_in,
 .hljs-title.class_,
 .hljs-class .hljs-title {
-  color: #c89e32
+  color: hsl(var(--color-red-700-value));
 }
 
 .hljs-emphasis {

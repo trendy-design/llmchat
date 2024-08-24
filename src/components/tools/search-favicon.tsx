@@ -18,7 +18,7 @@ export const SearchFavicon: FC<TSeachFavicon> = ({
   if (error) {
     return (
       <Globe02Icon
-        size={size === "sm" ? 14 : 16}
+        size={size === "sm" ? 16 : 18}
         strokeWidth={1.5}
         className={cn("text-gray-500", className)}
       />
