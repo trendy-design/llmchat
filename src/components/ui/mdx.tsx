@@ -62,6 +62,10 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
     return null;
   }
 
+  const renderParagraph = (children: ReactNode) => <p>{children}</p>;
+
+  const renderEm = (children: ReactNode) => <em>{children}</em>;
+
   const renderHeading = (children: ReactNode, level: number) => {
     const Heading = `h${level}` as keyof JSX.IntrinsicElements;
     return <Heading>{children}</Heading>;
@@ -81,7 +85,7 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
               href={href}
               target="_blank"
               data-message-id={messageId}
-              className="font-normal text-cyan-600 !no-underline dark:text-cyan-600"
+              className="font-normal text-teal-600 !no-underline dark:text-teal-600"
             >
               {text}
             </Link>
@@ -125,6 +129,15 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
     </blockquote>
   );
 
+  const renderList = (children: ReactNode, ordered: boolean) =>
+    ordered ? <ol>{children}</ol> : <ul>{children}</ul>;
+
+  const renderListItem = (children: ReactNode) => (
+    <li>
+      <p>{children}</p>
+    </li>
+  );
+
   const renderStrong = (children: ReactNode) => <strong>{children}</strong>;
 
   const renderCode = (code: string, lang: string) => (
@@ -164,13 +177,15 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
               {text}
             </motion.span>
           ),
-
+          paragraph: renderParagraph,
+          em: renderEm,
           heading: renderHeading,
           hr: renderHr,
           link: (href, text) => renderLink(href, text, messageId),
           image: renderImage,
           blockquote: renderBlockquote,
-
+          list: renderList,
+          listItem: renderListItem,
           strong: renderStrong,
           code: renderCode,
           codespan: renderCodespan,

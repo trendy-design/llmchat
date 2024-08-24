@@ -32,7 +32,7 @@ export const RegenerateWithModelSelect = ({
         <Tooltip content="Regenerate">
           <DropdownMenuTrigger asChild>
             {
-              <Button variant="ghost" size="sm" rounded="lg">
+              <Button variant="secondary" size="sm" rounded="lg">
                 <SparklesIcon size={16} variant="stroke" strokeWidth="2" />
 
                 {messageAssistantProps?.model?.name}

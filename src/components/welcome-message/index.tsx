@@ -98,7 +98,7 @@ export const WelcomeMessage = ({ show }: TWelcomeMessageProps) => {
                     strokeWidth={1.5}
                     className="mt-1 flex-shrink-0"
                   />
-                  <p className="inline-block leading-7 tracking-[0.015em] md:leading-6">
+                  <p className="inline-block leading-7 md:leading-6">
                     {point.text}
                   </p>
                 </Type>
@@ -112,7 +112,7 @@ export const WelcomeMessage = ({ show }: TWelcomeMessageProps) => {
               width={0}
               alt="sparck"
               height={0}
-              className="mx-2 inline-block w-10 text-cyan-400 dark:invert"
+              className="mx-2 inline-block w-10 text-teal-400 dark:invert"
             />{" "}
             no sign-up needed!
           </Type>
