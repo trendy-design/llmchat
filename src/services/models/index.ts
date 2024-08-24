@@ -94,9 +94,14 @@ export class ModelService {
       case "anthropic":
         return new ChatAnthropic({
           model: model.key,
-          anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
+          // anthropicApiUrl: `${window.location.origin}/api/anthropic/`,
           apiKey,
           maxTokens,
+          clientOptions: {
+            defaultHeaders: {
+              "anthropic-dangerous-direct-browser-access": "true",
+            },
+          },
           streaming: true,
           temperature,
           topP,

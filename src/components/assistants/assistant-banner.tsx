@@ -18,7 +18,7 @@ export const AssistantBanner: FC<AssistantBannerProps> = ({
       className="w-full rounded-xl bg-zinc-800/5 p-4 dark:bg-white/5"
     >
       <Flex direction="col" gap="sm">
-        <Flex items="center" gap="sm" className="!text-cyan-600">
+        <Flex items="center" gap="sm" className="!text-teal-600">
           <SparklesIcon size={20} />
 
           <Type weight="medium" size="base">

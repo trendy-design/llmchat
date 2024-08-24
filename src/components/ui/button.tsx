@@ -11,7 +11,7 @@ const buttonVariants = cva(
       variant: {
         default:
           "dark:bg-zinc-100 dark:text-zinc-800 text-white bg-zinc-800 hover:opacity-90",
-        accent: "text-cyan-600 bg-cyan-600/10 hover:bg-cyan-600/20",
+        accent: "text-teal-600 bg-teal-600/10 hover:bg-teal-600/20",
         outlined:
           "dark:bg-zinc-800 dark:text-white text-zinc-800 bg-white outline outline-zinc-800/10  dark:outline-white/5  hover:bg-zinc-50/50 dark:hover:bg-zinc-900/50",
         destructive:

@@ -9,7 +9,7 @@ const typeVariants = cva("text flex", {
     size: {
       xxs: "text-xs",
       xs: "text-xs",
-      sm: "text-xs md:text-sm tracking-tight",
+      sm: "text-xs md:text-sm",
       base: "text-sm md:text-base",
       lg: "text-base md:text-lg",
       xl: "text-lg md:text-xl",
