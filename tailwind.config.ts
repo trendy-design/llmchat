@@ -5,8 +5,8 @@ const config = {
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -20,6 +20,7 @@ const config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-inter)"],
+        mono: ["var(--font-mono)"],
       },
       colors: {
         zinc: {
@@ -85,7 +86,7 @@ const config = {
 
       fontWeight: {
         normal: "400",
-        medium: "450",
+        medium: "500",
         semibold: "550",
         bold: "650",
       },
