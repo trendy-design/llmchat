@@ -1,1 +1,18 @@
-bun run build
+#!/bin/bash
+
+if command -v bun &> /dev/null
+then
+    bun run build
+elif command -v yarn &> /dev/null
+then
+    yarn build
+elif command -v pnpm &> /dev/null
+then
+    pnpm run build
+elif command -v npm &> /dev/null
+then
+    npm run build
+else
+    echo "No package manager found. Please install bun, yarn, pnpm, or npm."
+    exit 1
+fi
