@@ -11,7 +11,6 @@ import {
 } from "@/ui";
 import moment from "moment";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { cn } from "../utils/clsx";
 import { sortSessions } from "../utils/utils";
@@ -43,7 +42,6 @@ export const CommandsProvider = ({ children }: TCommandsProvider) => {
   const { sessions, createSession, refetchSessions, setActiveSessionId } =
     useSessions();
   const { toast } = useToast();
-  const router = useRouter();
   const [isCommandOpen, setIsCommandOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
