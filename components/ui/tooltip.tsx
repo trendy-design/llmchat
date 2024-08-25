@@ -37,7 +37,7 @@ export type TTooltip = {
 const Tooltip = ({ children, content, side, sideOffset }: TTooltip) => {
   return (
     <TooltipBase delayDuration={0}>
-      <TooltipTrigger>{children}</TooltipTrigger>
+      <TooltipTrigger asChild>{children}</TooltipTrigger>
       <TooltipContent side={side} sideOffset={sideOffset}>
         {content}
       </TooltipContent>

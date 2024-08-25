@@ -67,7 +67,7 @@ export const OllamaSettings = ({ onRefresh }: OllamaSettingsProps) => {
         onChange={handleURLChange}
       />
 
-      <Button size="sm" variant="default" onClick={verifyAndSaveURL}>
+      <Button variant="default" onClick={verifyAndSaveURL}>
         Check Connection
       </Button>
 

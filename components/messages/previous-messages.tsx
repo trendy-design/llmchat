@@ -13,7 +13,7 @@ export const PreviousMessages = () => {
 
   const renderMessage = (message: TChatMessage, index: number) => {
     const isLast = !hasCurrentMessage && messages.length - 1 === index;
-    return <Message message={message} isLast={isLast} />;
+    return <Message message={message} isLast={isLast} key={message.id} />;
   };
 
   useEffect(() => {

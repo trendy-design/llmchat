@@ -8,7 +8,6 @@ export class PreferenceService {
   }
 
   async getPreferences(): Promise<TPreferences> {
-    console.log("getPreferences");
     return (await get("preferences")) as TPreferences;
   }
 

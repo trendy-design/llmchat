@@ -64,10 +64,10 @@ export const ChatInput = () => {
   return (
     <div className={chatInputBackgroundContainer}>
       <div
-        className="absolute bottom-0 left-0 right-0 h-[200px] bg-gradient-to-t from-white from-70% to-transparent backdrop-blur-sm dark:bg-zinc-800/50 dark:from-zinc-800"
+        className="absolute bottom-0 left-0 right-0 h-[180px] bg-gradient-to-t from-white from-60% to-transparent backdrop-blur-sm dark:bg-zinc-800/50 dark:from-zinc-800"
         style={{
-          maskImage: "linear-gradient(to top, black 25%, transparent)",
-          WebkitMaskImage: "linear-gradient(to top, black 25%, transparent)",
+          maskImage: "linear-gradient(to top, black 60%, transparent)",
+          WebkitMaskImage: "linear-gradient(to top, black 60%, transparent)",
         }}
       />
       <div className={chatContainer}>
@@ -81,7 +81,7 @@ export const ChatInput = () => {
           variants={slideUpVariant}
           initial="initial"
           animate={editor?.isEditable ? "animate" : "initial"}
-          className="flex w-full flex-shrink-0 overflow-hidden rounded-lg border bg-white shadow-sm dark:border-white/10 dark:bg-zinc-800"
+          className="flex w-full flex-shrink-0 overflow-hidden rounded-xl border border-zinc-500/20 bg-white shadow-sm dark:bg-zinc-800"
         >
           <ImageDropzoneRoot dropzoneProps={dropzonProps}>
             <Flex direction="col" className="w-full">

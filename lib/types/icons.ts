@@ -1,10 +1,5 @@
-import { HugeiconsProps } from "@hugeicons/react";
 import { LucideProps } from "lucide-react";
-import { FC, ForwardRefExoticComponent, RefAttributes } from "react";
-
-export type HugeIcon = FC<
-  Omit<HugeiconsProps, "ref"> & RefAttributes<SVGSVGElement>
->;
+import { ForwardRefExoticComponent, RefAttributes } from "react";
 
 export type LucideIcon = ForwardRefExoticComponent<
   Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>

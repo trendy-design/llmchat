@@ -72,10 +72,8 @@ export const HistoryItem = ({
   };
 
   const containerClasses = cn(
-    "gap-2 w-full group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-lg hover:bg-black/10 hover:dark:bg-black/30",
-    activeSessionId === session.id || isEditing
-      ? "bg-black/10 dark:bg-black/30"
-      : "",
+    "gap-2 w-full group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-lg hover:bg-zinc-500/10",
+    activeSessionId === session.id || isEditing ? "bg-zinc-500/10" : "",
   );
 
   const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {

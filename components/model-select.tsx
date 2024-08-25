@@ -43,7 +43,7 @@ export const ModelSelect: FC<TModelSelect> = ({
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
           <Button
-            variant={variant || "ghost"}
+            variant="secondary"
             className={cn("gap-2 text-xs md:text-sm", className)}
             size="sm"
           >
