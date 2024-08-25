@@ -31,9 +31,13 @@ yarn-error.log*
 # vercel
 .vercel
 *.npmrc
+bunfig.toml
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
 
 package-lock.json
+
+# Sentry Config File
+.env.sentry-build-plugin

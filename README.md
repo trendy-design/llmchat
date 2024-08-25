@@ -1,86 +1,48 @@
-# All-in-One LLM App
 
-Welcome to the All-in-One LLM App! For your info, this project is designed to run LLMs locally. All your chat sessions and API keys will be stored locally in your browser. This project is designed to provide a comprehensive solution for leveraging various language models in a user-friendly interface. Built with modern technologies, this application allows users to interact with multiple LLMs seamlessly.
+![og_6x](https://github.com/user-attachments/assets/4813a6b5-3294-4056-88bb-c536a45c220c)
 
-## Tech Stack
+<h1 align="center">LLMChat</h1>
+<p align="center">Most intuitive All-in-one AI chat interface.</p>
 
-- **Next.js** (React framework)
-- **TypeScript**
-- **Tailwind CSS**
-- **Framer Motion** (for animations)
-- **Zustand** (for state management)
-- **React-query** (for data fetching)
-- **LangChain** (for LLM orchestration)
-- **Supabase** (for database and authentication)
-- **Shadcn** (for additional functionality)
-- **Tiptap** (for rich text editing)
 
-## Getting Started
+## Key Features
 
-To get started with the All-in-One LLM App, follow these steps:
+- 🧠 **Multiple LLM Providers**: Supports various language models, including Ollama.
+- 🔌 **Plugins Library**: Enhances functionality through a plugin system with function calling capabilities.
+- 🌐 **Web Search Plugin**: Allows the AI to access and utilize web information.
+- 🤖 **Custom Assistants**: Create and customize AI assistants for specific tasks or domains.
+- 🗣️ **Text-to-Speech**: Converts text responses to speech using Whisper.
+- 🎙️ **Speech-to-Text**: (Coming soon) Will enable voice input for a more natural interaction.
+- 💾 **Local Storage**: Utilizes in-browser IndexedDB for efficient data storage.
+- 📤📥 **Data Portability**: Import and export your chat data for backup or transfer.
+- 📚 **Knowledge Spaces**: (Coming soon) Create custom knowledge bases for specialized topics.
+- 📝 **Prompt Library**: Access a collection of pre-defined prompts to guide conversations.
+- 👤 **Personalization**: Utilizes a memory plugin to provide more contextual and personalized responses.
+- 📱 **Progressive Web App**: Installable on various devices for a native app-like experience.
 
-### Prerequisites
 
-Make sure you have the following installed:
 
-- Node.js (v14 or later)
-- npm or yarn
-- A modern web browser
+## Stack
 
-### Installation
+- 🌍 Next.js
+- 🔤 TypeScript
+- 🧩 LangChain
+- 📦 Zustand
+- 🔄 React-query
+- 🗄️ Supabase
+- - 🎨 Tailwind CSS
+- ✨ Framer Motion
+- 🖌️ Shadcn
+- 📝 Tiptap
 
-1. Clone the repository:
+## Roadmap
 
-   ```bash
-   git clone https://github.com/yourusername/llmchat.git
-   cd llmchat
-   ```
+## QuickStart
 
-2. Install the dependencies:
+## Deploy
 
-   Using npm:
 
-   ```bash
-   npm install
-   ```
+  
 
-   Or using yarn:
 
-   ```bash
-   yarn install
-   ```
 
-3. Run the development server:
-
-   Using npm:
-
-   ```bash
-   npm run dev
-   ```
-
-   Or using yarn:
-
-   ```bash
-   yarn dev
-   ```
-
-4. Open your browser and navigate to [http://localhost:3000](http://localhost:3000) to see the application in action.
-
-## Features
-
-- Interact with multiple LLMs through a unified interface.
-- Save and manage chat sessions locally in your browser.
-- Customize settings for different models.
-- Real-time updates and notifications.
-
-## Contributing
-
-We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) for more information on how to get involved.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Thanks to the contributors and the open-source community for their support and inspiration.

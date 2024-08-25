@@ -5,8 +5,8 @@ const config = {
   content: [
     "./pages/**/*.{ts,tsx}",
     "./components/**/*.{ts,tsx}",
+    "./lib/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
-    "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
@@ -20,9 +20,11 @@ const config = {
     extend: {
       fontFamily: {
         sans: ["var(--font-inter)"],
+        mono: ["var(--font-mono)"],
       },
       colors: {
         zinc: {
+          "25": "hsl(0, 0%, 97.5%, <alpha-value>)",
           "50": "hsl(0, 0%, 93.7%, <alpha-value>)",
           "100": "hsl(0, 0%, 87.8%, <alpha-value>)",
           "200": "hsl(0, 0%, 77%, <alpha-value>)",
@@ -73,8 +75,8 @@ const config = {
       fontSize: {
         xs: "0.75rem",
         sm: "0.875rem",
-        base: "0.975rem",
-        lg: "1.125rem",
+        base: "1rem",
+        lg: "1.115rem",
         xl: "1.25rem",
         "2xl": "1.563rem",
         "3xl": "1.953rem",
@@ -83,8 +85,8 @@ const config = {
       },
 
       fontWeight: {
-        normal: "350",
-        medium: "450",
+        normal: "400",
+        medium: "500",
         semibold: "550",
         bold: "650",
       },
