@@ -9,8 +9,8 @@ import {
   Input,
   Textarea,
 } from "@/ui";
-import { Plus } from "@phosphor-icons/react";
 import { useFormik } from "formik";
+import { Plus } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { ImageAttachment } from "../chat-input/image-attachment";
 import { ImageUpload } from "../chat-input/image-upload";
@@ -172,7 +172,7 @@ export const CreateAssistant = ({
             citations.
           </FormLabel>
           <Button variant="default" disabled={true} className="opacity-20">
-            <Plus size={20} weight="bold" /> Add Knowledge <ComingSoon />
+            <Plus size={20} strokeWidth={2} /> Add Knowledge <ComingSoon />
           </Button>
         </div>
       </div>

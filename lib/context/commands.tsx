@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { cn } from "../utils/clsx";
 import { sortSessions } from "../utils/utils";
 
-import { CommentAdd01Icon, Delete01Icon, Moon02Icon, Sun03Icon } from "@/icons";
+import { Moon, Plus, Sun, Trash } from "lucide-react";
 import { createContext, useContext } from "react";
 import { useSessions } from "./sessions";
 
@@ -66,7 +66,7 @@ export const CommandsProvider = ({ children }: TCommandsProvider) => {
   const actions = [
     {
       name: "New session",
-      icon: CommentAdd01Icon,
+      icon: Plus,
       action: () => {
         createSession();
         onClose();
@@ -74,7 +74,7 @@ export const CommandsProvider = ({ children }: TCommandsProvider) => {
     },
     {
       name: `Switch to ${theme === "light" ? "dark" : "light"} mode`,
-      icon: theme === "light" ? Moon02Icon : Sun03Icon,
+      icon: theme === "light" ? Moon : Sun,
       action: () => {
         setTheme(theme === "light" ? "dark" : "light");
         onClose();
@@ -82,7 +82,7 @@ export const CommandsProvider = ({ children }: TCommandsProvider) => {
     },
     {
       name: "Delete current session",
-      icon: Delete01Icon,
+      icon: Trash,
       action: () => {
         onClose();
         toast({

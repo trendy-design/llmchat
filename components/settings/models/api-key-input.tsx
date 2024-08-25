@@ -1,7 +1,7 @@
 import { Flex } from "@/components/ui";
 import { Button } from "@/components/ui/button";
-import { SquareLock02Icon, ViewIcon, ViewOffIcon } from "@/components/ui/icons";
 import { Input } from "@/components/ui/input";
+import { Eye, EyeOff, Lock } from "lucide-react";
 import { FC, useState } from "react";
 export type TApiKeyInput = {
   value?: string;
@@ -35,11 +35,7 @@ const ApiKeyInput: FC<TApiKeyInput> = ({
       />
       <Flex items="center" gap="sm" className="absolute right-2">
         {isLocked && (
-          <SquareLock02Icon
-            size={16}
-            variant="solid"
-            className="text-zinc-500"
-          />
+          <Lock size={14} strokeWidth={2} className="text-zinc-500" />
         )}
         <Button
           variant="ghost"
@@ -47,9 +43,9 @@ const ApiKeyInput: FC<TApiKeyInput> = ({
           onClick={() => setShowKey(!showKey)}
         >
           {showKey ? (
-            <ViewOffIcon size={16} variant="solid" />
+            <EyeOff size={16} strokeWidth={2} />
           ) : (
-            <ViewIcon size={16} variant="solid" />
+            <Eye size={16} strokeWidth={2} />
           )}
         </Button>
       </Flex>

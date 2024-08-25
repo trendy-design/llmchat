@@ -1,5 +1,7 @@
 "use client";
 
+import { AlertCircle, Check } from "lucide-react";
+import { Button } from "./button";
 import {
   Toast,
   ToastClose,
@@ -7,10 +9,8 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
-} from "@/components/ui/toast";
-import { useToast } from "@/components/ui/use-toast";
-import { AlertCircleIcon, CheckmarkCircle01Icon } from "@hugeicons/react";
-import { Button } from "./button";
+} from "./toast";
+import { useToast } from "./use-toast";
 
 export function Toaster() {
   const { toasts, dismiss } = useToast();
@@ -22,16 +22,16 @@ export function Toaster() {
           <Toast key={id} {...props}>
             <div className="flex flex-row gap-3">
               {props.variant === "destructive" ? (
-                <AlertCircleIcon
-                  size={24}
-                  variant="solid"
-                  className="mt-1 flex-shrink-0 text-rose-400"
+                <AlertCircle
+                  size={18}
+                  strokeWidth={2}
+                  className="mt-1 flex-shrink-0 text-white"
                 />
               ) : (
-                <CheckmarkCircle01Icon
-                  size={24}
-                  variant="solid"
-                  className="mt-1 flex-shrink-0 text-teal-400"
+                <Check
+                  size={18}
+                  strokeWidth={2}
+                  className="mt-1 flex-shrink-0 text-white"
                 />
               )}
               <div className="flex w-full flex-col items-start gap-0">

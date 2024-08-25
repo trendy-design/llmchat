@@ -1,4 +1,3 @@
-import { ArrowDown01Icon, SparklesIcon } from "@/icons";
 import { useAssistantUtils } from "@/lib/hooks";
 import { TAssistant, TModelKey } from "@/lib/types";
 import {
@@ -9,6 +8,7 @@ import {
   DropdownMenuTrigger,
   Tooltip,
 } from "@/ui";
+import { ChevronDown, RefreshCcw } from "lucide-react";
 import { useState } from "react";
 
 export type TRegenerateModelSelect = {
@@ -33,10 +33,10 @@ export const RegenerateWithModelSelect = ({
           <DropdownMenuTrigger asChild>
             {
               <Button variant="secondary" size="sm" rounded="lg">
-                <SparklesIcon size={16} variant="stroke" strokeWidth="2" />
+                <RefreshCcw size={14} strokeWidth="2" />
 
                 {messageAssistantProps?.model?.name}
-                <ArrowDown01Icon size={16} variant="stroke" strokeWidth="2" />
+                <ChevronDown size={14} strokeWidth="2" />
               </Button>
             }
           </DropdownMenuTrigger>

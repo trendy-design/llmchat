@@ -9,7 +9,7 @@ import {
   Tooltip,
   Type,
 } from "@/ui";
-import { Cancel01Icon, RecordIcon, Tick01Icon } from "@hugeicons/react";
+import { Check, Circle, X } from "lucide-react";
 import { FC, useEffect } from "react";
 
 export type TAudioRecorder = {
@@ -58,7 +58,7 @@ export const AudioRecorder: FC<TAudioRecorder> = ({ sendMessage }) => {
             startVoiceRecording();
           }}
         >
-          <RecordIcon size={16} variant="stroke" strokeWidth="2" />
+          <Circle size={16} strokeWidth="2" />
         </Button>
       </Tooltip>
       {transcribing && (
@@ -117,7 +117,7 @@ export const AudioRecorder: FC<TAudioRecorder> = ({ sendMessage }) => {
                 }}
                 className="group"
               >
-                <Cancel01Icon size={16} strokeWidth="2" />
+                <X size={16} strokeWidth="2" />
                 Cancel
               </Button>
               <Button
@@ -128,7 +128,7 @@ export const AudioRecorder: FC<TAudioRecorder> = ({ sendMessage }) => {
                 }}
                 className="group"
               >
-                <Tick01Icon size={16} strokeWidth="2" />
+                <Check size={16} strokeWidth="2" />
                 Done
               </Button>
             </Flex>

@@ -1,6 +1,6 @@
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { ReactNode } from "react";
-import { HugeIcon } from "./icons";
+import { LucideIcon } from "./icons";
 import { TModelItem } from "./models";
 
 export const toolKeys = ["calculator", "web_search"];
@@ -43,8 +43,8 @@ export type ToolDefinition = {
   isVisibleInMenu?: boolean;
   validateAvailability?: (context: ToolValidationContext) => Promise<boolean>;
   onValidationFailed?: () => void;
-  icon: HugeIcon;
-  compactIcon: HugeIcon;
+  icon: LucideIcon;
+  compactIcon: LucideIcon;
 };
 
 export type ToolKey = (typeof toolKeys)[number];

@@ -1,9 +1,9 @@
-import { Quotes } from "@phosphor-icons/react";
 import { FC } from "react";
 import * as Selection from "selection-popover";
 
 import { useTextSelection } from "@/lib/hooks";
 import { Button } from "@/ui";
+import { MessageSquareReply } from "lucide-react";
 
 export type TAISelectionProvider = {
   children: React.ReactNode;
@@ -23,7 +23,7 @@ export const AISelectionProvider: FC<TAISelectionProvider> = ({
         <Selection.Content sticky="always" sideOffset={10} id="chat-reply">
           {selectedText && (
             <Button size="sm" onClick={() => onSelect(selectedText)}>
-              <Quotes size="16" weight="bold" /> Reply
+              <MessageSquareReply size="16" strokeWidth={2} /> Reply
             </Button>
           )}
         </Selection.Content>

@@ -9,7 +9,7 @@ import { useAssistantUtils } from "@/lib/hooks";
 import { TAssistant } from "@/lib/types";
 import { cn } from "@/lib/utils/clsx";
 import { Button, Flex } from "@/ui";
-import { AiIdeaIcon, SentIcon } from "@hugeicons/react";
+import { ArrowUp, Book } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PluginSelect } from "../plugin-select";
 import { ImageUpload } from "./image-upload";
@@ -50,8 +50,7 @@ export const ChatActions = ({
   const hasTextInput = !!editor?.getText();
 
   const sendButtonClasses = cn({
-    "bg-zinc-800 text-white dark:bg-teal-600/20 dark:text-teal-400 dark:outline-teal-400":
-      hasTextInput,
+    "bg-teal-600/20 text-teal-600 dark:text-teal-400": hasTextInput,
   });
   return (
     <Flex
@@ -89,7 +88,7 @@ export const ChatActions = ({
           className="gap-2 pl-1.5 pr-3 text-xs md:text-sm"
           size="sm"
         >
-          <AiIdeaIcon size={16} variant="stroke" strokeWidth="2" />
+          <Book size={16} strokeWidth="2" />
           <span className="hidden md:flex">Prompts</span>
         </Button>
         <Button
@@ -101,12 +100,7 @@ export const ChatActions = ({
             editor?.getText() && sendMessage(editor?.getText());
           }}
         >
-          <SentIcon
-            size={16}
-            className="-translate-x-0.5 rotate-45"
-            variant="solid"
-            strokeWidth="2"
-          />
+          <ArrowUp size={16} strokeWidth="2" />
         </Button>
       </Flex>
     </Flex>

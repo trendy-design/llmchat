@@ -1,8 +1,8 @@
 import { GeneratedImage } from "@/components/generated-image";
 import { ToolDefinition, ToolExecutionContext } from "@/lib/types";
-import { AiImageIcon } from "@hugeicons/react";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { DallEAPIWrapper } from "@langchain/openai";
+import { ImageIcon } from "lucide-react";
 import { z } from "zod";
 
 const dalleInputSchema = z.object({
@@ -73,8 +73,8 @@ const dalleToolDefinition: ToolDefinition = {
   },
   loadingMessage: "Generating Image ...",
   successMessage: "Generated Image",
-  icon: AiImageIcon,
-  compactIcon: AiImageIcon,
+  icon: ImageIcon,
+  compactIcon: ImageIcon,
 };
 
 export { dalleToolDefinition };

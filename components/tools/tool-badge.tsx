@@ -1,8 +1,8 @@
-import { HugeIcon } from "@/lib/types/icons";
 import { Flex, Spinner, Type } from "@/ui";
+import { LucideIcon } from "lucide-react";
 
 export type ToolBadgeProps = {
-  icon: HugeIcon;
+  icon: LucideIcon;
   isLoading?: boolean;
   loadingPlaceholder?: string;
   text: string;

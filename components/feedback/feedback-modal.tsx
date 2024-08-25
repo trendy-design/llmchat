@@ -1,13 +1,8 @@
 "use client";
 import { cn } from "@/lib/utils/clsx";
 import { Button, Flex, FormLabel, Input, Textarea, Type, useToast } from "@/ui";
-import {
-  Comment01Icon,
-  NeutralIcon,
-  Sad01Icon,
-  SmileIcon,
-} from "@hugeicons/react";
 import { useFormik } from "formik";
+import { Flag, Frown, Meh, Smile } from "lucide-react";
 import { Drawer } from "vaul";
 import { z } from "zod";
 import { toFormikValidationSchema } from "zod-formik-adapter";
@@ -53,9 +48,9 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
     },
   });
   const feedbackOptions = [
-    { type: "positive", icon: SmileIcon, color: "text-teal-400" },
-    { type: "neutral", icon: NeutralIcon, color: "" },
-    { type: "negative", icon: Sad01Icon, color: "text-rose-400" },
+    { type: "positive", icon: Smile, color: "text-teal-400" },
+    { type: "neutral", icon: Meh, color: "" },
+    { type: "negative", icon: Frown, color: "text-rose-400" },
   ];
 
   return (
@@ -75,7 +70,7 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
         >
           <div className="relative w-full space-y-4 rounded-lg bg-white dark:border dark:border-white/10 dark:bg-zinc-800">
             <Flex className="w-full border-b p-3" gap="sm" items="center">
-              <Comment01Icon size={20} variant="solid" />
+              <Flag size={20} strokeWidth={2} />
               <Type size="base" weight="medium">
                 Share your feedback
               </Type>
@@ -129,13 +124,7 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
                       formik.setFieldValue("feedbackType", type as FeedbackType)
                     }
                   >
-                    <Icon
-                      size={28}
-                      variant={
-                        formik.values.feedbackType === type ? "solid" : "stroke"
-                      }
-                      className={color}
-                    />
+                    <Icon size={28} strokeWidth={2} className={color} />
                   </Button>
                 ))}
               </Flex>

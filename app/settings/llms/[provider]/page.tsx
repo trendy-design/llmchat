@@ -17,7 +17,7 @@ import {
   AccordionTrigger,
   Flex,
 } from "@/ui";
-import { Alert01Icon, CheckmarkCircle01Icon } from "@hugeicons/react";
+import { BadgeCheckIcon, CircleAlert } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -123,9 +123,9 @@ export default function LLMsSettings() {
                 )}
               >
                 {model.connected ? (
-                  <CheckmarkCircle01Icon size={16} variant="solid" />
+                  <BadgeCheckIcon size={16} strokeWidth={2} />
                 ) : (
-                  <Alert01Icon size={16} strokeWidth={1.5} variant="solid" />
+                  <CircleAlert size={16} strokeWidth={2} />
                 )}
               </div>
             </AccordionTrigger>

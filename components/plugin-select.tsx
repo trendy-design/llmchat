@@ -1,7 +1,7 @@
 import { usePreferenceContext } from "@/lib/context";
 import { useAssistantUtils, useTools } from "@/lib/hooks";
 import { ToolKey } from "@/lib/types";
-import { PuzzleIcon } from "@hugeicons/react";
+import { ToyBrick } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 import {
   Badge,
@@ -76,7 +76,7 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
       <Tooltip content="Plugins">
         <PopoverTrigger asChild>
           <Button variant="ghost" size="sm">
-            <PuzzleIcon size={16} variant="stroke" strokeWidth="2" />
+            <ToyBrick size={18} strokeWidth="2" />
             <Badge>{selectedPlugins.length}</Badge>
           </Button>
         </PopoverTrigger>

@@ -1,7 +1,6 @@
 import { TChatMessage } from "@/lib/types";
 import { cn } from "@/lib/utils/clsx";
 import { Flex } from "@/ui";
-import { Add01Icon, MinusSignIcon } from "@hugeicons/react";
 import {
   Accordion,
   AccordionContent,
@@ -9,6 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@radix-ui/react-accordion";
+import { ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { FC, forwardRef } from "react";
 import { AIMessage } from "./ai/ai-message";
 import { ContextMessage } from "./context-message";
@@ -32,14 +32,15 @@ const CustomTrigger = forwardRef<
     >
       <Flex className="w-full flex-1 items-start">{children}</Flex>
       <Flex className="h-6 w-10 shrink-0 px-2" items="center" justify="center">
-        <Add01Icon
-          size={20}
-          className="opacity-50 transition-transform duration-200 group-data-[state=open]:hidden"
-        />
-        <MinusSignIcon
+        <ChevronsUpDown
           size={20}
           strokeWidth={1.5}
-          className="opacity-50 transition-transform duration-200 group-data-[state=closed]:hidden"
+          className="opacity-50 transition-transform duration-200 hover:opacity-100 group-data-[state=open]:hidden"
+        />
+        <ChevronsDownUp
+          size={20}
+          strokeWidth={1.5}
+          className="opacity-50 transition-transform duration-200 hover:opacity-100 group-data-[state=closed]:hidden"
         />
       </Flex>
     </AccordionTrigger>

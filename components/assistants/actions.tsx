@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/ui";
-import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
+import { Ellipsis, Pencil, Trash } from "lucide-react";
 import { FC } from "react";
 
 export type TAssistantActions = {
@@ -33,12 +33,12 @@ export const AssistantActions: FC<TAssistantActions> = ({
   const actions: TDropdownAction[] = [
     {
       label: "Edit",
-      icon: <Pencil size={14} weight="bold" />,
+      icon: <Pencil size={14} strokeWidth={2} />,
       onClick: (assistant: TAssistant) => onEdit(assistant),
     },
     {
       label: "Delete",
-      icon: <TrashSimple size={14} weight="bold" />,
+      icon: <Trash size={14} strokeWidth={2} />,
       onClick: (assistant: TAssistant) => onDelete(assistant),
     },
   ];
@@ -58,7 +58,7 @@ export const AssistantActions: FC<TAssistantActions> = ({
             setOpen(true);
           }}
         >
-          <DotsThree size={20} weight="bold" />
+          <Ellipsis size={16} strokeWidth={2} />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils/clsx";
-import { Globe02Icon } from "@hugeicons/react";
+import { Globe } from "lucide-react";
 import Image from "next/image";
 import { FC, useState } from "react";
 
@@ -17,9 +17,9 @@ export const SearchFavicon: FC<TSeachFavicon> = ({
   const [error, setError] = useState<boolean>(false);
   if (error) {
     return (
-      <Globe02Icon
+      <Globe
         size={size === "sm" ? 16 : 18}
-        strokeWidth={1.5}
+        strokeWidth={2}
         className={cn("text-gray-500", className)}
       />
     );

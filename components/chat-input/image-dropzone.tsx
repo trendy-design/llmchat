@@ -1,5 +1,5 @@
 import { Flex, Type } from "@/ui";
-import { ImageAdd01Icon } from "@hugeicons/react";
+import { ImagePlus } from "lucide-react";
 import { FC } from "react";
 import { DropzoneState } from "react-dropzone";
 
@@ -17,7 +17,7 @@ export const ImageDropzone: FC<TImageDropzone> = ({ dropzonProps }) => {
           justify="center"
           gap="sm"
         >
-          <ImageAdd01Icon size={16} strokeWidth={2} className="text-zinc-500" />
+          <ImagePlus size={16} strokeWidth={2} className="text-zinc-500" />
           <Type size="sm" textColor="secondary">
             Drag and drop an image here, or click to select an image
           </Type>

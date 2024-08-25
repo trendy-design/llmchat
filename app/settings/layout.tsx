@@ -1,22 +1,22 @@
 "use client";
-import {
-  BrainIcon,
-  DashboardCircleIcon,
-  Database02Icon,
-  Settings03Icon,
-  SparklesIcon,
-  VoiceIcon,
-} from "@/icons";
-import { HugeIcon } from "@/lib/types/icons";
 import { cn } from "@/lib/utils/clsx";
+import { LucideIcon } from "@/libs/types/icons";
 import { Button, Flex } from "@/ui";
-import { ArrowLeft01Icon } from "@hugeicons/react";
+import {
+  AudioLines,
+  Bolt,
+  Brain,
+  ChevronLeft,
+  Database,
+  Sparkle,
+  ToyBrick,
+} from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect } from "react";
 
 export type TSettingMenu = {
   name: string;
-  icon: HugeIcon;
+  icon: LucideIcon;
   route: string;
 };
 
@@ -31,32 +31,32 @@ export default function SettingsPage({
   const settingMenu: TSettingMenu[] = [
     {
       name: "Common",
-      icon: Settings03Icon,
+      icon: Bolt,
       route: "/settings/common",
     },
     {
       name: "LLMs",
-      icon: SparklesIcon,
+      icon: Sparkle,
       route: "/settings/llms",
     },
     {
       name: "Plugins",
-      icon: DashboardCircleIcon,
+      icon: ToyBrick,
       route: "/settings/plugins",
     },
     {
       name: "Memory",
-      icon: BrainIcon,
+      icon: Brain,
       route: "/settings/memory",
     },
     {
       name: "Voice Input",
-      icon: VoiceIcon,
+      icon: AudioLines,
       route: "/settings/voice",
     },
     {
       name: "Data",
-      icon: Database02Icon,
+      icon: Database,
       route: "/settings/data",
     },
   ];
@@ -103,7 +103,7 @@ export default function SettingsPage({
               push("/chat");
             }}
           >
-            <ArrowLeft01Icon size={16} />
+            <ChevronLeft size={16} strokeWidth={2} />
             Back
           </Button>
           <div className="h-2" />

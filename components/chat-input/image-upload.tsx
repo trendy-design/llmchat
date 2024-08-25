@@ -1,5 +1,5 @@
 import { Button, Tooltip } from "@/ui";
-import { ImageAdd01Icon } from "@hugeicons/react";
+import { ImagePlus } from "lucide-react";
 import { FC } from "react";
 
 export type TImageUpload = {
@@ -32,7 +32,7 @@ export const ImageUpload: FC<TImageUpload> = ({
       <Tooltip content={tooltip}>
         {showIcon ? (
           <Button variant="ghost" size="iconSm" onClick={handleFileSelect}>
-            <ImageAdd01Icon size={16} strokeWidth={2} />
+            <ImagePlus size={18} strokeWidth={2} />
           </Button>
         ) : (
           <Button variant="outlined" onClick={handleFileSelect}>

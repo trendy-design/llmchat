@@ -7,8 +7,8 @@ import {
 import { REVEAL_ANIMATION_VARIANTS } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/clsx";
 import { isValidUrl } from "@/lib/utils/utils";
-import { ArrowUpRight } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
+import { ExternalLink } from "lucide-react";
 import Markdown from "marked-react";
 import Link from "next/link";
 import { FC, ReactNode } from "react";
@@ -106,9 +106,9 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
               >
                 {href}
               </Type>
-              <ArrowUpRight
+              <ExternalLink
                 size={16}
-                weight="bold"
+                strokeWidth={2}
                 className="mt-1 flex-shrink-0"
               />
             </Flex>

@@ -1,6 +1,6 @@
-import { Alert, AlertDescription, Flex } from "@/components/ui";
-import { Alert02Icon } from "@/components/ui/icons";
+import { AlertCircle } from "lucide-react";
 import { useState } from "react";
+import { Alert, AlertDescription, Flex } from "./ui";
 export type TGeneratedImage = {
   image: string;
 };
@@ -20,7 +20,7 @@ export const GeneratedImage = ({ image }: TGeneratedImage) => {
       )}
       <Alert variant="warning">
         <AlertDescription className="flex flex-row items-center gap-2">
-          <Alert02Icon size={20} />
+          <AlertCircle size={16} strokeWidth={2} />
           {error
             ? "The image has expired. Please generate a new one."
             : "This image will expire in 1 hour. Please copy it before it expires."}

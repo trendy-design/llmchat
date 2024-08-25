@@ -1,7 +1,7 @@
 import { TChatMessage } from "@/lib/types";
 import { cn } from "@/lib/utils/clsx";
 import { Type } from "@/ui";
-import { ArrowDown01Icon, ArrowUp01Icon } from "@hugeicons/react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export type THumanMessage = {
@@ -27,7 +27,7 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
   return (
     <div className="relative w-full">
       <Type
-        size="lg"
+        size="base"
         weight="medium"
         className={cn("relative whitespace-break-spaces text-left leading-7", {
           "line-clamp-2": !isExpanded,
@@ -46,12 +46,12 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
         >
           {isExpanded ? (
             <>
-              <ArrowUp01Icon className="h-4 w-4" />
+              <ArrowUp size={14} strokeWidth={2} />
               Read Less
             </>
           ) : (
             <>
-              <ArrowDown01Icon className="h-4 w-4" />
+              <ArrowDown size={14} strokeWidth={2} />
               Read More
             </>
           )}

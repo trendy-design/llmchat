@@ -1,9 +1,9 @@
 import { SearchResults } from "@/components/tools/search-results";
 import { googleSearchPrompt } from "@/config/prompts";
 import { ToolDefinition, ToolExecutionContext } from "@/lib/types";
-import { Globe02Icon } from "@hugeicons/react";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import axios from "axios";
+import { Globe } from "lucide-react";
 import { z } from "zod";
 
 const webSearchSchema = z.object({
@@ -98,8 +98,8 @@ const googleSearchToolDefinition: ToolDefinition = {
   },
   loadingMessage: "Searching on Google...",
   successMessage: "Google Search",
-  icon: Globe02Icon,
-  compactIcon: Globe02Icon,
+  icon: Globe,
+  compactIcon: Globe,
 };
 
 export { googleSearchToolDefinition };

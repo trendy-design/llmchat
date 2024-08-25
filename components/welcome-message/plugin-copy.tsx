@@ -1,11 +1,10 @@
-import { HugeIcon } from "@/lib/types/icons";
 import { cn } from "@/lib/utils/clsx";
 import { StaggerContainer } from "@/ui";
-import { AiImageIcon, BrainIcon, Globe02Icon } from "@hugeicons/react";
+import { Brain, Globe, Image, LucideIcon } from "lucide-react";
 import { ExplainationCard } from "./explaination-card";
 
 type PluginItemProps = {
-  icon: HugeIcon;
+  icon: LucideIcon;
   text: string;
   color: string;
   explanation: string;
@@ -58,7 +57,7 @@ export const PluginCopy = () => {
     <StaggerContainer>
       Enhance your experience with plugins and personalized{" "}
       <PluginItem
-        icon={BrainIcon}
+        icon={Brain}
         text="memory"
         explanation="This plugin will help you personalize your experience by remembering your preferences and providing you with a more tailored experience."
         color="purple"
@@ -67,7 +66,7 @@ export const PluginCopy = () => {
       />
       : from{" "}
       <PluginItem
-        icon={Globe02Icon}
+        icon={Globe}
         text="web search"
         explanation="This plugin will help you search the web for information."
         color="blue"
@@ -76,7 +75,7 @@ export const PluginCopy = () => {
       />{" "}
       to{" "}
       <PluginItem
-        icon={AiImageIcon}
+        icon={Image}
         text="image generation"
         explanation="This plugin will help you generate images."
         color="rose"

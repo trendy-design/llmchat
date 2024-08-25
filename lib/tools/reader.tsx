@@ -1,7 +1,7 @@
 import { ToolDefinition, ToolExecutionContext } from "@/lib/types";
-import { Book01Icon } from "@hugeicons/react";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import axios from "axios";
+import { Book } from "lucide-react";
 import { z } from "zod";
 
 const webSearchSchema = z.object({
@@ -75,8 +75,8 @@ const readerToolDefinition: ToolDefinition = {
   },
   loadingMessage: "Reading webpage...",
   successMessage: "Webpage read successfully",
-  icon: Book01Icon,
-  compactIcon: Book01Icon,
+  icon: Book,
+  compactIcon: Book,
 };
 
 export { readerToolDefinition };

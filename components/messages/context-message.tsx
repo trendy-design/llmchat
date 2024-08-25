@@ -1,5 +1,5 @@
 import { Flex, Type } from "@/ui";
-import { QuoteUpSquareIcon } from "@hugeicons/react";
+import { MessageSquareQuote } from "lucide-react";
 import { ToolBadge } from "../tools/tool-badge";
 
 export type ContextMessageProps = {
@@ -11,7 +11,7 @@ export const ContextMessage = ({ context }: ContextMessageProps) => {
 
   return (
     <Flex direction="col" gap="sm">
-      <ToolBadge icon={QuoteUpSquareIcon} text="context" />
+      <ToolBadge icon={MessageSquareQuote} text="context" />
       <Type className="text-left" size="sm" textColor="secondary">
         {context}
       </Type>

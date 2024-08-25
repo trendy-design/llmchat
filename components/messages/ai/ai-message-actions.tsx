@@ -1,6 +1,5 @@
 import { useChatContext, usePreferenceContext, useSessions } from "@/context";
 import { useAssistantUtils, useClipboard, useLLMRunner } from "@/hooks";
-import { Copy01Icon, Delete01Icon, Tick01Icon } from "@/icons";
 import { TChatMessage } from "@/libs/types";
 import {
   Button,
@@ -10,6 +9,7 @@ import {
   Tooltip,
   Type,
 } from "@/ui";
+import { Check, Copy, Trash } from "lucide-react";
 import { FC } from "react";
 import { RegenerateWithModelSelect } from "../../regenerate-model-select";
 
@@ -108,9 +108,9 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
               onClick={handleCopyContent}
             >
               {showCopied ? (
-                <Tick01Icon size={14} variant="stroke" strokeWidth="2" />
+                <Check size={14} strokeWidth="2" />
               ) : (
-                <Copy01Icon size={14} variant="stroke" strokeWidth="2" />
+                <Copy size={14} strokeWidth="2" />
               )}
               Copy
             </Button>
@@ -123,7 +123,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
               onConfirm={handleDeleteMessage}
             >
               <Button variant="secondary" size="sm" rounded="lg">
-                <Delete01Icon size={14} variant="stroke" strokeWidth="2" />
+                <Trash size={14} strokeWidth="2" />
                 Delete
               </Button>
             </PopOverConfirmProvider>

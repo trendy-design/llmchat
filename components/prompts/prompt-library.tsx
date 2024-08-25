@@ -13,11 +13,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Edit02Icon } from "@/components/ui/icons";
 import { TPrompt } from "@/lib/types";
 import { Flex } from "@/ui";
-import { GoogleGeminiIcon } from "@hugeicons/react";
-import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
+import { Album, Bookmark, Ellipsis, Pencil, Trash } from "lucide-react";
 
 export type TPromptLibrary = {
   onPromptSelect: (prompt: TPrompt) => void;
@@ -56,7 +54,7 @@ export const PromptLibrary = ({
             className="w-full"
             onSelect={onCreate}
           >
-            <Edit02Icon size={16} variant="stroke" strokeWidth="2" />
+            <Pencil size={16} strokeWidth="2" />
             Create Prompt
           </CommandItem>
           {!!localPrompts?.length && (
@@ -68,17 +66,13 @@ export const PromptLibrary = ({
                   className="w-full"
                   onSelect={() => onPromptSelect(prompt)}
                 >
-                  <GoogleGeminiIcon
-                    size={20}
-                    variant="stroke"
-                    strokeWidth="2"
-                  />
+                  <Album size={20} strokeWidth="2" />
                   {prompt.name}
                   <Flex className="flex-1" />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="iconSm">
-                        <DotsThree size={24} weight="bold" />
+                        <Ellipsis size={16} strokeWidth={2} />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent
@@ -91,7 +85,7 @@ export const PromptLibrary = ({
                           e.stopPropagation();
                         }}
                       >
-                        <Pencil size={14} weight="bold" />
+                        <Pencil size={14} strokeWidth={2} />
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
@@ -100,7 +94,7 @@ export const PromptLibrary = ({
                           e.stopPropagation();
                         }}
                       >
-                        <TrashSimple size={14} weight="bold" />
+                        <Trash size={14} strokeWidth={2} />
                         Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -117,7 +111,7 @@ export const PromptLibrary = ({
                 className="w-full"
                 onSelect={() => onPromptSelect(prompt)}
               >
-                <GoogleGeminiIcon size={20} variant="stroke" strokeWidth="2" />
+                <Bookmark size={20} strokeWidth="2" />
                 {prompt.name}
               </CommandItem>
             ))}

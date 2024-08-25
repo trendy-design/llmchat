@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
 import { cn } from "@/lib/utils/clsx";
-import { Cancel01Icon } from "@hugeicons/react";
+import { X } from "lucide-react";
 
 const ToastProvider = ToastPrimitives.Provider;
 
@@ -84,7 +84,7 @@ const ToastClose = React.forwardRef<
     toast-close=""
     {...props}
   >
-    <Cancel01Icon size={14} strokeWidth={2} />
+    <X size={14} strokeWidth={2} />
   </ToastPrimitives.Close>
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;

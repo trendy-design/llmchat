@@ -1,6 +1,6 @@
 import { constants } from "@/config";
 import { useAuth } from "@/lib/context";
-import { HugeIcon } from "@/lib/types/icons";
+import { LucideIcon } from "@/lib/types/icons";
 import { cn } from "@/lib/utils/clsx";
 import {
   Button,
@@ -13,17 +13,17 @@ import {
   Tooltip,
   Type,
 } from "@/ui";
-import {
-  Comment01Icon,
-  Github01Icon,
-  HelpCircleIcon,
-  Logout01Icon,
-  Moon02Icon,
-  Settings03Icon,
-  Sun01Icon,
-  TwitterIcon,
-} from "@hugeicons/react";
 import Avatar from "boring-avatars";
+import {
+  Bolt,
+  CircleHelp,
+  Flag,
+  Github,
+  LogOut,
+  Moon,
+  Sun,
+  Twitter,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
@@ -37,13 +37,13 @@ export const ProfileDropdownItem = ({
 }: {
   label: string;
   onClick: () => void;
-  icon: HugeIcon;
+  icon: LucideIcon;
   key?: string;
 }) => {
   const Icon = icon;
   return (
     <DropdownMenuItem key={key} onClick={onClick}>
-      <Icon size={16} variant="stroke" strokeWidth="2" />
+      <Icon size={16} strokeWidth="2" />
       {label}
     </DropdownMenuItem>
   );
@@ -66,21 +66,21 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
       onClick: () => {
         push("/settings/common");
       },
-      icon: Settings03Icon,
+      icon: Bolt,
     },
     {
       label: "Feedback",
       onClick: () => {
         openFeedback(true);
       },
-      icon: Comment01Icon,
+      icon: Flag,
     },
     {
       label: "Support",
       onClick: () => {
         window.open("mailto:support@llmchat.co", "_blank");
       },
-      icon: HelpCircleIcon,
+      icon: CircleHelp,
     },
   ];
 
@@ -154,14 +154,14 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
             onClick={() => {
               window.open("https://x.com/llmchat_co", "_blank");
             }}
-            icon={TwitterIcon}
+            icon={Twitter}
           />
           <ProfileDropdownItem
             label="Github"
             onClick={() => {
               window.open("https://git.new/llmchat", "_blank");
             }}
-            icon={Github01Icon}
+            icon={Github}
           />
           <DropdownMenuSeparator />
 
@@ -171,14 +171,14 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
             onClick={() => {
               setTheme(theme === "light" ? "dark" : "light");
             }}
-            icon={theme === "light" ? Moon02Icon : Sun01Icon}
+            icon={theme === "light" ? Moon : Sun}
           />
 
           {user && (
             <ProfileDropdownItem
               label="Logout"
               onClick={logout}
-              icon={Logout01Icon}
+              icon={LogOut}
             />
           )}
         </DropdownMenuContent>

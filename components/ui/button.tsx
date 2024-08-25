@@ -19,15 +19,15 @@ const buttonVariants = cva(
         bordered:
           "border border-zinc-800/10 dark:border-zinc-100/10 bg-white dark:bg-zinc-800 text-zinc-800 dark:text-zinc-100  opacity-80 hover:opacity-100",
         secondary:
-          "bg-black/10 text-zinc-900 dark:text-white opacity-90 hover:opacity-100  dark:bg-white/10",
+          "bg-zinc-500/15 text-zinc-800 dark:text-white opacity-100 hover:opacity-80 ",
         ghost:
-          "hover:bg-black/10 dark:hover:bg-white/10 text-zinc-600 hover:text-zinc-800 dark:text-zinc-300 dark:hover:text-white",
+          "hover:bg-zinc-500/15 text-zinc-800 dark:text-white opacity-100 hover:opacity-80",
         link: "text-zinc-600 text-zinc-400 underline-offset-4 hover:underline h-auto decoration-black/20 dark:decoration-white/20",
         text: "p-0 text-xs",
       },
       size: {
-        default: "h-10 px-3 text-xs md:text-sm",
-        sm: "h-8 px-3 text-xs md:text-sm",
+        default: "h-10 px-3 text-xs md:text-[0.8em]",
+        sm: "h-8 px-3 text-xs md:text-[0.8em]",
         xs: "h-7 px-2 text-xs",
         md: "h-11 px-3 text-xs md:text-sm font-semibold",
         lg: "h-12 md:h-14  px-8 text-xs md:text-base font-semibold",

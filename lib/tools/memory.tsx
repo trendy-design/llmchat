@@ -1,10 +1,10 @@
 import { modelService } from "@/lib/services/models";
 import { ToolDefinition, ToolExecutionContext } from "@/lib/types";
-import { BrainIcon } from "@hugeicons/react";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { RunnableSequence } from "@langchain/core/runnables";
 import { DynamicStructuredTool } from "@langchain/core/tools";
 import { StructuredOutputParser } from "langchain/output_parsers";
+import { Brain } from "lucide-react";
 import { z } from "zod";
 
 const memoryParser = StructuredOutputParser.fromZodSchema(
@@ -126,8 +126,8 @@ const memoryToolDefinition: ToolDefinition = {
 
   loadingMessage: "Updating memories...",
   successMessage: "Memories updated successfully",
-  icon: BrainIcon,
-  compactIcon: BrainIcon,
+  icon: Brain,
+  compactIcon: Brain,
 };
 
 export { memoryToolDefinition };

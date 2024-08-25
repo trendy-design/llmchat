@@ -1,10 +1,9 @@
-import { PlusSignIcon } from "@/icons";
 import { useSessions } from "@/lib/context";
 import { HistorySidebar } from "../history/history-side-bar";
 
-import { HugeIcon } from "@/lib/types/icons";
+import { LucideIcon } from "@/lib/types/icons";
 import { BetaTag, Button, Flex, Tooltip } from "@/ui";
-import { Github01Icon } from "@hugeicons/react";
+import { Github, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { ModelIcon } from "../model-icon";
 import { ProfileDropdown } from "./profile-dropdown";
@@ -15,7 +14,7 @@ export const NavbarItem = ({
   onClick,
 }: {
   tooltip: string;
-  icon: HugeIcon;
+  icon: LucideIcon;
   onClick: () => void;
 }) => {
   if (!icon) return null;
@@ -23,7 +22,7 @@ export const NavbarItem = ({
   return (
     <Tooltip content={tooltip} side="bottom" sideOffset={4}>
       <Button size="iconSm" variant="ghost" onClick={onClick}>
-        <Icon size={16} strokeWidth={2} />
+        <Icon size={18} strokeWidth={2} />
       </Button>
     </Tooltip>
   );
@@ -48,7 +47,7 @@ export const Navbar = () => {
 
       <NavbarItem
         tooltip="New Session"
-        icon={PlusSignIcon}
+        icon={Plus}
         onClick={() => {
           push("/chat");
           createSession();
@@ -58,7 +57,7 @@ export const Navbar = () => {
       <Flex className="flex-1" />
       <NavbarItem
         tooltip="Github"
-        icon={Github01Icon}
+        icon={Github}
         onClick={() => {
           window.open("https://git.new/llmchat", "_blank");
         }}
