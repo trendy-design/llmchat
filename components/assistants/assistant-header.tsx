@@ -16,11 +16,11 @@ export const AssistantHeader: FC<AssistantHeaderProps> = ({
       direction="row"
       justify="between"
       gap="md"
-      className="w-full rounded-xl px-3 py-2"
+      className="w-full px-2 py-2"
     >
       <Flex direction="col" gap="sm">
         <Flex items="center" gap="xs">
-          <Type weight="medium" size="base">
+          <Type weight="medium" size="sm">
             Custom Assistant
           </Type>
         </Flex>

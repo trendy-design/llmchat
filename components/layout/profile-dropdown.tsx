@@ -33,16 +33,14 @@ export const ProfileDropdownItem = ({
   label,
   onClick,
   icon,
-  key,
 }: {
   label: string;
   onClick: () => void;
   icon: LucideIcon;
-  key?: string;
 }) => {
   const Icon = icon;
   return (
-    <DropdownMenuItem key={key} onClick={onClick}>
+    <DropdownMenuItem onClick={onClick}>
       <Icon size={16} strokeWidth="2" />
       {label}
     </DropdownMenuItem>
@@ -105,7 +103,7 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
           </DropdownMenuTrigger>
         </Tooltip>
         <DropdownMenuContent
-          className="min-w-[250px] p-1 text-sm md:text-base"
+          className="min-w-[250px] p-1.5 text-sm md:text-base"
           align="end"
           side="bottom"
           sideOffset={4}
@@ -135,7 +133,7 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
               </Button>
             </Flex>
           )}
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="my-1.5" />
 
           {menuItems.map((item, index) => {
             const Icon = item.icon;
@@ -148,7 +146,7 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
               />
             );
           })}
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator className="my-1.5" />
           <ProfileDropdownItem
             label="Twitter"
             onClick={() => {

@@ -55,17 +55,24 @@ export const AssistantItem = ({
   return (
     <CommandItem
       value={assistant.name}
-      className="w-full"
+      className="w-full !py-2.5"
       onSelect={handleSelect}
     >
-      <Flex gap="sm" items="center" key={assistant.key} className="w-full">
-        {getAssistantIcon(assistant.key, "sm")}
-        {assistant.name}
-        {model?.isNew && assistant.type !== "custom" && <Badge>New</Badge>}
-        {model?.isFree && assistant.type !== "custom" && <Badge>Free</Badge>}
-        {model?.isSignUpRequired && assistant.type !== "custom" && (
-          <Badge variant="secondary">Login Required</Badge>
-        )}
+      <Flex gap="md" items="center" key={assistant.key} className="w-full">
+        {getAssistantIcon(assistant.key, "md", false)}
+        <Flex direction="col">
+          <Flex gap="sm" items="center" className="flex-1">
+            <Type size="sm" weight="medium">
+              {assistant.name}
+            </Type>
+            {model?.isNew && assistant.type !== "custom" && <Badge>New</Badge>}
+          </Flex>
+          {assistant?.description && (
+            <Type size="xs" textColor="secondary">
+              {assistant.description}
+            </Type>
+          )}
+        </Flex>
         <div className="flex flex-1"></div>
         {assistant.type !== "custom" && (
           <Flex gap="md" items="center">

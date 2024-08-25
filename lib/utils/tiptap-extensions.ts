@@ -1,6 +1,7 @@
 import { Extension } from "@tiptap/react";
 
 export const ShiftEnterToLineBreak = Extension.create({
+  name: "shiftEnterToLineBreak",
   addKeyboardShortcuts() {
     return {
       "Shift-Enter": (_) => {
@@ -11,6 +12,7 @@ export const ShiftEnterToLineBreak = Extension.create({
 });
 
 export const DisableEnter = Extension.create({
+  name: "disableEnter",
   addKeyboardShortcuts() {
     return {
       Enter: () => true,

@@ -46,6 +46,7 @@ export const useAssistantUtils = () => {
         name: model.name,
         key: model.key,
         baseModel: model.key,
+        description: model.description,
         provider: model.provider,
         type: "base",
         systemPrompt:
@@ -67,7 +68,11 @@ export const useAssistantUtils = () => {
     return { assistant, model };
   };
 
-  const getAssistantIcon = (assistantKey: string, size: "sm" | "md" | "lg") => {
+  const getAssistantIcon = (
+    assistantKey: string,
+    size: "sm" | "md" | "lg",
+    rounded: boolean = true,
+  ) => {
     const assistant = getAssistantByKey(assistantKey);
 
     return (
@@ -77,6 +82,7 @@ export const useAssistantUtils = () => {
             ? assistant?.model?.icon
             : "assistant"
         }
+        rounded={rounded}
         name={assistant?.assistant.name}
         size={size}
         base64={assistant?.assistant.iconURL}

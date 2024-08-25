@@ -220,9 +220,6 @@
   }
 }
 
-p {
-  margin: 0 !important;
-}
 
 mark.prompt-highlight {
   background-color: hsl(0deg 0% 100%);

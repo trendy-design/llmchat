@@ -55,15 +55,16 @@ export const Navbar = () => {
       />
 
       <Flex className="flex-1" />
-      <NavbarItem
-        tooltip="Github"
-        icon={Github}
-        onClick={() => {
-          window.open("https://git.new/llmchat", "_blank");
-        }}
-      />
-      <HistorySidebar />
-
+      <Flex direction="row" items="center" gap="none">
+        <NavbarItem
+          tooltip="Github"
+          icon={Github}
+          onClick={() => {
+            window.open("https://git.new/llmchat", "_blank");
+          }}
+        />
+        <HistorySidebar />
+      </Flex>
       <ProfileDropdown />
     </div>
   );

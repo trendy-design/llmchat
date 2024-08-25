@@ -36,7 +36,6 @@ export const OpenAISettings = () => {
       <div className="flex flex-row items-center gap-1">
         {!apiKeys.openai && (
           <Button
-            size="sm"
             variant="default"
             onClick={() => {
               checkApiKey({
@@ -57,7 +56,6 @@ export const OpenAISettings = () => {
 
         {apiKeys?.openai && (
           <Button
-            size="sm"
             variant="secondary"
             onClick={() => {
               setKey("");
