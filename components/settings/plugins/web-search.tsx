@@ -12,8 +12,8 @@ import { Type } from "@/components/ui/text";
 import { useToast } from "@/components/ui/use-toast";
 import { configs } from "@/config";
 import { usePreferenceContext } from "@/lib/context";
-import { CaretDown } from "@phosphor-icons/react";
 import axios from "axios";
+import { ChevronDown } from "lucide-react";
 import { useEffect } from "react";
 import ApiKeyInput from "../models/api-key-input";
 
@@ -62,7 +62,7 @@ export const WebSearchPlugin = () => {
           <DropdownMenuTrigger asChild>
             <Button size="sm" variant="secondary">
               {preferences.defaultWebSearchEngine}{" "}
-              <CaretDown size={12} weight="bold" />
+              <ChevronDown size={12} strokeWidth={2} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[200px]" align="end">

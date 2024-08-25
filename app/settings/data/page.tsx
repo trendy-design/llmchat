@@ -13,11 +13,7 @@ import {
   Type,
   useToast,
 } from "@/ui";
-import {
-  AttachmentIcon,
-  FileExportIcon,
-  FileImportIcon,
-} from "@hugeicons/react";
+import { FileDown, FileUp, Paperclip } from "lucide-react";
 import { ChangeEvent } from "react";
 
 export default function DataSettings() {
@@ -132,14 +128,14 @@ export default function DataSettings() {
               title="This action will overwrite your current data. Are you sure you want to import?"
               confimBtnText="Import Data"
               confimBtnVariant="default"
-              confirmIcon={AttachmentIcon}
+              confirmIcon={Paperclip}
               onConfirm={(dismiss) => {
                 document?.getElementById("import-config")?.click();
                 dismiss();
               }}
             >
               <Button variant="outlined" size="sm">
-                <FileImportIcon size={16} variant="solid" /> Import
+                <FileDown size={16} strokeWidth={2} /> Import
               </Button>
             </PopOverConfirmProvider>
           </Flex>
@@ -163,7 +159,7 @@ export default function DataSettings() {
                 });
               }}
             >
-              <FileExportIcon size={16} variant="solid" /> Export
+              <FileUp size={16} strokeWidth={2} /> Export
             </Button>
           </Flex>
         </SettingCard>

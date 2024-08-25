@@ -2,7 +2,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { TPrompt } from "@/lib/types";
-import { ArrowLeft } from "@phosphor-icons/react";
 import Document from "@tiptap/extension-document";
 import HardBreak from "@tiptap/extension-hard-break";
 import Highlight from "@tiptap/extension-highlight";
@@ -10,6 +9,7 @@ import Paragraph from "@tiptap/extension-paragraph";
 import Placeholder from "@tiptap/extension-placeholder";
 import Text from "@tiptap/extension-text";
 import { EditorContent, useEditor } from "@tiptap/react";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export type TCreatePrompt = {
@@ -93,7 +93,7 @@ export const CreatePrompt = ({
             onOpenChange(false);
           }}
         >
-          <ArrowLeft size={16} weight="bold" />
+          <ArrowLeft size={16} strokeWidth={2} />
         </Button>
         <p className="text-base font-medium">
           {prompt ? "Edit Prompt" : "Create New Prompt"}

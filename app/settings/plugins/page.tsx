@@ -9,20 +9,20 @@ import {
   AccordionTrigger,
   Flex,
 } from "@/ui";
-import { AiImageIcon, Globe02Icon } from "@hugeicons/react";
+import { Globe, Image } from "lucide-react";
 
 export default function PulginSettings() {
   const pluginSettingsData = [
     {
       value: "websearch",
       label: "Web Search",
-      icon: Globe02Icon,
+      icon: Globe,
       settingsComponent: WebSearchPlugin,
     },
     {
       value: "image_generation",
       label: "Image Generation",
-      icon: AiImageIcon,
+      icon: Image,
       settingsComponent: ImageGenerationPlugin,
     },
   ];

@@ -1,8 +1,7 @@
 import { useSessions } from "@/lib/context";
 import { sortSessions } from "@/lib/utils/utils";
 import { Button, Flex, Tooltip, Type } from "@/ui";
-import { Clock04Icon } from "@hugeicons/react";
-import { X } from "@phosphor-icons/react";
+import { History, X } from "lucide-react";
 import { useState } from "react";
 import { Drawer } from "vaul";
 import { HistoryItem } from "./history-item";
@@ -16,7 +15,7 @@ export const HistorySidebar = () => {
       <Tooltip content="Chat History" side="bottom" sideOffset={4}>
         <Drawer.Trigger asChild>
           <Button variant="ghost" size="iconSm">
-            <Clock04Icon size={16} strokeWidth={2} />
+            <History size={18} strokeWidth={2} />
           </Button>
         </Drawer.Trigger>
       </Tooltip>
@@ -35,7 +34,7 @@ export const HistorySidebar = () => {
                 className="w-ful w-full border-b border-zinc-500/10 py-2 pl-3 pr-2"
               >
                 <Flex items="center" gap="sm">
-                  <Clock04Icon
+                  <History
                     size={16}
                     strokeWidth={2}
                     className="text-zinc-500"
@@ -52,7 +51,7 @@ export const HistorySidebar = () => {
                     setOpen(false);
                   }}
                 >
-                  <X size={16} weight="bold" />
+                  <X size={16} strokeWidth={2} />
                 </Button>
               </Flex>
 

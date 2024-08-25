@@ -1,7 +1,7 @@
 import { useScrollToBottom } from "@/lib/hooks";
 import { Button } from "@/ui";
-import { ArrowDown02Icon } from "@hugeicons/react";
 import { motion } from "framer-motion";
+import { ArrowDown } from "lucide-react";
 
 export const ScrollToBottomButton = () => {
   const { scrollToBottom, showScrollToBottom } = useScrollToBottom();
@@ -20,7 +20,7 @@ export const ScrollToBottomButton = () => {
         variant="outlined"
         rounded="full"
       >
-        <ArrowDown02Icon size={16} strokeWidth="2" />
+        <ArrowDown size={16} strokeWidth="2" />
       </Button>
     </motion.span>
   );

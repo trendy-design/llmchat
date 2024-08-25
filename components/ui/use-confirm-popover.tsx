@@ -1,4 +1,4 @@
-import { HugeIcon } from "@/lib/types/icons";
+import { LucideIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./button";
 import { Flex } from "./flex";
@@ -9,7 +9,7 @@ export type TPopoverConfirm = {
   onConfirm: (dismiss: () => void) => void;
   confimBtnText?: string;
   confimBtnVariant?: "destructive" | "default";
-  confirmIcon?: HugeIcon;
+  confirmIcon?: LucideIcon;
   onCancel?: () => void;
   children: React.ReactNode;
 };

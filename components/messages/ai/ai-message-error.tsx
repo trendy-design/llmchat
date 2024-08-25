@@ -1,8 +1,8 @@
-import { Alert02Icon } from "@/icons";
 import { useAuth, useChatContext, usePreferenceContext } from "@/lib/context";
 import { useAssistantUtils, useLLMRunner } from "@/lib/hooks";
 import { TChatMessage } from "@/lib/types";
 import { Button, Flex, Type } from "@/ui";
+import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
 
@@ -96,7 +96,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
       justify="between"
     >
       <Flex items="start" gap="sm">
-        <Alert02Icon size={16} variant="solid" className="mt-0 md:mt-0.5" />
+        <AlertCircle size={16} strokeWidth={2} className="mt-0 md:mt-0.5" />
         <Type textColor="secondary">{errorMessage}</Type>
       </Flex>
 

@@ -2,7 +2,6 @@
 import { Button, Flex, Type } from "@/components/ui";
 import { supabase } from "@/libs/supabase/client";
 import { cn } from "@/libs/utils/clsx";
-import { Github01Icon, GoogleIcon } from "@hugeicons/react";
 import { User } from "@supabase/supabase-js";
 import { createContext, useContext, useEffect, useState } from "react";
 import { Drawer } from "vaul";
@@ -102,7 +101,6 @@ export const AuthProvider = ({ children }: TAuthProvider) => {
                     size="lg"
                     onClick={signInWithGoogle}
                   >
-                    <GoogleIcon size={20} variant="solid" />
                     Sign In with Google
                   </Button>
                   <Button
@@ -111,8 +109,7 @@ export const AuthProvider = ({ children }: TAuthProvider) => {
                     size="lg"
                     onClick={signInWithGithub}
                   >
-                    <Github01Icon size={20} variant="solid" /> Sign In with
-                    Github
+                    Sign In with Github
                   </Button>
                 </Flex>
                 <Type size="xs" textColor="tertiary">

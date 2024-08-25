@@ -1,6 +1,6 @@
 import { TAttachment } from "@/lib/types";
 import { Button, Flex } from "@/ui";
-import { Cancel01Icon } from "@hugeicons/react";
+import { X } from "lucide-react";
 import Image from "next/image";
 import { FC } from "react";
 
@@ -32,7 +32,7 @@ export const ImageAttachment: FC<TImageAttachment> = ({
           onClick={clearAttachment}
           className="absolute right-[-4px] top-[-4px] z-10 h-4 w-4 flex-shrink-0"
         >
-          <Cancel01Icon size={12} strokeWidth={2} />
+          <X size={12} strokeWidth={2} />
         </Button>
       </div>
     </Flex>

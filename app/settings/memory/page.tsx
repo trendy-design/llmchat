@@ -2,10 +2,9 @@
 
 import { SettingCard } from "@/components/settings/setting-card";
 import { SettingsContainer } from "@/components/settings/settings-container";
-import { Delete01Icon } from "@/icons";
 import { usePreferenceContext } from "@/lib/context";
 import { Button, Flex, Type } from "@/ui";
-import { Layers01Icon } from "@hugeicons/react";
+import { Layers, Trash } from "lucide-react";
 
 export default function MemorySettings() {
   const { updatePreferences, preferences } = usePreferenceContext();
@@ -25,7 +24,7 @@ export default function MemorySettings() {
             });
           }}
         >
-          <Delete01Icon size={16} strokeWidth={2} />
+          <Trash size={16} strokeWidth={2} />
         </Button>
       </SettingCard>
     );
@@ -39,11 +38,7 @@ export default function MemorySettings() {
         gap="none"
         className="w-full rounded-lg bg-zinc-50/50 p-4 dark:bg-white/5"
       >
-        <Layers01Icon
-          size={20}
-          strokeWidth={1.5}
-          className="mb-2 text-zinc-500"
-        />
+        <Layers size={20} strokeWidth={2} className="mb-2 text-zinc-500" />
         <Type size="sm" textColor="secondary">
           No memories
         </Type>

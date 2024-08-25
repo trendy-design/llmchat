@@ -1,7 +1,7 @@
 import { useChatContext } from "@/lib/context";
 import { Button } from "@/ui";
-import { StopIcon } from "@hugeicons/react";
 import { motion } from "framer-motion";
+import { CircleStop } from "lucide-react";
 
 export const StopGenerationButton = () => {
   const { store } = useChatContext();
@@ -24,7 +24,7 @@ export const StopGenerationButton = () => {
           stopGeneration();
         }}
       >
-        <StopIcon size={16} variant="solid" />
+        <CircleStop size={16} strokeWidth={2} />
         Stop generation
       </Button>
     </motion.span>

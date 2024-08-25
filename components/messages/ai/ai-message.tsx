@@ -6,7 +6,7 @@ import { Mdx } from "@/components/ui/mdx";
 import { useChatContext } from "@/lib/context";
 import { useAssistantUtils } from "@/lib/hooks";
 import { TChatMessage } from "@/lib/types";
-import { Book02Icon } from "@hugeicons/react";
+import { BookOpenText } from "lucide-react";
 import { AIMessageActions } from "./ai-message-actions";
 import { AIMessageError } from "./ai-message-error";
 import { AIRelatedQuestions } from "./ai-related-questions";
@@ -51,7 +51,7 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
         {tools?.map((tool) => (
           <AIToolMessage tool={tool} key={tool.toolName} />
         ))}
-        {rawAI && <ToolBadge icon={Book02Icon} text={"Answer"} />}
+        {rawAI && <ToolBadge icon={BookOpenText} text={"Answer"} />}
 
         <AISelectionProvider onSelect={handleSelection}>
           <Mdx message={rawAI} animate={!!isLoading} messageId={id} />

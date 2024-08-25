@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { RecordIcon, StopIcon } from "@/components/ui/icons";
 import { Tooltip } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/use-toast";
 import { usePreferenceContext } from "@/lib/context";
+import { Circle, CircleStop } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -170,10 +170,9 @@ export const useWhisperRecorder = () => {
             }}
             className="group"
           >
-            <StopIcon
+            <CircleStop
               size={16}
-              variant="solid"
-              strokeWidth="2"
+              strokeWidth={2}
               className="text-rose-400/80"
             />
             <span className="hidden group-hover:flex">Stop</span>
@@ -185,7 +184,7 @@ export const useWhisperRecorder = () => {
     return (
       <Tooltip content="Record">
         <Button size="icon" variant="ghost" onClick={startVoiceRecording}>
-          <RecordIcon size={16} variant="stroke" strokeWidth="2" />
+          <Circle size={16} strokeWidth="2" />
         </Button>
       </Tooltip>
     );

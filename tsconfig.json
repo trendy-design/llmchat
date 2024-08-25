@@ -18,7 +18,6 @@
       }
     ],
     "paths": {
-      "@/icons": ["./components/ui/icons"],
       "@/ui": ["./components/ui"],
       "@/types": ["./lib/types"],
       "@/hooks": ["./lib/hooks"],

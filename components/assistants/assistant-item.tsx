@@ -1,5 +1,4 @@
 import { defaultPreferences } from "@/config";
-import { PuzzleIcon, ViewIcon } from "@/icons";
 import { usePreferenceContext } from "@/lib/context";
 import { useAssistantUtils } from "@/lib/hooks";
 import { TAssistant } from "@/lib/types";
@@ -15,7 +14,7 @@ import {
   Flex,
   Type,
 } from "@/ui";
-import { DotsThree, Pencil, TrashSimple } from "@phosphor-icons/react";
+import { Ellipsis, Eye, Pencil, ToyBrick, Trash } from "lucide-react";
 import { useState } from "react";
 
 export type TAssistantItem = {
@@ -71,14 +70,10 @@ export const AssistantItem = ({
         {assistant.type !== "custom" && (
           <Flex gap="md" items="center">
             {!!model?.vision && (
-              <ViewIcon size={16} strokeWidth={1.5} className="text-zinc-500" />
+              <Eye size={16} strokeWidth={1.5} className="text-zinc-500" />
             )}
             {!!model?.plugins?.length && (
-              <PuzzleIcon
-                size={16}
-                strokeWidth={1.5}
-                className="text-zinc-500"
-              />
+              <ToyBrick size={16} strokeWidth={1.5} className="text-zinc-500" />
             )}
             {model?.tokens && (
               <Type size="xs" textColor="secondary">
@@ -100,7 +95,7 @@ export const AssistantItem = ({
                 size="iconSm"
                 onClick={() => setOpen(true)}
               >
-                <DotsThree size={20} weight="bold" />
+                <Ellipsis size={16} strokeWidth={2} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -110,13 +105,13 @@ export const AssistantItem = ({
               <DropdownMenuItem
                 onClick={handleDropdownItemSelect(() => onEdit(assistant))}
               >
-                <Pencil size={14} weight="bold" />
+                <Pencil size={14} strokeWidth={2} />
                 Edit
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={handleDropdownItemSelect(() => onDelete(assistant))}
               >
-                <TrashSimple size={14} weight="bold" />
+                <Trash size={14} strokeWidth={2} />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>

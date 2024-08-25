@@ -1,5 +1,5 @@
 import { Button, Flex, Type } from "@/ui";
-import { Add01Icon, SparklesIcon } from "@hugeicons/react";
+import { Plus, Sparkle } from "lucide-react";
 import { FC } from "react";
 
 export type AssistantBannerProps = {
@@ -19,7 +19,7 @@ export const AssistantBanner: FC<AssistantBannerProps> = ({
     >
       <Flex direction="col" gap="sm">
         <Flex items="center" gap="sm" className="!text-teal-600">
-          <SparklesIcon size={20} />
+          <Sparkle size={20} />
 
           <Type weight="medium" size="base">
             Custom Assistant
@@ -36,7 +36,7 @@ export const AssistantBanner: FC<AssistantBannerProps> = ({
           setOpenCreateAssistant(true);
         }}
       >
-        <Add01Icon size={16} strokeWidth={2} /> Create Assistant
+        <Plus size={16} strokeWidth={2} /> Create Assistant
       </Button>
     </Flex>
   );

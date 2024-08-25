@@ -1,4 +1,3 @@
-import { Delete01Icon, Edit02Icon } from "@/icons";
 import { useSessions } from "@/lib/context";
 import { TChatSession } from "@/lib/types";
 import { cn } from "@/lib/utils/clsx";
@@ -12,6 +11,7 @@ import {
   Tooltip,
   Type,
 } from "@/ui";
+import { Pencil, Trash } from "lucide-react";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -135,7 +135,7 @@ export const HistoryItem = ({
           className={cn("hidden group-hover:flex", openDeleteConfirm && "flex")}
         >
           <Button variant="ghost" size="iconXS" onClick={handleEditClick}>
-            <Edit02Icon size={14} variant="stroke" strokeWidth="2" />
+            <Pencil size={14} strokeWidth="2" />
           </Button>
           <Tooltip content="Delete">
             <Popover
@@ -148,7 +148,7 @@ export const HistoryItem = ({
                   size="iconXS"
                   onClick={(e) => handleDeleteClick(e)}
                 >
-                  <Delete01Icon size={14} variant="stroke" strokeWidth="2" />
+                  <Trash size={14} strokeWidth="2" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="z-[1000]" side="bottom">

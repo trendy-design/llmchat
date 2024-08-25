@@ -1,14 +1,15 @@
 import { useChatContext } from "@/lib/context";
-import { HugeIcon } from "@/lib/types/icons";
 import { cn } from "@/lib/utils/clsx";
 import { Flex, Type } from "@/ui";
+
 import {
-  AiChat02Icon,
-  AiLockIcon,
-  AiMagicIcon,
-  PuzzleIcon,
-  Rocket01Icon,
-} from "@hugeicons/react";
+  Lock,
+  LucideIcon,
+  MessageCircle,
+  Rocket,
+  ToyBrick,
+  WandSparkles,
+} from "lucide-react";
 import Image from "next/image";
 import { ChatExamples } from "../chat-input/chat-examples";
 import { AiModelsCopy } from "./ai-models-copy";
@@ -22,29 +23,29 @@ export type TWelcomeMessageProps = {
 };
 
 export type WelcomePoint = {
-  icon: HugeIcon;
+  icon: LucideIcon;
   text: React.ReactNode;
 };
 
 const welcomePoints: WelcomePoint[] = [
   {
-    icon: AiChat02Icon,
+    icon: MessageCircle,
     text: <AiModelsCopy />,
   },
   {
-    icon: PuzzleIcon,
+    icon: ToyBrick,
     text: <PluginCopy />,
   },
   {
-    icon: AiMagicIcon,
+    icon: WandSparkles,
     text: <CustomAssistantCopy />,
   },
   {
-    icon: AiLockIcon,
+    icon: Lock,
     text: <PrivacyCopy />,
   },
   {
-    icon: Rocket01Icon,
+    icon: Rocket,
     text: <OpenSourceCopy />,
   },
 ];

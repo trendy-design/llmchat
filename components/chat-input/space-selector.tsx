@@ -7,7 +7,7 @@ import {
   Tooltip,
   Type,
 } from "@/ui";
-import { FolderLibraryIcon } from "@hugeicons/react";
+import { GalleryVerticalEnd } from "lucide-react";
 import { FC } from "react";
 
 export type SpaceSelector = {};
@@ -18,12 +18,12 @@ export const SpaceSelector: FC<SpaceSelector> = () => {
       <Popover>
         <PopoverTrigger>
           <Button size="iconSm" variant="ghost">
-            <FolderLibraryIcon size={16} strokeWidth={2} />
+            <GalleryVerticalEnd size={16} strokeWidth={2} />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-64">
           <Flex className="p-4" direction="col" items="center" justify="center">
-            <FolderLibraryIcon
+            <GalleryVerticalEnd
               size={16}
               strokeWidth={2}
               className="mb-2 text-zinc-500"

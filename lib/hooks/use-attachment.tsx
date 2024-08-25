@@ -1,7 +1,6 @@
-import { Pdf01Icon } from "@/icons";
 import { TAttachment } from "@/lib/types";
 import { Button, useToast } from "@/ui";
-import { X } from "@phosphor-icons/react";
+import { FileText, X } from "lucide-react";
 import { ChangeEvent, useState } from "react";
 
 export const useAttachment = () => {
@@ -41,14 +40,14 @@ export const useAttachment = () => {
     if (attachment?.file) {
       return (
         <div className="relative flex h-[60px] min-w-[60px] items-center justify-center rounded-xl border border-white/5 shadow-md">
-          <Pdf01Icon size={24} />
+          <FileText size={24} />
           <Button
             size={"iconXS"}
             variant="default"
             onClick={clearAttachment}
             className="absolute right-[-4px] top-[-4px] z-10 h-4 w-4 flex-shrink-0"
           >
-            <X size={12} weight="bold" />
+            <X size={12} strokeWidth={2} />
           </Button>
         </div>
       );
@@ -65,7 +64,7 @@ export const useAttachment = () => {
           onChange={handlePdfUpload}
         />
         <Button onClick={handleFileSelect}>
-          <Pdf01Icon size={16} strokeWidth={1.5} />
+          <FileText size={16} strokeWidth={1.5} />
           Upload PDF
         </Button>
       </>

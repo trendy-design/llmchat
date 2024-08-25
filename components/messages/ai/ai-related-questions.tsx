@@ -3,10 +3,9 @@ import { useAssistantUtils, useLLMRunner } from "@/lib/hooks";
 import { TChatMessage } from "@/lib/types";
 import { slideUpVariant } from "@/lib/utils/animations";
 import { Flex, StaggerContainer, Type } from "@/ui";
-import { ArrowRight02Icon, RepeatIcon } from "@hugeicons/react";
 import { motion } from "framer-motion";
+import { ArrowRight, Repeat2 } from "lucide-react";
 import { FC } from "react";
-import { ToolBadge } from "../../tools/tool-badge";
 
 export type TAIRelatedQuestions = {
   message: TChatMessage;
@@ -51,9 +50,15 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
       <Flex
         direction="col"
         gap="sm"
-        className="mt-4 w-full border-t border-zinc-500/10 pt-8"
+        className="mt-4 w-full border-t border-zinc-500/10 pt-4"
       >
-        <ToolBadge icon={RepeatIcon} text={"Related"} />
+        <Flex gap="sm" items="center">
+          <Repeat2 size={18} strokeWidth={2} />
+          <Type size="sm" weight="medium">
+            Related
+          </Type>
+        </Flex>
+        {/* <ToolBadge icon={Repeat2} text={"Related"} /> */}
         {message?.relatedQuestions?.map((question) => {
           return (
             <motion.div key={question} variants={slideUpVariant}>
@@ -63,7 +68,7 @@ export const AIRelatedQuestions: FC<TAIRelatedQuestions> = ({
                 onClick={() => handleOnClick(question)}
                 weight="medium"
               >
-                <ArrowRight02Icon size={16} strokeWidth={2} />
+                <ArrowRight size={18} strokeWidth={2} />
                 {question}
               </Type>
             </motion.div>

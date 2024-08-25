@@ -9,7 +9,7 @@ import { Flex } from "@/components/ui/flex";
 import { Type } from "@/components/ui/text";
 import { usePreferenceContext } from "@/lib/context";
 import { TPreferences } from "@/lib/types";
-import { CaretDown } from "@phosphor-icons/react";
+import { ChevronDown } from "lucide-react";
 
 export const ImageGenerationPlugin = () => {
   const { preferences, updatePreferences } = usePreferenceContext();
@@ -29,7 +29,7 @@ export const ImageGenerationPlugin = () => {
           <DropdownMenuTrigger asChild>
             <Button size="sm" variant="secondary">
               {preferences.dalleImageQuality}{" "}
-              <CaretDown size={12} weight="bold" />
+              <ChevronDown size={12} strokeWidth={2} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-[200px]" align="end">
@@ -61,7 +61,7 @@ export const ImageGenerationPlugin = () => {
           <DropdownMenuTrigger asChild>
             <Button size="sm" variant="secondary">
               {preferences.dalleImageSize}
-              <CaretDown size={12} weight="bold" />
+              <ChevronDown size={12} strokeWidth={2} />
             </Button>
           </DropdownMenuTrigger>
 

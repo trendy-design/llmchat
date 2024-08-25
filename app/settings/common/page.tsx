@@ -6,7 +6,7 @@ import { usePreferenceContext } from "@/lib/context";
 import { TPreferences } from "@/lib/types";
 import { cn } from "@/lib/utils/clsx";
 import { Button, Flex, Input, Slider, Switch, Textarea, Type } from "@/ui";
-import { ArrowClockwise } from "@phosphor-icons/react";
+import { RotateCcw } from "lucide-react";
 import { ChangeEvent } from "react";
 
 export default function CommonPage() {
@@ -19,7 +19,7 @@ export default function CommonPage() {
       rounded="lg"
       onClick={() => updatePreferences({ [key]: defaultPreferences[key] })}
     >
-      <ArrowClockwise size={14} weight="bold" />
+      <RotateCcw size={14} strokeWidth={2} />
     </Button>
   );
 
