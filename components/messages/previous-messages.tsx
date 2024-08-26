@@ -17,7 +17,9 @@ export const PreviousMessages = () => {
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages?.length) {
+      scrollToBottom();
+    }
   }, [messages.length]);
 
   const previousMessages = useMemo(() => {

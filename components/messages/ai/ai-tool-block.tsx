@@ -20,7 +20,7 @@ export const AiToolBlock = ({ tool, definition }: AiToolBlockProps) => {
       gap="sm"
     >
       <Flex gap="sm" className="w-full" items="center">
-        <Flex gap="sm" items="start" className="w-full">
+        <Flex gap="sm" items="center" className="w-full">
           <Flex
             items="center"
             justify="center"
@@ -34,9 +34,10 @@ export const AiToolBlock = ({ tool, definition }: AiToolBlockProps) => {
                 ? definition.loadingMessage
                 : definition.successMessage}
             </Type>
-            {tool.executionArgs && <Badge>{tool.toolName}</Badge>}
           </Flex>
         </Flex>
+        {tool.executionArgs && <Badge>{tool.toolName}</Badge>}
+
         <Button
           variant="ghost"
           size="iconXS"
