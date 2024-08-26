@@ -35,7 +35,6 @@ export const GeminiSettings = () => {
       <Flex gap="sm">
         {!apiKeys.gemini && (
           <Button
-            size="sm"
             variant="default"
             onClick={() => {
               checkApiKey({
@@ -56,7 +55,6 @@ export const GeminiSettings = () => {
 
         {apiKeys?.gemini && (
           <Button
-            size="sm"
             variant="secondary"
             onClick={() => {
               setKey("");

@@ -28,6 +28,7 @@ export type TModelKey = (typeof models)[number] | string;
 export type TModelItem = {
   name: string;
   key: TModelKey;
+  description?: string;
   isNew?: boolean;
   isFree?: boolean;
   isSignUpRequired?: boolean;

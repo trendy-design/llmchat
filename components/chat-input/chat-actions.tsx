@@ -9,7 +9,7 @@ import { useAssistantUtils } from "@/lib/hooks";
 import { TAssistant } from "@/lib/types";
 import { cn } from "@/lib/utils/clsx";
 import { Button, Flex } from "@/ui";
-import { ArrowUp, Book } from "lucide-react";
+import { ArrowUp, Book, ChevronDown } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PluginSelect } from "../plugin-select";
 import { ImageUpload } from "./image-upload";
@@ -60,13 +60,14 @@ export const ChatActions = ({
     >
       <Flex gap="xs" items="center">
         <Button
-          variant="ghost"
+          variant="secondary"
           onClick={openAssistants}
-          className="gap-2 pl-1.5 pr-3 text-xs md:text-sm"
+          className="gap-1 pl-1.5 pr-3"
           size="sm"
         >
           {assistantKey && getAssistantIcon(assistantKey, "sm")}
           {assistantName}
+          <ChevronDown size={14} strokeWidth="2" />
         </Button>
 
         <PluginSelect selectedAssistantKey={selectedAssistantKey} />
@@ -85,7 +86,6 @@ export const ChatActions = ({
           onClick={() => {
             openPrompts();
           }}
-          className="gap-2 pl-1.5 pr-3 text-xs md:text-sm"
           size="sm"
         >
           <Book size={16} strokeWidth="2" />
