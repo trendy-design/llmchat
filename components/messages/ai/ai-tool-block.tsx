@@ -19,15 +19,23 @@ export const AiToolBlock = ({ tool, definition }: AiToolBlockProps) => {
       direction="col"
       gap="sm"
     >
-      <Flex gap="sm" className="w-full">
-        <Icon size={16} strokeWidth={2} className="mt-0.5 flex-shrink-0" />
-        <Flex direction="col" gap="xs" className="w-full flex-1">
-          <Type size="sm" weight="medium">
-            {tool.isLoading
-              ? definition.loadingMessage
-              : definition.successMessage}
-          </Type>
-          {tool.executionArgs && <Badge>{tool.toolName}</Badge>}
+      <Flex gap="sm" className="w-full" items="center">
+        <Flex gap="sm" items="start" className="w-full">
+          <Flex
+            items="center"
+            justify="center"
+            className="h-8 w-8 rounded-lg border bg-white dark:bg-zinc-800"
+          >
+            <Icon size={16} strokeWidth={2} className="mt-0.5 flex-shrink-0" />
+          </Flex>
+          <Flex direction="col" gap="xs" className="w-full flex-1">
+            <Type size="sm" weight="medium">
+              {tool.isLoading
+                ? definition.loadingMessage
+                : definition.successMessage}
+            </Type>
+            {tool.executionArgs && <Badge>{tool.toolName}</Badge>}
+          </Flex>
         </Flex>
         <Button
           variant="ghost"
