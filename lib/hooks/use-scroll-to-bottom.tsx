@@ -1,6 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
+import { useChatContext } from "../context";
 
 export const useScrollToBottom = () => {
+  const { store } = useChatContext();
+  const currentMessageId = store((state) => state.currentMessage?.id);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [needsScroll, setNeedsScroll] = useState(false);
 
@@ -28,14 +31,13 @@ export const useScrollToBottom = () => {
     const chatContainer = document.getElementById("chat-container");
     if (chatContainer) {
       chatContainer.addEventListener("scroll", handleScroll);
-      handleScroll();
     }
     return () => {
       if (chatContainer) {
         chatContainer.removeEventListener("scroll", handleScroll);
       }
     };
-  }, [handleScroll]);
+  }, [handleScroll, currentMessageId]);
 
   return {
     showScrollToBottom: !isAtBottom && needsScroll,

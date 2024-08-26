@@ -50,7 +50,7 @@ export const ChatActions = ({
   const hasTextInput = !!editor?.getText();
 
   const sendButtonClasses = cn({
-    "bg-teal-600/20 text-teal-600 dark:text-teal-400": hasTextInput,
+    "!bg-teal-600/20 text-teal-600 dark:text-teal-400": hasTextInput,
   });
   return (
     <Flex

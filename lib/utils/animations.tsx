@@ -4,7 +4,7 @@ export const REVEAL_ANIMATION_VARIANTS = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 1,
+      duration: 0.5,
       ease: "easeIn",
       delay: 0.1,
     },

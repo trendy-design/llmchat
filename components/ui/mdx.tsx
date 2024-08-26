@@ -24,45 +24,9 @@ export type TMdx = {
 };
 
 const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
-  // const [processedMessage, setProcessedMessage] = useState("");
-
-  // useEffect(() => {
-  //   if (message) {
-  //     // Process the message to hide incomplete Markdown elements
-  //     const processed = hideIncompleteMarkdown(message);
-  //     setProcessedMessage(processed);
-  //   }
-  // }, [message]);
-
-  // const hideIncompleteMarkdown = (text: string) => {
-  //   // Remove incomplete links
-  //   text = text.replace(/\[([^\]]*)\](\([^\)]*\)?)?/g, (match, text, url) => {
-  //     return url && url.endsWith(")") ? match : "";
-  //   });
-
-  //   // Remove incomplete images
-  //   text = text.replace(/!\[([^\]]*)\]\(([^\)]*)\)/g, (match, alt, src) => {
-  //     return src && src.endsWith(")") ? match : "";
-  //   });
-
-  //   // Remove incomplete table cells
-  //   text = text.replace(/\|([^\|]+)\|/g, (match, text) => {
-  //     return text ? match : "";
-  //   });
-
-  //   // Remove incomplete table cells (duplicate, can be removed)
-  //   text = text.replace(/\|([^\|]+)\|/g, (match, text) => {
-  //     return text ? match : "";
-  //   });
-
-  //   return text;
-  // };
-
   if (!message || !messageId) {
     return null;
   }
-
-  const renderParagraph = (children: ReactNode) => <p>{children}</p>;
 
   const renderEm = (children: ReactNode) => <em>{children}</em>;
 
@@ -153,16 +117,16 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
     <article className={articleClass} id={`message-${messageId}`}>
       <Markdown
         renderer={{
-          text: (text) => (
-            <motion.span
+          text: (text) => text,
+          paragraph: (children) => (
+            <motion.p
               variants={REVEAL_ANIMATION_VARIANTS}
               animate={"visible"}
               initial={animate ? "hidden" : "visible"}
             >
-              {text}
-            </motion.span>
+              {children}
+            </motion.p>
           ),
-          paragraph: renderParagraph,
           em: renderEm,
           heading: renderHeading,
           hr: renderHr,
