@@ -16,6 +16,10 @@ const allPlugins = [
   "image_generation",
   "memory",
   "webpage_reader",
+  "py_interpreter",
+  "bar_chart",
+  "pie_chart",
+  "line_chart",
 ];
 
 export const models: TModelItem[] = [

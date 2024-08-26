@@ -7,6 +7,9 @@ import {
   readerToolDefinition,
 } from "@/lib/tools";
 import { TModelItem, ToolDefinition, ToolKey } from "@/lib/types";
+import { barChartToolDefinition } from "../tools/bar-chart";
+import { lineChartToolDefinition } from "../tools/line-chart";
+import { pieChartToolDefinition } from "../tools/pie-chart";
 
 export const useTools = () => {
   const { store } = useChatContext();
@@ -20,6 +23,9 @@ export const useTools = () => {
     dalleToolDefinition,
     memoryToolDefinition,
     readerToolDefinition,
+    barChartToolDefinition,
+    pieChartToolDefinition,
+    lineChartToolDefinition,
   ];
 
   const getToolByKey = (key: ToolKey) => {
