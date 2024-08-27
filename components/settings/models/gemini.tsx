@@ -4,6 +4,7 @@ import { Flex } from "@/components/ui/flex";
 import { configs } from "@/config";
 import { usePreferenceContext } from "@/lib/context";
 import { useLLMTest } from "@/lib/hooks";
+import plausible from "@/libs/utils/plausible";
 import { useEffect, useState } from "react";
 import { ApiKeyInfo } from "./api-key-info";
 import ApiKeyInput from "./api-key-input";
@@ -42,6 +43,11 @@ export const GeminiSettings = () => {
                 key,
                 onValidated: () => {
                   updateApiKey("gemini", key);
+                  plausible.trackEvent("Api+Added", {
+                    props: {
+                      provider: "Gemini",
+                    },
+                  });
                 },
                 onError: () => {
                   setKey("");

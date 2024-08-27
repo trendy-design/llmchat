@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }: TAuthProvider) => {
                 </Flex>
                 <Flex gap="sm" direction="col" className="w-full">
                   <Button
-                    className="w-full"
+                    className="plausible-event-name=Signup w-full"
                     rounded="full"
                     variant="secondary"
                     size="lg"
@@ -104,7 +104,7 @@ export const AuthProvider = ({ children }: TAuthProvider) => {
                     Sign In with Google
                   </Button>
                   <Button
-                    className="w-full"
+                    className="plausible-event-name=Signup w-full"
                     rounded="full"
                     size="lg"
                     onClick={signInWithGithub}
