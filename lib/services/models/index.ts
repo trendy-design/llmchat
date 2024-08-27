@@ -72,7 +72,7 @@ export class ModelService {
           streaming: true,
           apiKey: "llmchat",
           configuration: {
-            baseURL: process.env.NEXT_PUBLIC_LLMCHAT_COMPLETIONS_API_URL || "",
+            baseURL: `${window.location.origin}/api/llmchat/`,
           },
           temperature,
           maxTokens,
