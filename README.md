@@ -4,9 +4,7 @@
 <h1 align="center">LLMChat</h1>
 <p align="center">Most intuitive All-in-one AI chat interface.</p>
 
-<br/>
 [demo.webm](https://github.com/user-attachments/assets/d88afd50-ce19-4ca4-a1e3-44aa491178a1)
-<br/>
 
 ## Key Features
 
