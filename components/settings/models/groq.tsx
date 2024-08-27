@@ -4,6 +4,7 @@ import { Flex } from "@/components/ui/flex";
 import { configs } from "@/config";
 import { usePreferenceContext } from "@/lib/context";
 import { useLLMTest } from "@/lib/hooks";
+import plausible from "@/libs/utils/plausible";
 import { useEffect, useState } from "react";
 import { ApiKeyInfo } from "./api-key-info";
 import ApiKeyInput from "./api-key-input";
@@ -43,6 +44,11 @@ export const GroqSettings = () => {
                 key,
                 onValidated: () => {
                   updateApiKey("groq", key);
+                  plausible.trackEvent("Api+Added", {
+                    props: {
+                      provider: "Groq",
+                    },
+                  });
                 },
                 onError: () => {
                   setKey("");

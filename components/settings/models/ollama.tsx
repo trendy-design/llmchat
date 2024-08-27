@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/components/ui/use-toast";
 import { docs } from "@/config";
 import { usePreferenceContext } from "@/lib/context";
+import plausible from "@/libs/utils/plausible";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -36,6 +37,12 @@ export const OllamaSettings = ({ onRefresh }: OllamaSettingsProps) => {
           title: "Success",
           description: "Ollama server endpoint is valid",
         });
+        plausible.trackEvent("Api+Added", {
+          props: {
+            provider: "Ollama",
+          },
+        });
+
         updatePreferences({ ollamaBaseUrl: url });
         onRefresh();
       } else {

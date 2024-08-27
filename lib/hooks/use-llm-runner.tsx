@@ -16,6 +16,7 @@ import { generateShortUUID } from "@/lib/utils/utils";
 import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import moment from "moment";
 import { useAssistantUtils, useTools } from ".";
+import plausible from "../utils/plausible";
 
 const getErrorMessage = (error: string) => {
   if (error.includes("image_url") && error.includes("400")) {
@@ -48,6 +49,11 @@ export const useLLMRunner = () => {
       return;
     }
     editor?.commands.clearContent();
+    plausible.trackEvent("Generate", {
+      props: {
+        model: config.assistant.baseModel,
+      },
+    });
 
     //to avoid duplication not refetch when regenerating
     if (!config?.messageId) {
