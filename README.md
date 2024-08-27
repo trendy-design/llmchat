@@ -1,11 +1,12 @@
 
 ![og_6x](https://github.com/user-attachments/assets/4813a6b5-3294-4056-88bb-c536a45c220c)
 
-[demo.webm](https://github.com/user-attachments/assets/1c555c20-5adf-4c7b-8e55-96f5abcc3563)
-
-
 <h1 align="center">LLMChat</h1>
 <p align="center">Most intuitive All-in-one AI chat interface.</p>
+
+<br/>
+[demo.webm](https://github.com/user-attachments/assets/d88afd50-ce19-4ca4-a1e3-44aa491178a1)
+<br/>
 
 ## Key Features
 
@@ -39,6 +40,10 @@
 
 - 🎙️ **Speech-to-Text**: Coming soon.
 - 📚 **Knowledge Spaces**: Coming soon.
+
+## Quick Deploy with Vercel
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Ftrendy-design%2Fllmchat&env=JINA_API_KEY&envDescription=JINA_API_KEY&envLink=https%3A%2F%2Fjina.ai%2Freader&project-name=llmchat-clone)
+
 
 ## Quick Start
 
