@@ -1,6 +1,9 @@
 
 ![og_6x](https://github.com/user-attachments/assets/4813a6b5-3294-4056-88bb-c536a45c220c)
 
+[demo.webm](https://github.com/user-attachments/assets/1c555c20-5adf-4c7b-8e55-96f5abcc3563)
+
+
 <h1 align="center">LLMChat</h1>
 <p align="center">Most intuitive All-in-one AI chat interface.</p>
 
