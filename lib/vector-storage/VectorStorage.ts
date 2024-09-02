@@ -39,6 +39,9 @@ export class VectorStorage<T> {
     this.openaiModel = options.openaiModel ?? constants.DEFAULT_OPENAI_MODEL;
     this.embedTextsFn = options.embedTextsFn ?? this.embedTexts; // Use the custom function if provided, else use the default one
     this.openaiApiKey = options.openAIApiKey;
+
+    this.trainingMode = true; // Set training mode to true
+
     if (!this.openaiApiKey && !options.embedTextsFn) {
       console.error(
         'VectorStorage: pass as an option either an OpenAI API key or a custom embedTextsFn function.'
