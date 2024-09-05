@@ -17,7 +17,6 @@ import Avatar from "boring-avatars";
 import {
   Bolt,
   CircleHelp,
-  Flag,
   Github,
   LogOut,
   Moon,
@@ -27,7 +26,6 @@ import {
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
-import { useFeedback } from "../feedback/use-feedback";
 
 export const ProfileDropdownItem = ({
   label,
@@ -56,8 +54,6 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
   const { theme, setTheme } = useTheme();
   const { open: openSignIn, logout, user } = useAuth();
 
-  const { renderModal, setOpen: openFeedback } = useFeedback();
-
   const menuItems = [
     {
       label: "Settings",
@@ -66,13 +62,7 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
       },
       icon: Bolt,
     },
-    {
-      label: "Feedback",
-      onClick: () => {
-        openFeedback(true);
-      },
-      icon: Flag,
-    },
+
     {
       label: "Support",
       onClick: () => {
@@ -181,7 +171,6 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-      {renderModal()}
     </>
   );
 };

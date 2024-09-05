@@ -43,6 +43,15 @@ export const ChatExamples = () => {
           ))}
         </div>
       </StaggerContainer>
+      <div
+        className="relative mx-1 my-3 h-2 w-full opacity-10 dark:invert"
+        style={{
+          backgroundImage: 'url("./icons/wavy.svg")',
+          backgroundRepeat: "repeat-x",
+          backgroundSize: "contain",
+          backgroundPosition: "0 0",
+        }}
+      />
     </Flex>
   );
 };

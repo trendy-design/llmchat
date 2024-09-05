@@ -14,9 +14,11 @@ export const OpenAISettings = () => {
   const { apiKeys, updateApiKey } = usePreferenceContext();
   const { checkApiKey, isCheckingApiKey } = useLLMTest();
 
+  const openaiKey = apiKeys?.find((key) => key.provider === "openai")?.key;
+
   useEffect(() => {
-    setKey(apiKeys.openai || "");
-  }, [apiKeys.openai]);
+    setKey(openaiKey || "");
+  }, [openaiKey]);
 
   return (
     <Flex direction="col" gap="md">
@@ -29,13 +31,13 @@ export const OpenAISettings = () => {
       <ApiKeyInput
         value={key}
         setValue={setKey}
-        isDisabled={!!apiKeys.openai}
+        isDisabled={!!openaiKey}
         placeholder="Sk-xxxxxxxxxxxxxxxxxxxxxxxx"
-        isLocked={!!apiKeys.openai}
+        isLocked={!!openaiKey}
       />
 
       <div className="flex flex-row items-center gap-1">
-        {!apiKeys.openai && (
+        {!openaiKey && (
           <Button
             variant="default"
             onClick={() => {
@@ -60,7 +62,7 @@ export const OpenAISettings = () => {
           </Button>
         )}
 
-        {apiKeys?.openai && (
+        {openaiKey && (
           <Button
             variant="secondary"
             onClick={() => {

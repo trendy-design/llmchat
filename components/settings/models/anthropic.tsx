@@ -14,9 +14,13 @@ export const AnthropicSettings = () => {
   const { apiKeys, updateApiKey } = usePreferenceContext();
   const { checkApiKey, isCheckingApiKey } = useLLMTest();
 
+  const anthropicKey = apiKeys?.find(
+    (key) => key.provider === "anthropic",
+  )?.key;
+
   useEffect(() => {
-    setKey(apiKeys.anthropic || "");
-  }, [apiKeys.anthropic]);
+    setKey(anthropicKey || "");
+  }, [anthropicKey]);
 
   return (
     <Flex direction="col" gap="md">
@@ -29,13 +33,13 @@ export const AnthropicSettings = () => {
       <ApiKeyInput
         value={key}
         setValue={setKey}
-        isDisabled={!!apiKeys.anthropic}
+        isDisabled={!!anthropicKey}
         placeholder="sk-xxxxxxxxxxxxxxxxxxxxxxxx"
-        isLocked={!!apiKeys.anthropic}
+        isLocked={!!anthropicKey}
       />
 
       <Flex gap="sm">
-        {!apiKeys.anthropic && (
+        {!anthropicKey && (
           <Button
             variant="default"
             onClick={() => {
@@ -60,7 +64,7 @@ export const AnthropicSettings = () => {
           </Button>
         )}
 
-        {apiKeys?.anthropic && (
+        {anthropicKey && (
           <Button
             variant="secondary"
             onClick={() => {

@@ -37,7 +37,7 @@ export const useTools = () => {
 
     return (
       model?.plugins
-        ?.filter((p) => plugins.includes(p) || p === "webpage_reader")
+        ?.filter((p) => plugins.includes(p))
         ?.map((p) =>
           getToolByKey(p)?.executionFunction({
             updatePreferences,

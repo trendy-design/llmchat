@@ -53,7 +53,7 @@ export const Message: FC<TMessage> = ({ message, isLast }) => {
   return (
     <Accordion
       type="single"
-      className="w-full overflow-hidden"
+      className="w-full"
       collapsible
       defaultValue={message.id}
     >
@@ -74,7 +74,7 @@ export const Message: FC<TMessage> = ({ message, isLast }) => {
             <HumanMessage chatMessage={message} />
           </Flex>
         </CustomTrigger>
-        <AccordionContent className="w-full items-start overflow-hidden">
+        <AccordionContent className="w-full items-start">
           <AIMessage message={message} isLast={isLast} />
         </AccordionContent>
       </AccordionItem>

@@ -1,7 +1,7 @@
 import { defaultPreferences } from "@/config";
-import { TChatMessage } from "@/lib/types";
 import { ExportData } from "@/lib/types/export";
 import { dataValidator } from "@/lib/utils/validator";
+import moment from "moment";
 import { AssistantService } from "../assistants";
 import { PreferenceService } from "../preferences";
 import { PromptsService } from "../prompts";
@@ -31,23 +31,8 @@ export class ExportService {
   async processExport(): Promise<ExportData> {
     try {
       const chatSessions = await this.sessionsService.getSessions();
-      const messages = await Promise.all(
-        chatSessions.map(async (session) => {
-          const messages = await this.messagesService.getMessages(session.id);
-          if (messages.length === 0) {
-            return Promise.resolve(null);
-          }
-          return Promise.resolve({
-            key: `messages-${session.id}`,
-            message: await this.messagesService.getMessages(session.id),
-          });
-        }),
-      );
+      const messages = (await this.messagesService.getAllMessages()) || [];
 
-      const chatMessages = messages.filter(
-        (message): message is { key: string; message: TChatMessage[] } =>
-          message !== null,
-      );
       const preferences = await this.preferencesService.getPreferences();
       const apiKeys = await this.preferencesService.getApiKeys();
       const assistants = await this.assistantsService.getAssistants();
@@ -55,7 +40,7 @@ export class ExportService {
       dataValidator.parseAsync({
         preferences: { ...defaultPreferences, ...preferences },
         apiKeys,
-        chatMessages,
+        chatMessages: messages,
         chatSessions,
         assistants,
       });
@@ -63,7 +48,7 @@ export class ExportService {
       return {
         preferences: { ...defaultPreferences, ...preferences },
         apiKeys,
-        chatMessages,
+        chatMessages: messages,
         chatSessions,
         assistants,
       };
@@ -87,16 +72,16 @@ export class ExportService {
       const assistants = parsedData.assistants;
       const prompts = parsedData.prompts;
 
-      sessions && (await sessionsService.addSessions(sessions));
-      messages &&
-        (await Promise.all(
-          messages.map(async (message) => {
-            await messagesService.addMessages(
-              message.key.split("-")[1],
-              message.message,
-            );
-          }),
+      sessions &&
+        (await sessionsService.addSessions(
+          sessions?.map((session) => ({
+            ...session,
+            title: session.title ?? null,
+            createdAt: moment(session.createdAt).toDate(),
+            updatedAt: moment(session.updatedAt).toDate(),
+          })),
         ));
+      messages && (await this.messagesService.addAllMessages(messages));
       prompts && (await this.promptsService.addPrompts(prompts));
       preferences && (await preferencesService.setPreferences(preferences));
       apiKeys && (await preferencesService.setApiKeys(apiKeys));
