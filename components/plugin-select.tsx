@@ -82,7 +82,7 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
         </PopoverTrigger>
       </Tooltip>
       <PopoverContent
-        className="roundex-lg mr-8 w-[340px] p-0 dark:bg-zinc-700"
+        className="mr-8 w-[380px] rounded-xl p-0 dark:bg-zinc-700"
         side="top"
       >
         <Type
@@ -92,7 +92,7 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
         >
           Plugins <BetaTag />
         </Type>
-        <div className="flex flex-col p-1">
+        <div className="flex flex-col p-1.5">
           {availableTools.map((tool) => (
             <ToolItem
               key={tool.key}
@@ -117,7 +117,13 @@ const ToolItem: FC<ToolItemProps> = ({ tool, isSelected, onToggle }) => {
   const Icon = tool.icon;
   return (
     <div className="flex w-full flex-row items-center gap-3 rounded-lg px-3 py-2 text-xs hover:bg-zinc-50 dark:hover:bg-black/30 md:text-sm">
-      <Icon size={20} strokeWidth={1.5} />
+      <Flex
+        items="center"
+        justify="center"
+        className="h-8 w-8 rounded-lg border border-zinc-500/15 bg-white dark:bg-zinc-700"
+      >
+        <Icon size={16} strokeWidth={2} className="flex-shrink-0" />
+      </Flex>{" "}
       <Flex direction="col" gap="none" items="start">
         <Type size="sm" weight="medium">
           {tool.displayName}
