@@ -22,7 +22,7 @@ export type TModelIcon = {
   type: ModelIconType;
   size: "sm" | "md" | "lg" | "xs";
   rounded?: boolean;
-  base64?: string;
+  base64?: string | null;
   name?: string;
 };
 export const ModelIcon = ({

@@ -1,7 +1,7 @@
 "use client";
 import { defaultPreferences } from "@/config";
 import { usePreferencesQueries } from "@/libs/services/preferences";
-import { TApiKeys, TPreferences, TProvider } from "@/libs/types";
+import { TApiKeyInsert, TApiKeys, TPreferences, TProvider } from "@/libs/types";
 import { useEffect, useState } from "react";
 
 import { createContext, useContext } from "react";
@@ -12,9 +12,9 @@ export type TPreferenceContext = {
     newPreferences: Partial<TPreferences>,
     onSuccess?: (preference: TPreferences) => void,
   ) => void;
-  apiKeys: TApiKeys;
+  apiKeys: TApiKeys[];
   updateApiKey: (key: TProvider, value: string) => void;
-  updateApiKeys: (newApiKeys: TApiKeys) => void;
+  updateApiKeys: (newApiKeys: TApiKeys[]) => void;
 };
 
 export const PreferenceContext = createContext<undefined | TPreferenceContext>(
@@ -35,7 +35,7 @@ export type TPreferencesProvider = {
 
 export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
   const [preferences, setPreferences] = useState<TPreferences>();
-  const [apiKeys, setApiKeys] = useState<TApiKeys>({});
+  const [apiKeys, setApiKeys] = useState<TApiKeys[]>([]);
 
   useEffect(() => {
     setPreferences(defaultPreferences);
@@ -55,7 +55,7 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
   }, [preferencesQuery.data]);
 
   useEffect(() => {
-    apiKeysQuery.data && setApiKeys(apiKeysQuery.data);
+    setApiKeys(apiKeysQuery.data || []);
   }, [apiKeysQuery.data]);
 
   const updatePreferences = async (
@@ -67,16 +67,18 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
       ...existing,
       ...newPreferences,
     }));
-    setPreferencesMutation.mutate(newPreferences, {
-      onSuccess: (preference) => {
-        preferencesQuery.refetch();
-        onSuccess && onSuccess(preference);
+    setPreferencesMutation.mutate(
+      { id: 1, ...newPreferences },
+      {
+        onSuccess: (preference) => {
+          preferencesQuery.refetch();
+          onSuccess && onSuccess(preference);
+        },
       },
-    });
+    );
   };
 
   const updateApiKey = async (key: TProvider, value: string) => {
-    setApiKeys((existing) => ({ ...existing, [key]: value }));
     setApiKeyMutation.mutate({ key, value });
   };
   useEffect(() => {
@@ -84,7 +86,7 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
     updateApiKey("llmchat", "llmchat");
   }, []);
 
-  const updateApiKeys = (newApiKeys: TApiKeys) => {
+  const updateApiKeys = (newApiKeys: TApiKeyInsert[]) => {
     setApiKeys(newApiKeys);
   };
 

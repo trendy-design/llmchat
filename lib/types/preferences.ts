@@ -1,17 +1,23 @@
+import { schema } from "../database/schema";
 import { TAssistant } from "./assistants";
 import { TProvider } from "./models";
 import { ToolKey } from "./tools";
 
-export type TApiKeys = Partial<Record<TProvider, string>>;
+export type TApiKeys = typeof schema.apiKeys.$inferSelect;
+export type TApiKeyInsert = typeof schema.apiKeys.$inferInsert;
+
+export type TLegacyApiKeys = Partial<Record<TProvider, string>>;
 
 export type TPreferencesState = {
   preferences: TPreferences;
   setPreferences: (preferences: Partial<TPreferences>) => void;
-  apiKeys: TApiKeys;
-  setApiKeys: (apiKeys: Partial<TProvider>) => void;
+  apiKeys: TApiKeys[];
+  setApiKeys: (apiKeys: TApiKeys[]) => void;
 };
 
-export type TPreferences = {
+export type TPreferences = typeof schema.preferences.$inferSelect;
+
+export type TLegacyPreferences = {
   defaultAssistant: TAssistant["key"];
   systemPrompt: string;
   messageLimit: number;

@@ -24,7 +24,7 @@ export const AiToolBlock = ({ tool, definition }: AiToolBlockProps) => {
           <Flex
             items="center"
             justify="center"
-            className="h-8 w-8 rounded-lg border bg-white dark:bg-zinc-800"
+            className="h-8 w-8 rounded-lg border border-zinc-500/10 bg-white dark:bg-zinc-700"
           >
             <Icon size={16} strokeWidth={2} className="mt-0.5 flex-shrink-0" />
           </Flex>

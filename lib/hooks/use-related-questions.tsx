@@ -36,18 +36,23 @@ export const useRelatedQuestions = () => {
 
     const assistant = getAssistantByKey(message.runConfig.assistant.key);
 
-    if (!assistant || !apiKeys[assistant.model.provider]) {
+    if (
+      !assistant ||
+      !apiKeys.find((key) => key.provider === assistant.model.provider)
+    ) {
       return [];
     }
 
     if (assistant.model.provider === "ollama") {
       return generateRelatedQuestionForOllama(sessionId, messageId);
     }
-    const apiKey = apiKeys[assistant.model.provider];
+    const apiKey = apiKeys.find(
+      (key) => key.provider === assistant.model.provider,
+    );
     const selectedModel = await modelService.createInstance({
       model: assistant.model,
       preferences,
-      apiKey,
+      apiKey: apiKey?.key,
       provider: assistant.model.provider,
     });
 
@@ -96,7 +101,10 @@ export const useRelatedQuestions = () => {
 
     const assistant = getAssistantByKey(message.runConfig.assistant.key);
 
-    if (!assistant || !apiKeys[assistant.model.provider]) {
+    if (
+      !assistant ||
+      !apiKeys.find((key) => key.provider === assistant.model.provider)
+    ) {
       return [];
     }
 
@@ -106,11 +114,13 @@ export const useRelatedQuestions = () => {
     ) {
       return [];
     }
-    const apiKey = apiKeys[assistant.model.provider];
+    const apiKey = apiKeys.find(
+      (key) => key.provider === assistant.model.provider,
+    );
     const selectedModel = (await modelService.createInstance({
       model: assistant.model,
       preferences,
-      apiKey,
+      apiKey: apiKey?.key,
       provider: "ollama",
       props: {
         format: "json",

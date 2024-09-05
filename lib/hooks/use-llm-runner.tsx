@@ -6,7 +6,7 @@ import {
   messagesService,
   sessionsService,
 } from "@/lib/services/sessions/client";
-import { TLLMRunConfig, TStopReason } from "@/lib/types";
+import { TLLMRunConfig, TProvider, TStopReason } from "@/lib/types";
 import { injectPresetValues } from "@/lib/utils/preset-prompt-values";
 import {
   constructMessagePrompt,
@@ -16,6 +16,7 @@ import { generateShortUUID } from "@/lib/utils/utils";
 import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import moment from "moment";
 import { useAssistantUtils, useTools } from ".";
+import { preferencesService } from "../services/preferences";
 import plausible from "../utils/plausible";
 
 const getErrorMessage = (error: string) => {
@@ -90,23 +91,29 @@ export const useLLMRunner = () => {
       id: newMessageId,
       parentId: sessionId,
       sessionId,
-      rawHuman: input,
+      rawHuman: input || null,
       stop: false,
-      stopReason: undefined,
-      rawAI: undefined,
-      image,
+      stopReason: null,
+      rawAI: null,
+      image: image || null,
       tools: [],
       relatedQuestions: [],
-      createdAt: moment().toISOString(),
+      createdAt: moment().toDate(),
       isLoading: true,
+      errorMessage: null,
     });
 
-    const selectedModelKey = getModelByKey(modelKey, assistant.provider);
+    const selectedModelKey = getModelByKey(
+      modelKey,
+      assistant.provider as TProvider,
+    );
     if (!selectedModelKey) {
       throw new Error("Model not found");
     }
 
-    const apiKey = apiKeys[selectedModelKey?.provider];
+    const apiKey = await preferencesService.getApiKey(
+      selectedModelKey.provider,
+    );
 
     if (
       !apiKey &&
@@ -134,7 +141,7 @@ export const useLLMRunner = () => {
       model: selectedModelKey,
       preferences,
       provider: selectedModelKey.provider,
-      apiKey,
+      apiKey: apiKey?.key,
     });
 
     let agentExecutor: AgentExecutor | undefined;
@@ -161,6 +168,7 @@ export const useLLMRunner = () => {
       agentExecutor = new AgentExecutor({
         agent: agentWithTool as any,
         tools: availableTools,
+        maxIterations: 2,
       });
     }
     const chainWithoutTools = prompt.pipe(

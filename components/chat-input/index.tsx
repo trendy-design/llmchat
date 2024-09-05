@@ -7,12 +7,14 @@ import {
 } from "@/lib/hooks";
 import { slideUpVariant } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/clsx";
-import { Flex, FlexSpacer } from "@/ui";
+import { Flex, Type } from "@/ui";
 import { motion } from "framer-motion";
 import { useEffect, useRef } from "react";
+import { WelcomeMessage } from "../welcome-message";
 import { AudioRecorder } from "./audio-recorder";
 import { ChatActions } from "./chat-actions";
 import { ChatEditor } from "./chat-editor";
+import { ChatExamples } from "./chat-examples";
 import { ImageAttachment } from "./image-attachment";
 import { ImageDropzoneRoot } from "./image-dropzone-root";
 import { ScrollToBottomButton } from "./scroll-to-bottom-button";
@@ -26,9 +28,13 @@ export const ChatInput = () => {
   const { invokeModel } = useLLMRunner();
   const { editor } = useChatEditor();
   const session = store((state) => state.session);
+  const messages = store((state) => state.messages);
+  const currentMessage = store((state) => state.currentMessage);
   const context = store((state) => state.context);
   const { attachment, clearAttachment, handleImageUpload, dropzonProps } =
     useImageAttachment();
+
+  const isFreshSession = messages.length === 0 && !currentMessage?.id;
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -53,25 +59,33 @@ export const ChatInput = () => {
   };
 
   const chatInputBackgroundContainer = cn(
-    "absolute bottom-0 right-0 left-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-4 pt-16 md:justify-end md:px-4",
+    "absolute bottom-0 right-0 left-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-3 pt-16 md:justify-end md:px-4",
     "transition-all duration-1000 ease-in-out",
+    isFreshSession && "top-0 md:justify-center",
   );
 
   const chatContainer = cn(
-    "flex w-full flex-col gap-1 md:w-[640px] lg:w-[700px] z-10",
+    "flex flex-col items-center w-full gap-1 md:w-[640px] lg:w-[700px] z-10",
   );
 
   return (
     <div className={chatInputBackgroundContainer}>
       <div
-        className="absolute bottom-0 left-0 right-0 h-[180px] bg-gradient-to-t from-white from-60% to-transparent backdrop-blur-sm dark:bg-zinc-800/50 dark:from-zinc-800"
+        className={cn(
+          "absolute bottom-0 left-0 right-0 h-[180px] bg-gradient-to-t from-white from-60% to-transparent backdrop-blur-sm dark:bg-zinc-800/50 dark:from-zinc-800",
+          isFreshSession &&
+            "top-0 flex h-full flex-col items-center justify-center",
+        )}
         style={{
           maskImage: "linear-gradient(to top, black 60%, transparent)",
           WebkitMaskImage: "linear-gradient(to top, black 60%, transparent)",
         }}
       />
+
       <div className={chatContainer}>
-        <FlexSpacer />
+        {isFreshSession && <ChatExamples />}
+        <WelcomeMessage show={isFreshSession} />
+
         <Flex items="center" justify="center" gap="sm" className="mb-2">
           <ScrollToBottomButton />
           <StopGenerationButton />
@@ -100,6 +114,9 @@ export const ChatInput = () => {
             />
           </ImageDropzoneRoot>
         </motion.div>
+        <Type size="xxs" textColor="tertiary" className="pt-1 opacity-70">
+          LLMChat is in public beta. LLMs can make mistakes
+        </Type>
       </div>
     </div>
   );

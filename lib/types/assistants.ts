@@ -1,16 +1,16 @@
-import { TModelItem, TModelKey, TProvider } from "./models";
+import { TModelItem, TProvider } from "./models";
 
 export type TAssistantType = "base" | "custom";
 
 export type TAssistant = {
+  key: string;
   name: string;
-  description?: string;
+  description: string | null;
   systemPrompt: string;
-  iconURL?: string;
+  iconURL: string | null;
   provider: TProvider;
-  baseModel: TModelKey;
-  key: TModelKey | string;
-  type: TAssistantType;
+  baseModel: string;
+  type: "custom" | "base";
 };
 
 export type TAssistantsProvider = {

@@ -39,7 +39,7 @@ export const useTitleGenerator = () => {
 
     await updateSessionMutation.mutate({
       sessionId,
-      session: { title, updatedAt: moment().toISOString() },
+      session: { title, updatedAt: moment().toDate() },
     });
   };
 
@@ -52,12 +52,14 @@ export const useTitleGenerator = () => {
     if (assistant.model.plugins?.length > 0) {
     }
 
-    const apiKey = apiKeys[assistant.model.provider];
+    const apiKey = apiKeys.find(
+      (key) => key.provider === assistant.model.provider,
+    );
     const selectedModel = await modelService.createInstance({
       model: assistant.model,
       preferences,
       provider: assistant.model.provider,
-      apiKey,
+      apiKey: apiKey?.key,
     });
 
     const prompt = await constructPrompt({

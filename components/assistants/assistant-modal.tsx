@@ -114,7 +114,7 @@ export const AssistantModal: FC<TAssitantModal> = ({
         <DialogPortal>
           <DialogContent
             ariaTitle="Assistants"
-            className="!w-[400px] rounded-xl bg-white p-0"
+            className="!w-[440px] rounded-xl bg-white p-0"
           >
             <Command className="relative h-full rounded-xl dark:border dark:border-white/10">
               <div className="h-12 w-full border-b border-zinc-500/20 px-2">

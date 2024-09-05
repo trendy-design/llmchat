@@ -10,8 +10,6 @@ self.onmessage = async function (e) {
     self.postMessage({ error: "Invalid file", e });
     return;
   }
-
-  // Use FileReader to read the file
   const reader = new FileReader();
 
   reader.onload = async function (event) {
@@ -20,10 +18,8 @@ self.onmessage = async function (e) {
     try {
       const pdf = await getDocument(typedArray).promise;
       let pages: any[] = [];
-
-      // Extract text from each page
       for (let i = 0; i < pdf.numPages; i++) {
-        const page = await pdf.getPage(i + 1); // Pages are 1-indexed in pdfjs-dist
+        const page = await pdf.getPage(i + 1);
         const text = await page.getTextContent();
         pages.push({
           content: text.items.map((item: any) => item.str).join(" "),

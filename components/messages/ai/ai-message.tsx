@@ -34,7 +34,7 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
   };
 
   return (
-    <div className="mt-6 flex w-full flex-col items-start overflow-hidden md:flex-row">
+    <div className="mt-6 flex w-full flex-col items-start md:flex-row">
       {/* <Tooltip content={runConfig.assistant.name}>
         <div className="p-2 md:px-3 md:py-2">
           {getAssistantIcon(runConfig.assistant.key, "sm")}
@@ -46,7 +46,7 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
         direction="col"
         gap="xs"
         items="start"
-        className="w-full flex-1 overflow-hidden"
+        className="w-full flex-1"
       >
         {tools?.map((tool) => (
           <AIToolMessage tool={tool} key={tool.toolName} />
@@ -54,9 +54,18 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
         {rawAI && <ToolBadge icon={BookOpenText} text={"Answer"} />}
 
         <AISelectionProvider onSelect={handleSelection}>
-          <Mdx message={rawAI} animate={!!isLoading} messageId={id} />
+          <Mdx
+            message={rawAI ?? undefined}
+            animate={!!isLoading}
+            messageId={id}
+          />
         </AISelectionProvider>
-        {stop && <AIMessageError stopReason={stopReason} message={message} />}
+        {stop && (
+          <AIMessageError
+            stopReason={stopReason ?? undefined}
+            message={message}
+          />
+        )}
         <AIMessageActions message={message} canRegenerate={message && isLast} />
         <AIRelatedQuestions message={message} show={message && isLast} />
       </Flex>
