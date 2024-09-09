@@ -8,6 +8,7 @@ export const stopReasons = [
   "apikey",
   "recursion",
   "rateLimit",
+  "unauthorized",
   "finish",
 ] as const;
 

@@ -23,7 +23,7 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- CREATE TYPE "public"."stop_reason" AS ENUM('error', 'cancel', 'apikey', 'recursion', 'rateLimit', 'finish');
+ CREATE TYPE "public"."stop_reason" AS ENUM('error', 'cancel', 'apikey', 'recursion', 'rateLimit', 'unauthorized', 'finish');
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

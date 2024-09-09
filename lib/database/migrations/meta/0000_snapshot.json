@@ -1,5 +1,5 @@
 {
-  "id": "c173dcfe-1dfe-4bcf-b6d0-6e2a58ad69cb",
+  "id": "3ff9788a-4c4c-4a28-a5d9-ec3b3c7da333",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -446,6 +446,7 @@
         "apikey",
         "recursion",
         "rateLimit",
+        "unauthorized",
         "finish"
       ]
     },

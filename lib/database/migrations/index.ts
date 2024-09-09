@@ -3,7 +3,7 @@
 //@ts-nocheck
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
-import migration1 from "./0000_far_jack_power.sql";
+import migration1 from "./0000_tough_stingray.sql";
 import { runMigrationv1 } from "./migration_v1";
 
 export type Migration = {
