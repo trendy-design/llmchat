@@ -4,31 +4,14 @@ import {
   PreferenceProvider,
   ReactQueryProvider,
   SessionsProvider,
-} from "@/libs/context"; // Consolidated context imports
+} from "@/libs/context";
 import { AuthProvider } from "@/libs/context/auth";
-import { CSPostHogProvider } from "@/libs/posthog/provider";
 import { cn } from "@/libs/utils/clsx";
-import type { Metadata, Viewport } from "next"; // Combined type imports
+import type { Viewport } from "next";
 import { ThemeProvider } from "next-themes";
 import { interVar } from "./fonts";
 import "./globals.css";
-
-export const metadata: Metadata = {
-  title: "LLMChat - Your Ultimate AI Chat Experience",
-  description: "Chat with top LLMs in a minimal, privacy-focused UI.",
-  openGraph: {
-    title: "LLMChat - Your Ultimate AI Chat Experience",
-    siteName: "llmchat.co",
-    description: "Chat with top LLMs in a minimal, privacy-focused UI.",
-    url: "https://llmchat.co",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "LLMChat - Your Ultimate AI Chat Experience",
-    site: "llmchat.co",
-    description: "Chat with top LLMs in a minimal, privacy-focused UI.",
-  },
-};
+import "./metadata";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -52,28 +35,26 @@ export default function RootLayout({
           src="https://plausible.io/js/script.tagged-events.js"
         ></script>
       </head>
-      <CSPostHogProvider>
-        <body>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="light"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ReactQueryProvider>
-              <AuthProvider>
-                <TooltipProvider>
-                  <PreferenceProvider>
-                    <SessionsProvider>
-                      <MainLayout>{children}</MainLayout>
-                    </SessionsProvider>
-                  </PreferenceProvider>
-                </TooltipProvider>
-              </AuthProvider>
-            </ReactQueryProvider>
-          </ThemeProvider>
-        </body>
-      </CSPostHogProvider>
+      <body>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ReactQueryProvider>
+            <AuthProvider>
+              <TooltipProvider>
+                <PreferenceProvider>
+                  <SessionsProvider>
+                    <MainLayout>{children}</MainLayout>
+                  </SessionsProvider>
+                </PreferenceProvider>
+              </TooltipProvider>
+            </AuthProvider>
+          </ReactQueryProvider>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

@@ -44,22 +44,23 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
   };
 
   const handleDeleteMessage = () => {
-    removeMessageByIdMutation.mutate(
-      {
-        parentId: message.parentId,
-        messageId: message.id,
-      },
-      {
-        onSettled: () => {
-          if (currentMessageId === message.id) {
-            setCurrentMessage(undefined);
-          } else {
-            removeLastMessage();
-          }
-          refetch();
+    message.parentId &&
+      removeMessageByIdMutation.mutate(
+        {
+          parentId: message.parentId,
+          messageId: message.id,
         },
-      },
-    );
+        {
+          onSettled: () => {
+            if (currentMessageId === message.id) {
+              setCurrentMessage(undefined);
+            } else {
+              removeLastMessage();
+            }
+            refetch();
+          },
+        },
+      );
   };
 
   const handleRegenerate = (assistant: string) => {

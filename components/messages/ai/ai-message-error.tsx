@@ -1,6 +1,6 @@
 import { useAuth, useChatContext, usePreferenceContext } from "@/lib/context";
 import { useAssistantUtils, useLLMRunner } from "@/lib/hooks";
-import { TChatMessage } from "@/lib/types";
+import { TChatMessage, TProvider } from "@/lib/types";
 import { Button, Flex, Type } from "@/ui";
 import { AlertCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -41,15 +41,20 @@ export const AIMessageError: FC<TAIMessageError> = ({
 
   const assistant = message.runConfig.assistant;
 
-  const model = getModelByKey(assistant.baseModel, assistant.provider);
+  const model = getModelByKey(
+    assistant.baseModel,
+    assistant.provider as TProvider,
+  );
 
   const errorConfigs: Record<string, ErrorConfig> = {
     apikey: {
-      message: apiKeys?.[assistant?.provider]
+      message: apiKeys?.find((key) => key.provider === assistant.provider)
         ? "API Key is invalid or expired."
         : "Missing API Key",
       action: {
-        label: apiKeys?.[assistant?.provider] ? "Check API Key" : "Set API Key",
+        label: apiKeys?.find((key) => key.provider === assistant.provider)
+          ? "Check API Key"
+          : "Set API Key",
         onClick: () => push(`/settings/llms/${model?.provider}`),
       },
     },

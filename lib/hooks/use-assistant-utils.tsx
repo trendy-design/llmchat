@@ -1,7 +1,7 @@
 import { ModelIcon } from "@/components/model-icon";
 import { defaultPreferences } from "@/config";
 import { models, ollamaModelsSupportsTools } from "@/config/models";
-import { TAssistant, TModelItem, TModelKey, TProvider } from "@/lib/types";
+import { TAssistant, TModelItem, TModelKey } from "@/lib/types";
 import { useMemo } from "react";
 import { usePreferenceContext } from "../context";
 import { useAssistantsQueries } from "../services/assistants";
@@ -34,7 +34,7 @@ export const useAssistantUtils = () => {
     [ollamaModelsQuery.data?.models],
   );
 
-  const getModelByKey = (key: TModelKey, provider: TProvider) => {
+  const getModelByKey = (key: TModelKey, provider: TModelKey) => {
     return allModels.find(
       (model) => model.key === key && model.provider === provider,
     );
@@ -46,8 +46,9 @@ export const useAssistantUtils = () => {
         name: model.name,
         key: model.key,
         baseModel: model.key,
-        description: model.description,
+        description: model.description || null,
         provider: model.provider,
+        iconURL: null,
         type: "base",
         systemPrompt:
           preferences.systemPrompt || defaultPreferences.systemPrompt,

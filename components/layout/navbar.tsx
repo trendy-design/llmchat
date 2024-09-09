@@ -5,6 +5,7 @@ import { LucideIcon } from "@/lib/types/icons";
 import { BetaTag, Button, Flex, Tooltip } from "@/ui";
 import { Github, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useFeedback } from "../feedback/use-feedback";
 import { ModelIcon } from "../model-icon";
 import { ProfileDropdown } from "./profile-dropdown";
 
@@ -31,6 +32,7 @@ export const NavbarItem = ({
 export const Navbar = () => {
   const { push } = useRouter();
   const { createSession } = useSessions();
+  const { setOpen, renderModal } = useFeedback();
 
   return (
     <div className="group fixed left-0 right-0 top-0 z-10 flex w-full flex-row items-center justify-center gap-2.5 border-zinc-500/10 py-2 pl-4 pr-2 dark:border-zinc-500/5 md:border-r">
@@ -55,6 +57,15 @@ export const Navbar = () => {
       />
 
       <Flex className="flex-1" />
+      <Button
+        size="sm"
+        variant="bordered"
+        onClick={() => {
+          setOpen(true);
+        }}
+      >
+        Feedback
+      </Button>
       <Flex direction="row" items="center" gap="none">
         <NavbarItem
           tooltip="Github"
@@ -66,6 +77,7 @@ export const Navbar = () => {
         <HistorySidebar />
       </Flex>
       <ProfileDropdown />
+      {renderModal()}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { DynamicStructuredTool } from "@langchain/core/tools";
 import { ReactNode } from "react";
 import { LucideIcon } from "./icons";
 import { TModelItem } from "./models";
+import { TApiKeys, TPreferences } from "./preferences";
 
 export const toolKeys = ["calculator", "web_search"];
 
@@ -10,9 +11,9 @@ export type ToolExecutionFunction = (
 ) => DynamicStructuredTool;
 
 export type ToolExecutionContext = {
-  apiKeys: Record<string, string>;
+  apiKeys: TApiKeys[];
   updateToolExecutionState: (state: ToolExecutionState) => void;
-  preferences: Record<string, any>;
+  preferences: TPreferences;
   updatePreferences?: (preferences: Record<string, any>) => void;
   model: TModelItem;
 };
@@ -26,8 +27,8 @@ export type ToolExecutionState = {
 };
 
 export type ToolValidationContext = {
-  apiKeys: Record<string, string>;
-  preferences: Record<string, any>;
+  apiKeys: TApiKeys[];
+  preferences: TPreferences;
 };
 
 export type ToolDefinition = {

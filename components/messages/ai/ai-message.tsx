@@ -54,9 +54,18 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
         {rawAI && <ToolBadge icon={BookOpenText} text={"Answer"} />}
 
         <AISelectionProvider onSelect={handleSelection}>
-          <Mdx message={rawAI} animate={!!isLoading} messageId={id} />
+          <Mdx
+            message={rawAI ?? undefined}
+            animate={!!isLoading}
+            messageId={id}
+          />
         </AISelectionProvider>
-        {stop && <AIMessageError stopReason={stopReason} message={message} />}
+        {stop && (
+          <AIMessageError
+            stopReason={stopReason ?? undefined}
+            message={message}
+          />
+        )}
         <AIMessageActions message={message} canRegenerate={message && isLast} />
         <AIRelatedQuestions message={message} show={message && isLast} />
       </Flex>

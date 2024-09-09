@@ -50,7 +50,9 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
   const createSession = async () => {
     try {
       const data = await createNewSessionMutation.mutateAsync(undefined);
-      setActiveSessionId(data.id);
+      if (data) {
+        setActiveSessionId(data?.id);
+      }
     } catch (error) {
       console.error("Failed to create session:", error);
     }

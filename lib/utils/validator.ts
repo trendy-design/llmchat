@@ -1,16 +1,8 @@
-import { providers } from "@/config/models";
-import { models, stopReasons } from "@/lib/types";
+import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
+import { schema } from "../database/schema";
 
-export const assistantSchema = z.object({
-  name: z.string(),
-  systemPrompt: z.string(),
-  iconURL: z.string().optional(),
-  provider: z.enum(providers),
-  baseModel: z.union([z.enum(models), z.string()]),
-  key: z.string(),
-  type: z.enum(["base", "custom"]),
-});
+export const assistantSchema = createSelectSchema(schema.assistants);
 
 export const promptSchema = z.object({
   id: z.string(),
@@ -18,23 +10,9 @@ export const promptSchema = z.object({
   content: z.string(),
 });
 
-export const preferencesSchema = z.object({
-  defaultAssistant: z.string(),
-  systemPrompt: z.string(),
-  messageLimit: z.number().int(),
-  temperature: z.number(),
-  memories: z.array(z.string()),
+export const preferencesSchema = createSelectSchema(schema.preferences, {
   defaultPlugins: z.array(z.string()),
-  whisperSpeechToTextEnabled: z.boolean(),
-  dalleImageQuality: z.enum(["standard", "hd"]),
-  dalleImageSize: z.enum(["1024x1024", "1792x1024", "1024x1792"]),
-  maxTokens: z.number().int(),
-  defaultWebSearchEngine: z.enum(["google", "duckduckgo"]),
-  ollamaBaseUrl: z.string(),
-  topP: z.number(),
-  topK: z.number(),
-  googleSearchEngineId: z.string().optional(),
-  googleSearchApiKey: z.string().optional(),
+  memories: z.array(z.string()),
 });
 
 export const runConfigSchema = z.object({
@@ -46,6 +24,8 @@ export const runConfigSchema = z.object({
   assistant: assistantSchema,
 });
 
+export type RunConfigProps = z.infer<typeof runConfigSchema>;
+
 export const toolsSchema = z.array(
   z.object({
     toolName: z.string(),
@@ -56,42 +36,23 @@ export const toolsSchema = z.array(
   }),
 );
 
-export const chatMessageSchema = z.object({
-  id: z.string(),
-  image: z.string().optional(),
-  rawHuman: z.string().optional(),
-  rawAI: z.string().optional(),
-  sessionId: z.string(),
-  parentId: z.string(),
+export const chatMessageSchema = createSelectSchema(schema.chatMessages, {
   runConfig: runConfigSchema,
-  tools: toolsSchema.optional(),
-  isLoading: z.boolean().optional(),
-  stop: z.boolean().optional(),
-  stopReason: z.enum(stopReasons).optional(),
-
-  createdAt: z.string(),
+  tools: toolsSchema,
+  relatedQuestions: z.array(z.string()).nullable(),
 });
 
-export const apiKeysSchema = z.record(z.enum(providers), z.string());
-export const chatSessionSchema = z.object({
-  title: z.string().optional(),
-  id: z.string(),
-  createdAt: z.string(),
-  updatedAt: z.string().optional(),
-});
+export const apiKeysSchema = createSelectSchema(schema.apiKeys);
+
+export type ApiKeysProps = z.infer<typeof apiKeysSchema>;
+
+export const chatSessionSchema = createSelectSchema(schema.chatSessions);
 
 export const dataValidator = z.object({
   preferences: preferencesSchema.optional(),
-  apiKeys: apiKeysSchema.optional(),
+  apiKeys: z.array(apiKeysSchema).optional(),
   prompts: z.array(promptSchema).optional(),
-  chatMessages: z
-    .array(
-      z.object({
-        key: z.string().startsWith("messages-"),
-        message: z.array(chatMessageSchema),
-      }),
-    )
-    .optional(),
+  chatMessages: z.array(chatMessageSchema).optional(),
   chatSessions: z.array(chatSessionSchema).optional(),
   assistants: z.array(assistantSchema).optional(),
 });
