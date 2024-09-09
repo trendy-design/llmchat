@@ -30,7 +30,6 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
   const availableToolKeys = availableTools.map((tool) => tool.key);
 
   const [selectedPlugins, setSelectedPlugins] = useState<ToolKey[]>([]);
-
   useEffect(() => {
     setSelectedPlugins(
       preferences.defaultPlugins?.filter((p) =>
