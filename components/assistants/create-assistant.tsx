@@ -35,8 +35,9 @@ export const CreateAssistant = ({
   const { attachment, setAttachment, handleImageUpload, clearAttachment } =
     useImageAttachment();
 
-  const formik = useFormik<Omit<TAssistant, "key" | "provider">>({
+  const formik = useFormik<Omit<TAssistant, "key" | "provider" | "id">>({
     initialValues: {
+      description: assistant?.description || "",
       name: assistant?.name || "",
       systemPrompt: assistant?.systemPrompt || "",
       iconURL: assistant?.iconURL || "",
@@ -77,7 +78,7 @@ export const CreateAssistant = ({
 
   useEffect(() => {
     setAttachment({
-      base64: assistant?.iconURL,
+      base64: assistant?.iconURL ?? undefined,
     });
   }, [assistant]);
 

@@ -99,7 +99,7 @@ export const WebSearchPlugin = () => {
             <Input
               name="googleSearchEngineId"
               type="text"
-              value={preferences.googleSearchEngineId}
+              value={preferences.googleSearchEngineId ?? ""}
               autoComplete="off"
               onChange={(e) => {
                 updatePreferences({ googleSearchEngineId: e.target.value });
@@ -114,7 +114,7 @@ export const WebSearchPlugin = () => {
             />
 
             <ApiKeyInput
-              value={preferences.googleSearchApiKey}
+              value={preferences.googleSearchApiKey ?? ""}
               setValue={(value) => {
                 updatePreferences({ googleSearchApiKey: value });
               }}

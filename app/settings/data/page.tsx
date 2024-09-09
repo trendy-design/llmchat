@@ -39,7 +39,7 @@ export default function DataSettings() {
             description: "The JSON file you uploaded has been imported",
             variant: "default",
           });
-          window.location.reload();
+          // window.location.reload();
         } catch (e) {
           // Log this error
           toast({

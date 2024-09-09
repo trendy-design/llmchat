@@ -14,9 +14,11 @@ export const GeminiSettings = () => {
   const { apiKeys, updateApiKey } = usePreferenceContext();
   const { checkApiKey, isCheckingApiKey } = useLLMTest();
 
+  const geminiKey = apiKeys?.find((key) => key.provider === "gemini")?.key;
+
   useEffect(() => {
-    setKey(apiKeys.gemini || "");
-  }, [apiKeys.gemini]);
+    setKey(geminiKey || "");
+  }, [geminiKey]);
 
   return (
     <Flex direction="col" gap="sm">
@@ -28,13 +30,13 @@ export const GeminiSettings = () => {
       <ApiKeyInput
         value={key}
         setValue={setKey}
-        isDisabled={!!apiKeys.gemini}
+        isDisabled={!!geminiKey}
         placeholder="xxxxxxxxxxxxxxxxxxxxxxxx"
-        isLocked={!!apiKeys.gemini}
+        isLocked={!!geminiKey}
       />
 
       <Flex gap="sm">
-        {!apiKeys.gemini && (
+        {!geminiKey && (
           <Button
             variant="default"
             onClick={() => {
@@ -59,7 +61,7 @@ export const GeminiSettings = () => {
           </Button>
         )}
 
-        {apiKeys?.gemini && (
+        {geminiKey && (
           <Button
             variant="secondary"
             onClick={() => {

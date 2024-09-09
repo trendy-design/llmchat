@@ -30,7 +30,6 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
   const availableToolKeys = availableTools.map((tool) => tool.key);
 
   const [selectedPlugins, setSelectedPlugins] = useState<ToolKey[]>([]);
-
   useEffect(() => {
     setSelectedPlugins(
       preferences.defaultPlugins?.filter((p) =>
@@ -92,7 +91,7 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
         >
           Plugins <BetaTag />
         </Type>
-        <div className="flex flex-col p-1.5">
+        <div className="no-scrollbar flex max-h-[310px] flex-col overflow-y-auto p-1.5">
           {availableTools.map((tool) => (
             <ToolItem
               key={tool.key}

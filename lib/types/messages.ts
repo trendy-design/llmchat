@@ -1,3 +1,4 @@
+import { schema } from "../database/schema";
 import { TAssistant } from "./assistants";
 import { ToolExecutionState } from "./tools";
 
@@ -6,6 +7,7 @@ export const stopReasons = [
   "cancel",
   "apikey",
   "recursion",
+  "rateLimit",
   "finish",
 ] as const;
 
@@ -20,7 +22,14 @@ export type TLLMRunConfig = {
   assistant: TAssistant;
 };
 
-export type TChatMessage = {
+export type TChatMessage =
+  | (typeof schema.chatMessages.$inferSelect & {
+      runConfig: TLLMRunConfig;
+      tools?: ToolExecutionState[];
+    })
+  | typeof schema.chatMessages.$inferSelect;
+
+export type TLegacyChatMessage = {
   id: string;
   image?: string;
   rawHuman?: string;

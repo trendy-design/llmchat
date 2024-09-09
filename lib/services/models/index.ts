@@ -74,9 +74,9 @@ export class ModelService {
           configuration: {
             baseURL: `${window.location.origin}/api/llmchat/`,
           },
-          temperature,
+          temperature: Number(temperature),
           maxTokens,
-          topP,
+          topP: Number(topP),
           maxRetries: 2,
           ...props,
         });
@@ -85,9 +85,9 @@ export class ModelService {
           model: model.key,
           streaming: true,
           apiKey,
-          temperature,
+          temperature: Number(temperature),
           maxTokens,
-          topP,
+          topP: Number(topP),
           maxRetries: 2,
           ...props,
         });
@@ -102,9 +102,9 @@ export class ModelService {
             },
           },
           streaming: true,
-          temperature,
-          topP,
-          topK,
+          temperature: Number(temperature),
+          topP: Number(topP),
+          topK: Number(topK),
           maxRetries: 2,
           ...props,
         });
@@ -114,13 +114,13 @@ export class ModelService {
           apiKey,
           maxOutputTokens: maxTokens,
           streaming: true,
-          temperature,
+          temperature: Number(temperature),
           maxRetries: 1,
           onFailedAttempt: (error) => {
             console.error("Failed attempt", error);
           },
-          topP,
-          topK,
+          topP: Number(topP),
+          topK: Number(topK),
           ...props,
         });
       case "ollama":
@@ -128,10 +128,10 @@ export class ModelService {
           model: model.key,
           baseUrl: ollamaBaseUrl,
           numPredict: maxTokens,
-          topK,
-          topP,
+          topK: Number(topK),
+          topP: Number(topP),
           maxRetries: 2,
-          temperature,
+          temperature: Number(temperature),
           ...props,
         });
       case "groq":
@@ -141,7 +141,7 @@ export class ModelService {
           streaming: true,
           maxTokens: maxTokens,
           maxRetries: 2,
-          temperature,
+          temperature: Number(temperature),
           ...props,
         });
       default:

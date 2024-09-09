@@ -4,7 +4,7 @@ import { create } from "zustand";
 
 const initialState = {
   preferences: defaultPreferences,
-  apiKeys: {},
+  apiKeys: [],
 };
 
 export const createPreferencesStore = () =>
@@ -14,7 +14,7 @@ export const createPreferencesStore = () =>
       const existingPreferences = get().preferences;
       set({ preferences: { ...existingPreferences, ...preferences } });
     },
-    setApiKeys: (apiKeys: TApiKeys) => {
+    setApiKeys: (apiKeys: TApiKeys[]) => {
       set({ apiKeys });
     },
   }));

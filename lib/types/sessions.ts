@@ -6,11 +6,18 @@ export type TSessionsState = {
   setActiveSessionId: (id: string) => void;
 };
 
-export type TChatSession = {
+export type TLegacyChatSession = {
   title?: string;
   id: string;
   createdAt: string;
   updatedAt?: string;
+};
+
+export type TChatSession = {
+  title: string | null;
+  id: string;
+  createdAt: Date | null;
+  updatedAt: Date | null;
 };
 
 export type TSessionsProvider = {

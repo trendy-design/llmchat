@@ -21,7 +21,7 @@ const dalleFunction = (context: ToolExecutionContext) => {
         const tool = new DallEAPIWrapper({
           n: 1,
           model: "dall-e-3",
-          apiKey: apiKeys.openai,
+          apiKey: apiKeys.find((key) => key.provider === "openai")?.key,
           quality: preferences.dalleImageQuality,
           size: preferences.dalleImageSize,
         });
