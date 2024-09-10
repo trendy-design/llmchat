@@ -1,4 +1,3 @@
-import { useChatContext } from "@/lib/context";
 import { cn } from "@/lib/utils/clsx";
 import { Button, Flex, Type } from "@/ui";
 import { Dialog, DialogContent } from "@/ui/dialog";
@@ -53,8 +52,7 @@ const welcomePoints: WelcomePoint[] = [
   },
 ];
 
-export const WelcomeMessage = ({ show }: TWelcomeMessageProps) => {
-  const { store } = useChatContext();
+export const WelcomeMessage = () => {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -63,23 +61,11 @@ export const WelcomeMessage = ({ show }: TWelcomeMessageProps) => {
       if (wasShown !== "true") {
         const timer = setTimeout(() => {
           setOpen(true);
-        }, 5000);
+        }, 3000);
         return () => clearTimeout(timer);
       }
     }
   }, []);
-
-  useEffect(() => {
-    if (!open) {
-      localStorage.setItem("welcomeMessageShown", "true");
-    }
-  }, [open]);
-
-  const messages = store((state) => state.messages);
-  const currentMessage = store((state) => state.currentMessage);
-  const isFreshSession = !messages?.length && !currentMessage;
-
-  if (!show || !isFreshSession) return null;
 
   const handleClose = () => {
     setOpen(false);
@@ -87,7 +73,13 @@ export const WelcomeMessage = ({ show }: TWelcomeMessageProps) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={(open) => {
+        setOpen(open);
+        localStorage.setItem("welcomeMessageShown", "true");
+      }}
+    >
       <DialogContent
         ariaTitle="Welcome Message"
         className="max-w-80vw rounded-xl md:max-w-[660px]"

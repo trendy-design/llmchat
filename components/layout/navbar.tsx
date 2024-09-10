@@ -3,7 +3,7 @@ import { HistorySidebar } from "../history/history-side-bar";
 
 import { LucideIcon } from "@/lib/types/icons";
 import { BetaTag, Button, Flex, Tooltip } from "@/ui";
-import { Github, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFeedback } from "../feedback/use-feedback";
 import { ModelIcon } from "../model-icon";
@@ -67,13 +67,6 @@ export const Navbar = () => {
         Feedback
       </Button>
       <Flex direction="row" items="center" gap="none">
-        <NavbarItem
-          tooltip="Github"
-          icon={Github}
-          onClick={() => {
-            window.open("https://git.new/llmchat", "_blank");
-          }}
-        />
         <HistorySidebar />
       </Flex>
       <ProfileDropdown />
