@@ -7,9 +7,12 @@ import {
 } from "@/lib/hooks";
 import { slideUpVariant } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/clsx";
-import { Flex, Type } from "@/ui";
+import { Badge, Flex, Type } from "@/ui";
 import { motion } from "framer-motion";
-import { useEffect, useRef } from "react";
+import { Flame } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChangeLogs } from "../changelogs";
+import { ModelIcon } from "../model-icon";
 import { WelcomeMessage } from "../welcome-message";
 import { AudioRecorder } from "./audio-recorder";
 import { ChatActions } from "./chat-actions";
@@ -23,6 +26,7 @@ import { StopGenerationButton } from "./stop-generation-button";
 
 export const ChatInput = () => {
   const { store } = useChatContext();
+  const [openChangelog, setOpenChangelog] = useState(false);
   const { preferences } = usePreferenceContext();
   const { getAssistantByKey } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
@@ -83,41 +87,76 @@ export const ChatInput = () => {
       />
 
       <div className={chatContainer}>
-        {isFreshSession && <ChatExamples />}
-        <WelcomeMessage show={isFreshSession} />
+        <Flex
+          items="center"
+          justify="center"
+          direction="col"
+          gap="md"
+          className="mb-4"
+        >
+          {isFreshSession && (
+            <Badge
+              onClick={() => setOpenChangelog(true)}
+              className="cursor-pointer gap-1"
+              variant="tertiary"
+            >
+              <Flame size={14} /> Now supports charts!!
+            </Badge>
+          )}
+          <ChangeLogs open={openChangelog} setOpen={setOpenChangelog} />
+          {isFreshSession && (
+            <ModelIcon type="llmchatlogo" size="lg" rounded={false} />
+          )}
+          <Type size="lg" textColor="secondary">
+            How can I help you?
+          </Type>
+        </Flex>
 
         <Flex items="center" justify="center" gap="sm" className="mb-2">
           <ScrollToBottomButton />
           <StopGenerationButton />
         </Flex>
         <SelectedContext />
-        <motion.div
-          variants={slideUpVariant}
-          initial="initial"
-          animate={editor?.isEditable ? "animate" : "initial"}
-          className="flex w-full flex-shrink-0 overflow-hidden rounded-xl border border-zinc-500/20 bg-white shadow-sm dark:bg-zinc-800"
-        >
-          <ImageDropzoneRoot dropzoneProps={dropzonProps}>
-            <Flex direction="col" className="w-full">
-              <ImageAttachment
-                attachment={attachment}
-                clearAttachment={clearAttachment}
-              />
-              <Flex className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
-                <ChatEditor sendMessage={sendMessage} />
-                <AudioRecorder sendMessage={sendMessage} />
+        <Flex direction="col" className="w-full rounded-xl bg-zinc-500/10">
+          <Flex className="w-full px-3 py-2">
+            <Type size="xs" textColor="secondary">
+              LLMChat is Free to use with daily limits. Signin Required
+            </Type>
+          </Flex>
+          <motion.div
+            variants={slideUpVariant}
+            initial="initial"
+            animate={editor?.isEditable ? "animate" : "initial"}
+            className="flex w-full flex-shrink-0 overflow-hidden rounded-xl border border-zinc-500/25 bg-white shadow-sm dark:bg-zinc-700/50"
+          >
+            <ImageDropzoneRoot dropzoneProps={dropzonProps}>
+              <Flex direction="col" className="w-full">
+                <ImageAttachment
+                  attachment={attachment}
+                  clearAttachment={clearAttachment}
+                />
+                <Flex className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
+                  <ChatEditor sendMessage={sendMessage} />
+                  <AudioRecorder sendMessage={sendMessage} />
+                </Flex>
               </Flex>
-            </Flex>
-            <ChatActions
-              sendMessage={sendMessage}
-              handleImageUpload={handleImageUpload}
-            />
-          </ImageDropzoneRoot>
-        </motion.div>
-        <Type size="xxs" textColor="tertiary" className="pt-1 opacity-70">
-          LLMChat is in public beta. LLMs can make mistakes
-        </Type>
+              <ChatActions
+                sendMessage={sendMessage}
+                handleImageUpload={handleImageUpload}
+              />
+            </ImageDropzoneRoot>
+          </motion.div>
+        </Flex>
+        {isFreshSession && <ChatExamples />}
+        <WelcomeMessage show={isFreshSession} />
       </div>
+      <Type
+        size="xxs"
+        textColor="tertiary"
+        className="absolute bottom-0 z-10 py-2 opacity-70"
+      >
+        LLMChat is in public beta. LLMs can make mistakes
+      </Type>
     </div>
   );
 };

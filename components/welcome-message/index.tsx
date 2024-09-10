@@ -55,12 +55,17 @@ const welcomePoints: WelcomePoint[] = [
 
 export const WelcomeMessage = ({ show }: TWelcomeMessageProps) => {
   const { store } = useChatContext();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const wasShown = localStorage.getItem("welcomeMessageShown");
-      setOpen(wasShown !== "true");
+      if (wasShown !== "true") {
+        const timer = setTimeout(() => {
+          setOpen(true);
+        }, 5000);
+        return () => clearTimeout(timer);
+      }
     }
   }, []);
 

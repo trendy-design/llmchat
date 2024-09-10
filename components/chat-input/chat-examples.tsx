@@ -11,26 +11,22 @@ export const ChatExamples = () => {
   return (
     <Flex
       direction="col"
-      gap="sm"
+      gap="lg"
       justify="center"
-      items="start"
-      className="w-full"
+      items="center"
+      className="w-full py-3"
     >
-      <Type size="sm" textColor="tertiary">
+      <Type size="xs" textColor="tertiary">
         Try these example prompts or craft your own message
       </Type>
       <StaggerContainer>
-        <div className="grid grid-cols-1 gap-1 overflow-x-auto md:grid-cols-2">
-          {examplePrompts?.slice(0, 4)?.map((prompt, index) => (
-            <motion.div
-              key={prompt.name}
-              variants={slideUpVariant}
-              className="w-full"
-            >
+        <div className="flex flex-wrap justify-center gap-1.5 overflow-x-auto md:grid-cols-2">
+          {examplePrompts?.slice(0, 5)?.map((prompt, index) => (
+            <motion.div key={prompt.name} variants={slideUpVariant}>
               <Flex
                 key={index}
                 direction="col"
-                className="w-full cursor-pointer justify-start gap-3 rounded-lg bg-zinc-500/10 p-3 !text-sm opacity-80 hover:opacity-100"
+                className="w-full cursor-pointer justify-start gap-3 rounded-full border border-zinc-500/20 bg-zinc-500/5 px-3 py-0.5 !text-sm font-medium opacity-100 shadow-sm hover:opacity-80"
                 onClick={() => {
                   editor?.commands?.clearContent();
                   editor?.commands?.setContent(prompt.content);
@@ -43,15 +39,6 @@ export const ChatExamples = () => {
           ))}
         </div>
       </StaggerContainer>
-      <div
-        className="relative mx-1 my-3 h-2 w-full opacity-10 dark:invert"
-        style={{
-          backgroundImage: 'url("./icons/wavy.svg")',
-          backgroundRepeat: "repeat-x",
-          backgroundSize: "contain",
-          backgroundPosition: "0 0",
-        }}
-      />
     </Flex>
   );
 };

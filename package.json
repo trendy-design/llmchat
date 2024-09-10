@@ -59,6 +59,8 @@
     "drizzle-orm": "^0.33.0",
     "drizzle-zod": "^0.5.1",
     "duck-duck-scrape": "^2.2.5",
+    "embla-carousel-autoplay": "^8.2.1",
+    "embla-carousel-react": "^8.2.1",
     "formik": "^2.4.6",
     "framer-motion": "^11.1.9",
     "highlight.js": "^11.9.0",
