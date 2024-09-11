@@ -40,7 +40,7 @@ export const useLLMRunner = () => {
   const resetState = store((state) => state.resetState);
   const setAbortController = store((state) => state.setAbortController);
   const { getModelByKey } = useAssistantUtils();
-  const { preferences, apiKeys, updatePreferences } = usePreferenceContext();
+  const { preferences } = usePreferenceContext();
   const { getAvailableTools } = useTools();
   const { toast } = useToast();
 
@@ -116,7 +116,7 @@ export const useLLMRunner = () => {
     );
 
     if (
-      !apiKey &&
+      !apiKey?.key &&
       !["ollama", "llmchat"].includes(selectedModelKey?.provider)
     ) {
       updateCurrentMessage({
