@@ -15,6 +15,7 @@ import GitHubButton from "react-github-btn";
 import { ChangeLogs } from "../changelogs";
 import { ModelIcon } from "../model-icon";
 import { WelcomeMessage } from "../welcome-message";
+import { ApiKeyInfo } from "./api-key-info";
 import { AudioRecorder } from "./audio-recorder";
 import { ChatActions } from "./chat-actions";
 import { ChatEditor } from "./chat-editor";
@@ -64,9 +65,9 @@ export const ChatInput = () => {
   };
 
   const chatInputBackgroundContainer = cn(
-    "absolute bottom-0 right-0 left-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-3 pt-16 md:justify-end md:px-4",
+    "absolute bottom-0 right-0 left-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-3 pt-16  md:px-4",
     "transition-all duration-1000 ease-in-out",
-    isFreshSession && "top-0 md:justify-center",
+    isFreshSession && "top-0 justify-center  ",
   );
 
   const chatContainer = cn(
@@ -112,18 +113,16 @@ export const ChatInput = () => {
             </Type>
           </Flex>
         )}
+        {isFreshSession && <WelcomeMessage />}
 
         <Flex items="center" justify="center" gap="sm" className="mb-2">
           <ScrollToBottomButton />
           <StopGenerationButton />
         </Flex>
+
         <SelectedContext />
         <Flex direction="col" className="w-full rounded-xl bg-zinc-500/10">
-          <Flex className="w-full px-3 py-2">
-            <Type size="xs" textColor="secondary">
-              LLMChat is Free to use with daily limits. Signin Required
-            </Type>
-          </Flex>
+          <ApiKeyInfo />
           <motion.div
             variants={slideUpVariant}
             initial="initial"
@@ -148,13 +147,12 @@ export const ChatInput = () => {
             </ImageDropzoneRoot>
           </motion.div>
         </Flex>
+        {isFreshSession && <ChatExamples />}
         {!isFreshSession && (
           <Type size="xxs" textColor="tertiary" className="pb-1">
             LLMs can make mistakes
           </Type>
         )}
-        {isFreshSession && <ChatExamples />}
-        {isFreshSession && <WelcomeMessage />}
       </div>
       {isFreshSession && (
         <Type
@@ -167,7 +165,6 @@ export const ChatInput = () => {
             <GitHubButton
               href="https://github.com/trendy-design/llmchat"
               data-color-scheme="no-preference: light; light: light; dark: dark;"
-              data-show-count="true"
               aria-label="Star trendy-design/llmchat on GitHub"
             >
               Star
