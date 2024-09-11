@@ -1,4 +1,5 @@
 "use client";
+import { Spinner } from "@/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactNode, useEffect, useState } from "react";
 import { getDB } from "../database/client";
@@ -20,7 +21,15 @@ export const ReactQueryProvider = ({ children }: { children: ReactNode }) => {
     init();
   }, []);
 
-  if (!isDBReady) return null;
+  const renderLoader = () => {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        <Spinner />
+      </div>
+    );
+  };
+
+  if (!isDBReady) return renderLoader();
   return (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );

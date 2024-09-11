@@ -33,14 +33,21 @@ export const ApiKeyInfo = () => {
       <Type size="xs" textColor="secondary">
         Use your own API key or try{" "}
         <Link
-          href="https://ollama.com"
+          href={window.location.origin + "/settings/llms/ollama"}
           className="inline-block px-1 underline decoration-zinc-500/20 underline-offset-2"
         >
           Ollama
         </Link>{" "}
         for unlimited local access.
       </Type>
-      <Button variant="link" size="xs" className="text-teal-600">
+      <Button
+        variant="link"
+        size="xs"
+        className="text-teal-600"
+        onClick={() => {
+          window.location.href = window.location.origin + "/settings/llms";
+        }}
+      >
         Manage API Keys
       </Button>
     </Flex>
