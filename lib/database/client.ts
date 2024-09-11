@@ -1,18 +1,24 @@
-import { PGlite } from "@electric-sql/pglite";
+import { PGliteWorker } from "@electric-sql/pglite/worker";
 import { drizzle } from "drizzle-orm/pglite";
 import { runMigrations } from "./migrations";
 import { schema } from "./schema";
 
-let pgClient: PGlite;
+let pgClient: PGliteWorker;
 let dbInitializationPromise: Promise<ReturnType<typeof drizzle>>;
 
 export const getDB = async () => {
   if (!dbInitializationPromise) {
     console.log("initalizing db");
     dbInitializationPromise = (async () => {
-      pgClient = await PGlite.create({
-        dataDir: "idb://llmchat",
-      });
+      pgClient = new PGliteWorker(
+        new Worker(new URL("../worker/pg-lite-worker.js", import.meta.url), {
+          type: "module",
+        }),
+        {
+          dataDir: "idb://llmchat",
+          meta: {},
+        },
+      );
       await pgClient.waitReady;
       const db = drizzle(pgClient as any, { schema });
       await runMigrations(db);
@@ -22,7 +28,7 @@ export const getDB = async () => {
   return dbInitializationPromise;
 };
 
-export const getPGClient = async (): Promise<PGlite> => {
+export const getPGClient = async (): Promise<PGliteWorker> => {
   if (!pgClient) {
     await getDB();
   }

@@ -1,5 +1,3 @@
-// This file is auto-generated. Do not edit manually.
-
 //@ts-nocheck
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
@@ -40,7 +38,6 @@ export async function runMigrations(client: ReturnType<typeof drizzle>) {
           `);
 
     if (result.rows.length === 0) {
-      console.log(`Applying migration: ${migration.id}`);
       try {
         if (migration.sql) {
           // Execute the SQL directly if there's no breakpoint
@@ -62,18 +59,12 @@ export async function runMigrations(client: ReturnType<typeof drizzle>) {
           await migration.run(client);
         }
 
-        // Insert migration record only if all operations executed successfully
         await client.execute(sql`
           INSERT INTO drizzle_migrations (migration_name) VALUES (${migration.id})
         `);
-
-        console.log(`Migration applied successfully: ${migration.id}`);
       } catch (error) {
-        console.error(`Error applying migration ${migration.id}:`, error);
-        throw error; // Re-throw the error to stop the migration process
+        console.error(error);
       }
-    } else {
-      console.log(`Migration already applied: ${migration.id}`);
     }
   }
 }

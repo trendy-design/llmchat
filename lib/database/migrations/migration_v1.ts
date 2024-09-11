@@ -103,6 +103,5 @@ export const runMigrationv1 = async (db: ReturnType<typeof drizzle>) => {
     });
   } catch (error) {
     console.error("Migration v1 failed:", error);
-    throw error;
   }
 };

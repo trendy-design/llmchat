@@ -11,8 +11,8 @@
     "generate": "bunx drizzle-kit generate"
   },
   "dependencies": {
-    "@electric-sql/pglite": "^0.2.5",
-    "@electric-sql/pglite-repl": "^0.2.5",
+    "@electric-sql/pglite": "^0.2.6",
+    "@electric-sql/pglite-repl": "^0.2.6",
     "@langchain/anthropic": "^0.2.10",
     "@langchain/community": "^0.2.1",
     "@langchain/core": "^0.1.62",

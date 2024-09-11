@@ -117,12 +117,15 @@ export const useRelatedQuestions = () => {
       },
     })) as ChatOllama;
 
-    const modelWithTools = selectedModel?.withStructuredOutput(parsingSchema, {
-      name: "related_question",
-    });
+    const modelWithTools = selectedModel?.withStructuredOutput?.(
+      parsingSchema,
+      {
+        name: "related_question",
+      },
+    );
 
     try {
-      const generation = await modelWithTools.invoke(
+      const generation = await modelWithTools?.invoke(
         `${configs.relatedQuestionsUserPrompt(
           message.rawHuman,
           message.rawAI,
