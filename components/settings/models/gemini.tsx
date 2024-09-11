@@ -11,10 +11,10 @@ import ApiKeyInput from "./api-key-input";
 
 export const GeminiSettings = () => {
   const [key, setKey] = useState<string>("");
-  const { apiKeys, updateApiKey } = usePreferenceContext();
+  const { getApiKey, updateApiKey } = usePreferenceContext();
   const { checkApiKey, isCheckingApiKey } = useLLMTest();
 
-  const geminiKey = apiKeys?.find((key) => key.provider === "gemini")?.key;
+  const geminiKey = getApiKey("gemini");
 
   useEffect(() => {
     setKey(geminiKey || "");

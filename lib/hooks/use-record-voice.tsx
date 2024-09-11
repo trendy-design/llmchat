@@ -14,7 +14,7 @@ export const useRecordVoice = () => {
     null,
   );
   const { toast } = useToast();
-  const { apiKeys } = usePreferenceContext();
+  const { getApiKey } = usePreferenceContext();
   const [recording, setRecording] = useState<boolean>(false);
   const [transcribing, setIsTranscribing] = useState<boolean>(false);
   const { preferences } = usePreferenceContext();
@@ -72,7 +72,7 @@ export const useRecordVoice = () => {
   const getText = async (base64data: string): Promise<void> => {
     setIsTranscribing(true);
     try {
-      const apiKey = apiKeys.find((key) => key.provider === "openai")?.key;
+      const apiKey = getApiKey("openai");
       if (!apiKey) throw new Error("API key not found");
       const openai = new OpenAI({
         apiKey,
@@ -98,7 +98,7 @@ export const useRecordVoice = () => {
   };
 
   const startVoiceRecording = async () => {
-    const openAIAPIKeys = apiKeys.find((key) => key.provider === "openai");
+    const openAIAPIKeys = getApiKey("openai");
     if (!openAIAPIKeys) {
       toast({
         title: "API key missing",

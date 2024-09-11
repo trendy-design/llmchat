@@ -11,10 +11,10 @@ import ApiKeyInput from "./api-key-input";
 
 export const OpenAISettings = () => {
   const [key, setKey] = useState<string>("");
-  const { apiKeys, updateApiKey } = usePreferenceContext();
+  const { getApiKey, updateApiKey } = usePreferenceContext();
   const { checkApiKey, isCheckingApiKey } = useLLMTest();
 
-  const openaiKey = apiKeys?.find((key) => key.provider === "openai")?.key;
+  const openaiKey = getApiKey("openai");
 
   useEffect(() => {
     setKey(openaiKey || "");

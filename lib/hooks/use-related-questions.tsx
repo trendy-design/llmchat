@@ -18,7 +18,7 @@ const parser = StructuredOutputParser.fromZodSchema(parsingSchema);
 
 export const useRelatedQuestions = () => {
   const { getAssistantByKey } = useAssistantUtils();
-  const { preferences, apiKeys } = usePreferenceContext();
+  const { preferences, getApiKey } = usePreferenceContext();
 
   const generateRelatedQuestion = async (
     sessionId: string,
@@ -36,23 +36,18 @@ export const useRelatedQuestions = () => {
 
     const assistant = getAssistantByKey(message.runConfig.assistant.key);
 
-    if (
-      !assistant ||
-      !apiKeys.find((key) => key.provider === assistant.model.provider)
-    ) {
+    if (!assistant || !getApiKey(assistant.model.provider)) {
       return [];
     }
 
     if (assistant.model.provider === "ollama") {
       return generateRelatedQuestionForOllama(sessionId, messageId);
     }
-    const apiKey = apiKeys.find(
-      (key) => key.provider === assistant.model.provider,
-    );
+    const apiKey = getApiKey(assistant.model.provider);
     const selectedModel = await modelService.createInstance({
       model: assistant.model,
       preferences,
-      apiKey: apiKey?.key,
+      apiKey,
       provider: assistant.model.provider,
     });
 
@@ -101,10 +96,7 @@ export const useRelatedQuestions = () => {
 
     const assistant = getAssistantByKey(message.runConfig.assistant.key);
 
-    if (
-      !assistant ||
-      !apiKeys.find((key) => key.provider === assistant.model.provider)
-    ) {
+    if (!assistant || !getApiKey(assistant.model.provider)) {
       return [];
     }
 
@@ -114,13 +106,11 @@ export const useRelatedQuestions = () => {
     ) {
       return [];
     }
-    const apiKey = apiKeys.find(
-      (key) => key.provider === assistant.model.provider,
-    );
+    const apiKey = getApiKey(assistant.model.provider);
     const selectedModel = (await modelService.createInstance({
       model: assistant.model,
       preferences,
-      apiKey: apiKey?.key,
+      apiKey,
       provider: "ollama",
       props: {
         format: "json",

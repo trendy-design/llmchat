@@ -18,7 +18,7 @@ const parser = StructuredOutputParser.fromZodSchema(
 
 export const useTitleGenerator = () => {
   const { getAssistantByKey } = useAssistantUtils();
-  const { preferences, apiKeys } = usePreferenceContext();
+  const { preferences, getApiKey } = usePreferenceContext();
   const { updateSessionMutation } = useSessions();
 
   const generateTitleForSession = async (sessionId: string) => {
@@ -52,14 +52,12 @@ export const useTitleGenerator = () => {
     if (assistant.model.plugins?.length > 0) {
     }
 
-    const apiKey = apiKeys.find(
-      (key) => key.provider === assistant.model.provider,
-    );
+    const apiKey = getApiKey(assistant.model.provider);
     const selectedModel = await modelService.createInstance({
       model: assistant.model,
       preferences,
       provider: assistant.model.provider,
-      apiKey: apiKey?.key,
+      apiKey,
     });
 
     const prompt = await constructPrompt({

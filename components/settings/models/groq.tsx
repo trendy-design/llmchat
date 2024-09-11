@@ -11,10 +11,10 @@ import ApiKeyInput from "./api-key-input";
 
 export const GroqSettings = () => {
   const [key, setKey] = useState<string>("");
-  const { apiKeys, updateApiKey } = usePreferenceContext();
+  const { getApiKey, updateApiKey } = usePreferenceContext();
   const { checkApiKey, isCheckingApiKey } = useLLMTest();
 
-  const groqKey = apiKeys?.find((key) => key.provider === "groq")?.key;
+  const groqKey = getApiKey("groq");
 
   useEffect(() => {
     setKey(groqKey || "");

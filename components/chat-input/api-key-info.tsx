@@ -6,8 +6,10 @@ export const ApiKeyInfo = () => {
   const { apiKeys, preferences } = usePreferenceContext();
 
   const hasApiKeys =
-    apiKeys.filter((key) =>
-      ["openai", "anthropic", "gemini", "groq"].includes(key.provider),
+    apiKeys.filter(
+      (key) =>
+        ["openai", "anthropic", "gemini", "groq"].includes(key.provider) &&
+        key.key,
     ).length > 0;
 
   if (hasApiKeys) {

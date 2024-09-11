@@ -24,7 +24,7 @@ import { useEffect, useState } from "react";
 export default function LLMsSettings() {
   const { provider } = useParams();
   const { push } = useRouter();
-  const { apiKeys, preferences } = usePreferenceContext();
+  const { apiKeys, preferences, getApiKey } = usePreferenceContext();
   const [selectedModel, setSelectedModel] = useState<TProvider>("openai");
   const [ollamaConnected, setOllamaConnected] = useState(false);
 
@@ -55,14 +55,14 @@ export default function LLMsSettings() {
       value: "openai",
       label: "OpenAI",
       iconType: "openai",
-      connected: !!apiKeys.find((key) => key.provider === "openai"),
+      connected: !!getApiKey("openai"),
       settingsComponent: OpenAISettings,
     },
     {
       value: "anthropic",
       label: "Anthropic",
       iconType: "anthropic",
-      connected: !!apiKeys.find((key) => key.provider === "anthropic"),
+      connected: !!getApiKey("anthropic"),
 
       settingsComponent: AnthropicSettings,
     },
@@ -70,7 +70,7 @@ export default function LLMsSettings() {
       value: "gemini",
       label: "Gemini",
       iconType: "gemini",
-      connected: !!apiKeys.find((key) => key.provider === "gemini"),
+      connected: !!getApiKey("gemini"),
 
       settingsComponent: GeminiSettings,
     },
@@ -91,7 +91,7 @@ export default function LLMsSettings() {
       value: "groq",
       label: "Groq",
       iconType: "groq",
-      connected: !!apiKeys.find((key) => key.provider === "groq"),
+      connected: !!getApiKey("groq"),
       settingsComponent: GroqSettings,
     },
   ];
