@@ -16,6 +16,13 @@ export const runMigrationv1 = async (db: ReturnType<typeof drizzle>) => {
   try {
     // Chat sessions and messages
     const sessions: TChatSession[] = (await get("chat-sessions")) || [];
+
+    const sessionsTable = await db.select().from(schema.chatSessions);
+
+    if (sessionsTable?.length > 0) {
+      return;
+    }
+
     for (const session of sessions) {
       if (session?.id && session?.title) {
         await db.insert(schema.chatSessions).values({
