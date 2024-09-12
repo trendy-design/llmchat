@@ -14,7 +14,6 @@ export class PreferenceService {
   async getPreferences(): Promise<TPreferences> {
     const db = await getDB();
     const result = await db?.select().from(schema.preferences).limit(1);
-    console.log("result", result);
     return result?.[0] || defaultPreferences;
   }
 
