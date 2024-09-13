@@ -55,7 +55,7 @@ const welcomePoints: WelcomePoint[] = [
 ];
 
 export const WelcomeMessage = () => {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
