@@ -1,5 +1,6 @@
 "use client";
 import { ChatInput } from "@/components/chat-input";
+import { FullPageLoader } from "@/components/full-page-loader";
 import { ChatMessages } from "@/components/messages";
 import {
   AssistantsProvider,
@@ -8,22 +9,13 @@ import {
   PromptsProvider,
   useSessions,
 } from "@/lib/context";
-import { Spinner } from "@/ui";
 
 const ChatSessionPage = () => {
   const { isAllSessionLoading, activeSessionId } = useSessions();
 
-  const renderLoader = () => {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center">
-        <Spinner />
-      </div>
-    );
-  };
-
   const isLoading = isAllSessionLoading || !activeSessionId;
 
-  if (isLoading) return renderLoader();
+  if (isLoading) return <FullPageLoader />;
 
   return (
     <ChatProvider sessionId={activeSessionId}>
