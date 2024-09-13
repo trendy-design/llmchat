@@ -1,7 +1,7 @@
-import { constants } from "@/config";
 import { useAuth } from "@/lib/context";
 import { LucideIcon } from "@/lib/types/icons";
 import { cn } from "@/lib/utils/clsx";
+
 import {
   Button,
   DropdownMenu,
@@ -13,7 +13,7 @@ import {
   Tooltip,
   Type,
 } from "@/ui";
-import Avatar from "boring-avatars";
+import Avvvatars from "avvvatars-react";
 import {
   Bolt,
   CircleHelp,
@@ -83,11 +83,10 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
                 className,
               )}
             >
-              <Avatar
-                name={user?.email || "LLMChat"}
-                variant="marble"
+              <Avvvatars
+                value={user?.email || "LLMChat"}
+                style={user?.email ? "character" : "shape"}
                 size={24}
-                colors={constants.avatarColors}
               />
             </div>
           </DropdownMenuTrigger>
@@ -100,13 +99,11 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
         >
           {user ? (
             <Flex className="items-center p-2" gap="md">
-              <Avatar
-                name={user?.email || "LLMChat"}
-                variant="beam"
+              <Avvvatars
+                value={user?.email || "LLMChat"}
+                style={user?.email ? "character" : "shape"}
                 size={24}
-                colors={["#4A2BE2", "#D5EC77", "#3EE2DE", "#AF71FF", "#F882B3"]}
               />
-
               <Type size="sm" weight="medium" className="line-clamp-1">
                 {user?.email}
               </Type>

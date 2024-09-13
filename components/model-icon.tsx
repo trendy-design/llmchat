@@ -1,6 +1,5 @@
-import { constants } from "@/config";
 import { cn } from "@/lib/utils/clsx";
-import Avatar from "boring-avatars";
+import Avvvatars from "avvvatars-react";
 import Image from "next/image";
 export type ModelIconType =
   | "gpt3"
@@ -70,24 +69,11 @@ export const ModelIcon = ({
 
   if (type === "assistant") {
     return (
-      <div
-        className={cn(
-          "relative overflow-hidden rounded-md",
-          size === "xs" && "h-5 w-5",
-          size === "sm" && "h-6 w-6",
-          size === "md" && "h-8 w-8",
-          size === "lg" && "h-10 w-10",
-          rounded && "rounded-full",
-        )}
-      >
-        <Avatar
-          name={name || "assistant"}
-          variant="marble"
-          square
-          size={40}
-          colors={constants.avatarColors}
-        />
-      </div>
+      <Avvvatars
+        value={name || "assistant"}
+        style={name ? "character" : "shape"}
+        size={size === "xs" ? 20 : size === "sm" ? 24 : size === "md" ? 32 : 40}
+      />
     );
   }
 

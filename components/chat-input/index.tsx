@@ -24,7 +24,6 @@ import { ImageAttachment } from "./image-attachment";
 import { ImageDropzoneRoot } from "./image-dropzone-root";
 import { ScrollToBottomButton } from "./scroll-to-bottom-button";
 import { SelectedContext } from "./selected-context";
-import { StopGenerationButton } from "./stop-generation-button";
 
 export const ChatInput = () => {
   const { store } = useChatContext();
@@ -65,7 +64,7 @@ export const ChatInput = () => {
   };
 
   const chatInputBackgroundContainer = cn(
-    "absolute bottom-0 right-0 left-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-3 pt-16  md:px-4",
+    "absolute bottom-0 right-0 left-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-3  md:px-4",
     "transition-all duration-1000 ease-in-out",
     isFreshSession && "top-0 justify-center  ",
   );
@@ -117,7 +116,6 @@ export const ChatInput = () => {
 
         <Flex items="center" justify="center" gap="sm" className="mb-2">
           <ScrollToBottomButton />
-          <StopGenerationButton />
         </Flex>
 
         <SelectedContext />

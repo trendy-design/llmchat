@@ -8,8 +8,8 @@ import {
 import { useAssistantUtils } from "@/lib/hooks";
 import { TAssistant } from "@/lib/types";
 import { cn } from "@/lib/utils/clsx";
-import { Button, Flex } from "@/ui";
-import { ArrowUp, Book, ChevronDown } from "lucide-react";
+import { Button, Flex, Tooltip } from "@/ui";
+import { ArrowUp, Book, ChevronDown, CircleStop } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PluginSelect } from "../plugin-select";
 import { ImageUpload } from "./image-upload";
@@ -33,6 +33,8 @@ export const ChatActions = ({
     TAssistant["key"]
   >(preferences.defaultAssistant);
   const { models, getAssistantByKey, getAssistantIcon } = useAssistantUtils();
+  const stopGeneration = store((state) => state.stopGeneration);
+  const currentMessage = store((state) => state.currentMessage);
 
   useEffect(() => {
     const assistantProps = getAssistantByKey(preferences.defaultAssistant);
@@ -81,27 +83,33 @@ export const ChatActions = ({
       </Flex>
 
       <Flex gap="xs" items="center">
-        <Button
-          variant="ghost"
-          onClick={() => {
-            openPrompts();
-          }}
-          size="sm"
-        >
-          <Book size={16} strokeWidth="2" />
-          <span className="hidden md:flex">Prompts</span>
-        </Button>
-        <Button
-          size="iconSm"
-          variant={hasTextInput ? "default" : "secondary"}
-          disabled={!hasTextInput || isGenerating}
-          className={sendButtonClasses}
-          onClick={() => {
-            editor?.getText() && sendMessage(editor?.getText());
-          }}
-        >
-          <ArrowUp size={16} strokeWidth="2" />
-        </Button>
+        <Tooltip content="Prompts">
+          <Button
+            size="iconSm"
+            variant="ghost"
+            onClick={() => {
+              openPrompts();
+            }}
+          >
+            <Book size={16} strokeWidth="2" />
+          </Button>
+        </Tooltip>
+        {isGenerating ? (
+          <Button size="sm" variant="secondary" onClick={stopGeneration}>
+            <CircleStop size={16} strokeWidth={2} /> Stop
+          </Button>
+        ) : (
+          <Button
+            size="sm"
+            variant={hasTextInput ? "default" : "secondary"}
+            disabled={!hasTextInput || isGenerating}
+            onClick={() => {
+              editor?.getText() && sendMessage(editor?.getText());
+            }}
+          >
+            <ArrowUp size={16} strokeWidth="2" /> Send
+          </Button>
+        )}
       </Flex>
     </Flex>
   );
