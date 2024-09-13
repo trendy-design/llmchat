@@ -1,4 +1,5 @@
 "use client";
+import { FullPageLoader } from "@/components/full-page-loader";
 import { useChatSessionQueries } from "@/lib/services/sessions/queries";
 import { createSessionsStore } from "@/lib/store/sessions/store";
 import {
@@ -70,7 +71,7 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
   };
 
   if (!activeSessionId || sessions?.length === 0) {
-    return null;
+    return <FullPageLoader />;
   }
 
   return (
