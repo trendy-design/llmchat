@@ -71,7 +71,7 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
   };
 
   if (!activeSessionId || sessions?.length === 0) {
-    return <FullPageLoader />;
+    return <FullPageLoader label="Initializing chat" />;
   }
 
   return (

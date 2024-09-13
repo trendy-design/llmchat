@@ -40,7 +40,7 @@ export const ChatProvider: FC<TChatProvider> = ({ children, sessionId }) => {
   }, [messages?.data]);
 
   if (currentSession?.isLoading) {
-    return <FullPageLoader />;
+    return <FullPageLoader label="Initializing chat" />;
   }
 
   return (

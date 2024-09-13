@@ -50,7 +50,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
     apikey: {
       message: getApiKey(assistant.provider)
         ? "API Key is invalid or expired."
-        : "Missing API Key",
+        : "API Key required",
       action: {
         label: getApiKey(assistant.provider) ? "Check API Key" : "Set API Key",
         onClick: () => push(`/settings/llms/${model?.provider}`),
@@ -100,13 +100,15 @@ export const AIMessageError: FC<TAIMessageError> = ({
     >
       <Flex items="start" gap="sm">
         <AlertCircle size={16} strokeWidth={2} className="mt-0 md:mt-0.5" />
-        <Type textColor="secondary">{errorMessage}</Type>
+        <Type textColor="secondary" size="sm">
+          {errorMessage}
+        </Type>
       </Flex>
 
       {action && (
         <Button
           variant="secondary"
-          size="sm"
+          size="xs"
           onClick={action.onClick}
           rounded="full"
         >

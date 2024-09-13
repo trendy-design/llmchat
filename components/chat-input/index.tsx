@@ -149,8 +149,8 @@ export const ChatInput = () => {
         </Flex>
         {isFreshSession && <ChatExamples />}
         {!isFreshSession && (
-          <Type size="xxs" textColor="tertiary" className="pb-1">
-            LLMs can make mistakes
+          <Type size="xxs" textColor="tertiary">
+            LLMChat is in public beta. LLMs can make mistakes
           </Type>
         )}
       </div>

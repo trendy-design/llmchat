@@ -15,7 +15,7 @@ const ChatSessionPage = () => {
 
   const isLoading = isAllSessionLoading || !activeSessionId;
 
-  if (isLoading) return <FullPageLoader />;
+  if (isLoading) return <FullPageLoader label="Initializing chat" />;
 
   return (
     <ChatProvider sessionId={activeSessionId}>
