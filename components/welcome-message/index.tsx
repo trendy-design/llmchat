@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils/clsx";
 import { Button, Flex, Type } from "@/ui";
 import { Dialog, DialogContent } from "@/ui/dialog";
@@ -53,7 +55,7 @@ const welcomePoints: WelcomePoint[] = [
 ];
 
 export const WelcomeMessage = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(true);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -61,7 +63,7 @@ export const WelcomeMessage = () => {
       if (wasShown !== "true") {
         const timer = setTimeout(() => {
           setOpen(true);
-        }, 3000);
+        }, 100);
         return () => clearTimeout(timer);
       }
     }
@@ -152,7 +154,7 @@ export const WelcomeMessage = () => {
                     window.open("https://github.com/your-repo-url", "_blank")
                   }
                 >
-                  <Github size={16} /> Star us on GitHub
+                  <Github size={16} /> Star on GitHub
                 </Button>
               </Flex>
             </Flex>

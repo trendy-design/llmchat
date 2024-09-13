@@ -1,5 +1,6 @@
 import { MainLayout } from "@/components/layout/main-layout";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { WelcomeMessage } from "@/components/welcome-message";
 import {
   PreferenceProvider,
   ReactQueryProvider,
@@ -42,17 +43,18 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <ReactQueryProvider>
-            <AuthProvider>
-              <TooltipProvider>
+          <TooltipProvider>
+            <ReactQueryProvider>
+              <AuthProvider>
                 <PreferenceProvider>
                   <SessionsProvider>
                     <MainLayout>{children}</MainLayout>
                   </SessionsProvider>
                 </PreferenceProvider>
-              </TooltipProvider>
-            </AuthProvider>
-          </ReactQueryProvider>
+              </AuthProvider>
+            </ReactQueryProvider>
+            <WelcomeMessage />
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>

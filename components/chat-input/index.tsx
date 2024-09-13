@@ -14,7 +14,6 @@ import { useEffect, useRef, useState } from "react";
 import GitHubButton from "react-github-btn";
 import { ChangeLogs } from "../changelogs";
 import { ModelIcon } from "../model-icon";
-import { WelcomeMessage } from "../welcome-message";
 import { ApiKeyInfo } from "./api-key-info";
 import { AudioRecorder } from "./audio-recorder";
 import { ChatActions } from "./chat-actions";
@@ -112,7 +111,6 @@ export const ChatInput = () => {
             </Type>
           </Flex>
         )}
-        {isFreshSession && <WelcomeMessage />}
 
         <Flex items="center" justify="center" gap="sm" className="mb-2">
           <ScrollToBottomButton />

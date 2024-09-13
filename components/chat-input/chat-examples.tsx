@@ -21,7 +21,7 @@ export const ChatExamples = () => {
       </Type>
       <StaggerContainer>
         <div className="flex flex-wrap justify-center gap-1.5 overflow-x-auto md:grid-cols-2">
-          {examplePrompts?.slice(0, 5)?.map((prompt, index) => (
+          {examplePrompts?.slice(0, 3)?.map((prompt, index) => (
             <motion.div key={prompt.name} variants={slideUpVariant}>
               <Flex
                 key={index}
