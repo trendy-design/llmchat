@@ -117,13 +117,16 @@ export const ChatInput = () => {
         </Flex>
 
         <SelectedContext />
-        <Flex direction="col" className="w-full rounded-xl bg-zinc-500/10">
+        <Flex
+          direction="col"
+          className="w-full rounded-xl bg-zinc-50/95 backdrop-blur-sm dark:bg-zinc-700/95"
+        >
           <ApiKeyInfo />
           <motion.div
             variants={slideUpVariant}
             initial="initial"
             animate={editor?.isEditable ? "animate" : "initial"}
-            className="flex w-full flex-shrink-0 overflow-hidden rounded-xl border border-zinc-500/25 bg-white shadow-sm dark:bg-zinc-700/50"
+            className="flex w-full flex-shrink-0 overflow-hidden rounded-xl border border-zinc-500/25 bg-white shadow-sm dark:bg-zinc-800"
           >
             <ImageDropzoneRoot dropzoneProps={dropzonProps}>
               <Flex direction="col" className="w-full">

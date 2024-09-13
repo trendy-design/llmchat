@@ -29,12 +29,15 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
 
   return (
     <div className="relative w-full">
-      <Flex className="w-full items-center" gap="lg">
-        <Avvvatars
-          value={user?.email || "LLMChat"}
-          style={user?.email ? "character" : "shape"}
-          size={24}
-        />
+      <Flex className="w-full items-start" gap="lg">
+        <Flex className="mt-1">
+          <Avvvatars
+            displayValue={user?.email?.charAt(0) || "A"}
+            value={user?.email || "LLMChat"}
+            style={user?.email ? "character" : "shape"}
+            size={24}
+          />
+        </Flex>
         <Flex direction="col" className="flex-1">
           <Type
             size="base"

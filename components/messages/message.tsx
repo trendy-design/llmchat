@@ -28,10 +28,14 @@ const CustomTrigger = forwardRef<
     <AccordionTrigger
       {...props}
       ref={ref}
-      className="group flex w-full items-end justify-between"
+      className="group flex w-full items-start justify-between"
     >
       <Flex className="w-full flex-1 items-start">{children}</Flex>
-      <Flex className="h-6 w-10 shrink-0 px-2" items="center" justify="center">
+      <Flex
+        className="mt-1 h-6 w-10 shrink-0 px-2"
+        items="center"
+        justify="center"
+      >
         <ChevronsUpDown
           size={20}
           strokeWidth={1.5}
