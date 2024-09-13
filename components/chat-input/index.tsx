@@ -11,7 +11,6 @@ import { Badge, Flex, Type } from "@/ui";
 import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import GitHubButton from "react-github-btn";
 import { ChangeLogs } from "../changelogs";
 import { ModelIcon } from "../model-icon";
 import { ApiKeyInfo } from "./api-key-info";
@@ -19,6 +18,7 @@ import { AudioRecorder } from "./audio-recorder";
 import { ChatActions } from "./chat-actions";
 import { ChatEditor } from "./chat-editor";
 import { ChatExamples } from "./chat-examples";
+import { ChatFooter } from "./chat-footer";
 import { ImageAttachment } from "./image-attachment";
 import { ImageDropzoneRoot } from "./image-dropzone-root";
 import { ScrollToBottomButton } from "./scroll-to-bottom-button";
@@ -150,25 +150,7 @@ export const ChatInput = () => {
           </Type>
         )}
       </div>
-      {isFreshSession && (
-        <Type
-          size="xxs"
-          textColor="tertiary"
-          className="absolute bottom-0 z-10 py-2"
-        >
-          LLMChat is open source{" "}
-          <span className="inline-block px-1">
-            <GitHubButton
-              href="https://github.com/trendy-design/llmchat"
-              data-color-scheme="no-preference: light; light: light; dark: dark;"
-              aria-label="Star trendy-design/llmchat on GitHub"
-            >
-              Star
-            </GitHubButton>{" "}
-          </span>
-          and data is stored locally.
-        </Type>
-      )}
+      {isFreshSession && <ChatFooter />}
     </div>
   );
 };
