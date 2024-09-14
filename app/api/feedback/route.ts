@@ -1,3 +1,4 @@
+import { supabase } from "@/libs/utils/supabase";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(req: NextRequest, resp: NextResponse) {
@@ -10,6 +11,6 @@ export async function POST(req: NextRequest, resp: NextResponse) {
     });
   }
 
-  // await supabase.from("feedbacks").insert({ feedback, feedbackType, email });
+  await supabase.from("feedbacks").insert({ feedback, feedbackType, email });
   return NextResponse.json({ success: true });
 }
