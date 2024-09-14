@@ -1,12 +1,12 @@
 import { useAssistantUtils } from "@/hooks";
-import { usePreferenceContext } from "@/libs/context";
+import { useAuth, usePreferenceContext } from "@/libs/context";
 import { Button, Flex, Type } from "@/ui";
 import Link from "next/link";
 
 export const ApiKeyInfo = () => {
   const { apiKeys, preferences } = usePreferenceContext();
   const { getAssistantByKey } = useAssistantUtils();
-
+  const { open: openSignIn } = useAuth();
   const assistant = getAssistantByKey(preferences.defaultAssistant);
 
   const hasApiKeys =
@@ -16,21 +16,17 @@ export const ApiKeyInfo = () => {
 
   if (preferences.defaultAssistant === "llmchat") {
     return (
-      <Flex className="w-full py-1 pl-3 pr-1" justify="between" items="center">
+      <Flex className="w-full py-2 pl-3 pr-1" justify="between" items="center">
         <Type size="xs" textColor="secondary">
-          LLMChat: Free with limits in public beta. Add API keys for unlimited
-          use.
+          LLMChat is free to use with daily limits.{" "}
+          <span
+            className="inline-block cursor-pointer px-1 underline decoration-zinc-500/20 underline-offset-2"
+            onClick={openSignIn}
+          >
+            Sign in
+          </span>{" "}
+          required.
         </Type>
-        <Button
-          variant="link"
-          size="xs"
-          className="text-teal-600"
-          onClick={() => {
-            window.location.href = window.location.origin + "/settings/llms/";
-          }}
-        >
-          Add API Keys
-        </Button>
       </Flex>
     );
   }

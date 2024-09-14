@@ -11,11 +11,9 @@ import {
 } from "@/lib/context";
 
 const ChatSessionPage = () => {
-  const { isAllSessionLoading, activeSessionId } = useSessions();
+  const { activeSessionId } = useSessions();
 
-  const isLoading = isAllSessionLoading || !activeSessionId;
-
-  if (isLoading) return <FullPageLoader label="Initializing chat" />;
+  if (!activeSessionId) return <FullPageLoader label="Initializing chat" />;
 
   return (
     <ChatProvider sessionId={activeSessionId}>
@@ -24,7 +22,6 @@ const ChatSessionPage = () => {
           <PromptsProvider>
             <div className="relative flex h-[100%] w-full flex-row overflow-hidden">
               <ChatMessages />
-
               <ChatInput />
             </div>
           </PromptsProvider>
