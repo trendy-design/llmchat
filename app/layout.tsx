@@ -7,13 +7,13 @@ import {
   SessionsProvider,
 } from "@/libs/context";
 import { AuthProvider } from "@/libs/context/auth";
+import { RootProvider } from "@/libs/context/root";
 import { cn } from "@/libs/utils/clsx";
 import type { Viewport } from "next";
+import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { interVar } from "./fonts";
 import "./globals.css";
-
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "LLMChat - Your Ultimate AI Chat Experience",
@@ -76,7 +76,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn(interVar.variable, "antialiased", "light")}>
+    <html
+      lang="en"
+      className={cn(interVar.variable, "antialiased", "light")}
+      suppressHydrationWarning
+    >
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
         <script
@@ -86,25 +90,27 @@ export default function RootLayout({
         ></script>
       </head>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TooltipProvider>
-            <ReactQueryProvider>
-              <AuthProvider>
-                <PreferenceProvider>
-                  <SessionsProvider>
-                    <MainLayout>{children}</MainLayout>
-                  </SessionsProvider>
-                </PreferenceProvider>
-              </AuthProvider>
-            </ReactQueryProvider>
-            <WelcomeMessage />
-          </TooltipProvider>
-        </ThemeProvider>
+        <RootProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <TooltipProvider>
+              <ReactQueryProvider>
+                <AuthProvider>
+                  <PreferenceProvider>
+                    <SessionsProvider>
+                      <MainLayout>{children}</MainLayout>
+                    </SessionsProvider>
+                  </PreferenceProvider>
+                </AuthProvider>
+              </ReactQueryProvider>
+              <WelcomeMessage />
+            </TooltipProvider>
+          </ThemeProvider>
+        </RootProvider>
       </body>
     </html>
   );

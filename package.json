@@ -13,6 +13,7 @@
   "dependencies": {
     "@electric-sql/pglite": "^0.2.6",
     "@electric-sql/pglite-repl": "^0.2.6",
+    "@hotjar/browser": "^1.0.9",
     "@langchain/anthropic": "^0.2.10",
     "@langchain/community": "^0.2.1",
     "@langchain/core": "^0.1.62",

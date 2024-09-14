@@ -100,7 +100,7 @@ export const ChatInput = () => {
               className="cursor-pointer gap-1"
               variant="tertiary"
             >
-              <Flame size={14} /> Now supports charts!!
+              <Flame size={14} /> What&apos;s new
             </Badge>
 
             <ChangeLogs open={openChangelog} setOpen={setOpenChangelog} />
