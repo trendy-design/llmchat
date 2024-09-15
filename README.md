@@ -26,6 +26,7 @@
 
 - 🌍 **Next.js**
 - 🔤 **TypeScript**
+- 🗂️ **Pglite**
 - 🧩 **LangChain**
 - 📦 **Zustand**
 - 🔄 **React Query**
