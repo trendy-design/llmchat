@@ -3,6 +3,7 @@ import { useRootContext } from "@/libs/context/root";
 import { cn } from "@/libs/utils/clsx";
 import { Flex } from "@/ui";
 import { usePathname } from "next/navigation";
+import { ApiKeyModal } from "../api-key-modal";
 import { CommandSearch } from "../command-search";
 import { HistorySidebar } from "../history/history-side-bar";
 import { Toaster } from "../ui/toaster";
@@ -37,6 +38,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
             {children}
           </div>
         </div>
+        <ApiKeyModal />
         <CommandSearch />
       </Flex>
       <Toaster />

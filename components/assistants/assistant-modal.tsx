@@ -22,7 +22,6 @@ import { Dialog, DialogContent, DialogOverlay, DialogPortal } from "@/ui";
 import { CommandGroup } from "cmdk";
 import { ChevronDown } from "lucide-react";
 import { FC, useEffect, useRef, useState } from "react";
-import { AssistantHeader } from "./assistant-header";
 import { AssistantItem } from "./assistant-item";
 
 export type TAssitantModal = {
@@ -95,16 +94,23 @@ export const AssistantModal: FC<TAssitantModal> = ({
 
   const renderEmptyState = () => {
     return (
-      <Flex direction="col" items="center" justify="center" className="w-full">
+      <Flex
+        direction="col"
+        items="center"
+        justify="center"
+        className="w-full px-4"
+        gap="md"
+      >
         <Type size="sm" textColor="tertiary">
           No assistants found.
         </Type>
         <Button
           size="sm"
+          className="w-full"
           variant="outlined"
           onClick={() => setOpenCreateAssistant(true)}
         >
-          Create New
+          Create Custom Assistant
         </Button>
       </Flex>
     );
@@ -129,15 +135,13 @@ export const AssistantModal: FC<TAssitantModal> = ({
           align="start"
         >
           <Command className="relative h-full overflow-hidden rounded-xl dark:bg-zinc-700">
-            <div className="h-12 w-full border-b border-zinc-500/20 px-2">
+            <div className="h-11 w-full border-b border-zinc-500/20 px-2">
               <CommandInput
                 placeholder="Search assistants..."
-                className="h-12"
+                className="h-11"
                 ref={searchRef}
               />
             </div>
-
-            <CommandEmpty>{renderEmptyState()}</CommandEmpty>
 
             <Flex className="px-3 py-2" gap="xs">
               <Button
@@ -156,14 +160,22 @@ export const AssistantModal: FC<TAssitantModal> = ({
               </Button>
             </Flex>
 
+            <CommandEmpty>{renderEmptyState()}</CommandEmpty>
+
             <CommandList className="h-full !max-h-[50vh] overflow-y-auto pb-2">
               {activeTab === "assistants" && (
                 <CommandGroup className="w-full px-2.5">
                   {!!customAssistants?.length && (
-                    <AssistantHeader
-                      openCreateAssistant={openCreateAssistant}
-                      setOpenCreateAssistant={setOpenCreateAssistant}
-                    />
+                    <Flex direction="col" className="w-full p-2">
+                      <Button
+                        size="sm"
+                        className="w-full"
+                        variant="outlined"
+                        onClick={() => setOpenCreateAssistant(true)}
+                      >
+                        Create Custom Assistant
+                      </Button>
+                    </Flex>
                   )}
                   <Flex direction="col" className="w-full">
                     {renderAssistants(customAssistants)}

@@ -103,7 +103,7 @@ export const HistoryItem = ({
       {isEditing ? (
         <Input
           variant="ghost"
-          className="h-6 text-sm"
+          className="h-6 pl-0 text-sm"
           ref={historyInputRef}
           value={title || "Untitled"}
           onChange={handleInputChange}
@@ -144,7 +144,7 @@ export const HistoryItem = ({
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="z-[1000]" side="bottom">
-                <p className="pb-2 text-sm font-medium md:text-base">
+                <p className="pb-2 text-sm font-medium">
                   Are you sure you want to delete this session?
                 </p>
                 <div className="flex flex-row gap-1">
@@ -156,7 +156,7 @@ export const HistoryItem = ({
                     Delete
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     onClick={(e) => {
                       setOpenDeleteConfirm(false);

@@ -37,7 +37,7 @@ export const PromptLibrary = ({
 }: TPromptLibrary) => {
   return (
     <Command>
-      <CommandInput placeholder="Search Prompts" />
+      <CommandInput placeholder="Search Prompts" className="h-12" />
       <CommandSeparator />
       <div className="relative flex h-full w-full flex-col">
         <CommandEmpty className="flex w-full flex-col items-center justify-center gap-2 p-4 text-sm text-zinc-500">

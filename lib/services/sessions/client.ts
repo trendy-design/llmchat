@@ -2,7 +2,7 @@ import { TChatMessage, TChatSession } from "@/lib/types";
 import { generateShortUUID, sortSessions } from "@/lib/utils/utils";
 import { getDB } from "@/libs/database/client";
 import { schema } from "@/libs/database/schema";
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import moment from "moment";
 
 export class SessionsService {
@@ -102,8 +102,10 @@ export class SessionsService {
 export class MessagesService {
   async getAllMessages() {
     const db = await getDB();
-
-    return await db?.select().from(schema.chatMessages);
+    return await db
+      ?.select()
+      .from(schema.chatMessages)
+      .orderBy(asc(schema.chatMessages.createdAt));
   }
 
   async addAllMessages(messages: TChatMessage[]) {
@@ -119,7 +121,8 @@ export class MessagesService {
       (await db
         ?.select()
         .from(schema.chatMessages)
-        .where(eq(schema.chatMessages.parentId, parentId))) || []
+        .where(eq(schema.chatMessages.parentId, parentId))
+        .orderBy(asc(schema.chatMessages.createdAt))) || []
     );
   }
 

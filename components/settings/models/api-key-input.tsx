@@ -20,13 +20,20 @@ const ApiKeyInput: FC<TApiKeyInput> = ({
 }) => {
   const [showKey, setShowKey] = useState<boolean>(false);
 
+  const displayValue = value
+    ? showKey
+      ? value
+      : `${"*".repeat(value.length)}`
+    : "";
+
   return (
     <div className="relative flex w-full flex-row items-center gap-2">
       <Input
         placeholder={placeholder}
-        value={value}
+        value={displayValue}
         disabled={isDisabled}
-        type={showKey ? "text" : "password"}
+        type="text"
+        autoFocus={true}
         autoComplete="off"
         className="w-full pr-16"
         onChange={(e) => {

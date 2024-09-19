@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ChangeLogs } from "../changelogs";
+import { ApiKeyInfo } from "./api-key-info";
 import { ChatActions } from "./chat-actions";
 import { ChatEditor } from "./chat-editor";
 import { ChatExamples } from "./chat-examples";
@@ -69,7 +70,7 @@ export const ChatInput = () => {
   );
 
   const chatContainer = cn(
-    "flex flex-col items-center w-full gap-1 md:w-[640px] lg:w-[700px] z-10",
+    "flex flex-col items-center flex-1 w-full gap-1 md:w-[640px] lg:w-[700px] z-10",
   );
 
   return (
@@ -97,7 +98,7 @@ export const ChatInput = () => {
               justify="center"
               direction="col"
               gap="md"
-              className="mb-2"
+              className="mb-2 flex-1"
             >
               <Badge
                 onClick={() => setOpenChangelog(true)}
@@ -113,16 +114,16 @@ export const ChatInput = () => {
               <Type size="lg" textColor="secondary">
                 How can I help you?
               </Type>
+              <ApiKeyInfo />
             </Flex>
           )}
+          {isFreshSession && <ChatExamples />}
 
           <Flex items="center" justify="center" gap="sm" className="mb-2">
             <ScrollToBottomButton />
           </Flex>
 
           <SelectedContext />
-
-          {/* <ApiKeyInfo /> */}
 
           <Flex
             direction="col"
@@ -151,9 +152,8 @@ export const ChatInput = () => {
               </ImageDropzoneRoot>
             </motion.div>
           </Flex>
-          {isFreshSession && <ChatExamples />}
+          {<ChatFooter />}
         </div>
-        {isFreshSession && <ChatFooter />}
       </div>
     </>
   );

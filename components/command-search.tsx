@@ -1,7 +1,6 @@
 "use client";
 import { useRootContext } from "@/libs/context/root";
 import {
-  Button,
   CommandDialog,
   CommandEmpty,
   CommandGroup,
@@ -9,9 +8,8 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-  useToast,
 } from "@/ui";
-import { Moon, Plus, Sun, Trash } from "lucide-react";
+import { Moon, Plus, Sun } from "lucide-react";
 import moment from "moment";
 import { useTheme } from "next-themes";
 import { useEffect } from "react";
@@ -23,7 +21,6 @@ export const CommandSearch = () => {
   const { isCommandSearchOpen, setIsCommandSearchOpen } = useRootContext();
   const { sessions, createSession, refetchSessions, setActiveSessionId } =
     useSessions();
-  const { toast } = useToast();
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
@@ -60,37 +57,6 @@ export const CommandSearch = () => {
       action: () => {
         setTheme(theme === "light" ? "dark" : "light");
         onClose();
-      },
-    },
-    {
-      name: "Delete current session",
-      icon: Trash,
-      action: () => {
-        onClose();
-        toast({
-          title: "Delete Session?",
-          description: "This action cannot be undone.",
-          variant: "destructive",
-          action: (
-            <Button
-              size="sm"
-              variant="default"
-              onClick={() => {
-                // currentSession?.id &&
-                //   removeSessionMutation.mutate(currentSession?.id, {
-                //     onSuccess() {
-                //       createSession({
-                //         redirect: true,
-                //       });
-                //       dismiss();
-                //     },
-                //   });
-              }}
-            >
-              Delete
-            </Button>
-          ),
-        });
       },
     },
   ];

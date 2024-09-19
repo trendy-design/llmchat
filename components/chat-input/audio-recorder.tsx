@@ -4,13 +4,15 @@ import { formatTickerTime } from "@/lib/utils/utils";
 import {
   AudioVisualizer,
   Button,
+  Dialog,
+  DialogContent,
   Flex,
   LinearSpinner,
   Tooltip,
   Type,
 } from "@/ui";
 import { Check, Circle, X } from "lucide-react";
-import { FC, useEffect } from "react";
+import { FC, useEffect, useState } from "react";
 
 export type TAudioRecorder = {
   sendMessage: (message: string) => void;
@@ -31,6 +33,12 @@ export const AudioRecorder: FC<TAudioRecorder> = ({ sendMessage }) => {
     cancelRecording,
     startVoiceRecording,
   } = useRecordVoice();
+
+  const [portalElement, setPortalElement] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    setPortalElement(document.body);
+  }, []);
 
   useEffect(() => {
     if (text && session) {
@@ -71,70 +79,67 @@ export const AudioRecorder: FC<TAudioRecorder> = ({ sendMessage }) => {
           <LinearSpinner /> <Type textColor="secondary">Transcribing ...</Type>
         </Flex>
       )}
-      {recording && (
-        <Flex
-          className="fixed bottom-0 left-0 right-0 top-0 z-50 bg-white/90 backdrop-blur-sm dark:bg-zinc-800/90"
-          direction="col"
-          items="center"
-          justify="center"
-        >
-          <Flex
-            items="center"
-            direction="col"
-            gap="sm"
-            justify="between"
-            className="h-screen"
-          >
-            <Flex direction="row" gap="sm" items="center" className="p-6">
-              <Flex
-                gap="xs"
-                items="center"
-                className="rounded-full bg-zinc-100 px-4 py-2 dark:bg-zinc-700"
-              >
-                <Type size="base" weight="medium" className="flex-shrink-0">
-                  {formatTickerTime(elapsedTime)}
-                </Type>
-                <Type
-                  textColor="tertiary"
-                  size="base"
-                  weight="medium"
-                  className="flex-shrink-0"
+
+      <Dialog
+        open={recording}
+        onOpenChange={() => {
+          cancelRecording();
+        }}
+      >
+        <DialogContent ariaTitle="Record Voice" className="!max-w-[400px]">
+          <Flex direction="col" items="center" justify="center">
+            <Flex items="center" direction="col" gap="sm" justify="between">
+              <Flex direction="row" gap="sm" items="center" className="p-6">
+                <Flex
+                  gap="xs"
+                  items="center"
+                  className="rounded-full bg-zinc-100 px-4 py-2 dark:bg-zinc-700"
                 >
-                  / 1:00
-                </Type>
+                  <Type size="base" weight="medium" className="flex-shrink-0">
+                    {formatTickerTime(elapsedTime)}
+                  </Type>
+                  <Type
+                    textColor="tertiary"
+                    size="base"
+                    weight="medium"
+                    className="flex-shrink-0"
+                  >
+                    / 1:00
+                  </Type>
+                </Flex>
+              </Flex>
+
+              <AudioVisualizer stream={stream} />
+
+              <Flex gap="sm" className="w-full p-6" justify="center">
+                <Button
+                  variant="secondary"
+                  rounded="full"
+                  size="lg"
+                  onClick={() => {
+                    cancelRecording();
+                  }}
+                  className="group"
+                >
+                  <X size={16} strokeWidth="2" />
+                  Cancel
+                </Button>
+                <Button
+                  rounded="full"
+                  size="lg"
+                  onClick={() => {
+                    stopRecording();
+                  }}
+                  className="group"
+                >
+                  <Check size={16} strokeWidth="2" />
+                  Done
+                </Button>
               </Flex>
             </Flex>
-
-            <AudioVisualizer stream={stream} />
-
-            <Flex gap="sm" className="w-full p-6" justify="center">
-              <Button
-                variant="secondary"
-                rounded="full"
-                size="lg"
-                onClick={() => {
-                  cancelRecording();
-                }}
-                className="group"
-              >
-                <X size={16} strokeWidth="2" />
-                Cancel
-              </Button>
-              <Button
-                rounded="full"
-                size="lg"
-                onClick={() => {
-                  stopRecording();
-                }}
-                className="group"
-              >
-                <Check size={16} strokeWidth="2" />
-                Done
-              </Button>
-            </Flex>
           </Flex>
-        </Flex>
-      )}
+        </DialogContent>
+      </Dialog>
     </Flex>
   );
 };
