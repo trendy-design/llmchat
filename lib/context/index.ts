@@ -1,5 +1,3 @@
-export * from "../../components/command-search";
-export * from "./assistant";
 export * from "./auth";
 export * from "./chat";
 export * from "./preferences";
