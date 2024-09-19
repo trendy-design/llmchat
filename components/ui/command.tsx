@@ -15,7 +15,7 @@ const Command = React.forwardRef<
   <CommandPrimitive
     ref={ref}
     className={cn(
-      "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground dark:bg-zinc-800",
+      "flex h-full w-full flex-col overflow-hidden rounded-md bg-popover text-popover-foreground dark:bg-zinc-700",
       className,
     )}
     {...props}
@@ -33,7 +33,7 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
         className="overflow-hidden border border-transparent p-0 dark:border-white/10"
         ariaTitle="Command Search"
       >
-        <Command className="bg-white pb-2 dark:!bg-zinc-800 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
+        <Command className="bg-white pb-2 dark:!bg-zinc-700 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
           {children}
         </Command>
       </DialogContent>
@@ -128,7 +128,7 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex min-h-11 cursor-pointer items-center gap-2 rounded-lg !px-3 !py-2 text-xs font-medium text-zinc-800 outline-none aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-selected:bg-zinc-500/10 aria-selected:text-zinc-800 dark:text-zinc-100 dark:aria-selected:text-white md:text-sm",
+      "relative flex min-h-11 cursor-pointer items-center gap-2 rounded-lg !px-3 !py-2 text-xs font-medium text-zinc-800 outline-none aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-selected:bg-zinc-500/10 aria-selected:text-zinc-800 dark:text-zinc-100 dark:aria-selected:bg-zinc-900/50 dark:aria-selected:text-white md:text-sm",
       className,
     )}
     {...props}

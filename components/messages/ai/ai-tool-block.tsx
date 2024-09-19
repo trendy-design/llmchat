@@ -15,7 +15,7 @@ export const AiToolBlock = ({ tool, definition }: AiToolBlockProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   return (
     <Flex
-      className="w-full rounded-lg bg-zinc-500/10 p-3 pr-3"
+      className="w-full rounded-lg bg-zinc-500/10 p-2 pr-2"
       direction="col"
       gap="sm"
     >
@@ -24,9 +24,9 @@ export const AiToolBlock = ({ tool, definition }: AiToolBlockProps) => {
           <Flex
             items="center"
             justify="center"
-            className="h-8 w-8 rounded-lg border border-zinc-500/10 bg-white dark:bg-zinc-700"
+            className="h-6 w-6 rounded-lg border border-zinc-500/10 bg-white dark:bg-zinc-700"
           >
-            <Icon size={16} strokeWidth={2} className="mt-0.5 flex-shrink-0" />
+            <Icon size={14} strokeWidth={2} className="mt-0.5 flex-shrink-0" />
           </Flex>
           <Flex direction="col" gap="xs" className="w-full flex-1">
             <Type size="sm" weight="medium">

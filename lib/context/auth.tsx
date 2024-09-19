@@ -70,14 +70,14 @@ export const AuthProvider = ({ children }: TAuthProvider) => {
         onOpenChange={setOpenSignIn}
       >
         <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 z-[400] bg-zinc-500/70 backdrop-blur-sm dark:bg-zinc-900/70" />
+          <Drawer.Overlay className="fixed inset-0 z-[400] bg-zinc-500/50 dark:bg-zinc-900/50" />
           <Drawer.Content
             className={cn(
               "fixed bottom-0 left-0 right-0 z-[500] mx-auto mt-24 flex max-h-[530px] flex-col items-center outline-none md:bottom-8 md:left-[50%]",
               `w-full md:ml-[-190px] md:w-[380px]`,
             )}
           >
-            <div className="relative w-full space-y-4 rounded-lg bg-white dark:border dark:border-white/10 dark:bg-zinc-800">
+            <div className="relative w-full space-y-4 rounded-2xl bg-white dark:border dark:border-white/10 dark:bg-zinc-800">
               <Flex
                 className="w-full p-6"
                 items="center"
@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }: TAuthProvider) => {
                     className="plausible-event-name=Signup w-full"
                     rounded="full"
                     variant="secondary"
-                    size="lg"
+                    size="md"
                     onClick={signInWithGoogle}
                   >
                     Sign In with Google
@@ -106,7 +106,7 @@ export const AuthProvider = ({ children }: TAuthProvider) => {
                   <Button
                     className="plausible-event-name=Signup w-full"
                     rounded="full"
-                    size="lg"
+                    size="md"
                     onClick={signInWithGithub}
                   >
                     Sign In with Github

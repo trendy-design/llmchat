@@ -77,7 +77,7 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
                 Share your feedback
               </Type>
             </Flex>
-            <Flex gap="sm" direction="col" className="w-full px-3 pb-3">
+            <Flex gap="sm" direction="col" className="w-full px-6 pb-6">
               <Type size="sm" textColor="secondary">
                 We&apos;re always looking for ways to improve our product.
                 Please let us know what you think.

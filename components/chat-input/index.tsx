@@ -12,13 +12,11 @@ import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ChangeLogs } from "../changelogs";
-import { ModelIcon } from "../model-icon";
-import { ApiKeyInfo } from "./api-key-info";
-import { AudioRecorder } from "./audio-recorder";
 import { ChatActions } from "./chat-actions";
 import { ChatEditor } from "./chat-editor";
 import { ChatExamples } from "./chat-examples";
 import { ChatFooter } from "./chat-footer";
+import { ChatTopActions } from "./chat-top-actions";
 import { ImageAttachment } from "./image-attachment";
 import { ImageDropzoneRoot } from "./image-dropzone-root";
 import { ScrollToBottomButton } from "./scroll-to-bottom-button";
@@ -28,17 +26,19 @@ export const ChatInput = () => {
   const { store } = useChatContext();
   const [openChangelog, setOpenChangelog] = useState(false);
   const { preferences } = usePreferenceContext();
-  const { getAssistantByKey } = useAssistantUtils();
+  const { getAssistantByKey, getAssistantIcon } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
   const { editor } = useChatEditor();
   const session = store((state) => state.session);
   const messages = store((state) => state.messages);
   const currentMessage = store((state) => state.currentMessage);
+  const isGenerating = store((state) => state.isGenerating);
   const context = store((state) => state.context);
   const { attachment, clearAttachment, handleImageUpload, dropzonProps } =
     useImageAttachment();
 
-  const isFreshSession = messages.length === 0 && !currentMessage?.id;
+  const isFreshSession =
+    messages.length === 0 && !currentMessage?.id && !isGenerating;
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -73,87 +73,88 @@ export const ChatInput = () => {
   );
 
   return (
-    <div className={chatInputBackgroundContainer}>
-      <div
-        className={cn(
-          "absolute bottom-0 left-0 right-0 h-[180px] bg-gradient-to-t from-white from-60% to-transparent backdrop-blur-sm dark:bg-zinc-800/50 dark:from-zinc-800",
-          isFreshSession &&
-            "top-0 flex h-full flex-col items-center justify-center",
-        )}
-        style={{
-          maskImage: "linear-gradient(to top, black 60%, transparent)",
-          WebkitMaskImage: "linear-gradient(to top, black 60%, transparent)",
-        }}
-      />
+    <>
+      <Flex
+        direction="row"
+        className="absolute top-0 z-20 w-full rounded-t-md border-b border-zinc-500/10 bg-white dark:bg-zinc-800"
+      >
+        <ChatTopActions />
+      </Flex>
 
-      <div className={chatContainer}>
-        {isFreshSession && (
-          <Flex
-            items="center"
-            justify="center"
-            direction="col"
-            gap="md"
-            className="mb-2"
-          >
-            <Badge
-              onClick={() => setOpenChangelog(true)}
-              className="cursor-pointer gap-1"
-              variant="tertiary"
+      <div className={chatInputBackgroundContainer}>
+        <div
+          className={cn(
+            "absolute bottom-0 left-0 right-0 h-[120px] bg-gradient-to-t from-white from-40% to-transparent dark:bg-zinc-800/50 dark:from-zinc-800",
+            isFreshSession &&
+              "top-0 flex h-full flex-col items-center justify-center",
+          )}
+        />
+
+        <div className={chatContainer}>
+          {isFreshSession && (
+            <Flex
+              items="center"
+              justify="center"
+              direction="col"
+              gap="md"
+              className="mb-2"
             >
-              <Flame size={14} /> What&apos;s new
-            </Badge>
+              <Badge
+                onClick={() => setOpenChangelog(true)}
+                className="cursor-pointer gap-1"
+                variant="tertiary"
+              >
+                <Flame size={14} /> What&apos;s new
+              </Badge>
 
-            <ChangeLogs open={openChangelog} setOpen={setOpenChangelog} />
+              <ChangeLogs open={openChangelog} setOpen={setOpenChangelog} />
 
-            <ModelIcon type="llmchatlogo" size="lg" rounded={false} />
-            <Type size="lg" textColor="secondary">
-              How can I help you?
-            </Type>
+              {getAssistantIcon(preferences.defaultAssistant, "lg", true)}
+              <Type size="lg" textColor="secondary">
+                How can I help you?
+              </Type>
+            </Flex>
+          )}
+
+          <Flex items="center" justify="center" gap="sm" className="mb-2">
+            <ScrollToBottomButton />
           </Flex>
-        )}
 
-        <Flex items="center" justify="center" gap="sm" className="mb-2">
-          <ScrollToBottomButton />
-        </Flex>
+          <SelectedContext />
 
-        <SelectedContext />
-        <Flex
-          direction="col"
-          className="w-full rounded-xl bg-zinc-50/95 backdrop-blur-sm dark:bg-zinc-700/95"
-        >
-          <ApiKeyInfo />
-          <motion.div
-            variants={slideUpVariant}
-            initial="initial"
-            animate={editor?.isEditable ? "animate" : "initial"}
-            className="flex w-full flex-shrink-0 overflow-hidden rounded-xl border border-zinc-500/25 bg-white shadow-sm dark:bg-zinc-800"
+          {/* <ApiKeyInfo /> */}
+
+          <Flex
+            direction="col"
+            className="w-full rounded-xl bg-zinc-50/95 backdrop-blur-sm dark:bg-zinc-700/95"
           >
-            <ImageDropzoneRoot dropzoneProps={dropzonProps}>
-              <Flex direction="col" className="w-full">
-                <ImageAttachment
-                  attachment={attachment}
-                  clearAttachment={clearAttachment}
-                />
-                <Flex className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
-                  <ChatEditor sendMessage={sendMessage} />
-                  <AudioRecorder sendMessage={sendMessage} />
+            <motion.div
+              variants={slideUpVariant}
+              initial="initial"
+              animate={editor?.isEditable ? "animate" : "initial"}
+              className="flex w-full flex-shrink-0 overflow-hidden rounded-xl"
+            >
+              <ImageDropzoneRoot dropzoneProps={dropzonProps}>
+                <Flex direction="col" className="w-full">
+                  <ImageAttachment
+                    attachment={attachment}
+                    clearAttachment={clearAttachment}
+                  />
+                  <Flex className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
+                    <ChatEditor sendMessage={sendMessage} />
+                  </Flex>
+                  <ChatActions
+                    sendMessage={sendMessage}
+                    handleImageUpload={handleImageUpload}
+                  />
                 </Flex>
-              </Flex>
-              <ChatActions
-                sendMessage={sendMessage}
-                handleImageUpload={handleImageUpload}
-              />
-            </ImageDropzoneRoot>
-          </motion.div>
-        </Flex>
-        {isFreshSession && <ChatExamples />}
-        {!isFreshSession && (
-          <Type size="xxs" textColor="tertiary">
-            LLMChat is in public beta. LLMs can make mistakes
-          </Type>
-        )}
+              </ImageDropzoneRoot>
+            </motion.div>
+          </Flex>
+          {isFreshSession && <ChatExamples />}
+        </div>
+        {isFreshSession && <ChatFooter />}
       </div>
-      {isFreshSession && <ChatFooter />}
-    </div>
+    </>
   );
 };

@@ -34,8 +34,7 @@ export const RegenerateWithModelSelect = ({
             {
               <Button variant="secondary" size="sm" rounded="lg">
                 <RefreshCcw size={14} strokeWidth="2" />
-
-                {messageAssistantProps?.model?.name}
+                Regenerate
                 <ChevronDown size={14} strokeWidth="2" />
               </Button>
             }

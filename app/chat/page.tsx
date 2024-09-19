@@ -5,28 +5,28 @@ import { ChatMessages } from "@/components/messages";
 import {
   AssistantsProvider,
   ChatProvider,
-  CommandsProvider,
   PromptsProvider,
   useSessions,
 } from "@/lib/context";
+import { Flex } from "@/ui";
 
 const ChatSessionPage = () => {
   const { activeSessionId } = useSessions();
 
-  if (!activeSessionId) return <FullPageLoader label="Initializing chat" />;
-
   return (
     <ChatProvider sessionId={activeSessionId}>
-      <CommandsProvider>
-        <AssistantsProvider>
-          <PromptsProvider>
-            <div className="relative flex h-[100%] w-full flex-row overflow-hidden">
+      <AssistantsProvider>
+        <PromptsProvider>
+          {activeSessionId ? (
+            <Flex className="w-full" direction="col">
               <ChatMessages />
               <ChatInput />
-            </div>
-          </PromptsProvider>
-        </AssistantsProvider>
-      </CommandsProvider>
+            </Flex>
+          ) : (
+            <FullPageLoader label="Initializing chat" />
+          )}
+        </PromptsProvider>
+      </AssistantsProvider>
     </ChatProvider>
   );
 };

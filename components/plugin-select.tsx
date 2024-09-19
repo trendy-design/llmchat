@@ -74,7 +74,7 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <Tooltip content="Plugins">
         <PopoverTrigger asChild>
-          <Button variant="ghost" size="sm">
+          <Button variant="bordered" size="sm">
             <ToyBrick size={18} strokeWidth="2" />
             <Badge>{selectedPlugins.length}</Badge>
           </Button>
@@ -82,7 +82,8 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
       </Tooltip>
       <PopoverContent
         className="mr-8 w-[380px] rounded-xl p-0 dark:bg-zinc-700"
-        side="top"
+        side="bottom"
+        align="start"
       >
         <Type
           size="sm"

@@ -11,6 +11,8 @@ let dbInitializationPromise: Promise<ReturnType<typeof drizzle>>;
 export const getDB = async () => {
   if (!dbInitializationPromise) {
     const startTime = performance.now();
+    console.log(`✅ db initialization started`);
+
     dbInitializationPromise = (async () => {
       pgClient = new PGliteWorker(
         new Worker(new URL("../worker/pg-lite-worker.js", import.meta.url), {
@@ -22,6 +24,12 @@ export const getDB = async () => {
         },
       );
       await pgClient.waitReady;
+
+      console.log(
+        `✅ pg client ready`,
+        (performance.now() - startTime).toFixed(2),
+      );
+
       const db = drizzle(pgClient as any, { schema });
       await runMigrations(db);
       const endTime = performance.now();

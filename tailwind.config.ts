@@ -74,7 +74,7 @@ const config = {
       },
       fontSize: {
         xs: "0.75rem",
-        sm: "0.875rem",
+        sm: "0.850rem",
         base: "1rem",
         lg: "1.115rem",
         xl: "1.25rem",

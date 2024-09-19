@@ -12,7 +12,6 @@ import {
   Type,
 } from "@/ui";
 import { Pencil, Trash } from "lucide-react";
-import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -72,7 +71,7 @@ export const HistoryItem = ({
   };
 
   const containerClasses = cn(
-    "gap-2 w-full group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-lg hover:bg-zinc-500/10",
+    "gap-2 w-full group w-full cursor-pointer flex flex-row items-center h-10 py-1 pl-2.5 pr-1.5 rounded-lg hover:bg-zinc-500/10",
     activeSessionId === session.id || isEditing ? "bg-zinc-500/10" : "",
   );
 
@@ -114,17 +113,12 @@ export const HistoryItem = ({
       ) : (
         <>
           <Flex direction="col" items="start" className="w-full" gap="none">
-            <Type
-              className="line-clamp-1"
-              size="sm"
-              textColor="primary"
-              weight="medium"
-            >
+            <Type className="line-clamp-1" size="sm" textColor="primary">
               {session.title}
             </Type>
-            <Type className="line-clamp-1" size="xs" textColor="tertiary">
+            {/* <Type className="line-clamp-1" size="xs" textColor="tertiary">
               {moment(session.updatedAt).fromNow()}
-            </Type>
+            </Type> */}
           </Flex>
         </>
       )}

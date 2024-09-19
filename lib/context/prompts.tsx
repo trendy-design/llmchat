@@ -89,7 +89,7 @@ export const PromptsProvider = ({ children }: TPromptsProvider) => {
 
       <Dialog open={isPromptOpen} onOpenChange={setIsPromptOpen}>
         <DialogContent
-          className="flex max-h-[80dvh] w-[96dvw] flex-col gap-0 overflow-hidden rounded-lg border border-white/5 p-0 md:max-h-[600px] md:w-[600px]"
+          className="flex max-h-[80dvh] w-[96dvw] flex-col gap-0 overflow-hidden rounded-2xl border border-white/5 p-0 md:max-h-[600px] md:w-[600px]"
           ariaTitle="Prompt Library"
         >
           {showCreatePrompt ? (
