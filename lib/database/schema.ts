@@ -39,6 +39,7 @@ export const prompts = pgTable("prompts", {
 export const chatSessions = pgTable("chat_sessions", {
   id: text("id").primaryKey(),
   title: text("title"),
+  isExample: boolean("is_example").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

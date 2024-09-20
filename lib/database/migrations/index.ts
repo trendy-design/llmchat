@@ -2,7 +2,9 @@
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
 import migration1 from "./0000_tough_stingray.sql";
+import migration2 from "./0001_great_marrow.sql";
 import { runMigrationv1 } from "./migration_v1";
+import { runMigrationv2 } from "./migration_v2";
 
 export type Migration = {
   id: string;
@@ -18,6 +20,14 @@ export const migrations: Migration[] = [
   {
     id: "runMigrationv1",
     run: runMigrationv1,
+  },
+  {
+    id: "migration2",
+    sql: migration2,
+  },
+  {
+    id: "runMigrationv2",
+    run: runMigrationv2,
   },
 ];
 

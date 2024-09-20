@@ -49,7 +49,10 @@ export class ExportService {
         preferences: { ...defaultPreferences, ...preferences },
         apiKeys,
         chatMessages: messages,
-        chatSessions,
+        chatSessions: chatSessions.map((session) => ({
+          ...session,
+          isExample: session.isExample ?? false,
+        })),
         assistants,
       };
     } catch (error) {

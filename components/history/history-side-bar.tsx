@@ -3,7 +3,7 @@ import { sortSessions } from "@/lib/utils/utils";
 import { useRootContext } from "@/libs/context/root";
 import { TChatSession } from "@/types";
 import { Button, Flex, Type } from "@/ui";
-import { Command, History, Plus, Search } from "lucide-react";
+import { Command, Plus, Search } from "lucide-react";
 import moment from "moment";
 import { FullPageLoader } from "../full-page-loader";
 import { HistoryItem } from "./history-item";
@@ -13,6 +13,7 @@ export const HistorySidebar = () => {
   const { setIsCommandSearchOpen } = useRootContext();
 
   const groupedSessions: Record<string, TChatSession[]> = {
+    examples: [],
     today: [],
     tomorrow: [],
     last7Days: [],
@@ -23,8 +24,9 @@ export const HistorySidebar = () => {
   sortSessions(sessions, "createdAt")?.forEach((session) => {
     const createdAt = moment(session.createdAt);
     const now = moment();
-
-    if (createdAt.isSame(now, "day")) {
+    if (session.isExample) {
+      groupedSessions.examples.push(session);
+    } else if (createdAt.isSame(now, "day")) {
       groupedSessions.today.push(session);
     } else if (createdAt.isSame(now.clone().add(1, "day"), "day")) {
       groupedSessions.tomorrow.push(session);
@@ -41,9 +43,13 @@ export const HistorySidebar = () => {
     if (sessions.length === 0) return null;
     return (
       <>
-        <Flex items="center" gap="xs" className="px-5 py-3">
-          <History size={14} strokeWidth={3} className="text-zinc-500" />
-          <Type size="xs" weight="medium" textColor="tertiary">
+        <Flex items="center" gap="xs" className="px-5 py-2">
+          <Type
+            size="xs"
+            weight="medium"
+            textColor="tertiary"
+            className="opacity-70"
+          >
             {title}
           </Type>
         </Flex>
@@ -90,6 +96,7 @@ export const HistorySidebar = () => {
           <FullPageLoader />
         ) : (
           <Flex direction="col" className="no-scrollbar w-full overflow-y-auto">
+            {renderGroup("Examples", groupedSessions.examples)}
             {renderGroup("Today", groupedSessions.today)}
             {renderGroup("Tomorrow", groupedSessions.tomorrow)}
             {renderGroup("Last 7 Days", groupedSessions.last7Days)}

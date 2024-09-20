@@ -14,13 +14,12 @@ import { z } from "zod";
 import { ErrorBoundary } from "./error-boundary";
 
 export const colors = [
-  "hsl(var(--color-red-700-value))",
-  "hsl(var(--color-green-700-value))",
-  "hsl(var(--color-blue-700-value))",
-  "hsl(var(--color-amber-700-value))",
-  "hsl(var(--color-purple-700-value))",
-  "hsl(var(--color-pink-700-value))",
-  "hsl(var(--color-teal-700-value))",
+  "hsl(var(--color-red-600-value))",
+  "hsl(var(--color-blue-600-value))",
+  "hsl(var(--color-amber-600-value))",
+  "hsl(var(--color-purple-600-value))",
+  "hsl(var(--color-pink-600-value))",
+  "hsl(var(--color-teal-600-value))",
 ];
 
 export type ChartComponentProps = z.infer<typeof barChartSchema>;
