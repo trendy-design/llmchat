@@ -92,7 +92,7 @@ export const AIMessageActions: FC<TAIMessageActions> = ({
       className="w-full opacity-100 transition-opacity"
     >
       {isGenerating && (
-        <Flex gap="sm" items="center" className="py-1">
+        <Flex gap="sm" items="center">
           <Spinner />
           <Type size="sm" textColor="tertiary">
             {!!rawAI?.length ? "Typing ..." : "Thinking ..."}

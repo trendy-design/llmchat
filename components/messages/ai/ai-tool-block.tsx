@@ -14,11 +14,7 @@ export const AiToolBlock = ({ tool, definition }: AiToolBlockProps) => {
   const Icon = definition.compactIcon;
   const [isExpanded, setIsExpanded] = useState(false);
   return (
-    <Flex
-      className="w-full rounded-lg bg-zinc-500/10 p-2 pr-2"
-      direction="col"
-      gap="sm"
-    >
+    <Flex className="w-full pr-2" direction="col" gap="sm">
       <Flex gap="sm" className="w-full" items="center">
         <Flex gap="sm" items="center" className="w-full">
           <Flex
