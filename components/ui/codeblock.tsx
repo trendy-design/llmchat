@@ -32,7 +32,7 @@ export const CodeBlock = ({
   return (
     <div
       className={cn(
-        "not-prose w-full flex-shrink-0 overflow-hidden rounded-lg border border-zinc-500/15 bg-zinc-25/20 text-zinc-800 dark:border-white/5 dark:bg-black/20 dark:text-white",
+        "not-prose w-full flex-shrink-0 overflow-hidden rounded-lg border border-zinc-500/15 bg-white text-zinc-800 dark:border-white/5 dark:bg-black/20 dark:text-white",
       )}
     >
       {showHeader && (
@@ -59,7 +59,7 @@ export const CodeBlock = ({
       )}
       <pre className="w-full px-6 py-2">
         <code
-          className={`hljs language-${language} inline-block w-full overflow-x-auto whitespace-pre-wrap break-words pr-[100%] text-[0.85rem] tracking-wide`}
+          className={`hljs mono language-${language} inline-block w-full overflow-x-auto whitespace-pre-wrap break-words pr-[100%] text-sm`}
           ref={ref}
         ></code>
       </pre>

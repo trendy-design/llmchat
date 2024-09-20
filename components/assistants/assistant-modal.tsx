@@ -20,7 +20,7 @@ import { useAuth } from "@/lib/context";
 import { TAssistant } from "@/lib/types";
 import { Dialog, DialogContent, DialogOverlay, DialogPortal } from "@/ui";
 import { CommandGroup } from "cmdk";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Plus } from "lucide-react";
 import { FC, useEffect, useRef, useState } from "react";
 import { AssistantItem } from "./assistant-item";
 
@@ -134,7 +134,7 @@ export const AssistantModal: FC<TAssitantModal> = ({
           side="bottom"
           align="start"
         >
-          <Command className="relative h-full overflow-hidden rounded-xl dark:bg-zinc-700">
+          <Command className="relative h-full max-h-[450px] overflow-hidden rounded-xl dark:bg-zinc-700">
             <div className="h-11 w-full border-b border-zinc-500/20 px-2">
               <CommandInput
                 placeholder="Search assistants..."
@@ -173,7 +173,8 @@ export const AssistantModal: FC<TAssitantModal> = ({
                         variant="outlined"
                         onClick={() => setOpenCreateAssistant(true)}
                       >
-                        Create Custom Assistant
+                        <Plus size={14} strokeWidth="2" /> Create Custom
+                        Assistant
                       </Button>
                     </Flex>
                   )}

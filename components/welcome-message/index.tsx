@@ -59,7 +59,7 @@ export const WelcomeMessage = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const wasShown = localStorage.getItem("welcomeMessageShown");
+      const wasShown = localStorage?.getItem("welcomeMessageShown");
       if (wasShown !== "true") {
         const timer = setTimeout(() => {
           setOpen(true);
@@ -71,7 +71,9 @@ export const WelcomeMessage = () => {
 
   const handleClose = () => {
     setOpen(false);
-    localStorage.setItem("welcomeMessageShown", "true");
+    if (typeof window !== "undefined") {
+      localStorage?.setItem("welcomeMessageShown", "true");
+    }
   };
 
   return (
