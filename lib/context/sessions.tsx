@@ -1,5 +1,4 @@
 "use client";
-import { FullPageLoader } from "@/components/full-page-loader";
 import { useChatSessionQueries } from "@/lib/services/sessions/queries";
 import { createSessionsStore } from "@/lib/store/sessions/store";
 import { TChatMessage, TSessionsContext, TSessionsProvider } from "@/lib/types";
@@ -47,10 +46,6 @@ export const SessionsProvider: FC<TSessionsProvider> = ({ children }) => {
       console.error("Failed to add message:", error);
     }
   };
-
-  if (!activeSessionId) {
-    return <FullPageLoader label="Initializing chat" />;
-  }
 
   return (
     <SessionContext.Provider

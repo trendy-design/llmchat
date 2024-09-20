@@ -61,7 +61,7 @@ export const HistorySidebar = () => {
 
   return (
     <div className="relative flex h-[100dvh] w-[260px] flex-shrink-0 flex-row border-l border-zinc-500/10">
-      <Flex direction="col" className="no-scrollbar w-full overflow-y-auto">
+      <Flex direction="col" className="no-scrollbar w-full">
         <Flex
           justify="between"
           items="center"
@@ -85,15 +85,14 @@ export const HistorySidebar = () => {
             </Flex>
           </Button>
         </Flex>
-        {renderGroup("Today", groupedSessions.today)}
-        {renderGroup("Tomorrow", groupedSessions.tomorrow)}
-        {renderGroup("Last 7 Days", groupedSessions.last7Days)}
-        {renderGroup("Last 30 Days", groupedSessions.last30Days)}
-        {renderGroup("Previous Months", groupedSessions.previousMonths)}
+        <Flex direction="col" className="no-scrollbar w-full overflow-y-auto">
+          {renderGroup("Today", groupedSessions.today)}
+          {renderGroup("Tomorrow", groupedSessions.tomorrow)}
+          {renderGroup("Last 7 Days", groupedSessions.last7Days)}
+          {renderGroup("Last 30 Days", groupedSessions.last30Days)}
+          {renderGroup("Previous Months", groupedSessions.previousMonths)}
+        </Flex>
       </Flex>
-      <div className="absolute right-[-20px] flex h-full w-4 flex-col items-center justify-center">
-        <div className="mb-4 h-4 w-1 flex-shrink-0 rounded-full bg-white/50" />
-      </div>
     </div>
   );
 };
