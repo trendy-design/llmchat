@@ -38,7 +38,7 @@ export const ChatTopActions = () => {
     >
       <Flex gap="xs" items="center">
         <Button
-          variant="bordered"
+          variant="ghost"
           size="iconSm"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         >

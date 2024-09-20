@@ -21,7 +21,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
   const isChatPage = pathname.startsWith("/chat");
   const isSettingsPage = pathname.startsWith("/settings");
   const mainContainerClass =
-    "relative flex flex-1 flex-col h-[99dvh] w-full overflow-hidden rounded-t-lg bg-white shadow-sm dark:border dark:border-white/5 dark:bg-zinc-800";
+    "relative flex flex-1 flex-col h-[99dvh] w-full overflow-hidden rounded-t-lg bg-zinc-25 shadow-sm dark:border dark:border-white/5 dark:bg-zinc-800";
   const settingsContainerClass =
     "overflow-hidden h-[98dvh] rounded-t-md bg-white shadow-sm dark:border dark:border-white/5 dark:bg-zinc-800";
 
