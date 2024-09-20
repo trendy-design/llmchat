@@ -13,7 +13,6 @@ import Markdown from "marked-react";
 import Link from "next/link";
 import { FC, ReactNode } from "react";
 import { Flex, Type } from ".";
-import { mono } from "../../app/fonts";
 import { SearchFavicon } from "../tools/search-favicon";
 
 export type TMdx = {
@@ -94,10 +93,7 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = "base" }) => {
   );
 
   const renderCodespan = (code: string) => (
-    <span
-      style={mono.style}
-      className="rounded-md border bg-zinc-50 px-1 py-0.5 text-xs text-zinc-800 dark:bg-white/10 dark:text-white"
-    >
+    <span className="mono rounded-md border bg-zinc-50 px-1 py-0.5 text-xs text-zinc-800 dark:bg-white/10 dark:text-white">
       {code}
     </span>
   );

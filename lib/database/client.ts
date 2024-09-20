@@ -9,9 +9,11 @@ let pgClient: PGliteWorker;
 let dbInitializationPromise: Promise<ReturnType<typeof drizzle>>;
 
 export const getDB = async () => {
+  console.log(`✅ db initialization started 1`);
+
   if (!dbInitializationPromise) {
     const startTime = performance.now();
-    console.log(`✅ db initialization started`);
+    console.log(`✅ db initialization started 2`);
 
     dbInitializationPromise = (async () => {
       pgClient = new PGliteWorker(

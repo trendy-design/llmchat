@@ -6,7 +6,6 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useClipboard } from "@/lib/hooks";
 import { cn } from "@/lib/utils/clsx";
 import { Check, Copy } from "lucide-react";
-import { mono } from "../../app/fonts";
 
 export type codeBlockProps = {
   lang?: string;
@@ -60,7 +59,6 @@ export const CodeBlock = ({
       )}
       <pre className="w-full px-6 py-2">
         <code
-          style={mono.style}
           className={`hljs language-${language} inline-block w-full overflow-x-auto whitespace-pre-wrap break-words pr-[100%] text-[0.85rem] tracking-wide`}
           ref={ref}
         ></code>
