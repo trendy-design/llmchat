@@ -1,16 +1,17 @@
 import { useChatContext } from "@/lib/context";
 import { Flex } from "@/ui";
-import { EditorContent } from "@tiptap/react";
+import { Editor, EditorContent } from "@tiptap/react";
 import { FC } from "react";
 
 export type TChatEditor = {
   sendMessage: (message: string) => void;
+  editor: Editor | null;
 };
 
-export const ChatEditor: FC<TChatEditor> = ({ sendMessage }) => {
-  const { store } = useChatContext();
-  const editor = store((state) => state.editor);
+export const ChatEditor: FC<TChatEditor> = ({ sendMessage, editor }) => {
+  const { store, isReady } = useChatContext();
   const isGenerating = store((state) => state.isGenerating);
+  console.log("editor", editor);
 
   if (!editor) return null;
 
@@ -19,7 +20,7 @@ export const ChatEditor: FC<TChatEditor> = ({ sendMessage }) => {
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (isGenerating) return;
-    if (e.key === "Enter" && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey && isReady) {
       sendMessage(editor.getText());
     }
     if (e.key === "Enter" && e.shiftKey) {

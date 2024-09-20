@@ -12,21 +12,21 @@ import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ChangeLogs } from "../changelogs";
+import { FullPageLoader } from "../full-page-loader";
 import { ApiKeyInfo } from "./api-key-info";
 import { ChatActions } from "./chat-actions";
 import { ChatEditor } from "./chat-editor";
 import { ChatExamples } from "./chat-examples";
 import { ChatFooter } from "./chat-footer";
-import { ChatTopActions } from "./chat-top-actions";
 import { ImageAttachment } from "./image-attachment";
 import { ImageDropzoneRoot } from "./image-dropzone-root";
 import { ScrollToBottomButton } from "./scroll-to-bottom-button";
 import { SelectedContext } from "./selected-context";
 
 export const ChatInput = () => {
-  const { store } = useChatContext();
+  const { store, isReady } = useChatContext();
   const [openChangelog, setOpenChangelog] = useState(false);
-  const { preferences } = usePreferenceContext();
+  const { preferences, isPreferencesReady } = usePreferenceContext();
   const { getAssistantByKey, getAssistantIcon } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
   const { editor } = useChatEditor();
@@ -39,7 +39,7 @@ export const ChatInput = () => {
     useImageAttachment();
 
   const isFreshSession =
-    messages.length === 0 && !currentMessage?.id && !isGenerating;
+    messages.length === 0 && !currentMessage?.id && !isGenerating && session;
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -50,6 +50,7 @@ export const ChatInput = () => {
   }, [session?.id]);
 
   const sendMessage = (input: string) => {
+    if (!isReady) return;
     const props = getAssistantByKey(preferences.defaultAssistant);
     if (!props || !session) return;
 
@@ -73,88 +74,95 @@ export const ChatInput = () => {
     "flex flex-col items-center flex-1 w-full gap-1 md:w-[640px] lg:w-[700px] z-10",
   );
 
-  return (
-    <>
-      <Flex
-        direction="row"
-        className="absolute top-0 z-20 w-full rounded-t-md border-b border-zinc-500/10 bg-white dark:bg-zinc-800"
-      >
-        <ChatTopActions />
-      </Flex>
+  const renderChatBottom = () => {
+    return (
+      <>
+        {isFreshSession && <ChatExamples />}
 
-      <div className={chatInputBackgroundContainer}>
-        <div
-          className={cn(
-            "absolute bottom-0 left-0 right-0 h-[120px] bg-gradient-to-t from-white from-40% to-transparent dark:bg-zinc-800/50 dark:from-zinc-800",
-            isFreshSession &&
-              "top-0 flex h-full flex-col items-center justify-center",
-          )}
-        />
+        <Flex items="center" justify="center" gap="sm" className="mb-2">
+          <ScrollToBottomButton />
+        </Flex>
 
-        <div className={chatContainer}>
-          {isFreshSession && (
-            <Flex
-              items="center"
-              justify="center"
-              direction="col"
-              gap="md"
-              className="mb-2 flex-1"
-            >
-              <Badge
-                onClick={() => setOpenChangelog(true)}
-                className="cursor-pointer gap-1"
-                variant="tertiary"
-              >
-                <Flame size={14} /> What&apos;s new
-              </Badge>
+        <SelectedContext />
 
-              <ChangeLogs open={openChangelog} setOpen={setOpenChangelog} />
-
-              {getAssistantIcon(preferences.defaultAssistant, "lg", true)}
-              <Type size="lg" textColor="secondary">
-                How can I help you?
-              </Type>
-              <ApiKeyInfo />
-            </Flex>
-          )}
-          {isFreshSession && <ChatExamples />}
-
-          <Flex items="center" justify="center" gap="sm" className="mb-2">
-            <ScrollToBottomButton />
-          </Flex>
-
-          <SelectedContext />
-
-          <Flex
-            direction="col"
-            className="w-full rounded-xl bg-zinc-50/95 backdrop-blur-sm dark:bg-zinc-700/95"
+        <Flex
+          direction="col"
+          className="w-full rounded-xl bg-zinc-50/95 backdrop-blur-sm dark:bg-zinc-700/95"
+        >
+          <motion.div
+            variants={slideUpVariant}
+            initial="initial"
+            animate={editor?.isEditable ? "animate" : "initial"}
+            className="flex w-full flex-shrink-0 overflow-hidden rounded-xl"
           >
-            <motion.div
-              variants={slideUpVariant}
-              initial="initial"
-              animate={editor?.isEditable ? "animate" : "initial"}
-              className="flex w-full flex-shrink-0 overflow-hidden rounded-xl"
-            >
-              <ImageDropzoneRoot dropzoneProps={dropzonProps}>
-                <Flex direction="col" className="w-full">
-                  <ImageAttachment
-                    attachment={attachment}
-                    clearAttachment={clearAttachment}
-                  />
-                  <Flex className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
-                    <ChatEditor sendMessage={sendMessage} />
-                  </Flex>
-                  <ChatActions
-                    sendMessage={sendMessage}
-                    handleImageUpload={handleImageUpload}
-                  />
+            <ImageDropzoneRoot dropzoneProps={dropzonProps}>
+              <Flex direction="col" className="w-full">
+                <ImageAttachment
+                  attachment={attachment}
+                  clearAttachment={clearAttachment}
+                />
+                <Flex className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
+                  <ChatEditor sendMessage={sendMessage} editor={editor} />
                 </Flex>
-              </ImageDropzoneRoot>
-            </motion.div>
-          </Flex>
-          {<ChatFooter />}
-        </div>
+                <ChatActions
+                  sendMessage={sendMessage}
+                  handleImageUpload={handleImageUpload}
+                />
+              </Flex>
+            </ImageDropzoneRoot>
+          </motion.div>
+        </Flex>
+        {<ChatFooter />}
+      </>
+    );
+  };
+
+  if (!isReady || !isPreferencesReady) {
+    return (
+      <div className={chatInputBackgroundContainer}>
+        <FullPageLoader label="Initializing chat" />
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div className={chatInputBackgroundContainer}>
+      <div
+        className={cn(
+          "absolute bottom-0 left-0 right-0 h-[120px] bg-gradient-to-t from-white from-40% to-transparent dark:bg-zinc-800/50 dark:from-zinc-800",
+          isFreshSession &&
+            "top-0 flex h-full flex-col items-center justify-center",
+        )}
+      />
+
+      <div className={chatContainer}>
+        {isFreshSession && (
+          <Flex
+            items="center"
+            justify="center"
+            direction="col"
+            gap="md"
+            className="mb-2 flex-1"
+          >
+            <Badge
+              onClick={() => setOpenChangelog(true)}
+              className="cursor-pointer gap-1"
+              variant="tertiary"
+            >
+              <Flame size={14} /> What&apos;s new
+            </Badge>
+
+            <ChangeLogs open={openChangelog} setOpen={setOpenChangelog} />
+
+            {getAssistantIcon(preferences.defaultAssistant, "lg", true)}
+            <Type size="lg" textColor="secondary">
+              How can I help you?
+            </Type>
+            <ApiKeyInfo />
+          </Flex>
+        )}
+        {renderChatBottom()}
+      </div>
+    </div>
   );
 };

@@ -8,6 +8,7 @@ import { createContext, useContext } from "react";
 
 export type TPreferenceContext = {
   preferences: TPreferences;
+  isPreferencesReady: boolean;
   updatePreferences: (
     newPreferences: Partial<TPreferences>,
     onSuccess?: (preference: TPreferences) => void,
@@ -91,6 +92,7 @@ export const PreferenceProvider = ({ children }: TPreferencesProvider) => {
     <PreferenceContext.Provider
       value={{
         preferences: { ...defaultPreferences, ...preferences },
+        isPreferencesReady: !!preferencesQuery.data,
         updatePreferences,
         apiKeys,
         updateApiKey,

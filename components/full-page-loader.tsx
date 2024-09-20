@@ -6,7 +6,7 @@ export type FullPageLoaderProps = {
 
 export const FullPageLoader = ({ label }: FullPageLoaderProps) => {
   return (
-    <div className="flex h-[90vh] w-full flex-col items-center justify-center gap-1">
+    <div className="z-20 flex min-h-[90vh] w-full flex-1 flex-col items-center justify-center gap-1">
       <Spinner />
       {label && (
         <Type size="xs" textColor="secondary">

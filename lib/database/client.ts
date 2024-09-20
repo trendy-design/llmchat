@@ -25,12 +25,6 @@ export const getDB = async () => {
           meta: {},
         },
       );
-      await pgClient.waitReady;
-
-      console.log(
-        `✅ pg client ready`,
-        (performance.now() - startTime).toFixed(2),
-      );
 
       const db = drizzle(pgClient as any, { schema });
       await runMigrations(db);

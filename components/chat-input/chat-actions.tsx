@@ -13,7 +13,7 @@ export const ChatActions = ({
   sendMessage,
   handleImageUpload,
 }: TChatActions) => {
-  const { store } = useChatContext();
+  const { store, isReady } = useChatContext();
   const isGenerating = store((state) => state.isGenerating);
   const editor = store((state) => state.editor);
   const { open: openPrompts } = usePromptsContext();
@@ -60,7 +60,7 @@ export const ChatActions = ({
           <Button
             size="sm"
             variant={hasTextInput ? "default" : "secondary"}
-            disabled={!hasTextInput || isGenerating}
+            disabled={!isReady || !hasTextInput || isGenerating}
             onClick={() => {
               editor?.getText() && sendMessage(editor?.getText());
             }}

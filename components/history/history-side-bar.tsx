@@ -5,10 +5,11 @@ import { TChatSession } from "@/types";
 import { Button, Flex, Type } from "@/ui";
 import { Command, History, Plus, Search } from "lucide-react";
 import moment from "moment";
+import { FullPageLoader } from "../full-page-loader";
 import { HistoryItem } from "./history-item";
 
 export const HistorySidebar = () => {
-  const { sessions, createSession } = useSessions();
+  const { sessions, createSession, isAllSessionLoading } = useSessions();
   const { setIsCommandSearchOpen } = useRootContext();
 
   const groupedSessions: Record<string, TChatSession[]> = {
@@ -85,13 +86,17 @@ export const HistorySidebar = () => {
             </Flex>
           </Button>
         </Flex>
-        <Flex direction="col" className="no-scrollbar w-full overflow-y-auto">
-          {renderGroup("Today", groupedSessions.today)}
-          {renderGroup("Tomorrow", groupedSessions.tomorrow)}
-          {renderGroup("Last 7 Days", groupedSessions.last7Days)}
-          {renderGroup("Last 30 Days", groupedSessions.last30Days)}
-          {renderGroup("Previous Months", groupedSessions.previousMonths)}
-        </Flex>
+        {isAllSessionLoading ? (
+          <FullPageLoader />
+        ) : (
+          <Flex direction="col" className="no-scrollbar w-full overflow-y-auto">
+            {renderGroup("Today", groupedSessions.today)}
+            {renderGroup("Tomorrow", groupedSessions.tomorrow)}
+            {renderGroup("Last 7 Days", groupedSessions.last7Days)}
+            {renderGroup("Last 30 Days", groupedSessions.last30Days)}
+            {renderGroup("Previous Months", groupedSessions.previousMonths)}
+          </Flex>
+        )}
       </Flex>
     </div>
   );
