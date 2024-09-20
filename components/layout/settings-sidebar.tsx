@@ -1,10 +1,11 @@
 import { TSettingMenu } from "@/app/settings/layout";
 import { cn } from "@/libs/utils/clsx";
-import { Button, Flex } from "@/ui";
+import { Button, Flex, Type } from "@/ui";
 import {
   AudioLines,
   Bolt,
   Brain,
+  ChevronLeft,
   Database,
   Sparkle,
   ToyBrick,
@@ -65,14 +66,27 @@ export const SettingsSidebar = () => {
   };
 
   return (
-    <div className="relative flex h-[98dvh] w-[220px] flex-shrink-0 flex-row rounded-xl p-1">
+    <div className="relative flex h-[100dvh] w-[260px] flex-shrink-0 flex-row border-l">
       <Flex
         direction="col"
         gap="xs"
         justify="start"
-        className="h-full w-[280px] p-1.5"
+        className="h-full w-[280px]"
       >
-        {settingMenu.map(renderMenuItem)}
+        <Flex
+          justify="between"
+          items="center"
+          className="mt-2 w-full cursor-pointer border-b border-zinc-500/10 px-3 py-3"
+          onClick={() => push("/chat")}
+        >
+          <ChevronLeft size={16} strokeWidth={2} className="w-8" />
+          <Type className="w-full" size="base" weight="medium">
+            Settings
+          </Type>
+        </Flex>
+        <Flex className="w-full p-3" direction="col" gap="xs">
+          {settingMenu.map(renderMenuItem)}
+        </Flex>
       </Flex>
     </div>
   );

@@ -9,7 +9,7 @@ export default function VoiceSettings() {
   const { updatePreferences, preferences } = usePreferenceContext();
   return (
     <SettingsContainer title="Voice Settings">
-      <SettingCard className="flex flex-col justify-center p-5">
+      <SettingCard className="flex flex-col justify-center py-5">
         <Flex justify="between" items="center">
           <Flex direction="col" items="start">
             <Type textColor="primary" weight="medium">

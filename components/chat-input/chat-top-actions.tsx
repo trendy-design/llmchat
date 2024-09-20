@@ -61,7 +61,7 @@ export const ChatTopActions = () => {
           variant="bordered"
           size="sm"
           onClick={() => {
-            setOpen(true);
+            window.open("https://git.new/llmchat", "_blank");
           }}
         >
           <Github size={16} />

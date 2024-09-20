@@ -21,7 +21,7 @@ export const SettingsContainer: FC<
       <Type
         size="lg"
         weight="medium"
-        className="w-full border-b border-zinc-500/10 pb-4"
+        className="w-full border-b border-zinc-500/10 pb-6"
       >
         {title}
       </Type>

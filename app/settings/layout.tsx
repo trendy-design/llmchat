@@ -25,13 +25,12 @@ export default function SettingsPage({
   }, [pathname]);
 
   return (
-    <Flex className="p-1">
-      <Flex justify="center" className="rounded-lg">
-        <Flex className="relative w-[720px]">
-          <Flex className="no-scrollbar w-full flex-1 overflow-y-auto p-4">
-            {children}
-          </Flex>
-        </Flex>
+    <Flex
+      justify="center"
+      className="no-scrollbar h-full w-full overflow-y-auto py-8"
+    >
+      <Flex className="relative w-[720px]">
+        <Flex className="w-full p-4">{children}</Flex>
       </Flex>
     </Flex>
   );

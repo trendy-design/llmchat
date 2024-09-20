@@ -118,10 +118,10 @@ export default function CommonPage() {
         />
       </Flex>
 
-      <SettingCard className="px-5">
+      <SettingCard>
         {settings.map((setting, index) => {
           const listItemClasses = cn(
-            `w-full border-b border-zinc-500/10 py-4 `,
+            `w-full border-b border-zinc-500/10 py-6 `,
             {
               "border-b-0": index === settings.length - 1,
             },
@@ -182,7 +182,7 @@ export default function CommonPage() {
           );
         })}
       </SettingCard>
-      <SettingCard className="flex flex-col justify-center p-5">
+      <SettingCard className="flex flex-col justify-center">
         <Flex justify="between" items="center">
           <Flex direction="col" items="start">
             <Type textColor="primary" weight="medium">
