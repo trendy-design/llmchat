@@ -66,18 +66,17 @@ export const HistorySidebar = () => {
         <Flex
           justify="between"
           items="center"
-          className="w-full border-b border-zinc-500/10 px-3 py-3"
+          direction="col"
+          className="w-full px-3 py-4"
+          gap="sm"
         >
-          <Button rounded="full" className="w-full" onClick={createSession}>
+          <Button size="sm" className="w-full" onClick={createSession}>
             <Plus size={14} strokeWidth={2} /> New Chat
           </Button>
-        </Flex>
-        <Flex justify="between" items="center" className="w-full px-3 py-2">
           <Button
             size="sm"
             variant="secondary"
             className="w-full gap-2"
-            rounded="full"
             onClick={() => setIsCommandSearchOpen(true)}
           >
             <Search size={14} strokeWidth={2} /> Search
@@ -86,6 +85,7 @@ export const HistorySidebar = () => {
             </Flex>
           </Button>
         </Flex>
+
         {isAllSessionLoading ? (
           <FullPageLoader />
         ) : (

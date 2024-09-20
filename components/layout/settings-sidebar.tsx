@@ -76,15 +76,15 @@ export const SettingsSidebar = () => {
         <Flex
           justify="between"
           items="center"
-          className="mt-2 w-full cursor-pointer border-b border-zinc-500/10 px-3 py-3"
+          className="mt-2 w-full cursor-pointer px-3 py-3"
           onClick={() => push("/chat")}
         >
           <ChevronLeft size={16} strokeWidth={2} className="w-8" />
-          <Type className="w-full" size="base" weight="medium">
+          <Type className="w-full" size="sm" weight="medium">
             Settings
           </Type>
         </Flex>
-        <Flex className="w-full p-3" direction="col" gap="xs">
+        <Flex className="w-full px-3" direction="col" gap="xs">
           {settingMenu.map(renderMenuItem)}
         </Flex>
       </Flex>

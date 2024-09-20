@@ -27,10 +27,10 @@ export default function SettingsPage({
   return (
     <Flex
       justify="center"
-      className="no-scrollbar h-full w-full overflow-y-auto py-8"
+      className="no-scrollbar h-full w-full overflow-y-auto"
     >
       <Flex className="relative w-[720px]">
-        <Flex className="w-full p-4">{children}</Flex>
+        <Flex className="w-full p-8">{children}</Flex>
       </Flex>
     </Flex>
   );

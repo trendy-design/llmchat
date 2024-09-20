@@ -32,7 +32,7 @@ export const ChatTopActions = () => {
 
   return (
     <Flex
-      className="w-full px-1 pb-2 pt-2 md:p-2.5"
+      className="w-full px-1 pb-2 pt-2 md:p-2"
       items="center"
       justify="between"
     >

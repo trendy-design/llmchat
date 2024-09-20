@@ -21,7 +21,7 @@ export const NavbarItem = ({
   return (
     <Tooltip content={tooltip} side="right" sideOffset={4}>
       <Button
-        size="icon"
+        size="iconSm"
         variant={isActive ? "bordered" : "ghost"}
         onClick={onClick}
       >
@@ -36,7 +36,7 @@ export const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <div className="group z-10 flex h-screen flex-col items-center justify-center gap-2.5 px-3 py-5">
+    <div className="group z-10 flex h-screen flex-col items-center justify-center gap-2 px-3 py-5">
       <Flex
         direction="col"
         items="center"
