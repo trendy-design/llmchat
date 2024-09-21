@@ -1,16 +1,31 @@
-import { useSessions } from "@/lib/context";
+import { useAuth, useSessions } from "@/lib/context";
 import { sortSessions } from "@/lib/utils/utils";
 import { useRootContext } from "@/libs/context/root";
 import { TChatSession } from "@/types";
 import { Button, Flex, Type } from "@/ui";
-import { Command, Plus, Search } from "lucide-react";
+import {
+  Bolt,
+  Command,
+  Key,
+  LogInIcon,
+  Moon,
+  Plus,
+  Search,
+  Sun,
+} from "lucide-react";
 import moment from "moment";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
+import { BsGithub, BsTwitter } from "react-icons/bs";
 import { FullPageLoader } from "../full-page-loader";
 import { HistoryItem } from "./history-item";
 
 export const HistorySidebar = () => {
   const { sessions, createSession, isAllSessionLoading } = useSessions();
-  const { setIsCommandSearchOpen } = useRootContext();
+  const { setIsCommandSearchOpen, setOpenApiKeyModal } = useRootContext();
+  const { theme, setTheme } = useTheme();
+  const { push } = useRouter();
+  const { open: openSignIn, logout, user } = useAuth();
 
   const groupedSessions: Record<string, TChatSession[]> = {
     examples: [],
@@ -43,7 +58,7 @@ export const HistorySidebar = () => {
     if (sessions.length === 0) return null;
     return (
       <>
-        <Flex items="center" gap="xs" className="px-5 py-2">
+        <Flex items="center" gap="xs" className="px-2 py-2">
           <Type
             size="xs"
             weight="medium"
@@ -53,7 +68,7 @@ export const HistorySidebar = () => {
             {title}
           </Type>
         </Flex>
-        <Flex className="w-full px-2.5" gap="xs" direction="col">
+        <Flex className="w-full" gap="xs" direction="col">
           {sessions.map((session) => (
             <HistoryItem
               session={session}
@@ -68,12 +83,12 @@ export const HistorySidebar = () => {
 
   return (
     <div className="relative flex h-[100dvh] w-[260px] flex-shrink-0 flex-row border-l border-zinc-500/10">
-      <Flex direction="col" className="no-scrollbar w-full">
+      <Flex direction="col" className="no-scrollbar w-full pl-3 pr-1">
         <Flex
           justify="between"
           items="center"
           direction="col"
-          className="w-full px-3 py-4"
+          className="w-full py-4"
           gap="sm"
         >
           <Button size="sm" className="w-full" onClick={createSession}>
@@ -104,6 +119,84 @@ export const HistorySidebar = () => {
             {renderGroup("Previous Months", groupedSessions.previousMonths)}
           </Flex>
         )}
+        <Flex
+          className="w-full bg-zinc-50 py-3 dark:bg-zinc-900"
+          direction="col"
+          gap="sm"
+        >
+          <Button
+            size="sm"
+            variant="secondary"
+            className="w-full gap-2"
+            onClick={() => {
+              openSignIn();
+            }}
+          >
+            <LogInIcon size={16} strokeWidth={2} />
+            SignIn{" "}
+          </Button>
+          <Flex gap="sm" className="w-full">
+            <Button
+              variant="bordered"
+              size="sm"
+              className="w-full gap-2"
+              onClick={() => {
+                setOpenApiKeyModal(true);
+              }}
+            >
+              <Key size={16} strokeWidth={2} />
+              Add API
+            </Button>
+            <Button
+              variant="bordered"
+              size="sm"
+              className="w-full gap-2"
+              onClick={() => {
+                push("/settings");
+              }}
+            >
+              <Bolt size={16} strokeWidth={2} />
+              Settings
+            </Button>
+          </Flex>
+          <Flex className="w-full items-center justify-between opacity-70">
+            <Flex gap="xs">
+              <Button
+                size="iconXS"
+                variant="ghost"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                {theme === "dark" ? <Moon size={16} /> : <Sun size={16} />}
+              </Button>
+              <Button
+                size="iconXS"
+                variant="ghost"
+                onClick={() => {
+                  window.open("https://git.new/llmchat", "_blank");
+                }}
+              >
+                <BsGithub size={14} />
+              </Button>
+              <Button
+                size="iconXS"
+                variant="ghost"
+                onClick={() => {
+                  window.open("https://x.com/llmchatOS", "_blank");
+                }}
+              >
+                <BsTwitter size={14} />
+              </Button>
+            </Flex>
+            <Type
+              size="xs"
+              weight="medium"
+              textColor="secondary"
+              className="px-1"
+            >
+              v 1.2.3
+            </Type>
+          </Flex>
+        </Flex>
       </Flex>
     </div>
   );

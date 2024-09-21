@@ -12,24 +12,18 @@ export type RootContextType = {
   setOpenApiKeyModal: (openApiKeyModal: boolean) => void;
   apiKeyModalProvider: TProvider | null;
   setApiKeyModalProvider: (apiKeyModalProvider: TProvider | null) => void;
+  isMobileSidebarOpen: boolean;
+  setIsMobileSidebarOpen: (isMobileSidebarOpen: boolean) => void;
 };
 
-export const RootContext = createContext<RootContextType>({
-  isSidebarOpen: true,
-  setIsSidebarOpen: (isSidebarOpen: boolean) => {},
-  isCommandSearchOpen: false,
-  setIsCommandSearchOpen: (isCommandSearchOpen: boolean) => {},
-  openApiKeyModal: false,
-  setOpenApiKeyModal: (openApiKeyModal: boolean) => {},
-  apiKeyModalProvider: null,
-  setApiKeyModalProvider: (apiKeyModalProvider: TProvider | null) => {},
-});
+export const RootContext = createContext<RootContextType | null>(null);
 
 export const RootProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     initHotjar();
   }, []);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isCommandSearchOpen, setIsCommandSearchOpen] = useState(false);
   const [openApiKeyModal, setOpenApiKeyModal] = useState(false);
   const [apiKeyModalProvider, setApiKeyModalProvider] =
@@ -47,6 +41,8 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
         setOpenApiKeyModal,
         apiKeyModalProvider,
         setApiKeyModalProvider,
+        isMobileSidebarOpen,
+        setIsMobileSidebarOpen,
       }}
     >
       {children}

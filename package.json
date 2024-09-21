@@ -90,6 +90,7 @@
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
     "react-github-btn": "^1.4.0",
+    "react-icons": "^5.3.0",
     "react-intersection-observer": "^9.13.0",
     "recharts": "^2.12.7",
     "selection-popover": "^0.3.0",

@@ -1,6 +1,6 @@
 "use client";
 import { ChatInput } from "@/components/chat-input";
-import { ChatTopActions } from "@/components/chat-input/chat-top-actions";
+import { ChatTopNav } from "@/components/chat-input/chat-top-nav";
 import { ChatMessages } from "@/components/messages";
 import { ChatProvider, PromptsProvider, useSessions } from "@/lib/context";
 import { Flex } from "@/ui";
@@ -16,7 +16,7 @@ const ChatSessionPage = () => {
             direction="row"
             className="absolute top-0 z-20 w-full rounded-t-md border-b border-zinc-500/10 bg-zinc-25 dark:bg-zinc-800"
           >
-            <ChatTopActions />
+            <ChatTopNav />
           </Flex>
           <ChatMessages />
           <ChatInput />

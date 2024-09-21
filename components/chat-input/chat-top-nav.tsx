@@ -1,23 +1,29 @@
 import { defaultPreferences } from "@/config/preferences";
-import { usePreferenceContext } from "@/lib/context";
+import { usePreferenceContext, useSessions } from "@/lib/context";
 import { useAssistantUtils } from "@/lib/hooks";
 import { TAssistant } from "@/lib/types";
 import { useRootContext } from "@/libs/context/root";
 import { Button, Flex } from "@/ui";
-import { ChevronLeft, ChevronRight, Github } from "lucide-react";
+import { FlagIcon, Github, PanelLeft, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { AssistantModal } from "../assistants/assistant-modal";
 import { useFeedback } from "../feedback/use-feedback";
 import { PluginSelect } from "../plugin-select";
 
-export const ChatTopActions = () => {
+export const ChatTopNav = () => {
   const { setOpen, renderModal } = useFeedback();
+  const { createSession } = useSessions();
   const { preferences, updatePreferences } = usePreferenceContext();
   const [selectedAssistantKey, setSelectedAssistantKey] = useState<
     TAssistant["key"]
   >(preferences.defaultAssistant);
   const { models, getAssistantByKey } = useAssistantUtils();
-  const { isSidebarOpen, setIsSidebarOpen } = useRootContext();
+  const {
+    isSidebarOpen,
+    setIsSidebarOpen,
+    isMobileSidebarOpen,
+    setIsMobileSidebarOpen,
+  } = useRootContext();
 
   useEffect(() => {
     const assistantProps = getAssistantByKey(preferences.defaultAssistant);
@@ -32,7 +38,7 @@ export const ChatTopActions = () => {
 
   return (
     <Flex
-      className="w-full px-1 pb-2 pt-2 md:p-2"
+      className="absolute top-0 z-20 w-full rounded-t-md border-b border-zinc-500/10 bg-zinc-25 p-1 dark:bg-zinc-800 md:p-2"
       items="center"
       justify="between"
     >
@@ -40,13 +46,29 @@ export const ChatTopActions = () => {
         <Button
           variant="ghost"
           size="iconSm"
+          className="flex lg:hidden"
+          onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        >
+          <PanelLeft size={16} strokeWidth={2} />
+        </Button>
+
+        <Button
+          variant="ghost"
+          size="iconSm"
+          className="hidden lg:flex"
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         >
-          {isSidebarOpen ? (
-            <ChevronLeft size={16} strokeWidth={2} />
-          ) : (
-            <ChevronRight size={16} strokeWidth={2} />
-          )}
+          <PanelLeft size={16} strokeWidth={2} />
+        </Button>
+        <Button
+          variant="ghost"
+          size="iconSm"
+          className="flex lg:hidden"
+          onClick={() => {
+            createSession();
+          }}
+        >
+          <Plus size={16} strokeWidth={2} />
         </Button>
 
         <AssistantModal
@@ -65,7 +87,7 @@ export const ChatTopActions = () => {
           }}
         >
           <Github size={16} />
-          Star on Github
+          <span className="hidden md:block">Star on Github</span>
         </Button>
         <Button
           variant="bordered"
@@ -74,7 +96,8 @@ export const ChatTopActions = () => {
             setOpen(true);
           }}
         >
-          Feedback
+          <FlagIcon size={16} className="block md:hidden" />
+          <span className="hidden md:block">Feedback</span>
         </Button>
       </Flex>
       {renderModal()}

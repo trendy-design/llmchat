@@ -68,7 +68,7 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
       <DialogPortal>
         <DialogContent
           ariaTitle="Assistants"
-          className="!w-[450px] rounded-xl bg-white p-0 dark:border dark:border-white/10"
+          className="rounded-xl bg-white p-0 dark:border dark:border-white/10 md:w-[450px]"
         >
           <div className="relative w-full space-y-4">
             <Flex className="w-full p-4" gap="sm" items="center">

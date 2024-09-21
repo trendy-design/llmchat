@@ -1,4 +1,6 @@
 "use client";
+import { SettingsTopNav } from "@/components/chat-input/settings-top-nav";
+import { useRootContext } from "@/libs/context/root";
 import { LucideIcon } from "@/libs/types/icons";
 import { Flex } from "@/ui";
 import { usePathname, useRouter } from "next/navigation";
@@ -15,10 +17,12 @@ export default function SettingsPage({
 }: Readonly<{
   children: ReactNode;
 }>) {
+  const { setIsMobileSidebarOpen } = useRootContext();
   const { push } = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
+    setIsMobileSidebarOpen(false);
     if (pathname === "/settings") {
       push("/settings/common");
     }
@@ -29,8 +33,9 @@ export default function SettingsPage({
       justify="center"
       className="no-scrollbar h-full w-full overflow-y-auto"
     >
+      <SettingsTopNav />
       <Flex className="relative w-[720px]">
-        <Flex className="w-full p-8">{children}</Flex>
+        <Flex className="w-full px-4 pt-16 md:p-8">{children}</Flex>
       </Flex>
     </Flex>
   );

@@ -30,7 +30,7 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
     <Dialog {...props}>
       <DialogOverlay className="!bg-transparent backdrop-blur-0" />
       <DialogContent
-        className="overflow-hidden border border-transparent p-0 dark:border-white/10"
+        className="overflow-hidden border border-transparent p-0 dark:border-white/10 md:w-[600px]"
         ariaTitle="Command Search"
       >
         <Command className="bg-white pb-2 dark:!bg-zinc-700 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
@@ -54,7 +54,7 @@ const CommandInput = React.forwardRef<
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
-        "flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
+        "flex h-9 w-full rounded-md bg-transparent py-2.5 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
         className,
       )}
       {...props}
