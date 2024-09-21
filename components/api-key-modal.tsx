@@ -16,7 +16,7 @@ export const ApiKeyModal = () => {
   const {
     openApiKeyModal,
     setOpenApiKeyModal,
-    apiKeyModalProvider,
+    apiKeyModalProvider = "openai",
     setApiKeyModalProvider,
   } = useRootContext();
 
