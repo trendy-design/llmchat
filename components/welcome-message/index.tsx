@@ -6,7 +6,6 @@ import { Dialog, DialogContent } from "@/ui/dialog";
 
 import {
   ArrowRight,
-  Github,
   Lock,
   LucideIcon,
   MessageCircle,
@@ -16,6 +15,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import { FaGithub } from "react-icons/fa";
 import { AiModelsCopy } from "./ai-models-copy";
 import { CustomAssistantCopy } from "./custom-assistant-copy";
 import { OpenSourceCopy } from "./opensource-copy";
@@ -156,7 +156,7 @@ export const WelcomeMessage = () => {
                     window.open("https://github.com/your-repo-url", "_blank")
                   }
                 >
-                  <Github size={16} /> Star on GitHub
+                  <FaGithub size={16} /> Github Repo
                 </Button>
               </Flex>
             </Flex>

@@ -4,8 +4,9 @@ import { useAssistantUtils } from "@/lib/hooks";
 import { TAssistant } from "@/lib/types";
 import { useRootContext } from "@/libs/context/root";
 import { Button, Flex } from "@/ui";
-import { FlagIcon, Github, PanelLeft, Plus } from "lucide-react";
+import { FlagIcon, PanelLeft, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { FaGithub } from "react-icons/fa";
 import { AssistantModal } from "../assistants/assistant-modal";
 import { useFeedback } from "../feedback/use-feedback";
 import { PluginSelect } from "../plugin-select";
@@ -86,7 +87,7 @@ export const ChatTopNav = () => {
             window.open("https://git.new/llmchat", "_blank");
           }}
         >
-          <Github size={16} />
+          <FaGithub size={16} />
           <span className="hidden md:block">Star on Github</span>
         </Button>
         <Button
