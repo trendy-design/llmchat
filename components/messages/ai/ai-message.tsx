@@ -32,7 +32,7 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
   };
 
   return (
-    <div className="mt-2 flex w-full flex-row items-start justify-start">
+    <div className="mt-2 flex w-full flex-row items-start justify-start gap-3">
       <Flex className="flex-shrink-0">
         {getAssistantIcon(runConfig.assistant.key, "sm")}
       </Flex>
@@ -41,7 +41,7 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
         direction="col"
         gap="lg"
         items="start"
-        className="w-full flex-1 px-3 pb-8"
+        className="min-w-0 flex-grow pb-8"
       >
         {!!tools?.length && (
           <Flex className="w-full gap-1 pb-2" direction="col">

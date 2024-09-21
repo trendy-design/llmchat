@@ -65,7 +65,7 @@ export const ChatInput = () => {
   };
 
   const chatInputBackgroundContainer = cn(
-    "absolute bottom-0 right-0 left-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-3  md:px-4",
+    "absolute bottom-0 right-0 left-0 flex w-full flex-col items-center justify-end gap-2 px-4 pb-1  md:px-4",
     "transition-all duration-1000 ease-in-out",
     isFreshSession && "top-0 justify-center  ",
   );
@@ -87,7 +87,7 @@ export const ChatInput = () => {
 
         <Flex
           direction="col"
-          className="w-full rounded-xl border border-zinc-500/10 bg-white shadow-sm dark:bg-zinc-700/95"
+          className="w-full rounded-lg border border-zinc-500/15 bg-white shadow-sm dark:bg-zinc-700"
         >
           <motion.div
             variants={slideUpVariant}
