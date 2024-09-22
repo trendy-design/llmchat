@@ -13,6 +13,15 @@ export type TAssistant = {
   type: "custom" | "base";
 };
 
+export type TCustomAssistant = {
+  key: string;
+  name: string;
+  description: string | null;
+  systemPrompt: string;
+  iconURL: string | null;
+  startMessage: string[] | null;
+};
+
 export type TAssistantsProvider = {
   children: React.ReactNode;
 };

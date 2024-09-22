@@ -1,5 +1,7 @@
 import { useRef } from "react";
 
+import { CustomAssistantAvatar } from "@/components/custom-assistant-avatar";
+import { ModelIcon } from "@/components/model-icon";
 import { Flex } from "@/components/ui";
 import { Mdx } from "@/components/ui/mdx";
 import { useChatContext } from "@/lib/context";
@@ -20,6 +22,7 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
   const { id, isLoading, stopReason, tools, runConfig, stop, rawAI } = message;
 
   const { store } = useChatContext();
+  const session = store((state) => state.session);
   const editor = store((state) => state.editor);
   const setContextValue = store((state) => state.setContext);
   const messageRef = useRef<HTMLDivElement>(null);
@@ -34,7 +37,15 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
   return (
     <div className="mt-2 flex w-full flex-row items-start justify-start gap-3">
       <Flex className="flex-shrink-0">
-        {getAssistantIcon(runConfig.assistant.key, "sm")}
+        {session?.customAssistant?.iconURL ? (
+          <CustomAssistantAvatar
+            url={session?.customAssistant?.iconURL}
+            alt={session?.customAssistant?.name}
+            size="sm"
+          />
+        ) : (
+          <ModelIcon type="assistants" size="sm" />
+        )}
       </Flex>
       <Flex
         ref={messageRef}

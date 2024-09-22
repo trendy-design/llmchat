@@ -35,7 +35,7 @@ export const ImageUpload: FC<TImageUpload> = ({
             <ImagePlus size={18} strokeWidth={2} />
           </Button>
         ) : (
-          <Button variant="outlined" onClick={handleFileSelect}>
+          <Button variant="bordered" onClick={handleFileSelect}>
             {label}
           </Button>
         )}

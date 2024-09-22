@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ChangeLogs } from "../changelogs";
+import { CustomAssistantAvatar } from "../custom-assistant-avatar";
 import { FullPageLoader } from "../full-page-loader";
 import { ApiKeyInfo } from "./api-key-info";
 import { ChatActions } from "./chat-actions";
@@ -154,10 +155,25 @@ export const ChatInput = () => {
 
             <ChangeLogs open={openChangelog} setOpen={setOpenChangelog} />
 
-            {getAssistantIcon(preferences.defaultAssistant, "lg", true)}
+            {session?.customAssistant ? (
+              <CustomAssistantAvatar
+                url={session?.customAssistant?.iconURL}
+                alt={session?.customAssistant?.name}
+                size="lg"
+              />
+            ) : (
+              getAssistantIcon(preferences.defaultAssistant, "lg", true)
+            )}
             <Type size="lg" textColor="secondary">
-              How can I help you?
+              {session?.customAssistant
+                ? session?.customAssistant?.name
+                : "How can I help you?"}
             </Type>
+            {session?.customAssistant && (
+              <Type size="sm" textColor="secondary">
+                {session?.customAssistant?.description}
+              </Type>
+            )}
             <ApiKeyInfo />
           </Flex>
         )}

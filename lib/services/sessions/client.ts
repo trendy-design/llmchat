@@ -1,4 +1,4 @@
-import { TChatMessage, TChatSession } from "@/lib/types";
+import { TChatMessage, TChatSession, TCustomAssistant } from "@/lib/types";
 import { generateShortUUID, sortSessions } from "@/lib/utils/utils";
 import { getDB } from "@/libs/database/client";
 import { schema } from "@/libs/database/schema";
@@ -20,6 +20,35 @@ export class SessionsService {
   async setSession(chatSession: TChatSession) {
     const db = await getDB();
     await db?.insert(schema.chatSessions).values(chatSession);
+  }
+
+  async addAssistantToSession(assistant: TCustomAssistant) {
+    const db = await getDB();
+    const newSession = await this.createNewSession();
+    if (!newSession) return;
+    const updatedSession = await db
+      ?.update(schema.chatSessions)
+      .set({
+        customAssistant: assistant,
+      })
+      .where(eq(schema.chatSessions.id, newSession.id))
+      .returning();
+    return updatedSession?.[0] || null;
+  }
+
+  async removeAssistantFromSession(sessionId: string) {
+    const db = await getDB();
+    const latestSessionMessages =
+      (await this.messagesService.getMessages(sessionId)) || [];
+    if (!!latestSessionMessages?.length) return;
+    const updatedSession = await db
+      ?.update(schema.chatSessions)
+      .set({
+        customAssistant: null,
+      })
+      .where(eq(schema.chatSessions.id, sessionId))
+      .returning();
+    return updatedSession?.[0] || null;
   }
 
   async updateSession(

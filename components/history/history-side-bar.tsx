@@ -18,6 +18,7 @@ import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { BsGithub, BsTwitter } from "react-icons/bs";
 import { FullPageLoader } from "../full-page-loader";
+import { ModelIcon } from "../model-icon";
 import { HistoryItem } from "./history-item";
 
 export const HistorySidebar = () => {
@@ -83,12 +84,12 @@ export const HistorySidebar = () => {
 
   return (
     <div className="relative flex h-[100dvh] w-[260px] flex-shrink-0 flex-row border-l border-zinc-500/10">
-      <Flex direction="col" className="no-scrollbar w-full pl-3 pr-1">
+      <Flex direction="col" gap="sm" className="no-scrollbar w-full pl-3 pr-1">
         <Flex
           justify="between"
           items="center"
           direction="col"
-          className="w-full py-4"
+          className="w-full pb-2 pt-4"
           gap="sm"
         >
           <Button size="sm" className="w-full" onClick={createSession}>
@@ -106,6 +107,16 @@ export const HistorySidebar = () => {
             </Flex>
           </Button>
         </Flex>
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-2 px-2"
+          onClick={() => {
+            push("/assistants");
+          }}
+        >
+          <ModelIcon type="assistants" size="sm" />
+          Explore Assistants
+        </Button>
 
         {isAllSessionLoading ? (
           <FullPageLoader />

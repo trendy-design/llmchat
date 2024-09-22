@@ -1,1 +1,0 @@
-ALTER TABLE "chat_sessions" ADD COLUMN "is_example" boolean DEFAULT false;

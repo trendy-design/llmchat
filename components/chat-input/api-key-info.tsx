@@ -18,8 +18,12 @@ export const ApiKeyInfo = () => {
 
   if (preferences.defaultAssistant === "llmchat") {
     return (
-      <Flex className="w-full py-2 pl-3 pr-1" justify="between" items="center">
-        <Type size="xs" textColor="secondary">
+      <Flex className="w-full" justify="between" items="center">
+        <Type
+          size="xs"
+          textColor="secondary"
+          className="rounded-full bg-zinc-50 px-3 py-1.5 text-center"
+        >
           LLMChat is free to use with daily limits.{" "}
           <span
             className="inline-block cursor-pointer px-1 underline decoration-zinc-500/20 underline-offset-2"

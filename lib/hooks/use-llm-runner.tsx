@@ -131,7 +131,9 @@ export const useLLMRunner = () => {
       image,
       memories: preferences.memories,
       hasMessages: allPreviousMessages.length > 0,
-      systemPrompt: injectPresetValues(assistant.systemPrompt),
+      systemPrompt:
+        session.customAssistant?.systemPrompt ||
+        injectPresetValues(assistant.systemPrompt),
     });
 
     const availableTools = getAvailableTools(selectedModelKey);
