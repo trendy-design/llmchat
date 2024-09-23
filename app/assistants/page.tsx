@@ -143,7 +143,7 @@ const AssistantPage = () => {
           </Button>
         </Flex>
 
-        <div className="grid w-full grid-cols-4 gap-3 px-6">
+        <div className="grid w-full grid-cols-2 gap-3 px-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {localAssistants?.map((assistant: TCustomAssistant) =>
             renderAssistant(assistant, true),
           )}
@@ -161,7 +161,7 @@ const AssistantPage = () => {
             Explore More
           </Type>
 
-          <div className="grid w-full grid-cols-4 gap-3 px-6">
+          <div className="grid w-full grid-cols-2 gap-3 px-6 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {remoteAssistants.map((assistant: TCustomAssistant) =>
               renderAssistant(assistant, false),
             )}
