@@ -111,10 +111,12 @@ export const CreateAssistant = ({
   };
 
   const handleAddStartMessage = () => {
-    formik.setFieldValue("startMessage", [
-      ...(formik.values.startMessage || []),
-      "",
-    ]);
+    if (formik.values.startMessage && formik.values.startMessage.length < 4) {
+      formik.setFieldValue("startMessage", [
+        ...(formik.values.startMessage || []),
+        "",
+      ]);
+    }
   };
 
   const handleRemoveStartMessage = (index: number) => {
@@ -130,7 +132,7 @@ export const CreateAssistant = ({
       <DialogContent
         ariaTitle="Create Assistant"
         onInteractOutside={(e) => e.preventDefault()}
-        className="no-scrollbar z-[605] mx-auto max-h-[550px] w-full max-w-[540px] overflow-y-auto rounded-2xl bg-white p-5 dark:bg-zinc-800"
+        className="no-scrollbar z-[605] mx-auto max-h-[90vh] w-full max-w-[450px] overflow-x-auto rounded-2xl bg-white p-5 dark:bg-zinc-800"
       >
         <h2 className="w-full border-b border-zinc-500/15 pb-4 text-base font-medium">
           {updateAssistant?.key ? "Edit Assistant" : "Create Assistant"}
@@ -188,7 +190,7 @@ export const CreateAssistant = ({
 
           <Flex direction="col" gap="sm">
             <FormLabel label="Start Messages" isOptional>
-              Starter messages to get started conversation with the assistant.
+              This will help started conversation with the assistant.
             </FormLabel>
             {formik.values.startMessage?.map((message, index) => (
               <Flex
@@ -214,18 +216,21 @@ export const CreateAssistant = ({
                 </Button>
               </Flex>
             ))}
-            <Button
-              variant="bordered"
-              size="sm"
-              onClick={handleAddStartMessage}
-              className="self-start"
-            >
-              <Plus size={16} />
-              Add Start Message
-            </Button>
+            {formik.values.startMessage &&
+              formik.values.startMessage?.length < 4 && (
+                <Button
+                  variant="bordered"
+                  size="sm"
+                  onClick={handleAddStartMessage}
+                  className="self-start"
+                >
+                  <Plus size={16} />
+                  Add Start Message
+                </Button>
+              )}
           </Flex>
         </div>
-        <div className="mt-4 flex justify-end gap-2">
+        <div className="sticky bottom-0 mt-4 flex w-full justify-end gap-2 border-t bg-white pt-4">
           <Button variant="ghost" onClick={handleCancel}>
             Cancel
           </Button>

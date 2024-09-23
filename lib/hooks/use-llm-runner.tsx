@@ -198,7 +198,8 @@ export const useLLMRunner = () => {
           input,
         },
         {
-          recursionLimit: 5,
+          maxConcurrency: 1,
+          recursionLimit: 3,
           callbacks: [
             {
               handleLLMStart: async () => {},

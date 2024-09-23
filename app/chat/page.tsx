@@ -4,9 +4,16 @@ import { ChatTopNav } from "@/components/chat-input/chat-top-nav";
 import { ChatMessages } from "@/components/messages";
 import { ChatProvider, PromptsProvider, useSessions } from "@/lib/context";
 import { Flex } from "@/ui";
+import { useEffect } from "react";
 
 const ChatSessionPage = () => {
-  const { activeSessionId } = useSessions();
+  const { activeSessionId, createSession } = useSessions();
+
+  useEffect(() => {
+    if (!activeSessionId) {
+      createSession();
+    }
+  }, [activeSessionId]);
 
   return (
     <ChatProvider sessionId={activeSessionId}>
