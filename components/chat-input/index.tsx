@@ -1,4 +1,9 @@
-import { useChatContext, usePreferenceContext } from "@/lib/context";
+import { examplePrompts } from "@/config/example-prompts";
+import {
+  useChatContext,
+  usePreferenceContext,
+  useSessions,
+} from "@/lib/context";
 import {
   useAssistantUtils,
   useChatEditor,
@@ -7,39 +12,39 @@ import {
 } from "@/lib/hooks";
 import { slideUpVariant } from "@/lib/utils/animations";
 import { cn } from "@/lib/utils/clsx";
-import { Badge, Flex, Type } from "@/ui";
+import { Badge, Button, Flex, Type } from "@/ui";
 import { motion } from "framer-motion";
 import { Flame } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ChangeLogs } from "../changelogs";
+import { CustomAssistantAvatar } from "../custom-assistant-avatar";
 import { FullPageLoader } from "../full-page-loader";
 import { ApiKeyInfo } from "./api-key-info";
 import { ChatActions } from "./chat-actions";
 import { ChatEditor } from "./chat-editor";
-import { ChatExamples } from "./chat-examples";
 import { ChatFooter } from "./chat-footer";
 import { ImageAttachment } from "./image-attachment";
 import { ImageDropzoneRoot } from "./image-dropzone-root";
 import { ScrollToBottomButton } from "./scroll-to-bottom-button";
 import { SelectedContext } from "./selected-context";
+import { StarterMessages } from "./starter-messages";
 
 export const ChatInput = () => {
-  const { store, isReady } = useChatContext();
+  const { store, isReady, refetch } = useChatContext();
+  const { removeAssistantFromSessionMutation } = useSessions();
   const [openChangelog, setOpenChangelog] = useState(false);
   const { preferences, isPreferencesReady } = usePreferenceContext();
   const { getAssistantByKey, getAssistantIcon } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
   const { editor } = useChatEditor();
   const session = store((state) => state.session);
-  const messages = store((state) => state.messages);
-  const currentMessage = store((state) => state.currentMessage);
-  const isGenerating = store((state) => state.isGenerating);
+  const isInitialized = store((state) => state.isInitialized);
+  const setIsInitialized = store((state) => state.setIsInitialized);
   const context = store((state) => state.context);
   const { attachment, clearAttachment, handleImageUpload, dropzonProps } =
     useImageAttachment();
 
-  const isFreshSession =
-    messages.length === 0 && !currentMessage?.id && !isGenerating && session;
+  const isFreshSession = !isInitialized;
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -53,6 +58,7 @@ export const ChatInput = () => {
     if (!isReady) return;
     const props = getAssistantByKey(preferences.defaultAssistant);
     if (!props || !session) return;
+    setIsInitialized(true);
 
     invokeModel({
       input,
@@ -77,7 +83,16 @@ export const ChatInput = () => {
   const renderChatBottom = () => {
     return (
       <>
-        {isFreshSession && <ChatExamples />}
+        {isFreshSession && (
+          <StarterMessages
+            messages={
+              session?.customAssistant?.startMessage?.map((m) => ({
+                name: m,
+                content: m,
+              })) || examplePrompts
+            }
+          />
+        )}
 
         <Flex items="center" justify="center" gap="sm" className="mb-2">
           <ScrollToBottomButton />
@@ -154,10 +169,50 @@ export const ChatInput = () => {
 
             <ChangeLogs open={openChangelog} setOpen={setOpenChangelog} />
 
-            {getAssistantIcon(preferences.defaultAssistant, "lg", true)}
-            <Type size="lg" textColor="secondary">
-              How can I help you?
-            </Type>
+            {session?.customAssistant ? (
+              <CustomAssistantAvatar
+                url={session?.customAssistant?.iconURL}
+                alt={session?.customAssistant?.name}
+                size="lg"
+              />
+            ) : (
+              getAssistantIcon(preferences.defaultAssistant, "lg", true)
+            )}
+            <Flex direction="col" gap="xs" justify="center" items="center">
+              <Type
+                size="lg"
+                textColor={session?.customAssistant ? "primary" : "secondary"}
+              >
+                {session?.customAssistant
+                  ? session?.customAssistant?.name
+                  : "How can I help you?"}
+              </Type>
+              {session?.customAssistant && (
+                <Type
+                  size="sm"
+                  textColor="secondary"
+                  className="max-w-[400px] text-center"
+                >
+                  {session?.customAssistant?.description}
+                </Type>
+              )}
+              {session?.customAssistant && (
+                <Button
+                  variant="bordered"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => {
+                    removeAssistantFromSessionMutation.mutate(session?.id, {
+                      onSuccess: () => {
+                        refetch();
+                      },
+                    });
+                  }}
+                >
+                  Remove
+                </Button>
+              )}
+            </Flex>
             <ApiKeyInfo />
           </Flex>
         )}

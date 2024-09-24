@@ -1,4 +1,5 @@
 import { providers } from "@/config/models";
+import { TCustomAssistant } from "@/types";
 import {
   boolean,
   decimal,
@@ -40,6 +41,7 @@ export const chatSessions = pgTable("chat_sessions", {
   id: text("id").primaryKey(),
   title: text("title"),
   isExample: boolean("is_example").default(false),
+  customAssistant: json("custom_assistant").$type<TCustomAssistant>(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -72,6 +74,15 @@ export const assistants = pgTable("assistants", {
   baseModel: text("base_model").notNull(),
   key: text("key").unique().primaryKey(),
   type: assistantTypeEnum("type").notNull(),
+});
+
+export const customAssistants = pgTable("custom_assistants", {
+  name: text("name").notNull(),
+  description: text("description"),
+  systemPrompt: text("system_prompt").notNull(),
+  iconURL: text("icon_url"),
+  key: text("key").unique().primaryKey(),
+  startMessage: json("start_message").$type<string[]>(),
 });
 
 export const preferences = pgTable("preferences", {
@@ -117,4 +128,5 @@ export const schema = {
   dalleImageSizeEnum,
   webSearchEngineEnum,
   stopReasonEnum,
+  customAssistants,
 };

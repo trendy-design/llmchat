@@ -15,17 +15,27 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { BsGithub, BsTwitter } from "react-icons/bs";
 import { FullPageLoader } from "../full-page-loader";
+import { ModelIcon } from "../model-icon";
 import { HistoryItem } from "./history-item";
 
 export const HistorySidebar = () => {
-  const { sessions, createSession, isAllSessionLoading } = useSessions();
+  const pathname = usePathname();
+  const {
+    activeSessionId,
+    sessions,
+    createSession,
+    isAllSessionLoading,
+    removeAssistantFromSessionMutation,
+  } = useSessions();
   const { setIsCommandSearchOpen, setOpenApiKeyModal } = useRootContext();
   const { theme, setTheme } = useTheme();
   const { push } = useRouter();
   const { open: openSignIn, logout, user } = useAuth();
+  const isAssistantPage = pathname.startsWith("/assistants");
+  const isChatPage = pathname.startsWith("/chat");
 
   const groupedSessions: Record<string, TChatSession[]> = {
     examples: [],
@@ -83,15 +93,22 @@ export const HistorySidebar = () => {
 
   return (
     <div className="relative flex h-[100dvh] w-[260px] flex-shrink-0 flex-row border-l border-zinc-500/10">
-      <Flex direction="col" className="no-scrollbar w-full pl-3 pr-1">
+      <Flex direction="col" gap="sm" className="no-scrollbar w-full pl-3 pr-1">
         <Flex
           justify="between"
           items="center"
           direction="col"
-          className="w-full py-4"
+          className="w-full pb-2 pt-4"
           gap="sm"
         >
-          <Button size="sm" className="w-full" onClick={createSession}>
+          <Button
+            size="sm"
+            className="w-full"
+            onClick={() => {
+              !isChatPage && push("/chat");
+              createSession();
+            }}
+          >
             <Plus size={14} strokeWidth={2} /> New Chat
           </Button>
           <Button
@@ -106,6 +123,16 @@ export const HistorySidebar = () => {
             </Flex>
           </Button>
         </Flex>
+        <Button
+          variant={isAssistantPage ? "secondary" : "ghost"}
+          className="w-full justify-start gap-2 px-2"
+          onClick={() => {
+            push("/assistants");
+          }}
+        >
+          <ModelIcon type="assistants" size="sm" />
+          Explore Assistants
+        </Button>
 
         {isAllSessionLoading ? (
           <FullPageLoader />

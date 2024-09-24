@@ -1,6 +1,6 @@
 {
-  "id": "ef818c6f-b54e-49e1-98d3-1f99f9cba00a",
-  "prevId": "3ff9788a-4c4c-4a28-a5d9-ec3b3c7da333",
+  "id": "71deae06-951c-43bc-8f69-4fc75daa1b88",
+  "prevId": "ef818c6f-b54e-49e1-98d3-1f99f9cba00a",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -254,6 +254,60 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
+    },
+    "public.custom_assistants": {
+      "name": "custom_assistants",
+      "schema": "",
+      "columns": {
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "system_prompt": {
+          "name": "system_prompt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon_url": {
+          "name": "icon_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "start_message": {
+          "name": "start_message",
+          "type": "json",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "custom_assistants_key_unique": {
+          "name": "custom_assistants_key_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "key"
+          ]
+        }
+      }
     },
     "public.preferences": {
       "name": "preferences",

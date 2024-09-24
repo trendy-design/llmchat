@@ -1,6 +1,7 @@
 import { defaultPreferences } from "@/config";
 import { ExportData } from "@/lib/types/export";
 import { dataValidator } from "@/lib/utils/validator";
+import { TCustomAssistant } from "@/types";
 import moment from "moment";
 import { AssistantService } from "../assistants";
 import { PreferenceService } from "../preferences";
@@ -35,7 +36,8 @@ export class ExportService {
 
       const preferences = await this.preferencesService.getPreferences();
       const apiKeys = await this.preferencesService.getApiKeys();
-      const assistants = await this.assistantsService.getAssistants();
+      const assistants = await this.assistantsService.getLegacyAssistants();
+      const customAssistants = await this.assistantsService.getAllAssistant();
 
       dataValidator.parseAsync({
         preferences: { ...defaultPreferences, ...preferences },
@@ -43,6 +45,7 @@ export class ExportService {
         chatMessages: messages,
         chatSessions,
         assistants,
+        customAssistants,
       });
 
       return {
@@ -52,8 +55,9 @@ export class ExportService {
         chatSessions: chatSessions.map((session) => ({
           ...session,
           isExample: session.isExample ?? false,
+          customAssistant: session.customAssistant ?? null,
         })),
-        assistants,
+        customAssistants,
       };
     } catch (error) {
       console.error(error);
@@ -72,14 +76,15 @@ export class ExportService {
       const messages = parsedData.chatMessages;
       const preferences = parsedData.preferences;
       const apiKeys = parsedData.apiKeys;
-      const assistants = parsedData.assistants;
       const prompts = parsedData.prompts;
-
+      const customAssistants = parsedData.customAssistants;
       sessions &&
         (await sessionsService.addSessions(
           sessions?.map((session) => ({
             ...session,
             title: session.title ?? null,
+            customAssistant:
+              (session.customAssistant as TCustomAssistant) ?? null,
             createdAt: moment(session.createdAt).toDate(),
             updatedAt: moment(session.updatedAt).toDate(),
           })),
@@ -88,8 +93,8 @@ export class ExportService {
       prompts && (await this.promptsService.addPrompts(prompts));
       preferences && (await preferencesService.setPreferences(preferences));
       apiKeys && (await preferencesService.setApiKeys(apiKeys));
-
-      assistants && (await assistantsService.addAssistants(assistants));
+      customAssistants &&
+        (await assistantsService.addAssistants(customAssistants));
     } catch (error) {
       console.error(error);
       throw error;

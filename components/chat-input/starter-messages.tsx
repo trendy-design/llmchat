@@ -1,10 +1,18 @@
-import { examplePrompts } from "@/config";
 import { useChatContext } from "@/lib/context";
 import { slideUpVariant } from "@/lib/utils/animations";
 import { Flex, StaggerContainer, Type } from "@/ui";
 import { motion } from "framer-motion";
 
-export const ChatExamples = () => {
+export type StarterMessage = {
+  name: string;
+  content: string;
+};
+
+export type StarterMessages = {
+  messages: StarterMessage[];
+};
+
+export const StarterMessages = ({ messages }: StarterMessages) => {
   const { store } = useChatContext();
   const editor = store((state) => state.editor);
 
@@ -14,14 +22,14 @@ export const ChatExamples = () => {
       gap="lg"
       justify="center"
       items="center"
-      className="w-full py-3"
+      className="w-full py-1"
     >
       <Type size="xs" textColor="tertiary">
         Try these example prompts or craft your own message
       </Type>
       <StaggerContainer>
         <div className="flex flex-wrap justify-center gap-1.5 overflow-x-auto md:grid-cols-2">
-          {examplePrompts?.slice(0, 3)?.map((prompt, index) => (
+          {messages?.slice(0, 3)?.map((prompt, index) => (
             <motion.div key={prompt.name} variants={slideUpVariant}>
               <Flex
                 key={index}

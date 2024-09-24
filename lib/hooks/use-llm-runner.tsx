@@ -131,7 +131,9 @@ export const useLLMRunner = () => {
       image,
       memories: preferences.memories,
       hasMessages: allPreviousMessages.length > 0,
-      systemPrompt: injectPresetValues(assistant.systemPrompt),
+      systemPrompt:
+        session.customAssistant?.systemPrompt ||
+        injectPresetValues(assistant.systemPrompt),
     });
 
     const availableTools = getAvailableTools(selectedModelKey);
@@ -196,7 +198,8 @@ export const useLLMRunner = () => {
           input,
         },
         {
-          recursionLimit: 5,
+          maxConcurrency: 1,
+          recursionLimit: 3,
           callbacks: [
             {
               handleLLMStart: async () => {},

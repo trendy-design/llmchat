@@ -12,8 +12,15 @@
     {
       "idx": 1,
       "version": "7",
-      "when": 1726848772063,
-      "tag": "0001_great_marrow",
+      "when": 1726949019470,
+      "tag": "0001_steady_whiplash",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1727019900480,
+      "tag": "0002_soft_swordsman",
       "breakpoints": true
     }
   ]

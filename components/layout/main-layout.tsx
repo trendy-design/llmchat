@@ -30,7 +30,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     <div className="flex min-h-[98dvh] w-full flex-row gap-0.5 overflow-hidden bg-zinc-50 dark:bg-zinc-900">
       <Flex className="hidden lg:flex">
         <AnimatePresence>
-          {isChatPage && isSidebarOpen && <HistorySidebar />}
+          {!isSettingsPage && isSidebarOpen && <HistorySidebar />}
           {isSettingsPage && <SettingsSidebar />}
         </AnimatePresence>
       </Flex>

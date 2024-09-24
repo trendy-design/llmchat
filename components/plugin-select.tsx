@@ -81,7 +81,7 @@ export const PluginSelect: FC<TPluginSelect> = ({ selectedAssistantKey }) => {
         </PopoverTrigger>
       </Tooltip>
       <PopoverContent
-        className="mr-8 w-[380px] rounded-xl p-0 dark:bg-zinc-700"
+        className="mr-8 w-[320px] rounded-xl p-0 dark:bg-zinc-700"
         side="bottom"
         align="start"
       >

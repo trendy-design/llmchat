@@ -1,63 +1,54 @@
-import { TAssistant } from "@/lib/types";
-import { generateShortUUID } from "@/lib/utils/utils";
+import { TAssistant, TCustomAssistant } from "@/lib/types";
 import { getDB } from "@/libs/database/client";
 import { schema } from "@/libs/database/schema";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 export class AssistantService {
-  async getAssistants(): Promise<TAssistant[]> {
+  async getLegacyAssistants(): Promise<TAssistant[]> {
     const db = await getDB();
     const assistants = await db.select().from(schema.assistants);
     return assistants || [];
   }
 
-  async createAssistant(assistant: Omit<TAssistant, "key">) {
+  async createAssistant(
+    assistant: TCustomAssistant,
+  ): Promise<TCustomAssistant | null> {
     const db = await getDB();
-    const newAssistant = { ...assistant, key: generateShortUUID() };
-    await db
-      .insert(schema.assistants)
-      .values(newAssistant)
-      .onConflictDoUpdate({
-        target: schema.assistants.key,
-        set: {
-          ...newAssistant,
-        },
-      });
+    const newAssistant = await db
+      .insert(schema.customAssistants)
+      .values(assistant)
+      .returning();
+    return newAssistant?.[0] || null;
   }
 
-  async deleteAssistant(key: string) {
+  async addAssistants(assistants: TCustomAssistant[]): Promise<void> {
     const db = await getDB();
-    await db.delete(schema.assistants).where(eq(schema.assistants.key, key));
+    await db.insert(schema.customAssistants).values(assistants);
   }
-
   async updateAssistant(
-    assistantKey: string,
-    newAssistant: Omit<TAssistant, "key">,
-  ) {
+    key: string,
+    assistant: Partial<Omit<TCustomAssistant, "key">>,
+  ): Promise<TCustomAssistant | null> {
     const db = await getDB();
-    await db
-      .update(schema.assistants)
-      .set(newAssistant)
-      .where(eq(schema.assistants.key, assistantKey));
+    const updatedAssistant = await db
+      .update(schema.customAssistants)
+      .set(assistant)
+      .where(eq(schema.customAssistants.key, key))
+      .returning();
+    return updatedAssistant?.[0] || null;
+  }
+  async getAllAssistant(): Promise<TCustomAssistant[]> {
+    const db = await getDB();
+    const assistants = await db.select().from(schema.customAssistants);
+    return assistants || [];
   }
 
-  async addAssistants(assistants: TAssistant[]) {
+  async removeAssistant(key: string): Promise<void> {
     const db = await getDB();
+    console.log("key", key);
     await db
-      .insert(schema.assistants)
-      .values(assistants)
-      .onConflictDoUpdate({
-        target: schema.assistants.key,
-        set: {
-          name: sql`excluded.name`,
-          description: sql`excluded.description`,
-          baseModel: sql`excluded.baseModel`,
-          provider: sql`excluded.provider`,
-          systemPrompt: sql`excluded.systemPrompt`,
-          type: sql`excluded.type`,
-          iconURL: sql`excluded.iconURL`,
-        },
-      });
+      .delete(schema.customAssistants)
+      .where(eq(schema.customAssistants.key, key));
   }
 }
 

@@ -5,6 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useRootContext } from "@/libs/context/root";
+import { useEffect } from "react";
 import { ProviderSelect } from "./provider-select";
 import { AnthropicSettings } from "./settings/models/anthropic";
 import { GeminiSettings } from "./settings/models/gemini";
@@ -19,6 +20,12 @@ export const ApiKeyModal = () => {
     apiKeyModalProvider = "openai",
     setApiKeyModalProvider,
   } = useRootContext();
+
+  useEffect(() => {
+    if (!apiKeyModalProvider) {
+      setApiKeyModalProvider("openai");
+    }
+  }, [apiKeyModalProvider]);
 
   return (
     <Dialog open={openApiKeyModal} onOpenChange={setOpenApiKeyModal}>

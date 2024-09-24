@@ -16,6 +16,7 @@ const dalleFunction = (context: ToolExecutionContext) => {
     name: "image_generation",
     description: "Useful for when you asked for image based on description.",
     schema: dalleInputSchema,
+
     func: async ({ imageDescription }, runManager) => {
       try {
         const tool = new DallEAPIWrapper({
