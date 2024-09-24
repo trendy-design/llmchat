@@ -1,7 +1,6 @@
 
 ![og_6x](https://github.com/user-attachments/assets/4813a6b5-3294-4056-88bb-c536a45c220c)
-
-[demo.webm](https://github.com/user-attachments/assets/1c555c20-5adf-4c7b-8e55-96f5abcc3563)
+<img width="1512" alt="Screenshot 2024-09-24 at 8 48 40 AM" src="https://github.com/user-attachments/assets/2a64b0c4-5ce3-480c-a2e1-8a47319b1f3f">
 
 
 <h1 align="center">LLMChat</h1>
