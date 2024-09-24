@@ -1,35 +1,27 @@
 "use client";
 import { ChatInput } from "@/components/chat-input";
-import { FullPageLoader } from "@/components/full-page-loader";
+import { ChatTopNav } from "@/components/chat-input/chat-top-nav";
 import { ChatMessages } from "@/components/messages";
-import {
-  AssistantsProvider,
-  ChatProvider,
-  CommandsProvider,
-  PromptsProvider,
-  useSessions,
-} from "@/lib/context";
+import { ChatProvider, PromptsProvider, useSessions } from "@/lib/context";
+import { Flex } from "@/ui";
 
 const ChatSessionPage = () => {
-  const { isAllSessionLoading, activeSessionId } = useSessions();
-
-  const isLoading = isAllSessionLoading || !activeSessionId;
-
-  if (isLoading) return <FullPageLoader label="Initializing chat" />;
+  const { activeSessionId } = useSessions();
 
   return (
     <ChatProvider sessionId={activeSessionId}>
-      <CommandsProvider>
-        <AssistantsProvider>
-          <PromptsProvider>
-            <div className="relative flex h-[100%] w-full flex-row overflow-hidden">
-              <ChatMessages />
-
-              <ChatInput />
-            </div>
-          </PromptsProvider>
-        </AssistantsProvider>
-      </CommandsProvider>
+      <PromptsProvider>
+        <Flex className="w-full" direction="col">
+          <Flex
+            direction="row"
+            className="absolute top-0 z-20 w-full rounded-t-md border-b border-zinc-500/10 bg-zinc-25 dark:bg-zinc-800"
+          >
+            <ChatTopNav />
+          </Flex>
+          <ChatMessages />
+          <ChatInput />
+        </Flex>
+      </PromptsProvider>
     </ChatProvider>
   );
 };

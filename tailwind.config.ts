@@ -19,12 +19,12 @@ const config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-inter)"],
-        mono: ["var(--font-mono)"],
+        sans: ["var(--font-geist-sans)"],
+        mono: ["var(--font-geist-mono)"],
       },
       colors: {
         zinc: {
-          "25": "hsl(0, 0%, 97.5%, <alpha-value>)",
+          "25": "hsl(0, 0%, 99%, <alpha-value>)",
           "50": "hsl(0, 0%, 93.7%, <alpha-value>)",
           "100": "hsl(0, 0%, 87.8%, <alpha-value>)",
           "200": "hsl(0, 0%, 77%, <alpha-value>)",

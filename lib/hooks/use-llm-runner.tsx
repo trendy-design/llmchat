@@ -16,6 +16,7 @@ import { generateShortUUID } from "@/lib/utils/utils";
 import { AgentExecutor, createToolCallingAgent } from "langchain/agents";
 import moment from "moment";
 import { useAssistantUtils, useTools } from ".";
+import { useRootContext } from "../context/root";
 import { preferencesService } from "../services/preferences";
 import plausible from "../utils/plausible";
 
@@ -43,13 +44,13 @@ export const useLLMRunner = () => {
   const { preferences } = usePreferenceContext();
   const { getAvailableTools } = useTools();
   const { toast } = useToast();
+  const { setApiKeyModalProvider, setOpenApiKeyModal } = useRootContext();
 
   const invokeModel = async (config: TLLMRunConfig) => {
     if (!user && config.assistant.baseModel === "llmchat") {
       openSignIn();
       return;
     }
-    editor?.commands.clearContent();
     plausible.trackEvent("Generate", {
       props: {
         model: config.assistant.baseModel,
@@ -61,7 +62,6 @@ export const useLLMRunner = () => {
       refetch();
     }
     resetState();
-    setIsGenerating(true);
 
     const currentAbortController = new AbortController();
     setAbortController(currentAbortController);
@@ -86,6 +86,29 @@ export const useLLMRunner = () => {
     const messageLimit =
       preferences.messageLimit || defaultPreferences.messageLimit;
 
+    const selectedModelKey = getModelByKey(
+      modelKey,
+      assistant.provider as TProvider,
+    );
+    if (!selectedModelKey) {
+      throw new Error("Model not found");
+    }
+
+    const apiKey = await preferencesService.getApiKey(
+      selectedModelKey.provider,
+    );
+    if (
+      !apiKey?.key &&
+      !["ollama", "llmchat"].includes(selectedModelKey?.provider)
+    ) {
+      setIsGenerating(false);
+      setApiKeyModalProvider(selectedModelKey?.provider);
+      setOpenApiKeyModal(true);
+      return;
+    }
+    editor?.commands.clearContent();
+    setIsGenerating(true);
+
     setCurrentMessage({
       runConfig: config,
       id: newMessageId,
@@ -102,30 +125,6 @@ export const useLLMRunner = () => {
       isLoading: true,
       errorMessage: null,
     });
-
-    const selectedModelKey = getModelByKey(
-      modelKey,
-      assistant.provider as TProvider,
-    );
-    if (!selectedModelKey) {
-      throw new Error("Model not found");
-    }
-
-    const apiKey = await preferencesService.getApiKey(
-      selectedModelKey.provider,
-    );
-
-    if (
-      !apiKey?.key &&
-      !["ollama", "llmchat"].includes(selectedModelKey?.provider)
-    ) {
-      updateCurrentMessage({
-        isLoading: false,
-        stop: true,
-        stopReason: "apikey",
-      });
-      return;
-    }
 
     const prompt = await constructPrompt({
       context,

@@ -8,7 +8,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@radix-ui/react-accordion";
-import { ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { FC, forwardRef } from "react";
 import { AIMessage } from "./ai/ai-message";
 import { ContextMessage } from "./context-message";
@@ -24,25 +23,13 @@ const CustomTrigger = forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof AccordionTrigger>
 >(({ children, ...props }, ref) => (
-  <AccordionHeader className="flex w-full">
+  <AccordionHeader className="flex w-full rounded-xl p-2 hover:bg-zinc-50/50">
     <AccordionTrigger
       {...props}
       ref={ref}
-      className="group flex w-full items-end justify-between"
+      className="group flex w-full items-center justify-between"
     >
       <Flex className="w-full flex-1 items-start">{children}</Flex>
-      <Flex className="h-6 w-10 shrink-0 px-2" items="center" justify="center">
-        <ChevronsUpDown
-          size={20}
-          strokeWidth={1.5}
-          className="opacity-50 transition-transform duration-200 hover:opacity-100 group-data-[state=open]:hidden"
-        />
-        <ChevronsDownUp
-          size={20}
-          strokeWidth={1.5}
-          className="opacity-50 transition-transform duration-200 hover:opacity-100 group-data-[state=closed]:hidden"
-        />
-      </Flex>
     </AccordionTrigger>
   </AccordionHeader>
 ));
@@ -61,7 +48,7 @@ export const Message: FC<TMessage> = ({ message, isLast }) => {
         value={message.id}
         key={message.id}
         className={cn(
-          "flex w-full flex-col items-start gap-1 border-b border-zinc-500/15 py-8",
+          "flex w-full flex-col items-start gap-1 py-2",
           isLast && "border-b-0",
         )}
       >
@@ -74,7 +61,7 @@ export const Message: FC<TMessage> = ({ message, isLast }) => {
             <HumanMessage chatMessage={message} />
           </Flex>
         </CustomTrigger>
-        <AccordionContent className="w-full items-start">
+        <AccordionContent className="w-full items-start p-2">
           <AIMessage message={message} isLast={isLast} />
         </AccordionContent>
       </AccordionItem>

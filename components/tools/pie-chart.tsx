@@ -15,13 +15,12 @@ import { ErrorBoundary } from "./error-boundary";
 export type ChartComponentProps = z.infer<typeof pieChartSchema>;
 
 const colors = [
-  "hsl(var(--color-red-700-value))",
-  "hsl(var(--color-green-700-value))",
-  "hsl(var(--color-blue-700-value))",
-  "hsl(var(--color-amber-700-value))",
-  "hsl(var(--color-purple-700-value))",
-  "hsl(var(--color-pink-700-value))",
-  "hsl(var(--color-teal-700-value))",
+  "hsl(var(--color-red-600-value))",
+  "hsl(var(--color-blue-600-value))",
+  "hsl(var(--color-amber-600-value))",
+  "hsl(var(--color-purple-600-value))",
+  "hsl(var(--color-pink-600-value))",
+  "hsl(var(--color-teal-600-value))",
 ];
 
 export function PieChartComponent({
@@ -45,10 +44,7 @@ export function PieChartComponent({
         <Type size="sm" weight="medium">
           {title}
         </Type>
-        <ChartContainer
-          config={{}}
-          className="mx-auto aspect-square max-h-[350px]"
-        >
+        <ChartContainer config={{}} className="max-h-[350px]">
           <PieChart>
             <ChartTooltip
               cursor={false}

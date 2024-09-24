@@ -1,12 +1,10 @@
 import { useRef } from "react";
 
-import { ToolBadge } from "@/components/tools/tool-badge";
 import { Flex } from "@/components/ui";
 import { Mdx } from "@/components/ui/mdx";
 import { useChatContext } from "@/lib/context";
 import { useAssistantUtils } from "@/lib/hooks";
 import { TChatMessage } from "@/lib/types";
-import { BookOpenText } from "lucide-react";
 import { AIMessageActions } from "./ai-message-actions";
 import { AIMessageError } from "./ai-message-error";
 import { AIRelatedQuestions } from "./ai-related-questions";
@@ -34,24 +32,24 @@ export const AIMessage = ({ message, isLast }: TAIMessage) => {
   };
 
   return (
-    <div className="mt-6 flex w-full flex-col items-start md:flex-row">
-      {/* <Tooltip content={runConfig.assistant.name}>
-        <div className="p-2 md:px-3 md:py-2">
-          {getAssistantIcon(runConfig.assistant.key, "sm")}
-        </div>
-      </Tooltip> */}
-
+    <div className="mt-2 flex w-full flex-row items-start justify-start gap-3">
+      <Flex className="flex-shrink-0">
+        {getAssistantIcon(runConfig.assistant.key, "sm")}
+      </Flex>
       <Flex
         ref={messageRef}
         direction="col"
-        gap="xs"
+        gap="lg"
         items="start"
-        className="w-full flex-1"
+        className="min-w-0 flex-grow pb-8"
       >
-        {tools?.map((tool) => (
-          <AIToolMessage tool={tool} key={tool.toolName} />
-        ))}
-        {rawAI && <ToolBadge icon={BookOpenText} text={"Answer"} />}
+        {!!tools?.length && (
+          <Flex className="w-full gap-1 pb-2" direction="col">
+            {tools?.map((tool) => (
+              <AIToolMessage tool={tool} key={tool.toolName} />
+            ))}
+          </Flex>
+        )}
 
         <AISelectionProvider onSelect={handleSelection}>
           <Mdx

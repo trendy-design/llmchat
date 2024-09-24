@@ -1,5 +1,4 @@
 "use client";
-import { FullPageLoader } from "@/components/full-page-loader";
 import { TChatContext, TChatProvider } from "@/lib/types";
 import { FC, createContext, useContext, useEffect, useMemo } from "react";
 import { createChatStore } from "../store/chat/store";
@@ -41,14 +40,11 @@ export const ChatProvider: FC<TChatProvider> = ({ children, sessionId }) => {
     }
   }, [messages?.data]);
 
-  if (!currentSession?.data) {
-    return <FullPageLoader label="Initializing chat" />;
-  }
-
   return (
     <ChatContext.Provider
       value={{
         store,
+        isReady: !!currentSession?.data?.id,
         refetch: () => {
           currentSession?.refetch();
           messages?.refetch();

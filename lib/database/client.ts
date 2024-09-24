@@ -9,10 +9,13 @@ let pgClient: PGliteWorker;
 let dbInitializationPromise: Promise<ReturnType<typeof drizzle>>;
 
 export const getDB = async () => {
-  if (!dbInitializationPromise) {
-    dbInitializationPromise = (async () => {
-      const storedVersion = localStorage.getItem("dbVersion");
+  console.log(`✅ db initialization started 1`);
 
+  if (!dbInitializationPromise) {
+    const startTime = performance.now();
+    console.log(`✅ db initialization started 2`);
+
+    dbInitializationPromise = (async () => {
       pgClient = new PGliteWorker(
         new Worker(new URL("../worker/pg-lite-worker.js", import.meta.url), {
           type: "module",
@@ -22,15 +25,12 @@ export const getDB = async () => {
           meta: {},
         },
       );
-      await pgClient.waitReady;
+
       const db = drizzle(pgClient as any, { schema });
-
-      if (!storedVersion || parseInt(storedVersion) < CURRENT_DB_VERSION) {
-        await runMigrations(db);
-        localStorage.setItem("dbVersion", CURRENT_DB_VERSION.toString());
-      }
-
-      console.log("✅ db initialized");
+      await runMigrations(db);
+      const endTime = performance.now();
+      const loadTime = endTime - startTime;
+      console.log(`✅ db initialized in ${loadTime.toFixed(2)}ms`);
       return db;
     })();
   }

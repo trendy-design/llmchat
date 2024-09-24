@@ -96,8 +96,8 @@ const googleSearchToolDefinition: ToolDefinition = {
   renderComponent: ({ searchResults, query }) => {
     return <SearchResults searchResults={searchResults} query={query} />;
   },
-  loadingMessage: "Searching on Google...",
-  successMessage: "Google Search",
+  loadingMessage: "Searching on web...",
+  successMessage: "Web Search Results",
   icon: Globe,
   compactIcon: Globe,
 };

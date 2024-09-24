@@ -1,12 +1,14 @@
 import { useAssistantUtils } from "@/hooks";
-import { usePreferenceContext } from "@/libs/context";
+import { useAuth, usePreferenceContext } from "@/libs/context";
+import { useRootContext } from "@/libs/context/root";
 import { Button, Flex, Type } from "@/ui";
-import Link from "next/link";
+import { Plug } from "lucide-react";
 
 export const ApiKeyInfo = () => {
+  const { setOpenApiKeyModal, setApiKeyModalProvider } = useRootContext();
   const { apiKeys, preferences } = usePreferenceContext();
   const { getAssistantByKey } = useAssistantUtils();
-
+  const { open: openSignIn } = useAuth();
   const assistant = getAssistantByKey(preferences.defaultAssistant);
 
   const hasApiKeys =
@@ -16,21 +18,17 @@ export const ApiKeyInfo = () => {
 
   if (preferences.defaultAssistant === "llmchat") {
     return (
-      <Flex className="w-full py-1 pl-3 pr-1" justify="between" items="center">
+      <Flex className="w-full py-2 pl-3 pr-1" justify="between" items="center">
         <Type size="xs" textColor="secondary">
-          LLMChat: Free with limits in public beta. Add API keys for unlimited
-          use.
+          LLMChat is free to use with daily limits.{" "}
+          <span
+            className="inline-block cursor-pointer px-1 underline decoration-zinc-500/20 underline-offset-2"
+            onClick={openSignIn}
+          >
+            Sign in
+          </span>{" "}
+          required.
         </Type>
-        <Button
-          variant="link"
-          size="xs"
-          className="text-teal-600"
-          onClick={() => {
-            window.location.href = window.location.origin + "/settings/llms/";
-          }}
-        >
-          Add API Keys
-        </Button>
       </Flex>
     );
   }
@@ -39,30 +37,20 @@ export const ApiKeyInfo = () => {
     return null;
   }
   return (
-    <Flex className="w-full py-1 pl-3 pr-1" justify="between" items="center">
-      <Type size="xs" textColor="secondary">
-        Use your own {assistant?.model.provider} API key or try{" "}
-        <Link
-          href={window.location.origin + "/settings/llms/ollama"}
-          className="inline-block px-1 underline decoration-zinc-500/20 underline-offset-2"
+    <Flex className="p-2" justify="between" items="center">
+      {assistant?.model.provider && (
+        <Button
+          rounded="full"
+          size="xs"
+          className="px-3"
+          onClick={() => {
+            setOpenApiKeyModal(true);
+            setApiKeyModalProvider(assistant?.model.provider);
+          }}
         >
-          Ollama
-        </Link>{" "}
-        for unlimited local access.
-      </Type>
-      <Button
-        variant="link"
-        size="xs"
-        className="text-teal-600"
-        onClick={() => {
-          window.location.href =
-            window.location.origin +
-            "/settings/llms/" +
-            assistant?.model.provider;
-        }}
-      >
-        Add API Key
-      </Button>
+          <Plug size={14} /> Set API Key
+        </Button>
+      )}
     </Flex>
   );
 };

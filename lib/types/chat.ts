@@ -32,6 +32,7 @@ export type TChatState = {
 
 export type TChatContext = {
   store: UseBoundStore<StoreApi<TChatState>>;
+  isReady: boolean;
   refetch: () => void;
 };
 

@@ -16,6 +16,7 @@ export type TLegacyChatSession = {
 export type TChatSession = {
   title: string | null;
   id: string;
+  isExample?: boolean | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 };
