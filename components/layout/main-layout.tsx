@@ -9,7 +9,6 @@ import { ApiKeyModal } from "../api-key-modal";
 import { CommandSearch } from "../command-search";
 import { HistorySidebar } from "../history/history-side-bar";
 import { Toaster } from "../ui/toaster";
-import { SettingsSidebar } from "./settings-sidebar";
 
 export type MainLayoutProps = {
   children: React.ReactNode;
@@ -30,8 +29,8 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
     <div className="flex min-h-[98dvh] w-full flex-row gap-0.5 overflow-hidden bg-zinc-50 dark:bg-zinc-900">
       <Flex className="hidden lg:flex">
         <AnimatePresence>
-          {!isSettingsPage && isSidebarOpen && <HistorySidebar />}
-          {isSettingsPage && <SettingsSidebar />}
+          {isSidebarOpen && <HistorySidebar />}
+          {/* {isSettingsPage && <SettingsSidebar />} */}
         </AnimatePresence>
       </Flex>
       <Drawer.Root
@@ -44,8 +43,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
           <Drawer.Overlay className="fixed inset-0 z-30 bg-zinc-500/70 backdrop-blur-sm" />
           <Drawer.Content className={cn("fixed bottom-0 left-0 top-0 z-[50]")}>
             <Flex className="bg-zinc-50 pr-2">
-              {isChatPage && <HistorySidebar />}
-              {isSettingsPage && <SettingsSidebar />}
+              <HistorySidebar />
             </Flex>
           </Drawer.Content>
         </Drawer.Portal>
@@ -53,13 +51,7 @@ export const MainLayout = ({ children }: MainLayoutProps) => {
 
       <Flex className="w-full">
         <motion.div className="flex flex-1 gap-0 overflow-hidden p-0 md:px-2 md:pt-2">
-          <div
-            className={cn(
-              isSettingsPage ? settingsContainerClass : mainContainerClass,
-            )}
-          >
-            {children}
-          </div>
+          <div className={cn(mainContainerClass)}>{children}</div>
         </motion.div>
         <ApiKeyModal />
         <CommandSearch />
