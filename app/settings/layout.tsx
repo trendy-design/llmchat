@@ -31,11 +31,15 @@ export default function SettingsPage({
   return (
     <Flex
       justify="center"
-      className="no-scrollbar h-full w-full overflow-y-auto"
+      direction="col"
+      className="relative h-full w-full bg-white"
     >
       <SettingsTopNav />
-      <Flex className="relative w-[720px]">
-        <Flex className="w-full px-4 pt-16 md:p-8">{children}</Flex>
+
+      <Flex className="no-scrollbar h-full w-full flex-grow justify-center overflow-y-auto pb-24">
+        <Flex className="relative w-[700px]">
+          <Flex className="w-full px-4 pt-8 md:p-8">{children}</Flex>
+        </Flex>
       </Flex>
     </Flex>
   );

@@ -1,11 +1,10 @@
 import { TSettingMenu } from "@/app/settings/layout";
 import { cn } from "@/libs/utils/clsx";
-import { Button, Flex, Type } from "@/ui";
+import { Button, Flex } from "@/ui";
 import {
   AudioLines,
   Bolt,
   Brain,
-  ChevronLeft,
   Database,
   Sparkle,
   ToyBrick,
@@ -53,41 +52,38 @@ export const SettingsSidebar = () => {
     const isSelected = pathname.startsWith(menu.route);
     const Icon = menu.icon;
     return (
-      <Button
-        variant={isSelected ? "secondary" : "ghost"}
-        key={menu.route}
-        onClick={() => push(menu.route)}
-        className="w-full justify-start gap-2"
-      >
-        <Icon size={16} strokeWidth={2} className="dark:text-zinc-500" />
-        <span className={cn("font-medium md:flex")}>{menu.name}</span>
-      </Button>
+      <Flex direction="col" gap="sm">
+        <Button
+          variant={"ghost"}
+          key={menu.route}
+          size="sm"
+          onClick={() => push(menu.route)}
+          className="w-full justify-start gap-2"
+        >
+          <Icon
+            size={14}
+            strokeWidth={2}
+            className="opacity-50 dark:text-zinc-500"
+          />
+          <span className={cn("font-medium md:flex")}>{menu.name}</span>
+        </Button>
+        <Flex
+          className={cn(
+            "h-[2px] w-full bg-zinc-800 dark:bg-white",
+            isSelected ? "flex" : "hidden",
+          )}
+        />
+      </Flex>
     );
   };
 
   return (
-    <div className="relative flex h-[100dvh] w-[260px] flex-shrink-0 flex-row border-l border-zinc-500/10">
-      <Flex
-        direction="col"
-        gap="xs"
-        justify="start"
-        className="h-full w-[280px]"
-      >
-        <Flex
-          justify="between"
-          items="center"
-          className="mt-2 w-full cursor-pointer px-3 py-3"
-          onClick={() => push("/chat")}
-        >
-          <ChevronLeft size={16} strokeWidth={2} className="w-8" />
-          <Type className="w-full" size="sm" weight="medium">
-            Settings
-          </Type>
-        </Flex>
-        <Flex className="w-full px-3" direction="col" gap="xs">
-          {settingMenu.map(renderMenuItem)}
-        </Flex>
-      </Flex>
-    </div>
+    <Flex
+      direction="row"
+      gap="xs"
+      className="no-scrollbar w-full overflow-x-auto"
+    >
+      {settingMenu.map(renderMenuItem)}
+    </Flex>
   );
 };
