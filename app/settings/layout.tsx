@@ -32,7 +32,7 @@ export default function SettingsPage({
     <Flex
       justify="center"
       direction="col"
-      className="relative h-full w-full bg-white"
+      className="relative h-full w-full bg-white dark:bg-zinc-800"
     >
       <SettingsTopNav />
 

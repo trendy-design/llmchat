@@ -28,7 +28,7 @@ const AssistantPage = () => {
     return (
       <div
         key={assistant.key}
-        className="group relative flex cursor-pointer flex-col items-center gap-2 rounded-xl border px-4 pb-4 pt-6 hover:bg-zinc-50"
+        className="group relative flex cursor-pointer flex-col items-center gap-2 rounded-xl border px-4 pb-4 pt-6 hover:bg-zinc-50 dark:hover:bg-zinc-900"
       >
         {assistant.iconURL ? (
           <CustomAssistantAvatar
@@ -98,7 +98,7 @@ const AssistantPage = () => {
   return (
     <>
       <Flex
-        className="w-full border-b border-zinc-500/15 bg-zinc-25 px-2 py-2.5"
+        className="w-full border-b border-zinc-500/15 bg-zinc-25 px-2 py-2.5 dark:bg-zinc-800"
         items="center"
         gap="sm"
       >

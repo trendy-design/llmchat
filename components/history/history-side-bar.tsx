@@ -1,3 +1,4 @@
+import { configs } from "@/config/index";
 import { useAuth, useSessions } from "@/lib/context";
 import { sortSessions } from "@/lib/utils/utils";
 import { useRootContext } from "@/libs/context/root";
@@ -223,7 +224,7 @@ export const HistorySidebar = () => {
               textColor="secondary"
               className="px-1"
             >
-              v 1.2.3
+              v {configs.version}
             </Type>
           </Flex>
         </Flex>
