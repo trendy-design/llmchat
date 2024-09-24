@@ -12,8 +12,7 @@ import {
   Type,
 } from "@/ui";
 import { Pencil, Trash } from "lucide-react";
-import moment from "moment";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export const HistoryItem = ({
@@ -23,6 +22,7 @@ export const HistoryItem = ({
   session: TChatSession;
   dismiss: () => void;
 }) => {
+  const pathname = usePathname();
   const {
     updateSessionMutation,
     removeSessionMutation,
@@ -36,6 +36,7 @@ export const HistoryItem = ({
   const [title, setTitle] = useState(session.title);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const historyInputRef = useRef<HTMLInputElement>(null);
+  const isChatPage = pathname.startsWith("/chat");
 
   useEffect(() => {
     if (isEditing) {
@@ -72,8 +73,10 @@ export const HistoryItem = ({
   };
 
   const containerClasses = cn(
-    "gap-2 w-full group w-full cursor-pointer flex flex-row items-start py-2 pl-3 pr-2 rounded-lg hover:bg-zinc-500/10",
-    activeSessionId === session.id || isEditing ? "bg-zinc-500/10" : "",
+    "gap-2 w-full group w-full cursor-pointer flex flex-row items-center h-9 py-0.5 pl-2 pr-1 rounded-md hover:bg-zinc-500/10",
+    (activeSessionId === session.id && isChatPage) || isEditing
+      ? "bg-zinc-500/10"
+      : "",
   );
 
   const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -104,7 +107,7 @@ export const HistoryItem = ({
       {isEditing ? (
         <Input
           variant="ghost"
-          className="h-6 text-sm"
+          className="h-6 pl-0 text-sm"
           ref={historyInputRef}
           value={title || "Untitled"}
           onChange={handleInputChange}
@@ -114,17 +117,12 @@ export const HistoryItem = ({
       ) : (
         <>
           <Flex direction="col" items="start" className="w-full" gap="none">
-            <Type
-              className="line-clamp-1"
-              size="sm"
-              textColor="primary"
-              weight="medium"
-            >
+            <Type className="line-clamp-1" size="sm" textColor="primary">
               {session.title}
             </Type>
-            <Type className="line-clamp-1" size="xs" textColor="tertiary">
+            {/* <Type className="line-clamp-1" size="xs" textColor="tertiary">
               {moment(session.updatedAt).fromNow()}
-            </Type>
+            </Type> */}
           </Flex>
         </>
       )}
@@ -150,7 +148,7 @@ export const HistoryItem = ({
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="z-[1000]" side="bottom">
-                <p className="pb-2 text-sm font-medium md:text-base">
+                <p className="pb-2 text-sm font-medium">
                   Are you sure you want to delete this session?
                 </p>
                 <div className="flex flex-row gap-1">
@@ -162,7 +160,7 @@ export const HistoryItem = ({
                     Delete
                   </Button>
                   <Button
-                    variant="ghost"
+                    variant="secondary"
                     size="sm"
                     onClick={(e) => {
                       setOpenDeleteConfirm(false);

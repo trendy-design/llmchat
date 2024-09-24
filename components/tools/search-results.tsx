@@ -19,8 +19,6 @@ export const SearchResults = ({ searchResults, query }: TSearchResults) => {
 
   return (
     <Flex direction="col" gap="md" className="w-full">
-      {/* {query && <ToolBadge icon={Search01Icon} text={query} />} */}
-
       {Array.isArray(searchResults) && (
         <Flex
           gap="sm"

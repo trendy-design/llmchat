@@ -2,7 +2,10 @@
 import { sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/pglite";
 import migration1 from "./0000_tough_stingray.sql";
+import migration2 from "./0001_steady_whiplash.sql";
+import migration3 from "./0002_soft_swordsman.sql";
 import { runMigrationv1 } from "./migration_v1";
+import { runMigrationv2 } from "./migration_v2";
 
 export type Migration = {
   id: string;
@@ -19,38 +22,49 @@ export const migrations: Migration[] = [
     id: "runMigrationv1",
     run: runMigrationv1,
   },
+  {
+    id: "migration2",
+    sql: migration2,
+  },
+  {
+    id: "runMigrationv2",
+    run: runMigrationv2,
+  },
+  {
+    id: "migration3",
+    sql: migration3,
+  },
 ];
 
 export async function runMigrations(client: ReturnType<typeof drizzle>) {
   // Create a migrations table if it doesn't exist
   await client.execute(sql`
-          CREATE TABLE IF NOT EXISTS drizzle_migrations (
-            id SERIAL PRIMARY KEY,
-            migration_name TEXT NOT NULL UNIQUE,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-          );
-        `);
+    CREATE TABLE IF NOT EXISTS drizzle_migrations (
+      id SERIAL PRIMARY KEY,
+      migration_name TEXT NOT NULL UNIQUE,
+      created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );
+  `);
 
-  // Run migrations
+  const executedMigrations = await client.execute(sql`
+    SELECT migration_name FROM drizzle_migrations
+  `);
+  const executedMigrationSet = new Set(
+    executedMigrations.rows.map((row) => row.migration_name),
+  );
+
   for (const migration of migrations) {
-    const result = await client.execute(sql`
-            SELECT * FROM drizzle_migrations WHERE migration_name = ${migration.id}
-          `);
-
-    if (result.rows.length === 0) {
+    if (!executedMigrationSet.has(migration.id)) {
       try {
         if (migration.sql) {
-          // Execute the SQL directly if there's no breakpoint
-          if (!migration.sql.includes("--> statement-breakpoint")) {
-            await client.execute(sql.raw(migration.sql.trim()));
-          } else {
-            // Split and execute multiple statements if breakpoints exist
-            const statements = migration.sql.split("--> statement-breakpoint");
-            for (const statement of statements) {
-              const trimmedStatement = statement.trim();
-              if (trimmedStatement) {
-                await client.execute(sql.raw(trimmedStatement));
-              }
+          const statements = migration.sql.includes("--> statement-breakpoint")
+            ? migration.sql.split("--> statement-breakpoint")
+            : [migration.sql];
+
+          for (const statement of statements) {
+            const trimmedStatement = statement.trim();
+            if (trimmedStatement) {
+              await client.execute(sql.raw(trimmedStatement));
             }
           }
         }
@@ -63,7 +77,8 @@ export async function runMigrations(client: ReturnType<typeof drizzle>) {
           INSERT INTO drizzle_migrations (migration_name) VALUES (${migration.id})
         `);
       } catch (error) {
-        console.error(error);
+        console.error(`Error executing migration ${migration.id}:`, error);
+        throw error; // Stop execution if a migration fails
       }
     }
   }

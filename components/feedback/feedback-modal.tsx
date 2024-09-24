@@ -68,7 +68,7 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
       <DialogPortal>
         <DialogContent
           ariaTitle="Assistants"
-          className="!w-[450px] rounded-xl bg-white p-0 dark:border dark:border-white/10"
+          className="rounded-xl bg-white p-0 dark:border dark:border-white/10 md:w-[450px]"
         >
           <div className="relative w-full space-y-4">
             <Flex className="w-full p-4" gap="sm" items="center">
@@ -77,7 +77,7 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
                 Share your feedback
               </Type>
             </Flex>
-            <Flex gap="sm" direction="col" className="w-full px-3 pb-3">
+            <Flex gap="sm" direction="col" className="w-full px-6 pb-6">
               <Type size="sm" textColor="secondary">
                 We&apos;re always looking for ways to improve our product.
                 Please let us know what you think.

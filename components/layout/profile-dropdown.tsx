@@ -14,15 +14,7 @@ import {
   Type,
 } from "@/ui";
 import Avvvatars from "avvvatars-react";
-import {
-  Bolt,
-  CircleHelp,
-  Github,
-  LogOut,
-  Moon,
-  Sun,
-  Twitter,
-} from "lucide-react";
+import { CircleHelp, Github, LogOut, Moon, Sun, Twitter } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
@@ -56,14 +48,6 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
 
   const menuItems = [
     {
-      label: "Settings",
-      onClick: () => {
-        push("/settings/common");
-      },
-      icon: Bolt,
-    },
-
-    {
       label: "Support",
       onClick: () => {
         window.open("mailto:support@llmchat.co", "_blank");
@@ -94,8 +78,8 @@ export const ProfileDropdown: FC<ProfileDropdownProps> = ({ className }) => {
         <DropdownMenuContent
           className="min-w-[250px] p-1.5 text-sm md:text-base"
           align="end"
-          side="bottom"
-          sideOffset={4}
+          side="right"
+          sideOffset={8}
         >
           {user ? (
             <Flex className="items-center p-2" gap="md">

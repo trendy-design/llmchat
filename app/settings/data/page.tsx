@@ -72,7 +72,7 @@ export default function DataSettings() {
     <Flex direction="col" gap="xl" className="w-full">
       <SettingsContainer title="Manage your Data">
         <Flex direction="col" gap="md" className="w-full">
-          <SettingCard className="p-5">
+          <SettingCard className="py-5">
             <Flex items="center" justify="between">
               <Type textColor="primary" weight="medium">
                 Clear Chat History
@@ -122,7 +122,7 @@ export default function DataSettings() {
             </Flex>
           </SettingCard>
 
-          <SettingCard className="p-5">
+          <SettingCard className="py-5">
             <Flex items="center" justify="between">
               <Flex direction="col">
                 <Type textColor="primary" weight="medium">

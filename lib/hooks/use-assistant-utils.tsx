@@ -54,7 +54,6 @@ export const useAssistantUtils = () => {
           preferences.systemPrompt || defaultPreferences.systemPrompt,
       }),
     ),
-    ...(assistantQueries?.assistantsQuery.data || []),
   ];
 
   const getAssistantByKey = (

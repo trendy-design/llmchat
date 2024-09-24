@@ -29,17 +29,21 @@ export const FormLabel = ({
       className={cn("w-full", className)}
     >
       <Flex items="center" gap="sm" className="w-full">
-        <Type size="sm" textColor="secondary" weight="medium">
-          {label}
+        <Flex items="center" gap="xs">
+          <Type size="sm" weight="medium">
+            {label}
+          </Type>
           {isOptional && (
-            <span className="font-medium text-zinc-500"> (Optional)</span>
+            <Type size="xs" textColor="secondary">
+              (Optional)
+            </Type>
           )}
-        </Type>
+        </Flex>
         {link && (
           <Link
             href={link}
             target="_blank"
-            className="py-0.5 text-sm font-medium text-zinc-500 underline decoration-zinc-500/20 underline-offset-4 hover:opacity-90"
+            className="py-0.5 text-sm font-medium text-violet-500 underline decoration-zinc-500/20 underline-offset-4 hover:opacity-90"
           >
             {linkText}
           </Link>
@@ -47,7 +51,7 @@ export const FormLabel = ({
         {extra && extra()}
       </Flex>
       {children && (
-        <Type size="sm" textColor="secondary" weight="medium">
+        <Type size="xs" textColor="secondary">
           {children}
         </Type>
       )}

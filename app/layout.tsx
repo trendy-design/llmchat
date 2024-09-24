@@ -9,10 +9,10 @@ import {
 import { AuthProvider } from "@/libs/context/auth";
 import { RootProvider } from "@/libs/context/root";
 import { cn } from "@/libs/utils/clsx";
+import { GeistSans } from "geist/font/sans";
 import type { Viewport } from "next";
 import { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
-import { interVar } from "./fonts";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -75,10 +75,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  console.log(`✅ RootLayout`);
   return (
     <html
       lang="en"
-      className={cn(interVar.variable, "antialiased", "light")}
+      className={cn(GeistSans.className, "antialiased", "light")}
       suppressHydrationWarning
     >
       <head>

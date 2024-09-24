@@ -19,7 +19,7 @@ export const AIToolMessage = ({ tool }: AIToolMessageProps) => {
   const Icon = toolUsed.compactIcon;
 
   return (
-    <Flex direction="col" items="start" gap="sm" className="mb-4 w-full">
+    <Flex direction="col" items="start" gap="lg" className="w-full">
       <AiToolBlock tool={tool} definition={toolUsed} />
 
       {tool.renderData && toolUsed.renderComponent?.(tool.renderData)}

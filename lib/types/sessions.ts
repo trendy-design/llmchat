@@ -1,4 +1,5 @@
 import { useChatSessionQueries } from "@/libs/services/sessions/queries";
+import { TCustomAssistant } from "./assistants";
 import { TChatMessage } from "./messages";
 
 export type TSessionsState = {
@@ -16,6 +17,8 @@ export type TLegacyChatSession = {
 export type TChatSession = {
   title: string | null;
   id: string;
+  customAssistant?: TCustomAssistant | null;
+  isExample?: boolean | null;
   createdAt: Date | null;
   updatedAt: Date | null;
 };

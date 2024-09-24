@@ -16,6 +16,7 @@ const dalleFunction = (context: ToolExecutionContext) => {
     name: "image_generation",
     description: "Useful for when you asked for image based on description.",
     schema: dalleInputSchema,
+
     func: async ({ imageDescription }, runManager) => {
       try {
         const tool = new DallEAPIWrapper({
@@ -44,7 +45,8 @@ const dalleFunction = (context: ToolExecutionContext) => {
           executionResult: result,
           isLoading: false,
         });
-        const searchPrompt = "";
+        const searchPrompt =
+          "Only generate one image. Do not generate multiple images. and describe the image in detail.";
         return searchPrompt;
       } catch (error) {
         updateToolExecutionState({

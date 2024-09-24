@@ -29,25 +29,21 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
 
   return (
     <div className="relative w-full">
-      <Flex className="w-full items-start" gap="lg">
-        <Flex className="mt-1">
+      <Flex className="w-full items-start" gap="md">
+        <Flex className="mt-0.5">
           <Avvvatars
             displayValue={user?.email?.charAt(0) || "A"}
             value={user?.email || "LLMChat"}
             style={user?.email ? "character" : "shape"}
-            size={24}
+            size={26}
           />
         </Flex>
-        <Flex direction="col" className="flex-1">
+        <Flex direction="col" className="mt-1 flex-1" gap="sm">
           <Type
-            size="base"
             weight="medium"
-            className={cn(
-              "relative whitespace-break-spaces text-left leading-7",
-              {
-                "line-clamp-2": !isExpanded,
-              },
-            )}
+            className={cn("relative whitespace-break-spaces text-left", {
+              "line-clamp-2": !isExpanded,
+            })}
             ref={contentRef}
           >
             {rawHuman}
@@ -58,7 +54,7 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
                 setIsExpanded(!isExpanded);
                 e.stopPropagation();
               }}
-              className="items-center gap-1 py-1 opacity-60 hover:underline hover:opacity-100"
+              className="items-center gap-1 opacity-60 hover:underline hover:opacity-100"
             >
               {isExpanded ? (
                 <>

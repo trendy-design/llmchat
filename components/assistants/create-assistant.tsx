@@ -1,74 +1,82 @@
 import { useAssistantUtils, useImageAttachment } from "@/lib/hooks";
-import { TAssistant } from "@/lib/types";
+import { TCustomAssistant } from "@/lib/types";
+import { generateShortUUID } from "@/libs/utils/utils";
 import {
-  Badge,
   Button,
-  ComingSoon,
+  Dialog,
+  DialogContent,
+  DialogOverlay,
   Flex,
   FormLabel,
   Input,
   Textarea,
 } from "@/ui";
 import { useFormik } from "formik";
-import { Plus } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { Plus, Trash } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { ImageAttachment } from "../chat-input/image-attachment";
 import { ImageUpload } from "../chat-input/image-upload";
-import { ModelSelect } from "../model-select";
 
 export type TCreateAssistant = {
-  assistant?: TAssistant;
-  onCreateAssistant: (assistant: Omit<TAssistant, "key">) => void;
-  onUpdateAssistant: (assistant: TAssistant) => void;
-  onCancel: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  assistant?: TCustomAssistant;
 };
 
 export const CreateAssistant = ({
+  open,
+  onOpenChange,
   assistant,
-  onCreateAssistant,
-  onUpdateAssistant,
-  onCancel,
 }: TCreateAssistant) => {
   const botTitleRef = useRef<HTMLInputElement | null>(null);
-  const { assistants } = useAssistantUtils();
+  const { assistants, createAssistantMutation, updateAssistantMutation } =
+    useAssistantUtils();
 
   const { attachment, setAttachment, handleImageUpload, clearAttachment } =
     useImageAttachment();
 
-  const formik = useFormik<Omit<TAssistant, "key" | "provider" | "id">>({
+  const [updateAssistant, setUpdateAssistant] = useState<
+    TCustomAssistant | undefined
+  >(assistant);
+
+  const formik = useFormik<Omit<TCustomAssistant, "key">>({
     initialValues: {
-      description: assistant?.description || "",
-      name: assistant?.name || "",
-      systemPrompt: assistant?.systemPrompt || "",
-      iconURL: assistant?.iconURL || "",
-      baseModel: assistant?.baseModel || "gpt-3.5-turbo",
-      type: "custom",
+      description: updateAssistant?.description || "",
+      name: updateAssistant?.name || "",
+      systemPrompt: updateAssistant?.systemPrompt || "",
+      iconURL: updateAssistant?.iconURL || "",
+      startMessage: updateAssistant?.startMessage || [],
     },
     enableReinitialize: true,
     onSubmit: (values) => {
-      if (assistant?.key) {
-        const selectedAssistant = assistants.find(
-          (a) => a.baseModel === assistant?.baseModel,
+      if (updateAssistant?.key) {
+        updateAssistantMutation.mutate(
+          {
+            key: updateAssistant.key,
+            assistant: values as TCustomAssistant,
+          },
+          {
+            onSettled: () => {
+              onOpenChange(false);
+              setUpdateAssistant(undefined);
+            },
+          },
         );
-
-        selectedAssistant?.provider &&
-          onUpdateAssistant({
-            ...values,
-            key: assistant?.key,
-            provider: selectedAssistant?.provider,
-          });
       } else {
-        const selectedAssistant = assistants.find(
-          (a) => a.baseModel === values?.baseModel,
+        createAssistantMutation.mutate(
+          { ...values, key: generateShortUUID() },
+          {
+            onSuccess(data, variables, context) {
+              onOpenChange(false);
+              clearAssistant();
+            },
+            onError: (error) => {
+              // Log this error
+              console.error(error);
+            },
+          },
         );
-        selectedAssistant?.provider &&
-          onCreateAssistant({
-            ...values,
-            provider: selectedAssistant?.provider,
-          });
       }
-      clearAssistant();
-      onCancel();
     },
   });
 
@@ -78,9 +86,9 @@ export const CreateAssistant = ({
 
   useEffect(() => {
     setAttachment({
-      base64: assistant?.iconURL ?? undefined,
+      base64: updateAssistant?.iconURL ?? undefined,
     });
-  }, [assistant]);
+  }, [updateAssistant]);
 
   useEffect(() => {
     if (attachment) {
@@ -97,99 +105,140 @@ export const CreateAssistant = ({
     formik.setFieldValue("iconURL", "");
   };
 
+  const handleCancel = () => {
+    clearAssistant();
+    onOpenChange(false);
+  };
+
+  const handleAddStartMessage = () => {
+    if (formik.values.startMessage && formik.values.startMessage.length < 4) {
+      formik.setFieldValue("startMessage", [
+        ...(formik.values.startMessage || []),
+        "",
+      ]);
+    }
+  };
+
+  const handleRemoveStartMessage = (index: number) => {
+    const newStartMessages = formik.values.startMessage?.filter(
+      (_, i) => i !== index,
+    );
+    formik.setFieldValue("startMessage", newStartMessages);
+  };
+
   return (
-    <div className="relative flex h-full w-full flex-col items-start overflow-hidden rounded-lg bg-white dark:border dark:border-white/10 dark:bg-zinc-800">
-      <div className="flex w-full flex-row items-center gap-3 border-b border-zinc-500/20 px-4 py-3">
-        <p className="text-base font-medium">
-          {assistant?.key ? "Edit Assistant" : "Add New Assistant"}
-        </p>
-        <Badge>Beta</Badge>
-      </div>
-      <div className="no-scrollbar flex h-full w-full flex-col items-start gap-6 overflow-y-auto p-4 pb-[100px]">
-        <div className="flex w-full flex-row items-center justify-between gap-2">
-          <FormLabel label="Base Model" />
-          <ModelSelect
-            variant="secondary"
-            fullWidth
-            className="h-10 w-full justify-start p-2"
-            selectedModel={formik.values.baseModel}
-            setSelectedModel={(model) => {
-              formik.setFieldValue("baseModel", model);
-            }}
-          />
-        </div>
-
-        <div className="flex w-full flex-col gap-2">
-          <FormLabel label="Assistant Name" />
-          <Input
-            type="text"
-            name="name"
-            placeholder="Assistant Name"
-            value={formik.values.name}
-            ref={botTitleRef}
-            onChange={formik.handleChange}
-            className="w-full"
-          />
-        </div>
-
-        <Flex direction="col" gap="sm">
-          <FormLabel label="Icon" isOptional />
-          <Flex direction="row" gap="sm" items="center">
-            <ImageAttachment
-              attachment={attachment}
-              clearAttachment={handleClearAttachment}
-            />
-            <ImageUpload
-              label="Upload Icon"
-              handleImageUpload={handleImageUpload}
-              id="assistant-icon-upload"
-              tooltip="Upload Icon"
-              showIcon={false}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogOverlay className="fixed inset-0 z-[600] bg-zinc-500/50 dark:bg-zinc-900/50" />
+      <DialogContent
+        ariaTitle="Create Assistant"
+        onInteractOutside={(e) => e.preventDefault()}
+        className="no-scrollbar z-[605] mx-auto max-h-[90vh] w-full max-w-[450px] overflow-x-auto rounded-2xl bg-white p-5 dark:bg-zinc-800"
+      >
+        <h2 className="w-full border-b border-zinc-500/15 pb-4 text-base font-medium">
+          {updateAssistant?.key ? "Edit Assistant" : "Create Assistant"}
+        </h2>
+        <div className="space-y-4 overflow-y-auto">
+          <Flex direction="col" gap="sm">
+            <FormLabel label="Assistant Name" />
+            <Input
+              name="name"
+              placeholder="Assistant Name"
+              value={formik.values.name}
+              onChange={formik.handleChange}
             />
           </Flex>
-        </Flex>
 
-        <div className="flex w-full flex-col gap-2">
-          <FormLabel label="System Prompt">
-            Assign bot a role to help users understand what the bot can do.
-          </FormLabel>
-          <Textarea
-            name="systemPrompt"
-            onKeyDown={(e) => {
-              e.stopPropagation();
-            }}
-            placeholder="You're a helpful Assistant. Your role is to help users with their queries."
-            value={formik.values.systemPrompt}
-            onChange={formik.handleChange}
-            className="w-full"
-          />
+          <Flex direction="col" gap="sm">
+            <FormLabel label="Description" isOptional />
+            <Input
+              name="description"
+              placeholder="Description"
+              value={formik.values.description || ""}
+              onChange={formik.handleChange}
+            />
+          </Flex>
+
+          <Flex direction="col" gap="sm">
+            <FormLabel label="Avatar" isOptional />
+            <Flex direction="row" gap="sm" items="center">
+              <ImageAttachment
+                attachment={attachment}
+                clearAttachment={handleClearAttachment}
+              />
+              <ImageUpload
+                showIcon={false}
+                tooltip="Upload Avatar"
+                label="Upload"
+                handleImageUpload={handleImageUpload}
+                id="assistant-icon-upload"
+              />
+            </Flex>
+          </Flex>
+
+          <Flex direction="col" gap="sm">
+            <FormLabel label="System Prompt">
+              This will instruct the assistant on how to respond to user, how to
+              behave, and how to answer questions.
+            </FormLabel>
+            <Textarea
+              name="systemPrompt"
+              placeholder="You're a helpful Assistant. Your role is to help users with their queries."
+              value={formik.values.systemPrompt}
+              onChange={formik.handleChange}
+            />
+          </Flex>
+
+          <Flex direction="col" gap="sm">
+            <FormLabel label="Start Messages" isOptional>
+              This will help started conversation with the assistant.
+            </FormLabel>
+            {formik.values.startMessage?.map((message, index) => (
+              <Flex
+                key={index}
+                direction="row"
+                gap="sm"
+                items="center"
+                className="w-full"
+              >
+                <Input
+                  name={`startMessage.${index}`}
+                  placeholder={`Start message ${index + 1}`}
+                  value={message}
+                  className="flex-1"
+                  onChange={formik.handleChange}
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleRemoveStartMessage(index)}
+                >
+                  <Trash size={16} />
+                </Button>
+              </Flex>
+            ))}
+            {formik.values.startMessage &&
+              formik.values.startMessage?.length < 4 && (
+                <Button
+                  variant="bordered"
+                  size="sm"
+                  onClick={handleAddStartMessage}
+                  className="self-start"
+                >
+                  <Plus size={16} />
+                  Add Start Message
+                </Button>
+              )}
+          </Flex>
         </div>
-        <div className="flex w-full flex-col gap-2">
-          <FormLabel label="Knowledge">
-            Provide custom knowledge that your bot will access to inform its
-            responses. Your bot will retrieve relevant sections from the
-            knowledge base based on the user message. The data in the knowledge
-            base may be made viewable by other users through bot responses or
-            citations.
-          </FormLabel>
-          <Button variant="default" disabled={true} className="opacity-20">
-            <Plus size={20} strokeWidth={2} /> Add Knowledge <ComingSoon />
+        <div className="sticky bottom-0 mt-4 flex w-full justify-end gap-2 border-t bg-white pt-4">
+          <Button variant="ghost" onClick={handleCancel}>
+            Cancel
+          </Button>
+          <Button variant="default" onClick={() => formik.handleSubmit()}>
+            Save
           </Button>
         </div>
-      </div>
-      <div className="flex w-full flex-row items-center justify-between gap-1 border-t border-zinc-500/20 p-2">
-        <Button variant="ghost" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button
-          variant="default"
-          onClick={() => {
-            formik.handleSubmit();
-          }}
-        >
-          Save
-        </Button>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };

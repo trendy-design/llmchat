@@ -1,40 +1,13 @@
-import { TAssistant } from "@/lib/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { TCustomAssistant } from "@/lib/types";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { assistantService } from "./client";
 
 export const useAssistantsQueries = () => {
+  const queryClient = useQueryClient();
+
   const assistantsQuery = useQuery({
-    queryKey: ["assistants"],
-    queryFn: () => assistantService.getAssistants(),
-  });
-
-  const createAssistantMutation = useMutation({
-    mutationFn: (assistant: Omit<TAssistant, "key">) =>
-      assistantService.createAssistant(assistant),
-    onSuccess: () => {
-      assistantsQuery.refetch();
-    },
-  });
-
-  const deleteAssistantMutation = useMutation({
-    mutationFn: (assistantKey: string) =>
-      assistantService.deleteAssistant(assistantKey),
-    onSuccess: () => {
-      assistantsQuery.refetch();
-    },
-  });
-
-  const updateAssistantMutation = useMutation({
-    mutationFn: ({
-      assistantKey,
-      newAssistant,
-    }: {
-      assistantKey: string;
-      newAssistant: Omit<TAssistant, "key">;
-    }) => assistantService.updateAssistant(assistantKey, newAssistant),
-    onSuccess: () => {
-      assistantsQuery.refetch();
-    },
+    queryKey: ["custom-assistants"],
+    queryFn: () => assistantService.getAllAssistant(),
   });
 
   const useOllamaModelsQuery = (baseUrl: string) =>
@@ -43,11 +16,54 @@ export const useAssistantsQueries = () => {
       queryFn: () => fetch(`${baseUrl}/api/tags`).then((res) => res.json()),
       enabled: !!baseUrl,
     });
+
+  const createAssistantMutation = useMutation({
+    mutationFn: (assistant: TCustomAssistant) =>
+      assistantService.createAssistant(assistant),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["custom-assistants"] });
+      assistantsQuery.refetch();
+    },
+  });
+
+  const updateAssistantMutation = useMutation({
+    mutationFn: ({
+      key,
+      assistant,
+    }: {
+      key: string;
+      assistant: Partial<Omit<TCustomAssistant, "key">>;
+    }) => assistantService.updateAssistant(key, assistant),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["custom-assistants"] });
+      assistantsQuery.refetch();
+    },
+  });
+
+  const removeAssistantMutation = useMutation({
+    mutationFn: async (key: string) => {
+      console.log("mutation key", key);
+      await assistantService.removeAssistant(key);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["custom-assistants"] });
+      assistantsQuery.refetch();
+    },
+  });
+
+  const addAssistantsMutation = useMutation({
+    mutationFn: (assistants: TCustomAssistant[]) =>
+      assistantService.addAssistants(assistants),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["custom-assistants"] });
+      assistantsQuery.refetch();
+    },
+  });
   return {
     assistantsQuery,
+    useOllamaModelsQuery,
     createAssistantMutation,
     updateAssistantMutation,
-    deleteAssistantMutation,
-    useOllamaModelsQuery,
+    removeAssistantMutation,
   };
 };
