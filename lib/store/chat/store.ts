@@ -9,6 +9,7 @@ const initialState = {
   context: undefined,
   editor: undefined,
   isGenerating: false,
+  isInitialized: false,
   abortController: undefined,
 };
 
@@ -16,7 +17,12 @@ export const createChatStore = () =>
   create<TChatState>((set, get) => ({
     ...initialState,
     setSession: (session) => set({ session }),
-    setMessages: (messages) => set({ messages }),
+    setMessages: (messages) => {
+      set({ messages });
+      if (messages.length > 0) {
+        set({ isInitialized: true });
+      }
+    },
     updateCurrentMessage: (message) => {
       const { currentMessage } = get();
       if (currentMessage) {
@@ -24,9 +30,14 @@ export const createChatStore = () =>
         set({ currentMessage: { ...currentMessage, ...newMessage } });
       }
     },
+    setIsInitialized: (isInitialized) => set({ isInitialized }),
     removeLastMessage: () => {
       const { messages } = get();
-      set({ messages: messages.slice(0, -1) });
+      const newMessages = messages.slice(0, -1);
+      set({ messages: newMessages });
+      if (newMessages.length === 0) {
+        set({ isInitialized: false });
+      }
     },
     setTools: (tools) => set({ currentTools: tools }),
     addTool: (tool) => {
@@ -78,5 +89,6 @@ export const createChatStore = () =>
         messages: messageExists ? updatedMessages : [...messages, message],
       });
     },
+
     setContext: (context) => set({ context }),
   }));

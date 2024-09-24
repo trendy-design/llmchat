@@ -12,7 +12,7 @@ import {
   Type,
 } from "@/ui";
 import { Pencil, Trash } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export const HistoryItem = ({
@@ -22,6 +22,7 @@ export const HistoryItem = ({
   session: TChatSession;
   dismiss: () => void;
 }) => {
+  const pathname = usePathname();
   const {
     updateSessionMutation,
     removeSessionMutation,
@@ -35,6 +36,7 @@ export const HistoryItem = ({
   const [title, setTitle] = useState(session.title);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const historyInputRef = useRef<HTMLInputElement>(null);
+  const isChatPage = pathname.startsWith("/chat");
 
   useEffect(() => {
     if (isEditing) {
@@ -72,7 +74,9 @@ export const HistoryItem = ({
 
   const containerClasses = cn(
     "gap-2 w-full group w-full cursor-pointer flex flex-row items-center h-9 py-0.5 pl-2 pr-1 rounded-md hover:bg-zinc-500/10",
-    activeSessionId === session.id || isEditing ? "bg-zinc-500/10" : "",
+    (activeSessionId === session.id && isChatPage) || isEditing
+      ? "bg-zinc-500/10"
+      : "",
   );
 
   const handleEditClick = (e: React.MouseEvent<HTMLButtonElement>) => {

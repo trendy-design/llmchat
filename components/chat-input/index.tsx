@@ -38,15 +38,13 @@ export const ChatInput = () => {
   const { invokeModel } = useLLMRunner();
   const { editor } = useChatEditor();
   const session = store((state) => state.session);
-  const messages = store((state) => state.messages);
-  const currentMessage = store((state) => state.currentMessage);
-  const isGenerating = store((state) => state.isGenerating);
+  const isInitialized = store((state) => state.isInitialized);
+  const setIsInitialized = store((state) => state.setIsInitialized);
   const context = store((state) => state.context);
   const { attachment, clearAttachment, handleImageUpload, dropzonProps } =
     useImageAttachment();
 
-  const isFreshSession =
-    messages.length === 0 && !currentMessage?.id && !isGenerating && session;
+  const isFreshSession = !isInitialized;
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -60,6 +58,7 @@ export const ChatInput = () => {
     if (!isReady) return;
     const props = getAssistantByKey(preferences.defaultAssistant);
     if (!props || !session) return;
+    setIsInitialized(true);
 
     invokeModel({
       input,
