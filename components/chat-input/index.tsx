@@ -6,6 +6,7 @@ import {
 } from "@/lib/context";
 import {
   useAssistantUtils,
+  useAttachment,
   useChatEditor,
   useImageAttachment,
   useLLMRunner,
@@ -42,8 +43,19 @@ export const ChatInput = () => {
   const currentMessage = store((state) => state.currentMessage);
   const isGenerating = store((state) => state.isGenerating);
   const context = store((state) => state.context);
-  const { attachment, clearAttachment, handleImageUpload, dropzonProps } =
-    useImageAttachment();
+  const {
+    attachment: imageAttachment,
+    clearAttachment: clearImageAttachment,
+    handleImageUpload,
+    dropzonProps,
+  } = useImageAttachment();
+  const {
+    attachment: fileAttachment,
+    renderFileUpload,
+    renderAttachedFile,
+    clearAttachment: clearFileAttachment,
+    content: fileContent,
+  } = useAttachment();
 
   const isFreshSession =
     messages.length === 0 && !currentMessage?.id && !isGenerating && session;
@@ -61,14 +73,26 @@ export const ChatInput = () => {
     const props = getAssistantByKey(preferences.defaultAssistant);
     if (!props || !session) return;
 
+    console.log("fileContent", fileContent);
+    console.log("fileAttachment", fileAttachment);
+
     invokeModel({
       input,
       context,
-      image: attachment?.base64,
+      attachment: fileContent
+        ? {
+            attachmentName: fileAttachment?.file?.name,
+            attachmentType: fileAttachment?.file?.type,
+            attachmentSize: fileAttachment?.file?.size,
+            attachmentContent: fileContent,
+          }
+        : undefined,
+      image: imageAttachment?.base64,
       sessionId: session.id,
       assistant: props.assistant,
     });
-    clearAttachment();
+    clearImageAttachment();
+    clearFileAttachment();
   };
 
   const chatInputBackgroundContainer = cn(
@@ -114,15 +138,17 @@ export const ChatInput = () => {
             <ImageDropzoneRoot dropzoneProps={dropzonProps}>
               <Flex direction="col" className="w-full">
                 <ImageAttachment
-                  attachment={attachment}
-                  clearAttachment={clearAttachment}
+                  attachment={imageAttachment}
+                  clearAttachment={clearImageAttachment}
                 />
+                {renderAttachedFile()}
                 <Flex className="flex w-full flex-row items-end gap-0 py-2 pl-2 pr-2 md:pl-3">
                   <ChatEditor sendMessage={sendMessage} editor={editor} />
                 </Flex>
                 <ChatActions
                   sendMessage={sendMessage}
                   handleImageUpload={handleImageUpload}
+                  renderFileUpload={renderFileUpload}
                 />
               </Flex>
             </ImageDropzoneRoot>

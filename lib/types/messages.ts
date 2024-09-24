@@ -14,8 +14,17 @@ export const stopReasons = [
 
 export type TStopReason = (typeof stopReasons)[number];
 
+export type TFileAttachment = {
+  attachmentName?: string;
+  attachmentType?: string;
+  attachmentSize?: number;
+  attachmentTokenCount?: number;
+  attachmentContent?: string;
+};
+
 export type TLLMRunConfig = {
   context?: string;
+  attachment?: TFileAttachment;
   input?: string;
   image?: string;
   sessionId: string;

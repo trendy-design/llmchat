@@ -24,7 +24,8 @@ const lineChartFunction = (context: ToolExecutionContext) => {
 
   return new DynamicStructuredTool({
     name: "line_chart",
-    description: "Generate a multi-line chart from provided data",
+    description:
+      "Generate a multi-line chart from provided data. For large datasets (e.g., from CSV uploads), automatically summarize or sample the data to show trends while maintaining performance.",
     schema: lineChartSchema,
     func: async ({ title, xData, xLabel, ySeriesData }, runManager) => {
       try {

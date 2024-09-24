@@ -11,7 +11,6 @@ export type TChatEditor = {
 export const ChatEditor: FC<TChatEditor> = ({ sendMessage, editor }) => {
   const { store, isReady } = useChatContext();
   const isGenerating = store((state) => state.isGenerating);
-  console.log("editor", editor);
 
   if (!editor) return null;
 

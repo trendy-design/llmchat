@@ -7,11 +7,13 @@ import { ImageUpload } from "./image-upload";
 export type TChatActions = {
   sendMessage: (message: string) => void;
   handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  renderFileUpload: () => React.ReactNode;
 };
 
 export const ChatActions = ({
   sendMessage,
   handleImageUpload,
+  renderFileUpload,
 }: TChatActions) => {
   const { store, isReady } = useChatContext();
   const isGenerating = store((state) => state.isGenerating);
@@ -49,6 +51,7 @@ export const ChatActions = ({
             <Book size={16} strokeWidth="2" />
           </Button>
         </Tooltip>
+        {/* {renderFileUpload()} */}
       </Flex>
 
       <Flex gap="xs" items="center">

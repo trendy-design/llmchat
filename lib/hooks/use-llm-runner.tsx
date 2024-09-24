@@ -65,7 +65,15 @@ export const useLLMRunner = () => {
 
     const currentAbortController = new AbortController();
     setAbortController(currentAbortController);
-    const { sessionId, messageId, input, context, image, assistant } = config;
+    const {
+      sessionId,
+      messageId,
+      input,
+      context,
+      image,
+      assistant,
+      attachment,
+    } = config;
     const newMessageId = messageId || generateShortUUID();
     const modelKey = assistant.baseModel;
     const session = await sessionsService.getSessionById(sessionId);
@@ -129,6 +137,8 @@ export const useLLMRunner = () => {
     const prompt = await constructPrompt({
       context,
       image,
+      attachment,
+
       memories: preferences.memories,
       hasMessages: allPreviousMessages.length > 0,
       systemPrompt:

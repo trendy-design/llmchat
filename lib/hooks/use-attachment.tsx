@@ -1,28 +1,51 @@
+import { AttachmentCard } from "@/components/messages/attachment-card";
 import { TAttachment } from "@/lib/types";
 import { Button, useToast } from "@/ui";
-import { FileText, X } from "lucide-react";
+import { Paperclip } from "lucide-react";
 import { ChangeEvent, useState } from "react";
+import { generateShortUUID } from "../utils/utils";
 
 export const useAttachment = () => {
   const [attachment, setAttachment] = useState<TAttachment>();
+  const [content, setContent] = useState<string>("");
   const { toast } = useToast();
 
   const clearAttachment = () => {
     setAttachment(undefined);
   };
 
-  const handlePdfUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
-    const fileTypes = ["application/pdf"];
+    const fileTypes = ["text/csv", "text/plain", "application/pdf"];
     if (file && !fileTypes.includes(file?.type)) {
       toast({
         title: "Invalid format",
-        description: "Please select a valid PDF file.",
+        description: "Please select a valid CSV or TXT file.",
         variant: "destructive",
       });
       return;
     }
+
+    const fileWorker = new Worker(
+      new URL("../worker/worker.ts", import.meta.url),
+    );
+
+    console.log("file worker", fileWorker);
+    fileWorker.postMessage({ file, documentId: generateShortUUID() });
+
+    fileWorker.onmessage = (e) => {
+      if (e.data.error) {
+        toast({
+          title: "Error",
+          description: e.data.error,
+          variant: "destructive",
+        });
+      }
+      if (e.data.content) {
+        setContent(e.data.content);
+      }
+    };
 
     if (file) {
       setAttachment((prev) => ({
@@ -33,39 +56,35 @@ export const useAttachment = () => {
   };
 
   const handleFileSelect = () => {
-    document.getElementById("pdf-fileInput")?.click();
+    document.getElementById("fileInputrt")?.click();
   };
 
-  const renderAttachedPdf = () => {
-    if (attachment?.file) {
-      return (
-        <div className="relative flex h-[60px] min-w-[60px] items-center justify-center rounded-xl border border-white/5 shadow-md">
-          <FileText size={24} />
-          <Button
-            size={"iconXS"}
-            variant="default"
-            onClick={clearAttachment}
-            className="absolute right-[-4px] top-[-4px] z-10 h-4 w-4 flex-shrink-0"
-          >
-            <X size={12} strokeWidth={2} />
-          </Button>
-        </div>
-      );
-    }
+  const renderAttachedFile = () => {
+    if (!attachment) return null;
+    return (
+      <AttachmentCard
+        attachment={{
+          attachmentContent: content,
+          attachmentName: attachment?.file?.name,
+          attachmentSize: attachment?.file?.size,
+          attachmentType: attachment?.file?.type,
+        }}
+        onClear={clearAttachment}
+      />
+    );
   };
 
-  const renderPdfFileUpload = () => {
+  const renderFileUpload = () => {
     return (
       <>
         <input
           type="file"
-          id="pdf-fileInput"
+          id="fileInputrt"
           className="hidden"
-          onChange={handlePdfUpload}
+          onChange={handleFileUpload}
         />
-        <Button onClick={handleFileSelect}>
-          <FileText size={16} strokeWidth={1.5} />
-          Upload PDF
+        <Button onClick={handleFileSelect} variant="ghost" size={"iconXS"}>
+          <Paperclip size={16} strokeWidth={2} />
         </Button>
       </>
     );
@@ -73,10 +92,11 @@ export const useAttachment = () => {
 
   return {
     attachment,
-    handlePdfUpload,
+    handleFileUpload,
     handleFileSelect,
     clearAttachment,
-    renderAttachedPdf,
-    renderPdfFileUpload,
+    renderAttachedFile,
+    renderFileUpload,
+    content,
   };
 };

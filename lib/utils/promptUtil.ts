@@ -9,8 +9,10 @@ import {
 import { sortMessages } from "./utils";
 
 const constructPrompt = async (props: TConstructPrompt) => {
-  const { context, image, hasMessages, memories, systemPrompt } = props;
+  const { context, image, hasMessages, memories, systemPrompt, attachment } =
+    props;
   const messagePlaceholders = new MessagesPlaceholder("chat_history");
+  console.log("attachment", attachment);
 
   const memoryPrompt =
     memories?.length > 0 ? `Things to remember:\n${memories.join("\n")}` : "";
@@ -31,6 +33,10 @@ const constructPrompt = async (props: TConstructPrompt) => {
     context
       ? `Answer user's question based on the following context: """{context}"""`
       : ``
+  }${
+    attachment?.attachmentContent
+      ? `\n\nHere's additional information from an attachment:\n${attachment?.attachmentContent}`
+      : ""
   }`;
 
   const userMessageContent = image

@@ -10,6 +10,7 @@ import {
 } from "@radix-ui/react-accordion";
 import { FC, forwardRef } from "react";
 import { AIMessage } from "./ai/ai-message";
+import { AttachmentCard } from "./attachment-card";
 import { ContextMessage } from "./context-message";
 import { HumanMessage } from "./human-message";
 import { ImageMessage } from "./image-message";
@@ -57,6 +58,10 @@ export const Message: FC<TMessage> = ({ message, isLast }) => {
             <ImageMessage image={message.runConfig?.image} />
 
             <ContextMessage context={message.runConfig?.context} />
+
+            {!!message.runConfig?.attachment && (
+              <AttachmentCard attachment={message.runConfig?.attachment} />
+            )}
 
             <HumanMessage chatMessage={message} />
           </Flex>
