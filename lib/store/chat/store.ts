@@ -21,6 +21,8 @@ export const createChatStore = () =>
       set({ messages });
       if (messages.length > 0) {
         set({ isInitialized: true });
+      } else {
+        set({ isInitialized: false });
       }
     },
     updateCurrentMessage: (message) => {
