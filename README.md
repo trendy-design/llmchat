@@ -1,5 +1,9 @@
 
-<img width="1512" alt="Screenshot 2024-09-24 at 8 48 40 AM" src="https://github.com/user-attachments/assets/2a64b0c4-5ce3-480c-a2e1-8a47319b1f3f"><br>
+  <div style="margin: 10px;">
+    <img width="1500" alt="Screenshot 2024-09-25 at 8 52 53 AM" src="https://github.com/user-attachments/assets/d558b8f2-37ea-4a6d-b6ec-969d56cad103">
+  </div><br>
+
+
 
 <p align="center">
   <img width="160" alt="LLMChat logo" src="https://github.com/user-attachments/assets/ea0535c8-37ee-4d5f-8db2-e15d5bc1decb">
