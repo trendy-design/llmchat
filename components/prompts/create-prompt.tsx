@@ -87,7 +87,7 @@ export const CreatePrompt = ({
     <div className="relative flex h-full w-full flex-col items-start overflow-hidden">
       <div className="flex w-full flex-row items-center gap-3 border-b border-zinc-500/20 px-2 py-2">
         <Button
-          size="iconSm"
+          size="icon-sm"
           variant="ghost"
           onClick={() => {
             onOpenChange(false);

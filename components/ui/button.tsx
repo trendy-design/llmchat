@@ -3,6 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import * as React from "react";
 
 import { cn } from "@/lib/utils/clsx";
+import { LucideIcon } from "@/libs/types/icons";
 
 const buttonVariants = cva(
   "inline-flex items-center gap-1 justify-center font-medium whitespace-nowrap rounded-md transition-colors focus-visible:outline-none ",
@@ -32,9 +33,9 @@ const buttonVariants = cva(
         md: "h-11 px-4 text-xs md:text-sm font-semibold",
         lg: "h-12 md:h-14  px-8 text-xs md:text-base font-semibold",
         icon: "h-9 min-w-9 text-xs md:text-sm",
-        iconSm: "h-8 min-w-8 text-xs md:text-sm",
-        iconXS: "h-7 min-w-7 text-xs md:text-sm",
-        linkSm: "p-0 text-xs",
+        "icon-sm": "h-8 min-w-8 text-xs md:text-sm",
+        "icon-xs": "h-7 min-w-7 text-xs md:text-sm",
+        "link-sm": "p-0 text-xs",
         link: "p-0",
       },
       rounded: {
@@ -55,17 +56,55 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
+  suffixIcon?: LucideIcon;
+  icon?: LucideIcon;
+  iconSize?: "xs" | "sm" | "md" | "lg";
+  prefixIcon?: LucideIcon;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, rounded, asChild = false, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      size,
+      iconSize = "sm",
+      rounded,
+      asChild = false,
+      prefixIcon,
+      suffixIcon,
+      icon,
+      children,
+      ...props
+    },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : "button";
+    const PrefixIcon = prefixIcon;
+    const SuffixIcon = suffixIcon;
+    const Icon = icon;
+
+    const iconSizes = {
+      xs: 12,
+      sm: 14,
+      md: 16,
+      lg: 18,
+    } as const;
+
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, rounded, className }))}
         ref={ref}
         {...props}
-      />
+      >
+        {PrefixIcon && (
+          <PrefixIcon size={iconSizes[iconSize]} strokeWidth={2} />
+        )}
+        {Icon ? <Icon size={iconSizes[iconSize]} strokeWidth={2} /> : children}
+        {SuffixIcon && (
+          <SuffixIcon size={iconSizes[iconSize]} strokeWidth={2} />
+        )}
+      </Comp>
     );
   },
 );

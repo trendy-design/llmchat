@@ -27,7 +27,7 @@ export const ImageAttachment: FC<TImageAttachment> = ({
         />
 
         <Button
-          size={"iconXS"}
+          size={"icon-xs"}
           variant="default"
           onClick={clearAttachment}
           className="absolute right-[-4px] top-[-4px] z-10 h-4 w-4 flex-shrink-0"

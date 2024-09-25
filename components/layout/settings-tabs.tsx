@@ -1,6 +1,7 @@
 import { TSettingMenu } from "@/app/settings/layout";
 import { cn } from "@/libs/utils/clsx";
 import { Button, Flex } from "@/ui";
+import { motion } from "framer-motion";
 import {
   AudioLines,
   Bolt,
@@ -11,7 +12,7 @@ import {
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 
-export const SettingsSidebar = () => {
+export const SettingsTabs = () => {
   const { push } = useRouter();
   const pathname = usePathname();
 
@@ -52,7 +53,7 @@ export const SettingsSidebar = () => {
     const isSelected = pathname.startsWith(menu.route);
     const Icon = menu.icon;
     return (
-      <Flex direction="col" gap="sm">
+      <Flex direction="col" gap="sm" className="relative pb-2">
         <Button
           variant={"ghost"}
           key={menu.route}
@@ -67,12 +68,18 @@ export const SettingsSidebar = () => {
           />
           <span className={cn("font-medium md:flex")}>{menu.name}</span>
         </Button>
-        <Flex
-          className={cn(
-            "h-[2px] w-full bg-zinc-800 dark:bg-white",
-            isSelected ? "flex" : "hidden",
-          )}
-        />
+        {isSelected && (
+          <motion.div
+            className="absolute bottom-0 left-0 right-0 h-[2px] bg-zinc-800 dark:bg-white"
+            layoutId="underline"
+            initial={false}
+            transition={{
+              type: "spring",
+              stiffness: 500,
+              damping: 30,
+            }}
+          />
+        )}
       </Flex>
     );
   };

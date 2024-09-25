@@ -110,33 +110,38 @@ export const AssistantModal: FC<TAssitantModal> = ({
               value={openProviders}
               onValueChange={(val) => setOpenProviders(val)}
             >
-              {providers?.map((provider) => {
-                return (
-                  <CommandGroup key={provider} value={provider}>
-                    <AccordionItem
-                      value={provider}
-                      className="!border-t !border-b-transparent"
-                    >
-                      <AccordionTrigger className="px-2 py-2">
-                        <Flex gap="sm">
-                          <ModelIcon type={provider} size="sm" />
-                          {provider}
-                          {provider === "llmchat" && (
-                            <Badge variant="tertiary">Free</Badge>
+              {providers
+                ?.filter((p) => {
+                  return !!baseAssistants.filter((ba) => ba.provider === p)
+                    ?.length;
+                })
+                ?.map((provider) => {
+                  return (
+                    <CommandGroup key={provider} value={provider}>
+                      <AccordionItem
+                        value={provider}
+                        className="!border-t !border-b-transparent"
+                      >
+                        <AccordionTrigger className="px-2 py-2">
+                          <Flex gap="sm">
+                            <ModelIcon type={provider} size="sm" />
+                            {provider}
+                            {provider === "llmchat" && (
+                              <Badge variant="tertiary">Free</Badge>
+                            )}
+                          </Flex>
+                        </AccordionTrigger>
+                        <AccordionContent className="!p-0 !pt-2">
+                          {renderAssistants(
+                            baseAssistants?.filter(
+                              (assistant) => assistant.provider === provider,
+                            ),
                           )}
-                        </Flex>
-                      </AccordionTrigger>
-                      <AccordionContent className="!p-0 !pt-2">
-                        {renderAssistants(
-                          baseAssistants?.filter(
-                            (assistant) => assistant.provider === provider,
-                          ),
-                        )}
-                      </AccordionContent>
-                    </AccordionItem>
-                  </CommandGroup>
-                );
-              })}
+                        </AccordionContent>
+                      </AccordionItem>
+                    </CommandGroup>
+                  );
+                })}
             </Accordion>
           </CommandList>
         </Command>

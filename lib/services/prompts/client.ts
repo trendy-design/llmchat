@@ -14,9 +14,7 @@ export class PromptsService {
   async createPrompt(prompt: Omit<TPrompt, "id">): Promise<void> {
     const db = await getDB();
     const newPrompt = { ...prompt, id: generateShortUUID() };
-    console.log("newPrompt", newPrompt);
     const result = await db.insert(schema.prompts).values(newPrompt);
-    console.log("result", result);
   }
 
   async updatePrompt(

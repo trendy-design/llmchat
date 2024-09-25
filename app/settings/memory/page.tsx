@@ -17,7 +17,7 @@ export default function MemorySettings() {
         </Type>
         <Button
           variant="ghost"
-          size="iconSm"
+          size="icon-sm"
           onClick={() => {
             updatePreferences({
               memories: preferences?.memories?.filter((m) => m !== memory),

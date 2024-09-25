@@ -19,18 +19,12 @@ import { useTheme } from "next-themes";
 import { usePathname, useRouter } from "next/navigation";
 import { BsGithub, BsTwitter } from "react-icons/bs";
 import { FullPageLoader } from "../full-page-loader";
+import { HistoryItem } from "../history/history-item";
 import { ModelIcon } from "../model-icon";
-import { HistoryItem } from "./history-item";
 
-export const HistorySidebar = () => {
+export const Sidebar = () => {
   const pathname = usePathname();
-  const {
-    activeSessionId,
-    sessions,
-    createSession,
-    isAllSessionLoading,
-    removeAssistantFromSessionMutation,
-  } = useSessions();
+  const { sessions, createSession, isAllSessionLoading } = useSessions();
   const { setIsCommandSearchOpen, setOpenApiKeyModal } = useRootContext();
   const { theme, setTheme } = useTheme();
   const { push } = useRouter();
@@ -68,17 +62,10 @@ export const HistorySidebar = () => {
   const renderGroup = (title: string, sessions: TChatSession[]) => {
     if (sessions.length === 0) return null;
     return (
-      <>
-        <Flex items="center" gap="xs" className="px-2 py-2">
-          <Type
-            size="xs"
-            weight="medium"
-            textColor="tertiary"
-            className="opacity-70"
-          >
-            {title}
-          </Type>
-        </Flex>
+      <Flex gap="xs" direction="col" items="start" className="w-full">
+        <Type size="xs" weight="medium" className="px-2">
+          {title}
+        </Type>
         <Flex className="w-full" gap="xs" direction="col">
           {sessions.map((session) => (
             <HistoryItem
@@ -88,13 +75,13 @@ export const HistorySidebar = () => {
             />
           ))}
         </Flex>
-      </>
+      </Flex>
     );
   };
 
   return (
     <div className="relative flex h-[100dvh] w-[260px] flex-shrink-0 flex-row border-l border-zinc-500/10">
-      <Flex direction="col" gap="sm" className="no-scrollbar w-full pl-3 pr-1">
+      <Flex direction="col" gap="xl" className="no-scrollbar w-full pl-3 pr-1">
         <Flex
           justify="between"
           items="center"
@@ -114,7 +101,7 @@ export const HistorySidebar = () => {
           </Button>
           <Button
             size="sm"
-            variant="secondary"
+            variant="bordered"
             className="w-full gap-2"
             onClick={() => setIsCommandSearchOpen(true)}
           >
@@ -123,23 +110,24 @@ export const HistorySidebar = () => {
               <Command size={12} /> K
             </Flex>
           </Button>
+          <Button
+            variant={isAssistantPage ? "secondary" : "ghost"}
+            className="w-full justify-start gap-2 px-2"
+            onClick={() => {
+              push("/assistants");
+            }}
+          >
+            <ModelIcon type="assistants" size="sm" />
+            Explore Assistants
+          </Button>
         </Flex>
-        <Button
-          variant={isAssistantPage ? "secondary" : "ghost"}
-          className="w-full justify-start gap-2 px-2"
-          onClick={() => {
-            push("/assistants");
-          }}
-        >
-          <ModelIcon type="assistants" size="sm" />
-          Explore Assistants
-        </Button>
 
         {isAllSessionLoading ? (
           <FullPageLoader />
         ) : (
           <Flex
             direction="col"
+            gap="xl"
             className="no-scrollbar w-full flex-1 overflow-y-auto"
           >
             {renderGroup("Examples", groupedSessions.examples)}
@@ -193,14 +181,15 @@ export const HistorySidebar = () => {
           <Flex className="w-full items-center justify-between opacity-70">
             <Flex gap="xs">
               <Button
-                size="iconXS"
+                size="icon-xs"
                 variant="ghost"
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               >
                 {theme === "dark" ? <Moon size={16} /> : <Sun size={16} />}
               </Button>
+
               <Button
-                size="iconXS"
+                size="icon-xs"
                 variant="ghost"
                 onClick={() => {
                   window.open("https://git.new/llmchat", "_blank");
@@ -209,7 +198,7 @@ export const HistorySidebar = () => {
                 <BsGithub size={14} />
               </Button>
               <Button
-                size="iconXS"
+                size="icon-xs"
                 variant="ghost"
                 onClick={() => {
                   window.open("https://x.com/llmchatOS", "_blank");

@@ -260,8 +260,6 @@ export const useLLMRunner = () => {
         },
       );
 
-      console.log("stream", stream);
-
       updateCurrentMessage({
         rawHuman: input,
         rawAI: stream?.content || stream?.output?.[0]?.text || stream?.output,

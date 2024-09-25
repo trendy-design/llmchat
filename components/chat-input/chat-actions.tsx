@@ -40,7 +40,7 @@ export const ChatActions = ({
         />
         <Tooltip content="Prompts">
           <Button
-            size="iconSm"
+            size="icon-sm"
             variant="ghost"
             onClick={() => {
               openPrompts();

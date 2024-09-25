@@ -15,7 +15,7 @@ export default function CommonPage() {
   const renderResetToDefault = (key: keyof TPreferences) => (
     <Button
       variant="secondary"
-      size="iconXS"
+      size="icon-xs"
       rounded="lg"
       onClick={() => updatePreferences({ [key]: defaultPreferences[key] })}
     >

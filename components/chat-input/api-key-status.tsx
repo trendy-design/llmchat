@@ -4,7 +4,7 @@ import { useRootContext } from "@/libs/context/root";
 import { Button, Flex, Type } from "@/ui";
 import { Plug } from "lucide-react";
 
-export const ApiKeyInfo = () => {
+export const ApiKeyStatus = () => {
   const { setOpenApiKeyModal, setApiKeyModalProvider } = useRootContext();
   const { apiKeys, preferences } = usePreferenceContext();
   const { getAssistantByKey } = useAssistantUtils();

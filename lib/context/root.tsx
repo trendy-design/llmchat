@@ -29,7 +29,6 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
   const [apiKeyModalProvider, setApiKeyModalProvider] =
     useState<TProvider | null>(null);
 
-  console.log(`✅ RootProvider`);
   return (
     <RootContext.Provider
       value={{

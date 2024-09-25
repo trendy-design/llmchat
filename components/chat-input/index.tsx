@@ -19,7 +19,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChangeLogs } from "../changelogs";
 import { CustomAssistantAvatar } from "../custom-assistant-avatar";
 import { FullPageLoader } from "../full-page-loader";
-import { ApiKeyInfo } from "./api-key-info";
+import { ApiKeyStatus } from "./api-key-status";
 import { ChatActions } from "./chat-actions";
 import { ChatEditor } from "./chat-editor";
 import { ChatFooter } from "./chat-footer";
@@ -213,7 +213,7 @@ export const ChatInput = () => {
                 </Button>
               )}
             </Flex>
-            <ApiKeyInfo />
+            <ApiKeyStatus />
           </Flex>
         )}
         {renderChatBottom()}

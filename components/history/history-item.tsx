@@ -130,7 +130,7 @@ export const HistoryItem = ({
         <Flex
           className={cn("hidden group-hover:flex", openDeleteConfirm && "flex")}
         >
-          <Button variant="ghost" size="iconXS" onClick={handleEditClick}>
+          <Button variant="ghost" size="icon-xs" onClick={handleEditClick}>
             <Pencil size={14} strokeWidth="2" />
           </Button>
           <Tooltip content="Delete">
@@ -141,7 +141,7 @@ export const HistoryItem = ({
               <PopoverTrigger asChild>
                 <Button
                   variant={openDeleteConfirm ? "secondary" : "ghost"}
-                  size="iconXS"
+                  size="icon-xs"
                   onClick={(e) => handleDeleteClick(e)}
                 >
                   <Trash size={14} strokeWidth="2" />
