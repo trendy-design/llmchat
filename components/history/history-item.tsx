@@ -117,7 +117,7 @@ export const HistoryItem = ({
       ) : (
         <>
           <Flex direction="col" items="start" className="w-full" gap="none">
-            <Type className="line-clamp-1" size="sm" textColor="primary">
+            <Type className="line-clamp-1 w-full" size="sm" textColor="primary">
               {session.title}
             </Type>
             {/* <Type className="line-clamp-1" size="xs" textColor="tertiary">
