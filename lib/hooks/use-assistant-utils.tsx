@@ -1,6 +1,6 @@
 import { ModelIcon } from "@/components/model-icon";
 import { defaultPreferences } from "@/config";
-import { models, ollamaModelsSupportsTools } from "@/config/models";
+import { allPlugins, models, ollamaModelsSupportsTools } from "@/config/models";
 import { TAssistant, TModelItem, TModelKey } from "@/lib/types";
 import { useMemo } from "react";
 import { usePreferenceContext } from "../context";
@@ -23,7 +23,7 @@ export const useAssistantUtils = () => {
           key: model.name,
           tokens: 128000,
           plugins: ollamaModelsSupportsTools.includes(model.name)
-            ? ["web_search", "webpage_reader"]
+            ? allPlugins
             : [],
           icon: "ollama",
           provider: "ollama",

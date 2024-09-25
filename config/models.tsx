@@ -14,7 +14,7 @@ export const ollamaModelsSupportsTools = [
   "llama3.2:3b",
 ];
 
-const allPlugins = [
+export const allPlugins = [
   "web_search",
   "image_generation",
   "memory",
