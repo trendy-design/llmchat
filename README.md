@@ -1,9 +1,10 @@
 
-![og_6x](https://github.com/user-attachments/assets/4813a6b5-3294-4056-88bb-c536a45c220c)
-<img width="1512" alt="Screenshot 2024-09-24 at 8 48 40 AM" src="https://github.com/user-attachments/assets/2a64b0c4-5ce3-480c-a2e1-8a47319b1f3f">
+<img width="1512" alt="Screenshot 2024-09-24 at 8 48 40 AM" src="https://github.com/user-attachments/assets/2a64b0c4-5ce3-480c-a2e1-8a47319b1f3f"><br>
 
+<p align="center">
+  <img width="160" alt="LLMChat logo" src="https://github.com/user-attachments/assets/ea0535c8-37ee-4d5f-8db2-e15d5bc1decb">
+</p>
 
-<h1 align="center">LLMChat</h1>
 <p align="center">Most intuitive All-in-one AI chat interface.</p>
 
 ## Key Features
@@ -71,6 +72,9 @@ To get the project running locally:
    ```
 
 4. Open your browser and navigate to `http://localhost:3000`.
+
+![og_6x](https://github.com/user-attachments/assets/4813a6b5-3294-4056-88bb-c536a45c220c)
+
 
 ## Deployment
 
