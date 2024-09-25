@@ -44,8 +44,6 @@ export const RecentMessage = () => {
           parentId: currentMessage.sessionId,
           message: currentMessage,
         });
-        console.log("messages", messages);
-
         setIsGenerating(false);
 
         if (messages?.[0]?.sessionId && messages?.length < 2) {

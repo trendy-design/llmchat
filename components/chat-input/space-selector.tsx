@@ -17,7 +17,7 @@ export const SpaceSelector: FC<SpaceSelector> = () => {
     <Tooltip content="Spaces (coming soon)" side="top" sideOffset={4}>
       <Popover>
         <PopoverTrigger>
-          <Button size="iconSm" variant="ghost">
+          <Button size="icon-sm" variant="ghost">
             <GalleryVerticalEnd size={16} strokeWidth={2} />
           </Button>
         </PopoverTrigger>

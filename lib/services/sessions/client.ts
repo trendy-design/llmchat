@@ -82,8 +82,6 @@ export class SessionsService {
         .where(eq(schema.chatSessions.id, id))
         .returning();
 
-      console.log("deletedSession", deletedSession);
-
       const session = await this.getSessionById(id);
       return session;
     } catch (error) {

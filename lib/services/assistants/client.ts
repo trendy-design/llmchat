@@ -45,7 +45,6 @@ export class AssistantService {
 
   async removeAssistant(key: string): Promise<void> {
     const db = await getDB();
-    console.log("key", key);
     await db
       .delete(schema.customAssistants)
       .where(eq(schema.customAssistants.key, key));

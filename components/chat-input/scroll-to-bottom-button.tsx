@@ -17,7 +17,7 @@ export const ScrollToBottomButton = () => {
       <Button
         onClick={scrollToBottom}
         variant="bordered"
-        size="iconXS"
+        size="icon-xs"
         rounded="full"
       >
         <ArrowDown size={16} strokeWidth="2" />

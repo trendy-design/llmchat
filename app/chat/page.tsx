@@ -12,12 +12,7 @@ const ChatSessionPage = () => {
     <ChatProvider sessionId={activeSessionId}>
       <PromptsProvider>
         <Flex className="w-full" direction="col">
-          <Flex
-            direction="row"
-            className="absolute top-0 z-20 w-full rounded-t-md border-b border-zinc-500/10 bg-zinc-25 dark:bg-zinc-800"
-          >
-            <ChatTopNav />
-          </Flex>
+          <ChatTopNav />
           <ChatMessages />
           <ChatInput />
         </Flex>

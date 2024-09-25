@@ -1,4 +1,4 @@
-import { MainLayout } from "@/components/layout/main-layout";
+import { RootLayout } from "@/components/layout";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { WelcomeMessage } from "@/components/welcome-message";
 import {
@@ -70,12 +70,11 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
-export default function RootLayout({
+export default function ParentLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  console.log(`✅ RootLayout`);
   return (
     <html
       lang="en"
@@ -103,7 +102,7 @@ export default function RootLayout({
                 <AuthProvider>
                   <PreferenceProvider>
                     <SessionsProvider>
-                      <MainLayout>{children}</MainLayout>
+                      <RootLayout>{children}</RootLayout>
                     </SessionsProvider>
                   </PreferenceProvider>
                 </AuthProvider>

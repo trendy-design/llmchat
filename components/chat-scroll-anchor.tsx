@@ -18,7 +18,6 @@ export const ChatScrollAnchor = ({
   });
   useEffect(() => {
     if (isAtBottom && trackVisibility && !inView && hasMessages) {
-      console.log("scrolling to bottom");
       const chatContainer = document.getElementById("chat-container");
       if (chatContainer) {
         chatContainer.scrollTop =

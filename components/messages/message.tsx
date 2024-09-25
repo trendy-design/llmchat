@@ -23,7 +23,7 @@ const CustomTrigger = forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof AccordionTrigger>
 >(({ children, ...props }, ref) => (
-  <AccordionHeader className="flex w-full rounded-xl p-2 hover:bg-zinc-50/50">
+  <AccordionHeader className="flex w-full rounded-xl p-2 hover:bg-zinc-500/10">
     <AccordionTrigger
       {...props}
       ref={ref}
