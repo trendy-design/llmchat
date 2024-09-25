@@ -9,7 +9,10 @@ export const providers = [
   "groq",
 ] as const;
 
-export const ollamaModelsSupportsTools = ["llama3-groq-tool-use:latest"];
+export const ollamaModelsSupportsTools = [
+  "llama3-groq-tool-use:latest",
+  "llama3.2:3b",
+];
 
 const allPlugins = [
   "web_search",
