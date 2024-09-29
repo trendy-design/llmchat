@@ -153,7 +153,7 @@ export const WelcomeMessage = () => {
                   size="md"
                   variant="bordered"
                   onClick={() =>
-                    window.open("https://github.com/your-repo-url", "_blank")
+                    window.open("https://git.new/llmchat", "_blank")
                   }
                 >
                   <FaGithub size={16} /> Github Repo

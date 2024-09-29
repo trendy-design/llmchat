@@ -30,7 +30,9 @@ export const AssistantCard: React.FC<AssistantCardProps> = ({
         <ModelIcon type="assistants" size="lg" />
       )}
       <Flex direction="col" items="center" className="w-full">
-        <Type weight="medium">{assistant.name}</Type>
+        <Type weight="medium" className="text-center">
+          {assistant.name}
+        </Type>
         <Type textColor="secondary" className="line-clamp-2 w-full text-center">
           {assistant.description}
         </Type>

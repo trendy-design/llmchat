@@ -8,7 +8,7 @@ import { defaultPreferences } from "./preferences";
 import * as prompts from "./prompts";
 
 const configs = {
-  version: "1.0.2",
+  version: "1.0.3",
   ...links,
   ...prompts,
   ollamaTagsEndpoint: "/api/tags",
