@@ -54,7 +54,7 @@ const AssistantPage = () => {
         />
       ))}
       {assistants.length === 0 && (
-        <div className="col-span-full flex items-center justify-center rounded-lg bg-zinc-50/50 p-2">
+        <div className="col-span-full flex items-center justify-center rounded-lg bg-zinc-500/100 p-2">
           <Type textColor="tertiary">No assistants yet</Type>
         </div>
       )}
