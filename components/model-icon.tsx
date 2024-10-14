@@ -15,6 +15,7 @@ export type ModelIconType =
   | "website_reader"
   | "groq"
   | "ollama"
+  | "lmstudio"
   | "llmchatlogo"
   | "assistants";
 
@@ -45,6 +46,7 @@ export const ModelIcon = ({
     website_reader: "/icons/website_reader.svg",
     llmchatlogo: "/icons/llmchatlogo.svg",
     ollama: "/icons/ollama.svg",
+    lmstudio:"/icons/lmstudio.svg",
     assistants: "/icons/assistants.svg",
     groq: "/icons/groq.svg",
   };

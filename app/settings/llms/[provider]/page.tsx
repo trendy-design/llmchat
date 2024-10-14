@@ -4,6 +4,7 @@ import { AnthropicSettings } from "@/components/settings/models/anthropic";
 import { GeminiSettings } from "@/components/settings/models/gemini";
 import { GroqSettings } from "@/components/settings/models/groq";
 import { OllamaSettings } from "@/components/settings/models/ollama";
+import { LmStudioSettings } from "@/components/settings/models/lmstudio";
 import { OpenAISettings } from "@/components/settings/models/openai";
 import { SettingsContainer } from "@/components/settings/settings-container";
 import { providers } from "@/config/models";
@@ -27,6 +28,7 @@ export default function LLMsSettings() {
   const { apiKeys, preferences, getApiKey } = usePreferenceContext();
   const [selectedModel, setSelectedModel] = useState<TProvider>("openai");
   const [ollamaConnected, setOllamaConnected] = useState(false);
+  const [lmStudioConnected, setLMStudioConnected] = useState(false);
 
   const checkOllamaConnection = async () => {
     try {
@@ -38,9 +40,23 @@ export default function LLMsSettings() {
     }
   };
 
+  const checkLMStudioConnection = async () => {
+    try {
+      const url = preferences.lmStudioBaseUrl;
+      await fetch(url + "/models");
+      setLMStudioConnected(true);
+    } catch (error) {
+      setLMStudioConnected(false);
+    }
+  };
+
   useEffect(() => {
     checkOllamaConnection();
   }, [preferences.ollamaBaseUrl]);
+
+  useEffect(() => {
+    checkLMStudioConnection()
+  }, [preferences.lmStudioBaseUrl])
 
   useEffect(() => {
     if (providers.includes(provider as TProvider)) {
@@ -82,6 +98,19 @@ export default function LLMsSettings() {
         <OllamaSettings
           onRefresh={() => {
             checkOllamaConnection();
+          }}
+        />
+      ),
+    },
+    {
+      value: "lmstudio",
+      label: "Lm Studio",
+      iconType: "lmstudio",
+      connected: lmStudioConnected,
+      settingsComponent: () => (
+        <LmStudioSettings
+          onRefresh={() => {
+            checkLMStudioConnection();
           }}
         />
       ),

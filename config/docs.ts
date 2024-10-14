@@ -54,7 +54,34 @@ Once the model is pulled, you can start using it in the chat.
   Important: Please restart the Ollama service after completion.
   `;
 
+const lmStudioConfig = `
+  #### Step 1: Install and Launch LM Studio Locally
+  
+  Ensure you have LM Studio installed on your Mac. If you haven't downloaded it yet, please visit the [official website](https://lmstudio.ai/download) to get started.
+  
+  #### Step 2: Enable the LM Studio Server and Configure CORS
+  
+  To allow your project to communicate with LM Studio, you'll need to enable the server feature and configure Cross-Origin Resource Sharing (CORS).
+  
+  1. Open **LM Studio**.
+  2. Click on the **Server** tab located in the sidebar.
+  3. Toggle the **Enable Server** option to **On**.
+  4. Click on **Settings** within the Server tab.
+  5. Enable **CORS** (Cross-Origin Resource Sharing).
+  6. Set the allowed origins to \`*\` to permit all origins, or specify your project's origin.
+  7. Note the server URL displayed; you'll need this for your project configuration.
+  
+  #### Step 3: Download the Model of Your Choice
+  
+  1. Navigate to the **Models** tab in LM Studio.
+  2. Browse and download the model you wish to use.
+  3. Wait for the download and installation to complete.
+  
+  Once the model is installed and the server is running with CORS enabled, you can start using it in your project.
+`;
+
 export const docs = {
   macosOllamaConfig,
   windowsOllamaConfig,
+  lmStudioConfig
 };
