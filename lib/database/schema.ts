@@ -105,6 +105,7 @@ export const preferences = pgTable("preferences", {
     "default_web_search_engine",
   ).notNull(),
   ollamaBaseUrl: text("ollama_base_url").notNull(),
+  lmStudioBaseUrl: text("lm_studio_base_url").notNull(),
   topP: decimal("top_p").notNull(),
   topK: decimal("top_k").notNull(),
   googleSearchEngineId: text("google_search_engine_id"),
