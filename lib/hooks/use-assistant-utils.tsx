@@ -1,6 +1,6 @@
 import { ModelIcon } from "@/components/model-icon";
 import { defaultPreferences } from "@/config";
-import { models, ollamaModelsSupportsTools } from "@/config/models";
+import { allPlugins, models, ollamaModelsSupportsTools, lmStudioModelsSupportsTools } from "@/config/models";
 import { TAssistant, TModelItem, TModelKey } from "@/lib/types";
 import { useMemo } from "react";
 import { usePreferenceContext } from "../context";
@@ -13,6 +13,16 @@ export const useAssistantUtils = () => {
   const ollamaModelsQuery = assistantQueries.useOllamaModelsQuery(
     preferences.ollamaBaseUrl,
   );
+
+  const lmStudioModelsQuery = assistantQueries.useLmStudioModelsQuery(
+    preferences.lmStudioBaseUrl
+  )
+
+  const parseLmStudioModelName = (name: string): string => {
+    const parts = name.split("/");
+    const lastPart = parts[parts.length - 1];
+    return lastPart.replace(/\.gguf$/i, ""); 
+  };
 
   const allModels: TModelItem[] = useMemo(
     () => [
@@ -30,8 +40,21 @@ export const useAssistantUtils = () => {
           maxOutputTokens: 2048,
         }),
       ) || []),
+      ...(lmStudioModelsQuery.data?.data?.map(
+        (model: any): TModelItem => ({
+          name: parseLmStudioModelName(model.id),
+          key: model.id,
+          tokens: 128000,
+          plugins: lmStudioModelsSupportsTools.includes(model.id)
+            ? allPlugins
+            : [],
+          icon: "lmstudio",
+          provider: "lmstudio",
+          maxOutputTokens: 2048,
+        }),
+      ) || []),
     ],
-    [ollamaModelsQuery.data?.models],
+    [ollamaModelsQuery.data?.models, lmStudioModelsQuery.data?.data],
   );
 
   const getModelByKey = (key: TModelKey, provider: TModelKey) => {
@@ -40,9 +63,13 @@ export const useAssistantUtils = () => {
     );
   };
 
+  
+
   const assistants: TAssistant[] = [
     ...allModels.map(
-      (model): TAssistant => ({
+      
+      (model): TAssistant => (
+        {
         name: model.name,
         key: model.key,
         baseModel: model.key,

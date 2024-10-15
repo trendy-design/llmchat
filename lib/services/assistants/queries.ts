@@ -17,6 +17,13 @@ export const useAssistantsQueries = () => {
       enabled: !!baseUrl,
     });
 
+  const useLmStudioModelsQuery = (baseUrl: string) =>
+    useQuery({
+      queryKey: ["lmstudio-models", baseUrl],
+      queryFn: () => fetch(`${baseUrl}/models`).then((res) => res.json()),
+      enabled: !!baseUrl,
+    });
+
   const createAssistantMutation = useMutation({
     mutationFn: (assistant: TCustomAssistant) =>
       assistantService.createAssistant(assistant),
@@ -62,6 +69,7 @@ export const useAssistantsQueries = () => {
   return {
     assistantsQuery,
     useOllamaModelsQuery,
+    useLmStudioModelsQuery,
     createAssistantMutation,
     updateAssistantMutation,
     removeAssistantMutation,

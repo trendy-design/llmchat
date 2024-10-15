@@ -32,6 +32,7 @@ export type TLegacyPreferences = {
   maxTokens: number;
   defaultWebSearchEngine: "google" | "duckduckgo";
   ollamaBaseUrl: string;
+  lmStudioBaseUrl: string;
   topP: number;
   topK: number;
   googleSearchEngineId?: string;
