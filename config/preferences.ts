@@ -14,6 +14,7 @@ export const defaultPreferences: TPreferences = {
   dalleImageQuality: "standard",
   dalleImageSize: "1024x1024",
   ollamaBaseUrl: "http://localhost:11434",
+  lmStudioBaseUrl: "http://localhost:1234/v1",
   whisperSpeechToTextEnabled: false,
   googleSearchEngineId: null,
   googleSearchApiKey: null,

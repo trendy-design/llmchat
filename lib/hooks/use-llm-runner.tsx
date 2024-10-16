@@ -99,7 +99,7 @@ export const useLLMRunner = () => {
     );
     if (
       !apiKey?.key &&
-      !["ollama", "llmchat"].includes(selectedModelKey?.provider)
+      !["ollama","lmstudio", "llmchat"].includes(selectedModelKey?.provider)
     ) {
       setIsGenerating(false);
       setApiKeyModalProvider(selectedModelKey?.provider);

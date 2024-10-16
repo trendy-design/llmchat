@@ -105,6 +105,7 @@ export const runMigrationv1 = async (db: ReturnType<typeof drizzle>) => {
         dalleImageQuality: preferences.dalleImageQuality,
         dalleImageSize: preferences.dalleImageSize,
         ollamaBaseUrl: preferences.ollamaBaseUrl,
+        lmStudioBaseUrl: preferences.lmStudioBaseUrl,
         whisperSpeechToTextEnabled: preferences.whisperSpeechToTextEnabled,
         defaultWebSearchEngine: preferences.defaultWebSearchEngine,
         defaultPlugins: preferences.defaultPlugins,

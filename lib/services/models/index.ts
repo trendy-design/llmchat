@@ -4,8 +4,11 @@ import { ChatAnthropic } from "@langchain/anthropic";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { ChatGroq } from "@langchain/groq";
 import { ChatOllama } from "@langchain/ollama";
-import { ChatOpenAI } from "@langchain/openai";
+import { ChatOpenAI, ChatOpenAI as ChatLmStudio } from "@langchain/openai";
+
 type ChatOpenAIConstructorParams = ConstructorParameters<typeof ChatOpenAI>[0];
+type ChatLmStudioConstructorParams = ConstructorParameters<typeof ChatLmStudio>[0];
+
 type ChatAnthropicConstructorParams = ConstructorParameters<
   typeof ChatAnthropic
 >[0];
@@ -42,6 +45,10 @@ type TCreateInstance = {
       props?: Partial<ChatOllamaConstructorParams>;
     }
   | {
+      provider: "lmstudio";
+      props?: Partial<ChatLmStudioConstructorParams>;
+    }
+  | {
       provider: "groq";
       props?: Partial<ChatGroqConstructorParams>;
     }
@@ -55,7 +62,7 @@ export class ModelService {
     apiKey,
     ...props
   }: TCreateInstance) {
-    const { temperature, topP, topK, ollamaBaseUrl, ...rest } = {
+    const { temperature, topP, topK, ollamaBaseUrl, lmStudioBaseUrl, ...rest } = {
       ...defaultPreferences,
       ...preferences,
     };
@@ -134,6 +141,18 @@ export class ModelService {
           temperature: Number(temperature),
           ...props,
         });
+        case "lmstudio":
+          return new ChatLmStudio({
+              model: model.key,
+              configuration: { baseURL: lmStudioBaseUrl },
+              streaming: true,
+              apiKey: 'lm-studio',
+              temperature: Number(temperature),
+              maxTokens,
+              topP: Number(topP),
+              maxRetries: 2,
+              ...props,
+          });
       case "groq":
         return new ChatGroq({
           model: model.key,
@@ -158,6 +177,8 @@ export class ModelService {
       case "gemini":
         return "gemini-pro";
       case "ollama":
+        return "phi3:latest";
+      case "lmstudio":
         return "phi3:latest";
       case "llmchat":
         return "llmchat";

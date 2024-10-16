@@ -4,6 +4,7 @@ import { drizzle } from "drizzle-orm/pglite";
 import migration1 from "./0000_tough_stingray.sql";
 import migration2 from "./0001_steady_whiplash.sql";
 import migration3 from "./0002_soft_swordsman.sql";
+import migration4 from "./0003_absurd_vengeance.sql"
 import { runMigrationv1 } from "./migration_v1";
 import { runMigrationv2 } from "./migration_v2";
 
@@ -33,6 +34,10 @@ export const migrations: Migration[] = [
   {
     id: "migration3",
     sql: migration3,
+  },
+  {
+    id: "migration4",
+    sql: migration4,
   },
 ];
 

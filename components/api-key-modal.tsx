@@ -11,6 +11,7 @@ import { AnthropicSettings } from "./settings/models/anthropic";
 import { GeminiSettings } from "./settings/models/gemini";
 import { GroqSettings } from "./settings/models/groq";
 import { OllamaSettings } from "./settings/models/ollama";
+import { LmStudioSettings } from "./settings/models/lmstudio";
 import { OpenAISettings } from "./settings/models/openai";
 
 export const ApiKeyModal = () => {
@@ -47,6 +48,9 @@ export const ApiKeyModal = () => {
         {apiKeyModalProvider === "groq" && <GroqSettings />}
         {apiKeyModalProvider === "ollama" && (
           <OllamaSettings onRefresh={() => {}} />
+        )}
+        {apiKeyModalProvider === "lmstudio" && (
+          <LmStudioSettings onRefresh={() => {}} />
         )}
       </DialogContent>
     </Dialog>
