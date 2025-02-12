@@ -1,0 +1,37 @@
+{
+  "name": "@repo/shared",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./config": "./config/index.ts",
+    "./types": "./types/index.ts",
+    "./utils": "./utils/index.ts",
+    "./db": "./db/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tiptap/react": "^2.4.0",
+    "langchain": "^0.2.0",
+    "@langchain/core": "^0.1.62",
+    "lucide-react": "^0.435.0",
+    "zod": "^3.23.8",
+    "zustand": "^4.5.4",
+    "drizzle-orm": "^0.33.0",
+    "drizzle-zod": "^0.5.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18",
+    "@types/node": "latest",
+    "typescript": "latest",
+    "eslint": "latest",
+    "eslint-config-custom": "*",
+    "@repo/typescript-config": "*",
+    "drizzle-kit": "latest"
+  },
+  "peerDependencies": {
+    "react": "^18"
+  }
+}

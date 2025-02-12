@@ -1,0 +1,29 @@
+{
+  "name": "llmchat-api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.5.0",
+    "@langchain/community": "^0.0.32",
+    "@repo/shared": "*",
+    "axios": "^1.6.7",
+    "jsdom": "^24.0.0",
+    "next": "14.1.0",
+    "openai": "^4.28.0",
+    "turndown": "^7.1.2"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.6",
+    "@types/node": "^20",
+    "@types/turndown": "^5.0.4",
+    "typescript": "^5",
+    "eslint": "^8",
+    "eslint-config-next": "14.1.0"
+  }
+} 

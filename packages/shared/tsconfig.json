@@ -1,0 +1,17 @@
+{
+	"extends": "@repo/typescript-config",
+	"compilerOptions": {
+		"rootDir": ".",
+		"outDir": "dist",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"module": "ESNext",
+		"target": "ES2020",
+		"moduleResolution": "bundler",
+		"jsx": "react-jsx",
+		"paths": {
+			"@repo/shared/*": ["../shared/*"]
+		}
+	},
+	"include": ["config/**/*", "types/**/*", "utils/**/*", "db/validator.ts"],
+	"exclude": ["node_modules", "dist"]
+}
