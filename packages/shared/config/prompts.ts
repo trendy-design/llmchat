@@ -10,8 +10,4 @@ What would your next 2-3 short questions or response be as a user?
 const googleSearchPrompt = (input: string, information: string) =>
   `Answer the following question based on the information provided. Question: ${input} \n\n Information: \n\n ${information}`;
 
-export {
-  googleSearchPrompt,
-  relatedQuestionsSystemPrompt,
-  relatedQuestionsUserPrompt,
-};
+export { googleSearchPrompt, relatedQuestionsSystemPrompt, relatedQuestionsUserPrompt };

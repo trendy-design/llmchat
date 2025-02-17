@@ -1,7 +1,7 @@
-import { useSessions } from "@/lib/context";
-import { TChatSession } from "@repo/shared/types";
-import { Input } from "@repo/ui";
-import { FC, useEffect, useRef } from "react";
+import { useSessions } from '@/lib/context';
+import { TChatSession } from '@repo/shared/types';
+import { Input } from '@repo/ui';
+import { FC, useEffect, useRef } from 'react';
 
 export type THistoryEdit = {
   title?: string;
@@ -24,16 +24,16 @@ export const HistoryEdit: FC<THistoryEdit> = ({
     setIsEditing(false);
     updateSessionMutation.mutate({
       sessionId: session.id,
-      session: { title: title?.trim() || session?.title || "Untitled" },
+      session: { title: title?.trim() || session?.title || 'Untitled' },
     });
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       setIsEditing(false);
       updateSessionMutation.mutate({
         sessionId: session.id,
-        session: { title: title?.trim() || session?.title || "Untitled" },
+        session: { title: title?.trim() || session?.title || 'Untitled' },
       });
     }
   };

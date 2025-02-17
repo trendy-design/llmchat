@@ -1,7 +1,7 @@
-import { TAttachment } from "@repo/shared/types";
-import { useToast } from "@repo/ui";
-import { ChangeEvent, useCallback, useState } from "react";
-import { useDropzone } from "react-dropzone";
+import { TAttachment } from '@repo/shared/types';
+import { useToast } from '@repo/ui';
+import { ChangeEvent, useCallback, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 
 // const resizeFile = (file: File) =>
 //   new Promise((resolve) => {
@@ -42,19 +42,19 @@ export const useImageAttachment = () => {
   const readImageFile = async (file?: File) => {
     const reader = new FileReader();
 
-    const fileTypes = ["image/jpeg", "image/png", "image/gif"];
+    const fileTypes = ['image/jpeg', 'image/png', 'image/gif'];
     if (file && !fileTypes.includes(file?.type)) {
       toast({
-        title: "Invalid format",
-        description: "Please select a valid image (JPEG, PNG, GIF).",
-        variant: "destructive",
+        title: 'Invalid format',
+        description: 'Please select a valid image (JPEG, PNG, GIF).',
+        variant: 'destructive',
       });
       return;
     }
 
     reader.onload = () => {
-      if (typeof reader.result !== "string") return;
-      const base64String = reader?.result?.split(",")[1];
+      if (typeof reader.result !== 'string') return;
+      const base64String = reader?.result?.split(',')[1];
       setAttachment((prev) => ({
         ...prev,
         base64: `data:${file?.type};base64,${base64String}`,

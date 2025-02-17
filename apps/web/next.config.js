@@ -1,18 +1,16 @@
 /** @type {import('next').NextConfig} */
-import { withSentryConfig } from "@sentry/nextjs";
+import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig = {
   images: {
     remotePatterns: [
-      { hostname: "icon.horse" },
-      { hostname: "icons.duckduckgo.com" },
-      { hostname: "www.google.com" },
-      { hostname: "zyqdiwxgffuy8ymd.public.blob.vercel-storage.com" },
+      { hostname: 'icon.horse' },
+      { hostname: 'icons.duckduckgo.com' },
+      { hostname: 'www.google.com' },
+      { hostname: 'zyqdiwxgffuy8ymd.public.blob.vercel-storage.com' },
     ],
   },
   webpack: (config, options) => {
-
-
     if (!options.isServer) {
       config.resolve.fallback = { fs: false, module: false, path: false };
     }
@@ -20,7 +18,7 @@ const nextConfig = {
     // Existing SQL loader configuration
     config.module.rules.push({
       test: /\.sql$/,
-      use: "raw-loader",
+      use: 'raw-loader',
     });
 
     // Experimental features
@@ -35,19 +33,19 @@ const nextConfig = {
   // Existing rewrites and redirects
   async rewrites() {
     return [
-      { source: "/settings/llms", destination: "/settings/llms/openai" },
-      { source: "/settings", destination: "/settings/common" },
+      { source: '/settings/llms', destination: '/settings/llms/openai' },
+      { source: '/settings', destination: '/settings/common' },
     ];
   },
   async redirects() {
-    return [{ source: "/", destination: "/chat", permanent: true }];
+    return [{ source: '/', destination: '/chat', permanent: true }];
   },
 };
 
 export default withSentryConfig(nextConfig, {
   // Sentry configuration (unchanged)
-  org: "saascollect",
-  project: "javascript-nextjs",
+  org: 'saascollect',
+  project: 'javascript-nextjs',
   silent: !process.env.CI,
   widenClientFileUpload: true,
   hideSourceMaps: true,

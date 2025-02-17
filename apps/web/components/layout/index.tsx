@@ -1,23 +1,21 @@
-"use client";
-import { useRootContext } from "@/libs/context/root";
-import { Flex, Toaster } from "@repo/ui";
-import { AnimatePresence, motion } from "framer-motion";
-import { FC } from "react";
-import { Drawer } from "vaul";
-import { ApiKeyModal } from "../api-key-modal";
-import { CommandSearch } from "../command-search";
-import { Sidebar } from "./side-bar";
+'use client';
+import { useRootContext } from '@/libs/context/root';
+import { Flex, Toaster } from '@repo/ui';
+import { AnimatePresence, motion } from 'framer-motion';
+import { FC } from 'react';
+import { Drawer } from 'vaul';
+import { CommandSearch } from '../command-search';
+import { Sidebar } from './side-bar';
 
 export type TRootLayout = {
   children: React.ReactNode;
 };
 
 export const RootLayout: FC<TRootLayout> = ({ children }) => {
-  const { isSidebarOpen, isMobileSidebarOpen, setIsMobileSidebarOpen } =
-    useRootContext();
+  const { isSidebarOpen, isMobileSidebarOpen, setIsMobileSidebarOpen } = useRootContext();
 
   const containerClass =
-    "relative flex flex-1 flex-col h-[100dvh] w-full overflow-hidden bg-white shadow-sm dark:border dark:border-white/5 dark:bg-zinc-800";
+    'relative flex flex-1 flex-col h-[100dvh] w-full overflow-hidden bg-white shadow-sm dark:border dark:border-white/5 dark:bg-zinc-800';
 
   return (
     <div className="flex min-h-[98dvh] w-full flex-row overflow-hidden bg-zinc-50 dark:bg-zinc-900">
@@ -46,7 +44,6 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
         <motion.div className="flex flex-1 gap-0 overflow-hidden p-0">
           <div className={containerClass}>{children}</div>
         </motion.div>
-        <ApiKeyModal />
         <CommandSearch />
       </Flex>
 

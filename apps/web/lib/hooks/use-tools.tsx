@@ -1,15 +1,15 @@
-import { useChatContext, usePreferenceContext } from "@/lib/context";
+import { useChatContext, usePreferenceContext } from '@/lib/context';
 import {
   dalleToolDefinition,
   duckduckGoToolDefinition,
   googleSearchToolDefinition,
   memoryToolDefinition,
   readerToolDefinition,
-} from "@/lib/tools";
-import { TModelItem, ToolDefinition, ToolKey } from "@repo/shared/types";
-import { barChartToolDefinition } from "../tools/bar-chart";
-import { lineChartToolDefinition } from "../tools/line-chart";
-import { pieChartToolDefinition } from "../tools/pie-chart";
+} from '@/lib/tools';
+import { TModelItem, ToolDefinition, ToolKey } from '@repo/shared/types';
+import { barChartToolDefinition } from '../tools/bar-chart';
+import { lineChartToolDefinition } from '../tools/line-chart';
+import { pieChartToolDefinition } from '../tools/pie-chart';
 
 export const useTools = () => {
   const { store } = useChatContext();
@@ -17,7 +17,7 @@ export const useTools = () => {
   const addTool = store((state) => state.addTool);
 
   const tools: ToolDefinition[] = [
-    preferences.defaultWebSearchEngine === "duckduckgo"
+    preferences.defaultWebSearchEngine === 'duckduckgo'
       ? duckduckGoToolDefinition
       : googleSearchToolDefinition,
     dalleToolDefinition,
@@ -45,7 +45,7 @@ export const useTools = () => {
             model,
             apiKeys,
             updateToolExecutionState: addTool,
-          }),
+          })
         )
         ?.filter((t): t is any => !!t) || []
     );

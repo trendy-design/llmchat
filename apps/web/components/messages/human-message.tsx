@@ -1,10 +1,10 @@
-import { useAuth } from "@/libs/context";
-import { TChatMessage } from "@repo/shared/types";
-import { cn } from "@repo/shared/utils";
-import { Flex, Type } from "@repo/ui";
-import Avvvatars from "avvvatars-react";
-import { ArrowDown, ArrowUp } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useAuth } from '@/libs/context';
+import { TChatMessage } from '@repo/shared/types';
+import { cn } from '@repo/shared/utils';
+import { Flex, Type } from '@repo/ui';
+import Avvvatars from 'avvvatars-react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 export type THumanMessage = {
   chatMessage: TChatMessage;
@@ -18,11 +18,9 @@ export const HumanMessage = ({ chatMessage }: THumanMessage) => {
   const { user } = useAuth();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-useEffect(() => {
+  useEffect(() => {
     if (contentRef.current) {
-      setShowReadMore(
-        contentRef.current.scrollHeight > contentRef.current.clientHeight,
-      );
+      setShowReadMore(contentRef.current.scrollHeight > contentRef.current.clientHeight);
     }
   }, [rawHuman]);
 
@@ -33,17 +31,17 @@ useEffect(() => {
       <Flex className="w-full items-start" gap="md">
         <Flex className="mt-0.5">
           <Avvvatars
-            displayValue={user?.email?.charAt(0) || "A"}
-            value={user?.email || "LLMChat"}
-            style={user?.email ? "character" : "shape"}
+            displayValue={user?.email?.charAt(0) || 'A'}
+            value={user?.email || 'LLMChat'}
+            style={user?.email ? 'character' : 'shape'}
             size={26}
           />
         </Flex>
         <Flex direction="col" className="mt-1 flex-1" gap="sm">
           <Type
             weight="medium"
-            className={cn("relative whitespace-break-spaces text-left", {
-              "line-clamp-2": !isExpanded,
+            className={cn('relative whitespace-break-spaces text-left', {
+              'line-clamp-2': !isExpanded,
             })}
             ref={contentRef}
           >

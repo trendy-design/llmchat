@@ -1,35 +1,35 @@
-import { MetadataRoute } from "next";
+import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "LLMChat",
-    short_name: "LLMChat",
+    name: 'LLMChat',
+    short_name: 'LLMChat',
     description:
-      "LLMChat is a modern AI chat client that allows you to chat with AI in a more intuitive way.",
-    start_url: "/",
-    display: "standalone",
-    background_color: "#fff",
-    theme_color: "#1d1d1d",
+      'LLMChat is a modern AI chat client that allows you to chat with AI in a more intuitive way.',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#fff',
+    theme_color: '#1d1d1d',
     icons: [
       {
-        src: "/icon-192x192.png",
-        sizes: "192x192",
-        type: "image/png",
+        src: '/icon-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
       },
       {
-        src: "/icon-256x256.png",
-        sizes: "256x256",
-        type: "image/png",
+        src: '/icon-256x256.png',
+        sizes: '256x256',
+        type: 'image/png',
       },
       {
-        src: "/icon-384x384.png",
-        sizes: "384x384",
-        type: "image/png",
+        src: '/icon-384x384.png',
+        sizes: '384x384',
+        type: 'image/png',
       },
       {
-        src: "/icon-512x512.png",
-        sizes: "512x512",
-        type: "image/png",
+        src: '/icon-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
       },
     ],
   };

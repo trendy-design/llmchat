@@ -1,7 +1,6 @@
-import { Button, Tooltip } from "@repo/ui";
-import { IconPaperclip } from "@tabler/icons-react";
-import { FC } from "react";
-
+import { Button, Tooltip } from '@repo/ui';
+import { IconPaperclip } from '@tabler/icons-react';
+import { FC } from 'react';
 
 export type TImageUpload = {
   id: string;
@@ -24,12 +23,7 @@ export const ImageUpload: FC<TImageUpload> = ({
 
   return (
     <>
-      <input
-        type="file"
-        id={id}
-        className="hidden"
-        onChange={handleImageUpload}
-      />
+      <input type="file" id={id} className="hidden" onChange={handleImageUpload} />
       <Tooltip content={tooltip}>
         {showIcon ? (
           <Button variant="ghost" size="icon-sm" onClick={handleFileSelect}>

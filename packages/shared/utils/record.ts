@@ -1,10 +1,7 @@
-const blobToBase64 = (
-  blob: Blob,
-  callback: (base64data: string) => void
-): void => {
+const blobToBase64 = (blob: Blob, callback: (base64data: string) => void): void => {
   const reader = new FileReader();
   reader.onload = function () {
-    const base64data = reader.result?.toString().split(",")[1] || null;
+    const base64data = reader.result?.toString().split(',')[1] || null;
     base64data && callback(base64data);
   };
   reader.readAsDataURL(blob);
@@ -13,10 +10,7 @@ const blobToBase64 = (
 const getPeakLevel = (analyzer: AnalyserNode): number => {
   const array = new Uint8Array(analyzer.fftSize);
   analyzer.getByteTimeDomainData(array);
-  return (
-    array.reduce((max, current) => Math.max(max, Math.abs(current - 127)), 0) /
-    128
-  );
+  return array.reduce((max, current) => Math.max(max, Math.abs(current - 127)), 0) / 128;
 };
 
 const createMediaStream = (

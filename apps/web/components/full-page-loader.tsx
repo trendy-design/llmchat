@@ -1,4 +1,4 @@
-import { Spinner, Type } from "@repo/ui";
+import { Spinner, Type } from '@repo/ui';
 
 export type FullPageLoaderProps = {
   label?: string;

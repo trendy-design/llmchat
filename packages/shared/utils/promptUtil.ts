@@ -1,60 +1,50 @@
-import { AIMessage, HumanMessage } from "@langchain/core/messages";
+import { AIMessage, HumanMessage } from '@langchain/core/messages';
 import {
   BaseMessagePromptTemplateLike,
   ChatPromptTemplate,
   MessagesPlaceholder,
-} from "@langchain/core/prompts";
-import { TChatMessage, TConstructPrompt } from "@repo/shared/types";
-import { sortMessages } from "./utils";
+} from '@langchain/core/prompts';
+import { TChatMessage, TConstructPrompt } from '@repo/shared/types';
+import { sortMessages } from './utils';
 
 const constructPrompt = async (props: TConstructPrompt) => {
   const { context, image, hasMessages, memories, systemPrompt } = props;
-  const messagePlaceholders = new MessagesPlaceholder("chat_history");
+  const messagePlaceholders = new MessagesPlaceholder('chat_history');
 
-  const memoryPrompt =
-    memories?.length > 0 ? `Things to remember:\n${memories.join("\n")}` : "";
-  const messagesPrompt = hasMessages
-    ? "You can also refer to these previous conversations"
-    : "";
+  const memoryPrompt = memories?.length > 0 ? `Things to remember:\n${memories.join('\n')}` : '';
+  const messagesPrompt = hasMessages ? 'You can also refer to these previous conversations' : '';
 
-  const formatInstructions = props.formatInstructions
-    ? "\n{format_instructions}"
-    : "";
+  const formatInstructions = props.formatInstructions ? '\n{format_instructions}' : '';
 
   const systemMessage: BaseMessagePromptTemplateLike = [
-    "system",
+    'system',
     `${systemPrompt}\n${memoryPrompt}\n${messagesPrompt}\n${formatInstructions}`,
   ];
 
   const userContent = `{input}\n\n${
-    context
-      ? `Answer user's question based on the following context: """{context}"""`
-      : ""
+    context ? `Answer user's question based on the following context: """{context}"""` : ''
   }`;
 
   const userMessageContent = image
     ? [
         {
-          type: "text",
+          type: 'text',
           text: userContent,
         },
         {
-          type: "image_url",
+          type: 'image_url',
           image_url: image,
         },
       ]
     : userContent;
 
-  const userMessage: BaseMessagePromptTemplateLike = [
-    "user",
-    userMessageContent,
-  ];
+  const userMessage: BaseMessagePromptTemplateLike = ['user', userMessageContent];
 
   return ChatPromptTemplate.fromMessages([
     systemMessage,
     messagePlaceholders,
     userMessage,
-    ["placeholder", "{agent_scratchpad}"],
+    ['placeholder', '{agent_scratchpad}'],
   ]);
 };
 
@@ -65,7 +55,7 @@ const constructMessagePrompt = async ({
   messages: TChatMessage[];
   limit: number;
 }) => {
-  const sortedMessages = sortMessages(messages, "createdAt");
+  const sortedMessages = sortMessages(messages, 'createdAt');
   const chatHistory = sortedMessages
     .slice(-limit)
     .reduce((acc: (HumanMessage | AIMessage)[], { rawAI, rawHuman, image }) => {
@@ -75,18 +65,18 @@ const constructMessagePrompt = async ({
             content: image
               ? [
                   {
-                    type: "text",
+                    type: 'text',
                     text: rawHuman,
                   },
                   {
-                    type: "image_url",
+                    type: 'image_url',
                     image_url: {
                       url: image,
                     },
                   },
                 ]
               : rawHuman,
-          }),
+          })
         );
       }
       if (rawAI) {

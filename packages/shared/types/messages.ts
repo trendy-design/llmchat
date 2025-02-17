@@ -1,16 +1,15 @@
-import { schema } from "../db/schema";
-import { TAssistant } from "./assistants";
-import { ToolExecutionState } from "./tools";
-
+import { schema } from '../db/schema';
+import { TAssistant } from './assistants';
+import { ToolExecutionState } from './tools';
 
 export const stopReasons = [
-  "error",
-  "cancel",
-  "apikey",
-  "recursion",
-  "rateLimit",
-  "unauthorized",
-  "finish",
+  'error',
+  'cancel',
+  'apikey',
+  'recursion',
+  'rateLimit',
+  'unauthorized',
+  'finish',
 ] as const;
 
 export type TStopReason = (typeof stopReasons)[number];

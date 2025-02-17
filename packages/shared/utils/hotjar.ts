@@ -1,4 +1,4 @@
-import Hotjar from "@hotjar/browser";
+import Hotjar from '@hotjar/browser';
 
 const siteId = process.env.NEXT_PUBLIC_HOTJAR_SITE_ID;
 const hotjarVersion = process.env.NEXT_PUBLIC_HOTJAR_VERSION;

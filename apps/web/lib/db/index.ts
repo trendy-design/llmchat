@@ -1,10 +1,10 @@
 import {
-    TApiKeys,
-    TChatMessage,
-    TChatSession,
-    TCustomAssistant,
-    TPreferences,
-    TPrompt
+  TApiKeys,
+  TChatMessage,
+  TChatSession,
+  TCustomAssistant,
+  TPreferences,
+  TPrompt,
 } from '@repo/shared/types';
 import Dexie, { Table } from 'dexie';
 
@@ -18,16 +18,16 @@ export class AppDatabase extends Dexie {
 
   constructor() {
     super('AppDatabase');
-    
+
     this.version(1).stores({
       preferences: '++id',
       apiKeys: 'provider',
       chatSessions: 'id, createdAt, updatedAt',
       chatMessages: 'id, parentId, sessionId, createdAt',
       customAssistants: 'key',
-      prompts: 'id'
+      prompts: 'id',
     });
   }
 }
 
-export const db = new AppDatabase(); 
+export const db = new AppDatabase();

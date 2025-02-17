@@ -1,7 +1,7 @@
-import { useTools } from "@/lib/hooks";
-import { ToolExecutionState } from "@repo/shared/types";
-import { Flex } from "@repo/ui";
-import { AiToolBlock } from "./ai-tool-block";
+import { useTools } from '@/lib/hooks';
+import { ToolExecutionState } from '@repo/shared/types';
+import { Flex } from '@repo/ui';
+import { AiToolBlock } from './ai-tool-block';
 
 type AIToolMessageProps = {
   tool: ToolExecutionState;

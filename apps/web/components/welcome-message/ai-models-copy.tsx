@@ -1,10 +1,10 @@
-import { slideUpVariant } from "@repo/shared/utils";
-import { Flex, StaggerContainer, Tooltip } from "@repo/ui";
-import { motion } from "framer-motion";
-import { ModelIcon, ModelIconType } from "../model-icon";
+import { slideUpVariant } from '@repo/shared/utils';
+import { Flex, StaggerContainer, Tooltip } from '@repo/ui';
+import { motion } from 'framer-motion';
+import { ModelIcon, ModelIconType } from '../model-icon';
 
 export const AiModelsCopy = () => {
-  const modelList = ["gpt4", "anthropic", "ollama", "gemini", "groq"];
+  const modelList = ['gpt4', 'anthropic', 'ollama', 'gemini', 'groq'];
 
   return (
     <>
@@ -21,25 +21,21 @@ export const AiModelsCopy = () => {
                     className="mr-[-8px] w-full rounded-md"
                     initial={{
                       rotate: -5 + index * 2,
-                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                     }}
                     animate={{
                       rotate: -5 + index * 2,
-                      boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
                     }}
                     whileHover={{
                       scale: 1.1,
                       rotate: -5 + index * 2 + 5,
                       zIndex: 10,
-                      boxShadow: "0 10px 15px rgba(0, 0, 0, 0.2)",
+                      boxShadow: '0 10px 15px rgba(0, 0, 0, 0.2)',
                     }}
                     transition={{ duration: 0.2 }}
                   >
-                    <ModelIcon
-                      type={model as ModelIconType}
-                      size="md"
-                      rounded={false}
-                    />
+                    <ModelIcon type={model as ModelIconType} size="md" rounded={false} />
                   </motion.div>
                 </Tooltip>
               );

@@ -1,32 +1,24 @@
-"use client";
-import { useMemo } from "react";
-import { Legend, Pie, PieChart } from "recharts";
+'use client';
+import { useMemo } from 'react';
+import { Legend, Pie, PieChart } from 'recharts';
 
-import { pieChartSchema } from "@/libs/tools/pie-chart";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent, Type
-} from "@repo/ui";
-import { z } from "zod";
-import { ErrorBoundary } from "./error-boundary";
+import { pieChartSchema } from '@/libs/tools/pie-chart';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, Type } from '@repo/ui';
+import { z } from 'zod';
+import { ErrorBoundary } from './error-boundary';
 
 export type ChartComponentProps = z.infer<typeof pieChartSchema>;
 
 const colors = [
-  "hsl(var(--color-red-600-value))",
-  "hsl(var(--color-blue-600-value))",
-  "hsl(var(--color-amber-600-value))",
-  "hsl(var(--color-purple-600-value))",
-  "hsl(var(--color-pink-600-value))",
-  "hsl(var(--color-teal-600-value))",
+  'hsl(var(--color-red-600-value))',
+  'hsl(var(--color-blue-600-value))',
+  'hsl(var(--color-amber-600-value))',
+  'hsl(var(--color-purple-600-value))',
+  'hsl(var(--color-pink-600-value))',
+  'hsl(var(--color-teal-600-value))',
 ];
 
-export function PieChartComponent({
-  values,
-  labels,
-  title,
-}: ChartComponentProps) {
+export function PieChartComponent({ values, labels, title }: ChartComponentProps) {
   const combinedData = useMemo(
     () =>
       values?.map((value, index) => ({
@@ -34,7 +26,7 @@ export function PieChartComponent({
         value: value,
         fill: colors[index % colors.length],
       })) ?? [],
-    [values, labels],
+    [values, labels]
   );
 
   return (
@@ -45,10 +37,7 @@ export function PieChartComponent({
         </Type>
         <ChartContainer config={{}} className="max-h-[350px]">
           <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Legend layout="vertical" align="left" verticalAlign="middle" />
 
             <Pie

@@ -1,7 +1,7 @@
 import { db } from '@/lib/db';
-import { TChatMessage, TChatSession, TCustomAssistant } from "@repo/shared/types";
-import { generateShortUUID, sortSessions } from "@repo/shared/utils";
-import moment from "moment";
+import { TChatMessage, TChatSession, TCustomAssistant } from '@repo/shared/types';
+import { generateShortUUID, sortSessions } from '@repo/shared/utils';
+import moment from 'moment';
 
 export class MessagesService {
   async getAllMessages() {
@@ -13,10 +13,7 @@ export class MessagesService {
   }
 
   async getMessages(parentId: string): Promise<TChatMessage[]> {
-    return await db.chatMessages
-      .where('parentId')
-      .equals(parentId)
-      .sortBy('createdAt');
+    return await db.chatMessages.where('parentId').equals(parentId).sortBy('createdAt');
   }
 
   async addMessage(parentId: string, chatMessage: TChatMessage) {
@@ -28,7 +25,7 @@ export class MessagesService {
   }
 
   async addMessages(parentId: string, messages: TChatMessage[]) {
-    const messagesWithParent = messages.map(message => ({
+    const messagesWithParent = messages.map((message) => ({
       ...message,
       parentId,
       sessionId: parentId,
@@ -64,32 +61,28 @@ export class SessionsService {
   async addAssistantToSession(assistant: TCustomAssistant) {
     const newSession = await this.createNewSession();
     if (!newSession) return null;
-    
+
     await db.chatSessions.update(newSession.id, {
-      customAssistant: assistant
+      customAssistant: assistant,
     });
-    
-    return await db.chatSessions.get(newSession.id) || null;
+
+    return (await db.chatSessions.get(newSession.id)) || null;
   }
 
   async removeAssistantFromSession(sessionId: string) {
-    const latestSessionMessages =
-      (await this.messagesService.getMessages(sessionId)) || [];
+    const latestSessionMessages = (await this.messagesService.getMessages(sessionId)) || [];
     if (!!latestSessionMessages?.length) return;
     await db.chatSessions.update(sessionId, {
-      customAssistant: null
+      customAssistant: null,
     });
   }
 
-  async updateSession(
-    sessionId: string,
-    newSession: Partial<Omit<TChatSession, "id">>,
-  ) {
+  async updateSession(sessionId: string, newSession: Partial<Omit<TChatSession, 'id'>>) {
     await db.chatSessions.update(sessionId, newSession);
   }
 
   async getSessionById(id: string) {
-    return await db.chatSessions.get(id) || null;
+    return (await db.chatSessions.get(id)) || null;
   }
 
   async removeSessionById(id: string) {
@@ -107,10 +100,10 @@ export class SessionsService {
 
   async createNewSession(): Promise<TChatSession | null> {
     const sessions = await this.getSessions();
-    const latestSession = sortSessions(sessions, "createdAt")?.[0];
+    const latestSession = sortSessions(sessions, 'createdAt')?.[0];
 
     // Only try to get messages if we have a valid session ID
-    const latestSessionMessages = latestSession?.id 
+    const latestSessionMessages = latestSession?.id
       ? await this.messagesService.getMessages(latestSession.id)
       : [];
 
@@ -120,7 +113,7 @@ export class SessionsService {
 
     const newSession = await db.chatSessions.add({
       id: generateShortUUID(),
-      title: "Untitled",
+      title: 'Untitled',
       createdAt: moment().toDate(),
       updatedAt: moment().toDate(),
     });

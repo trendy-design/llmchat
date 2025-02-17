@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useInView } from "react-intersection-observer";
+import { useEffect } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 export type TChatScrollAnchorProps = {
   isAtBottom: boolean;
@@ -18,10 +18,9 @@ export const ChatScrollAnchor = ({
   });
   useEffect(() => {
     if (isAtBottom && trackVisibility && !inView && hasMessages) {
-      const chatContainer = document.getElementById("chat-container");
+      const chatContainer = document.getElementById('chat-container');
       if (chatContainer) {
-        chatContainer.scrollTop =
-          chatContainer.scrollHeight - chatContainer.clientHeight;
+        chatContainer.scrollTop = chatContainer.scrollHeight - chatContainer.clientHeight;
       }
     }
   }, [inView, entry, isAtBottom, trackVisibility, hasMessages]);

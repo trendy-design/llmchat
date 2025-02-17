@@ -1,9 +1,9 @@
-import { useRootContext } from "@/libs/context/root";
-import { Button, Flex, Type, cn } from "@repo/ui";
-import { ChevronLeft, FlagIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { ReactNode } from "react";
-import { useFeedback } from "../feedback/use-feedback";
+import { useRootContext } from '@/libs/context/root';
+import { Button, Flex, Type, cn } from '@repo/ui';
+import { ChevronLeft, FlagIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ReactNode } from 'react';
+import { useFeedback } from '../feedback/use-feedback';
 
 interface TopNavProps {
   title?: string;
@@ -20,27 +20,17 @@ export const TopNav = ({
 }: TopNavProps) => {
   const { push } = useRouter();
   const { setOpen, renderModal } = useFeedback();
-  const {
-    isSidebarOpen,
-    setIsSidebarOpen,
-    isMobileSidebarOpen,
-    setIsMobileSidebarOpen,
-  } = useRootContext();
+  const { isSidebarOpen, setIsSidebarOpen, isMobileSidebarOpen, setIsMobileSidebarOpen } =
+    useRootContext();
 
   return (
     <Flex
       className={cn(
-        "sticky top-0 z-20 flex w-full rounded-t-md border-zinc-500/10 p-1 dark:bg-zinc-800 md:p-3",
+        'sticky top-0 z-20 flex w-full rounded-t-md border-zinc-500/10 p-1 md:p-3 dark:bg-zinc-800'
       )}
       direction="col"
     >
-      <Flex
-        direction="row"
-        gap="xs"
-        justify="between"
-        items="center"
-        className="w-full"
-      >
+      <Flex direction="row" gap="xs" justify="between" items="center" className="w-full">
         <Flex gap="xs" items="center">
           {/* <Button
             variant="ghost"
@@ -60,11 +50,7 @@ export const TopNav = ({
             <PanelLeft size={16} strokeWidth={2} />
           </Button> */}
           {showBackButton && (
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              onClick={() => push("/chat")}
-            >
+            <Button variant="ghost" size="icon-sm" onClick={() => push('/chat')}>
               <ChevronLeft size={16} strokeWidth={2} />
             </Button>
           )}

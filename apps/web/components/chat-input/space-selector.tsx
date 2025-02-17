@@ -1,14 +1,6 @@
-import {
-        Button,
-        Flex,
-        Popover,
-        PopoverContent,
-        PopoverTrigger,
-        Tooltip,
-        Type,
-} from "@repo/ui";
-import { GalleryVerticalEnd } from "lucide-react";
-import { FC } from "react";
+import { Button, Flex, Popover, PopoverContent, PopoverTrigger, Tooltip, Type } from '@repo/ui';
+import { GalleryVerticalEnd } from 'lucide-react';
+import { FC } from 'react';
 
 export type SpaceSelector = {};
 
@@ -23,11 +15,7 @@ export const SpaceSelector: FC<SpaceSelector> = () => {
         </PopoverTrigger>
         <PopoverContent className="w-64">
           <Flex className="p-4" direction="col" items="center" justify="center">
-            <GalleryVerticalEnd
-              size={16}
-              strokeWidth={2}
-              className="mb-2 text-zinc-500"
-            />
+            <GalleryVerticalEnd size={16} strokeWidth={2} className="mb-2 text-zinc-500" />
 
             <Type size="sm" textColor="secondary">
               Knowledge Spaces

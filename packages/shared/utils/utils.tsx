@@ -1,38 +1,37 @@
-import { TChatMessage, TChatSession } from "@repo/shared/types";
-import moment from "moment";
-import { customAlphabet } from "nanoid";
+import { TChatMessage, TChatSession } from '@repo/shared/types';
+import moment from 'moment';
+import { customAlphabet } from 'nanoid';
 
 export const getRelativeDate = (date: string | Date) => {
-  const today = moment().startOf("day");
-  const inputDate = moment(date).startOf("day");
+  const today = moment().startOf('day');
+  const inputDate = moment(date).startOf('day');
 
-  const diffDays = today.diff(inputDate, "days");
+  const diffDays = today.diff(inputDate, 'days');
 
   if (diffDays === 0) {
-    return "Today";
-  }if (diffDays === 1) {
-    return "Yesterday";
+    return 'Today';
   }
-    return inputDate.format("DD/MM/YYYY");
+  if (diffDays === 1) {
+    return 'Yesterday';
+  }
+  return inputDate.format('DD/MM/YYYY');
 };
 
 export function formatNumber(number: number) {
   if (number >= 1000000) {
     return `${(number / 1000000).toFixed(0)}M`;
-  }if (number >= 1000) {
+  }
+  if (number >= 1000) {
     return `${(number / 1000).toFixed(0)}K`;
   }
-    return number.toString();
+  return number.toString();
 }
 
 export function removeExtraSpaces(str?: string) {
-  return str?.trim().replace(/\n{3,}/g, "\n\n");
+  return str?.trim().replace(/\n{3,}/g, '\n\n');
 }
 
-export const sortSessions = (
-  sessions: TChatSession[],
-  sortBy: "createdAt" | "updatedAt",
-) => {
+export const sortSessions = (sessions: TChatSession[], sortBy: 'createdAt' | 'updatedAt') => {
   return sessions.sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
 };
 export const isValidUrl = (url: string) => {
@@ -44,19 +43,13 @@ export const isValidUrl = (url: string) => {
   }
 };
 
-export const sortMessages = (
-  messages: Partial<TChatMessage>[],
-  sortBy: "createdAt",
-) => {
+export const sortMessages = (messages: Partial<TChatMessage>[], sortBy: 'createdAt') => {
   return messages.sort((a, b) => moment(a[sortBy]).diff(moment(b[sortBy])));
 };
 
-export const convertFileToBase64 = (
-  file: File,
-  onChange: (base64: string) => void,
-): void => {
+export const convertFileToBase64 = (file: File, onChange: (base64: string) => void): void => {
   if (!file) {
-    alert("Please select a file!");
+    alert('Please select a file!');
     return;
   }
 
@@ -67,19 +60,19 @@ export const convertFileToBase64 = (
   };
 
   reader.onerror = (error: ProgressEvent<FileReader>) => {
-    console.error("Error: ", error);
-    alert("Error reading file!");
+    console.error('Error: ', error);
+    alert('Error reading file!');
   };
 
   reader.readAsDataURL(file);
 };
 
 // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export  function generateAndDownloadJson(data: any, filename: string) {
+export function generateAndDownloadJson(data: any, filename: string) {
   const json = JSON.stringify(data);
-  const blob = new Blob([json], { type: "application/json" });
+  const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
@@ -96,8 +89,8 @@ export async function imageUrlToBase64(imageUrl: string): Promise<string> {
     const reader = new FileReader();
     reader.onload = () => {
       const base64String = reader.result as string;
-      const base64Url = `data:${response.headers.get("Content-Type")};base64,${
-        base64String.split(",")[1]
+      const base64Url = `data:${response.headers.get('Content-Type')};base64,${
+        base64String.split(',')[1]
       }`;
       resolve(base64Url);
     };
@@ -107,12 +100,12 @@ export async function imageUrlToBase64(imageUrl: string): Promise<string> {
 }
 
 export function generateShortUUID() {
-  const nanoid = customAlphabet("1234567890abcdef", 12);
+  const nanoid = customAlphabet('1234567890abcdef', 12);
   return nanoid();
 }
 
 export const formatTickerTime = (seconds: number): string => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
-  return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
 };

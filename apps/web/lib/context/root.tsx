@@ -1,7 +1,7 @@
-"use client";
-import { TProvider } from "@repo/shared/types";
-import { initHotjar } from "@repo/shared/utils";
-import { createContext, useContext, useEffect, useState } from "react";
+'use client';
+import { TProvider } from '@repo/shared/types';
+import { initHotjar } from '@repo/shared/utils';
+import { createContext, useContext, useEffect, useState } from 'react';
 
 export type RootContextType = {
   isSidebarOpen: boolean;
@@ -26,8 +26,7 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isCommandSearchOpen, setIsCommandSearchOpen] = useState(false);
   const [openApiKeyModal, setOpenApiKeyModal] = useState(false);
-  const [apiKeyModalProvider, setApiKeyModalProvider] =
-    useState<TProvider | null>(null);
+  const [apiKeyModalProvider, setApiKeyModalProvider] = useState<TProvider | null>(null);
 
   return (
     <RootContext.Provider
@@ -52,7 +51,7 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
 export const useRootContext = () => {
   const context = useContext(RootContext);
   if (!context) {
-    throw new Error("useRootContext must be used within a RootProvider");
+    throw new Error('useRootContext must be used within a RootProvider');
   }
   return context;
 };

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { Skeleton } from "./skeleton";
+import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
+import { Skeleton } from './skeleton';
 export type TLinkBlock = {
   url: string;
 };
@@ -12,11 +12,11 @@ export const LinkBlock = ({ url }: TLinkBlock) => {
 
   const fetchOg = async (url: string) => {
     try {
-      const res = await fetch("/api/og", {
-        method: "POST",
+      const res = await fetch('/api/og', {
+        method: 'POST',
         body: JSON.stringify({ url }),
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       });
 
@@ -47,9 +47,9 @@ export const LinkBlock = ({ url }: TLinkBlock) => {
   const renderConatiner = (children: React.ReactNode, link?: string) => {
     return (
       <div
-        className="bg-white p-3 rounded-xl border border-black/10 hover:scale-[101%] hover:text-blue-400 cursor-pointer"
+        className="cursor-pointer rounded-xl border border-black/10 bg-white p-3 hover:scale-[101%] hover:text-blue-400"
         onClick={() => {
-          link && window.open(link, "_blank");
+          link && window.open(link, '_blank');
         }}
       >
         {children}
@@ -64,11 +64,11 @@ export const LinkBlock = ({ url }: TLinkBlock) => {
   if (isLoading) {
     return renderConatiner(
       <div className="flex flex-row items-start gap-2">
-        <Skeleton className="w-6 h-6 rounded-xl" />
+        <Skeleton className="h-6 w-6 rounded-xl" />
 
-        <div className="flex flex-col gap-1 items-start w-full">
-          <Skeleton className="w-[80%] h-[10px] rounded-full" />
-          <Skeleton className="w-[50%] h-[10px] rounded-full" />
+        <div className="flex w-full flex-col items-start gap-1">
+          <Skeleton className="h-[10px] w-[80%] rounded-full" />
+          <Skeleton className="h-[10px] w-[50%] rounded-full" />
         </div>
       </div>
     );
@@ -83,23 +83,21 @@ export const LinkBlock = ({ url }: TLinkBlock) => {
             width={0}
             height={0}
             sizes="100vw"
-            className="min-w-6 h-6 border border-black/10 rounded-md object-cover"
+            className="h-6 min-w-6 rounded-md border border-black/10 object-cover"
           />
 
-          <div className="flex flex-col gap-1 items-start w-full">
-            <p className="text-sm md:text-base text-zinc-800 w-full truncate overflow-hidden">
+          <div className="flex w-full flex-col items-start gap-1">
+            <p className="w-full overflow-hidden truncate text-sm text-zinc-800 md:text-base">
               {ogResult.ogTitle}
             </p>
-            <p className="text-sm md:text-base text-zinc-400">
-              {ogResult.ogUrl}
-            </p>
+            <p className="text-sm text-zinc-400 md:text-base">{ogResult.ogUrl}</p>
           </div>
         </div>,
         ogResult.ogUrl
       )
     : renderConatiner(
         <div>
-          <p className="text-sm md:text-base text-zinc-400">{url}</p>
+          <p className="text-sm text-zinc-400 md:text-base">{url}</p>
         </div>,
         url
       );

@@ -1,34 +1,17 @@
 {
+  "extends": "@repo/typescript-config/nextjs",
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "compilerOptions": {
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": false,
-    "noEmit": true,
-    "incremental": true,
-    "esModuleInterop": true,
+    "moduleResolution": "bundler",
     "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ]
-  },
-  "include": [
-    "next-env.d.ts",
-    ".next/types/**/*.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+    "paths": {
+      "@repo/shared/types": ["./lib/types"],
+      "@/hooks": ["./lib/hooks"],
+      "@/libs/*": ["./lib/*"],
+      "@/config/*": ["./config/*"],
+      "@/context": ["./lib/context"],
+      "@/services/*": ["./lib/services/*"],
+      "@/*": ["./*"]
+    }
+  }
 }

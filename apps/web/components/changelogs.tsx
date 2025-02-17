@@ -1,10 +1,18 @@
-import { getRelativeDate } from "@repo/shared/utils";
-import { Carousel, CarouselContent, CarouselItem, Dialog, DialogContent, Flex, Type } from "@repo/ui";
-import { useQuery } from "@tanstack/react-query";
-import Autoplay from "embla-carousel-autoplay";
-import { Flame } from "lucide-react";
-import Image from "next/image";
-import { Mdx } from "./mdx";
+import { getRelativeDate } from '@repo/shared/utils';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  Dialog,
+  DialogContent,
+  Flex,
+  Type,
+} from '@repo/ui';
+import { useQuery } from '@tanstack/react-query';
+import Autoplay from 'embla-carousel-autoplay';
+import { Flame } from 'lucide-react';
+import Image from 'next/image';
+import { Mdx } from './mdx';
 
 export type Changelog = {
   id: string;
@@ -21,8 +29,8 @@ export type ChangelogsProps = {
 
 export const ChangeLogs = ({ open, setOpen }: ChangelogsProps) => {
   const { data, error } = useQuery<{ changelogs: Changelog[] }>({
-    queryKey: ["changelogs"],
-    queryFn: () => fetch("/api/changelogs").then((res) => res.json()),
+    queryKey: ['changelogs'],
+    queryFn: () => fetch('/api/changelogs').then((res) => res.json()),
     staleTime: 1000 * 60 * 30, // 30 min
   });
 
@@ -40,12 +48,7 @@ export const ChangeLogs = ({ open, setOpen }: ChangelogsProps) => {
           </Type>
         </Flex>
         {changelogs?.map((changelog) => (
-          <Flex
-            key={changelog.id}
-            className="px-6 py-4"
-            direction="col"
-            gap="md"
-          >
+          <Flex key={changelog.id} className="px-6 py-4" direction="col" gap="md">
             <Flex direction="col" gap="none">
               <Type size="lg" weight="medium">
                 {changelog.title}
@@ -56,7 +59,7 @@ export const ChangeLogs = ({ open, setOpen }: ChangelogsProps) => {
             </Flex>
             <Carousel
               opts={{
-                align: "start",
+                align: 'start',
                 loop: true,
               }}
               plugins={[
@@ -82,12 +85,7 @@ export const ChangeLogs = ({ open, setOpen }: ChangelogsProps) => {
               </CarouselContent>
             </Carousel>
             <Flex direction="col" gap="md">
-              <Mdx
-                message={changelog.content}
-                animate={true}
-                size="sm"
-                messageId={changelog.id}
-              />
+              <Mdx message={changelog.content} animate={true} size="sm" messageId={changelog.id} />
             </Flex>
           </Flex>
         ))}

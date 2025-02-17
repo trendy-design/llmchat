@@ -1,8 +1,7 @@
-import { usePreferenceContext } from "@/lib/context";
-import { Button, Tooltip, useToast } from "@repo/ui";
-import { Circle, CircleStop } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Button, Tooltip, useToast } from '@repo/ui';
+import { Circle, CircleStop } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 const WHISPER_SAMPLING_RATE = 16_000;
 const MAX_AUDIO_LENGTH = 60; // seconds
@@ -11,22 +10,20 @@ const MAX_SAMPLES = WHISPER_SAMPLING_RATE * MAX_AUDIO_LENGTH;
 // WIP: Experimenting with local whisper
 export const useWhisperRecorder = () => {
   const { push } = useRouter();
-  const [text, setText] = useState<string>("");
-  const [partialText, setPartialText] = useState<string>("");
+  const [text, setText] = useState<string>('');
+  const [partialText, setPartialText] = useState<string>('');
   const { toast } = useToast();
-  const { apiKeys } = usePreferenceContext();
   const [recording, setRecording] = useState<boolean>(false);
   const [transcribing, setIsTranscribing] = useState<boolean>(false);
   const [chunks, setChunks] = useState<Blob[]>([]);
   const workerRef = useRef<Worker | null>(null);
-  const { preferences } = usePreferenceContext();
   const audioContextRef = useRef<AudioContext | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
   const runLocalWhisper = async (audioData: AudioBuffer) => {
     // biome-ignore lint/suspicious/noImplicitAnyLet: <explanation>
-let  audio;
+    let audio;
     if (audioData.numberOfChannels === 2) {
       const SCALING_FACTOR = Math.sqrt(2);
 
@@ -42,17 +39,15 @@ let  audio;
       audio = audioData.getChannelData(0);
     }
 
-    const worker = new Worker(
-      new URL("../worker/transformer-worker.js", import.meta.url),
-    );
+    const worker = new Worker(new URL('../worker/transformer-worker.js', import.meta.url));
 
     worker.postMessage({
       audio: audio,
-      model: "Xenova/whisper-base",
+      model: 'Xenova/whisper-base',
       multilingual: false,
       quantized: false,
       subtask: null,
-      language: "english",
+      language: 'english',
     });
 
     worker.onmessage = (event) => {
@@ -60,7 +55,7 @@ let  audio;
       // if (data?.data?.text && data?.status === "complete") {
       //   setText(data.data.text);
       // }
-      if (data?.data?.text && data?.status === "update") {
+      if (data?.data?.text && data?.status === 'update') {
         setPartialText(data?.data?.[0]?.trim());
       }
     };
@@ -91,7 +86,7 @@ let  audio;
 
       recorderRef.current.onstart = () => {
         setRecording(true);
-        setText("");
+        setText('');
         setChunks([]);
       };
       recorderRef.current.ondataavailable = (e) => {
@@ -124,9 +119,7 @@ let  audio;
 
       fileReader.onloadend = async () => {
         const arrayBuffer = fileReader.result;
-        const decoded = await audioContextRef.current?.decodeAudioData(
-          arrayBuffer as ArrayBuffer,
-        );
+        const decoded = await audioContextRef.current?.decodeAudioData(arrayBuffer as ArrayBuffer);
         let audio = decoded?.getChannelData(0);
         if (audio?.length || 0 > MAX_SAMPLES) {
           // Get last MAX_SAMPLES
@@ -134,8 +127,8 @@ let  audio;
         }
 
         workerRef.current?.postMessage({
-          type: "generate",
-          data: { audio, language: "en" },
+          type: 'generate',
+          data: { audio, language: 'en' },
         });
       };
       fileReader.readAsArrayBuffer(blob);
@@ -169,11 +162,7 @@ let  audio;
             }}
             className="group"
           >
-            <CircleStop
-              size={16}
-              strokeWidth={2}
-              className="text-rose-400/80"
-            />
+            <CircleStop size={16} strokeWidth={2} className="text-rose-400/80" />
             <span className="hidden group-hover:flex">Stop</span>
           </Button>
         </>
@@ -191,16 +180,14 @@ let  audio;
 
   useEffect(() => {
     if (workerRef.current) return;
-    workerRef.current = new Worker(
-      new URL("../worker/transformer-worker.js", import.meta.url),
-    );
+    workerRef.current = new Worker(new URL('../worker/transformer-worker.js', import.meta.url));
 
-    workerRef.current.addEventListener("message", (event) => {
-      if (event?.data?.status === "start") {
+    workerRef.current.addEventListener('message', (event) => {
+      if (event?.data?.status === 'start') {
         setIsProcessing(true);
         recorderRef.current?.requestData();
       }
-      if (event?.data?.status === "complete") {
+      if (event?.data?.status === 'complete') {
         setIsProcessing(false);
         setPartialText(event.data.output);
       }
@@ -219,7 +206,7 @@ let  audio;
         onClick={() => {
           if (workerRef.current) {
             workerRef.current.postMessage({
-              type: "load",
+              type: 'load',
             });
           }
         }}

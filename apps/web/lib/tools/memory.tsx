@@ -1,46 +1,34 @@
-import { modelService } from "@/lib/services/models";
-import { PromptTemplate } from "@langchain/core/prompts";
-import { RunnableSequence } from "@langchain/core/runnables";
-import { DynamicStructuredTool } from "@langchain/core/tools";
-import { ToolDefinition, ToolExecutionContext } from "@repo/shared/types";
-import { StructuredOutputParser } from "langchain/output_parsers";
-import { Brain } from "lucide-react";
-import { z } from "zod";
+import { modelService } from '@/lib/services/models';
+import { PromptTemplate } from '@langchain/core/prompts';
+import { RunnableSequence } from '@langchain/core/runnables';
+import { DynamicStructuredTool } from '@langchain/core/tools';
+import { ToolDefinition, ToolExecutionContext } from '@repo/shared/types';
+import { StructuredOutputParser } from 'langchain/output_parsers';
+import { Brain } from 'lucide-react';
+import { z } from 'zod';
 
 const memoryParser = StructuredOutputParser.fromZodSchema(
   z.object({
     memories: z
-      .array(
-        z.string().describe("A single piece of key information about the user"),
-      )
-      .describe("List of key information about the user"),
-  }),
+      .array(z.string().describe('A single piece of key information about the user'))
+      .describe('List of key information about the user'),
+  })
 );
 
 const memoryToolSchema = z.object({
   memory: z
-    .array(
-      z.string().describe("A single piece of key information about the user"),
-    )
-    .describe(
-      "New key information about the user or their preferences to be added or updated",
-    ),
-  question: z.string().describe("The question or request made by the user"),
+    .array(z.string().describe('A single piece of key information about the user'))
+    .describe('New key information about the user or their preferences to be added or updated'),
+  question: z.string().describe('The question or request made by the user'),
 });
 
 const memoryFunction = (context: ToolExecutionContext) => {
-  const {
-    apiKeys,
-    preferences,
-    updatePreferences,
-    model,
-    updateToolExecutionState,
-  } = context;
+  const { apiKeys, preferences, updatePreferences, model, updateToolExecutionState } = context;
 
   return new DynamicStructuredTool({
-    name: "memory",
+    name: 'memory',
     description:
-      "Manages user information and preferences to personalize future interactions. Use when the user provides key information or explicitly asks to remember something.",
+      'Manages user information and preferences to personalize future interactions. Use when the user provides key information or explicitly asks to remember something.',
     schema: memoryToolSchema,
     func: async ({ memory, question }, runManager) => {
       try {
@@ -63,21 +51,21 @@ const memoryFunction = (context: ToolExecutionContext) => {
             2. Remove if requested
             3. Add new unique memories
             
-            {format_instructions}`,
+            {format_instructions}`
           ),
           currentModel as any,
           memoryParser as any,
         ]);
 
         const response = await chain.invoke({
-          new_memory: memory.join("\n"),
-          existing_memory: existingMemories.join("\n"),
+          new_memory: memory.join('\n'),
+          existing_memory: existingMemories.join('\n'),
           question: question,
           format_instructions: memoryParser.getFormatInstructions(),
         });
 
         if (!response?.memories?.length) {
-          runManager?.handleToolError("Error performing memory update");
+          runManager?.handleToolError('Error performing memory update');
           return question;
         }
 
@@ -86,7 +74,7 @@ const memoryFunction = (context: ToolExecutionContext) => {
         });
 
         updateToolExecutionState({
-          toolName: "memory",
+          toolName: 'memory',
           executionArgs: {
             memory,
             question,
@@ -100,32 +88,32 @@ const memoryFunction = (context: ToolExecutionContext) => {
         return question;
       } catch (error) {
         updateToolExecutionState({
-          toolName: "memory",
+          toolName: 'memory',
           executionArgs: {
             memory,
             question,
           },
           isLoading: false,
         });
-        return "Error performing memory update. Please check API keys.";
+        return 'Error performing memory update. Please check API keys.';
       }
     },
   });
 };
 
 const memoryToolDefinition: ToolDefinition = {
-  key: "memory",
-  description: "Personalize future interactions",
+  key: 'memory',
+  description: 'Personalize future interactions',
   executionFunction: memoryFunction,
-  displayName: "Memory",
+  displayName: 'Memory',
   isBeta: false,
   isVisibleInMenu: true,
   validateAvailability: async (context) => {
     return true;
   },
 
-  loadingMessage: "Updating memories...",
-  successMessage: "Memories updated successfully",
+  loadingMessage: 'Updating memories...',
+  successMessage: 'Memories updated successfully',
   icon: Brain,
   compactIcon: Brain,
 };

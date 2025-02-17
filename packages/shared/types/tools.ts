@@ -1,14 +1,12 @@
-import { DynamicStructuredTool } from "@langchain/core/tools";
-import { ReactNode } from "react";
-import { LucideIcon } from "./icons";
-import { TModelItem } from "./models";
-import { TApiKeys, TPreferences } from "./preferences";
+import { DynamicStructuredTool } from '@langchain/core/tools';
+import { ReactNode } from 'react';
+import { LucideIcon } from './icons';
+import { TModelItem } from './models';
+import { TApiKeys, TPreferences } from './preferences';
 
-export const toolKeys = ["calculator", "web_search"];
+export const toolKeys = ['calculator', 'web_search'];
 
-export type ToolExecutionFunction = (
-  args: ToolExecutionContext,
-) => DynamicStructuredTool;
+export type ToolExecutionFunction = (args: ToolExecutionContext) => DynamicStructuredTool;
 
 export type ToolExecutionContext = {
   apiKeys: TApiKeys[];
@@ -53,4 +51,4 @@ export type ToolDefinition = {
 };
 
 export type ToolKey = (typeof toolKeys)[number];
-export type IconSize = "sm" | "md" | "lg";
+export type IconSize = 'sm' | 'md' | 'lg';

@@ -1,5 +1,5 @@
-import { Flex, Spinner, Type } from "@repo/ui";
-import { LucideIcon } from "lucide-react";
+import { Flex, Spinner, Type } from '@repo/ui';
+import { LucideIcon } from 'lucide-react';
 
 export type ToolBadgeProps = {
   icon: LucideIcon;
@@ -8,20 +8,11 @@ export type ToolBadgeProps = {
   text: string;
 };
 
-export const ToolBadge = ({
-  icon,
-  isLoading,
-  loadingPlaceholder,
-  text,
-}: ToolBadgeProps) => {
+export const ToolBadge = ({ icon, isLoading, loadingPlaceholder, text }: ToolBadgeProps) => {
   const Icon = icon;
   return (
     <Flex items="center" gap="sm" className="rounded-full">
-      {isLoading ? (
-        <Spinner />
-      ) : (
-        <Icon size={16} strokeWidth={2} className="text-zinc-500" />
-      )}
+      {isLoading ? <Spinner /> : <Icon size={16} strokeWidth={2} className="text-zinc-500" />}
       <Type size="sm" textColor="secondary">
         {isLoading ? loadingPlaceholder : text}
       </Type>

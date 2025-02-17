@@ -1,18 +1,18 @@
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 
 const LoadingDot = {
-  display: "block",
-  width: "4px",
-  height: "4px",
-  borderRadius: "50%",
+  display: 'block',
+  width: '4px',
+  height: '4px',
+  borderRadius: '50%',
 };
 
 const LoadingContainer = {
-  width: "24px",
-  height: "24px",
-  paddingTop: "6px",
-  display: "flex",
-  justifyContent: "space-around",
+  width: '24px',
+  height: '24px',
+  paddingTop: '6px',
+  display: 'flex',
+  justifyContent: 'space-around',
 };
 
 const ContainerVariants = {
@@ -30,11 +30,11 @@ const ContainerVariants = {
 
 const DotVariants = {
   initial: {
-    y: "0%",
+    y: '0%',
     opacity: 1,
   },
   animate: {
-    y: "100%",
+    y: '100%',
     opacity: 0.5,
   },
 };
@@ -42,7 +42,7 @@ const DotVariants = {
 const DotTransition = {
   duration: 1.5,
   repeat: Infinity,
-  ease: "easeInOut",
+  ease: 'easeInOut',
 };
 
 export function Spinner() {
@@ -66,9 +66,9 @@ export function LinearSpinner() {
   return (
     <div
       style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
     >
       <motion.div

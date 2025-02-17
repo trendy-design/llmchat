@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { FeedbackModal } from "./feedback-modal";
+import { useState } from 'react';
+import { FeedbackModal } from './feedback-modal';
 
 export const useFeedback = () => {
   const [open, setOpen] = useState(false);

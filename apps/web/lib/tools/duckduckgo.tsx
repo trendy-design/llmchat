@@ -1,9 +1,9 @@
-import { SearchResults } from "@/components/tools/search-results";
-import { DynamicStructuredTool } from "@langchain/core/tools";
-import { ToolDefinition, ToolExecutionContext } from "@repo/shared/types";
-import axios from "axios";
-import { Globe } from "lucide-react";
-import { z } from "zod";
+import { SearchResults } from '@/components/tools/search-results';
+import { DynamicStructuredTool } from '@langchain/core/tools';
+import { ToolDefinition, ToolExecutionContext } from '@repo/shared/types';
+import axios from 'axios';
+import { Globe } from 'lucide-react';
+import { z } from 'zod';
 
 const duckDuckGoToolPrompt =
   "A search engine optimized for comprehensive, accurate, and trusted results. Useful for when you need to answer questions about current events. Input should be a search query. Don't use tool if already used it to answer the question.";
@@ -19,16 +19,16 @@ const duckduckGoFunction = (context: ToolExecutionContext) => {
   const { updateToolExecutionState } = context;
 
   return new DynamicStructuredTool({
-    name: "web_search",
+    name: 'web_search',
     description: duckDuckGoToolPrompt,
     schema: webSearchSchema,
     func: async ({ input }, runManager) => {
       try {
-        const response = await axios.post("/api/search", { query: input });
+        const response = await axios.post('/api/search', { query: input });
         const result = JSON?.parse(response.data?.results) || [];
         if (!result) {
-          runManager?.handleToolError("Error performing Duckduck go search");
-          throw new Error("Invalid response");
+          runManager?.handleToolError('Error performing Duckduck go search');
+          throw new Error('Invalid response');
         }
 
         const information = result?.map(
@@ -36,11 +36,11 @@ const duckduckGoFunction = (context: ToolExecutionContext) => {
           title: ${result?.title},
           snippet: ${result?.snippet},
           link: ${result?.link}
-        `,
+        `
         );
 
         updateToolExecutionState({
-          toolName: "web_search",
+          toolName: 'web_search',
           executionArgs: {
             input,
           },
@@ -58,7 +58,7 @@ const duckduckGoFunction = (context: ToolExecutionContext) => {
         return duckDuckGoSearchPropmt(input, information);
       } catch (error) {
         updateToolExecutionState({
-          toolName: "web_search",
+          toolName: 'web_search',
           executionArgs: {
             input,
           },
@@ -71,18 +71,18 @@ const duckduckGoFunction = (context: ToolExecutionContext) => {
 };
 
 const duckduckGoToolDefinition: ToolDefinition = {
-  key: "web_search",
-  description: "Search on DuckDuckGo",
+  key: 'web_search',
+  description: 'Search on DuckDuckGo',
   executionFunction: duckduckGoFunction,
-  displayName: "Web Search",
+  displayName: 'Web Search',
   isBeta: true,
   isVisibleInMenu: true,
   validateAvailability: async () => Promise.resolve(true),
   renderComponent: ({ searchResults, query }) => {
     return <SearchResults searchResults={searchResults} query={query} />;
   },
-  loadingMessage: "Searching on web...",
-  successMessage: "Web Search Results",
+  loadingMessage: 'Searching on web...',
+  successMessage: 'Web Search Results',
   icon: Globe,
   compactIcon: Globe,
 };

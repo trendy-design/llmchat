@@ -1,6 +1,7 @@
-import { TPrompt } from "@repo/shared/types";
+import { TPrompt } from '@repo/shared/types';
 import {
-  Button, Command,
+  Button,
+  Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
@@ -11,9 +12,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Flex
-} from "@repo/ui";
-import { Album, Bookmark, Ellipsis, Pencil, Trash } from "lucide-react";
+  Flex,
+} from '@repo/ui';
+import { Album, Bookmark, Ellipsis, Pencil, Trash } from 'lucide-react';
 
 export type TPromptLibrary = {
   onPromptSelect: (prompt: TPrompt) => void;
@@ -45,11 +46,7 @@ export const PromptLibrary = ({
         </CommandEmpty>
 
         <CommandList className="px-2 pb-2">
-          <CommandItem
-            value={"Create prompt"}
-            className="w-full"
-            onSelect={onCreate}
-          >
+          <CommandItem value={'Create prompt'} className="w-full" onSelect={onCreate}>
             <Pencil size={16} strokeWidth="2" />
             Create Prompt
           </CommandItem>
@@ -71,10 +68,7 @@ export const PromptLibrary = ({
                         <Ellipsis size={16} strokeWidth={2} />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                      className="min-w-[200px] text-sm md:text-base"
-                      align="end"
-                    >
+                    <DropdownMenuContent className="min-w-[200px] text-sm md:text-base" align="end">
                       <DropdownMenuItem
                         onClick={(e) => {
                           onEdit(prompt);

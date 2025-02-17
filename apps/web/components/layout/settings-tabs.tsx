@@ -1,15 +1,8 @@
-import { TSettingMenu } from "@/app/settings/layout";
-import { Button, Flex, cn } from "@repo/ui";
-import { motion } from "framer-motion";
-import {
-  AudioLines,
-  Bolt,
-  Brain,
-  Database,
-  Sparkle,
-  ToyBrick,
-} from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { TSettingMenu } from '@/app/settings/layout';
+import { Button, Flex, cn } from '@repo/ui';
+import { motion } from 'framer-motion';
+import { AudioLines, Bolt, Brain, Database, Sparkle, ToyBrick } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 
 export const SettingsTabs = () => {
   const { push } = useRouter();
@@ -17,34 +10,34 @@ export const SettingsTabs = () => {
 
   const settingMenu: TSettingMenu[] = [
     {
-      name: "Common",
+      name: 'Common',
       icon: Bolt,
-      route: "/settings/common",
+      route: '/settings/common',
     },
     {
-      name: "LLMs",
+      name: 'LLMs',
       icon: Sparkle,
-      route: "/settings/llms",
+      route: '/settings/llms',
     },
     {
-      name: "Plugins",
+      name: 'Plugins',
       icon: ToyBrick,
-      route: "/settings/plugins",
+      route: '/settings/plugins',
     },
     {
-      name: "Memory",
+      name: 'Memory',
       icon: Brain,
-      route: "/settings/memory",
+      route: '/settings/memory',
     },
     {
-      name: "Voice Input",
+      name: 'Voice Input',
       icon: AudioLines,
-      route: "/settings/voice",
+      route: '/settings/voice',
     },
     {
-      name: "Data",
+      name: 'Data',
       icon: Database,
-      route: "/settings/data",
+      route: '/settings/data',
     },
   ];
 
@@ -54,18 +47,14 @@ export const SettingsTabs = () => {
     return (
       <Flex direction="col" gap="sm" className="relative pb-2">
         <Button
-          variant={"ghost"}
+          variant={'ghost'}
           key={menu.route}
           size="sm"
           onClick={() => push(menu.route)}
           className="w-full justify-start gap-2"
         >
-          <Icon
-            size={14}
-            strokeWidth={2}
-            className="opacity-50 dark:text-white"
-          />
-          <span className={cn("font-medium md:flex")}>{menu.name}</span>
+          <Icon size={14} strokeWidth={2} className="opacity-50 dark:text-white" />
+          <span className={cn('font-medium md:flex')}>{menu.name}</span>
         </Button>
         {isSelected && (
           <motion.div
@@ -73,7 +62,7 @@ export const SettingsTabs = () => {
             layoutId="underline"
             initial={false}
             transition={{
-              type: "spring",
+              type: 'spring',
               stiffness: 500,
               damping: 30,
             }}
@@ -84,11 +73,7 @@ export const SettingsTabs = () => {
   };
 
   return (
-    <Flex
-      direction="row"
-      gap="xs"
-      className="no-scrollbar w-full overflow-x-auto"
-    >
+    <Flex direction="row" gap="xs" className="no-scrollbar w-full overflow-x-auto">
       {settingMenu.map(renderMenuItem)}
     </Flex>
   );

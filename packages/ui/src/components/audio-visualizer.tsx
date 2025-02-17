@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { useCallback, useEffect, useRef } from "react";
-import { cn } from "../lib/utils";
+import { useCallback, useEffect, useRef } from 'react';
+import { cn } from '../lib/utils';
 
 export type AudioVisualizerProps = {
   stream?: MediaStream | null;
@@ -31,8 +31,7 @@ export function AudioVisualizer({ stream }: AudioVisualizerProps) {
       .fill(0)
       .map((_, i) => {
         const startFreq = minFreq * Math.pow(maxFreq / minFreq, i / totalBars);
-        const endFreq =
-          minFreq * Math.pow(maxFreq / minFreq, (i + 1) / totalBars);
+        const endFreq = minFreq * Math.pow(maxFreq / minFreq, (i + 1) / totalBars);
         return { startFreq, endFreq };
       });
 
@@ -44,12 +43,8 @@ export function AudioVisualizer({ stream }: AudioVisualizerProps) {
       analyserRef.current.getByteFrequencyData(dataArray);
 
       frequencyRanges.forEach(({ startFreq, endFreq }, i) => {
-        const startIndex = Math.floor(
-          (startFreq / audioContext.sampleRate) * bufferLength,
-        );
-        const endIndex = Math.floor(
-          (endFreq / audioContext.sampleRate) * bufferLength,
-        );
+        const startIndex = Math.floor((startFreq / audioContext.sampleRate) * bufferLength);
+        const endIndex = Math.floor((endFreq / audioContext.sampleRate) * bufferLength);
 
         let sum = 0;
         for (let j = startIndex; j < endIndex; j++) {
@@ -95,9 +90,9 @@ export function AudioVisualizer({ stream }: AudioVisualizerProps) {
               if (el) barsRef.current[index] = el;
             }}
             className={cn(
-              "min-h-10 w-8 rounded-full bg-zinc-800/30 transition-all duration-75 dark:bg-white/50",
+              'min-h-10 w-8 rounded-full bg-zinc-800/30 transition-all duration-75 dark:bg-white/50'
             )}
-            style={{ height: "32px" }}
+            style={{ height: '32px' }}
           ></div>
         ))}
     </div>

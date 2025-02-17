@@ -1,37 +1,35 @@
-import { cn } from "../lib/utils";
-;
+import { cn } from '../lib/utils';
+import { VariantProps, cva } from 'class-variance-authority';
 
-import { VariantProps, cva } from "class-variance-authority";
+import React from 'react';
 
-import React from "react";
-
-const typeVariants = cva("text flex !my-0", {
+const typeVariants = cva('text flex !my-0', {
   variants: {
     size: {
-      xxs: "text-xs",
-      xs: "text-xs",
-      sm: "text-xs md:text-sm",
-      base: "text-sm md:text-base",
-      lg: "text-base md:text-lg",
-      xl: "text-lg md:text-xl",
+      xxs: 'text-xs',
+      xs: 'text-xs',
+      sm: 'text-xs md:text-sm',
+      base: 'text-sm md:text-base',
+      lg: 'text-base md:text-lg',
+      xl: 'text-lg md:text-xl',
     },
     textColor: {
-      primary: "text-zinc-800 dark:text-zinc-50",
-      secondary: "text-zinc-600 dark:text-zinc-200",
-      tertiary: "text-zinc-500",
-      white: "text-white",
+      primary: 'text-zinc-800 dark:text-zinc-50',
+      secondary: 'text-zinc-600 dark:text-zinc-200',
+      tertiary: 'text-zinc-500',
+      white: 'text-white',
     },
     weight: {
-      regular: "font-normal",
-      medium: "font-medium",
-      bold: "font-semibold",
+      regular: 'font-normal',
+      medium: 'font-medium',
+      bold: 'font-semibold',
     },
   },
 
   defaultVariants: {
-    size: "sm",
-    textColor: "primary",
-    weight: "regular",
+    size: 'sm',
+    textColor: 'primary',
+    weight: 'regular',
   },
 });
 
@@ -44,15 +42,11 @@ export interface TypeProps
 export const Type = React.forwardRef<HTMLParagraphElement, TypeProps>(
   ({ className, size, textColor, weight, asChild = false, ...props }, ref) => {
     return (
-      <p
-        className={cn(typeVariants({ size, textColor, className, weight }))}
-        ref={ref}
-        {...props}
-      >
+      <p className={cn(typeVariants({ size, textColor, className, weight }))} ref={ref} {...props}>
         {props.children}
       </p>
     );
-  },
+  }
 );
 
-Type.displayName = "Type";
+Type.displayName = 'Type';

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -10,11 +10,7 @@ const containerVariants = {
   },
 };
 
-export const StaggerContainer = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const StaggerContainer = ({ children }: { children: React.ReactNode }) => {
   return (
     <motion.div
       initial="hidden"

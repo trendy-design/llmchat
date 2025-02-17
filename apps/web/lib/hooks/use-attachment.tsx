@@ -1,7 +1,7 @@
-import { TAttachment } from "@repo/shared/types";
-import { Button, useToast } from "@repo/ui";
-import { FileText, X } from "lucide-react";
-import { ChangeEvent, useState } from "react";
+import { TAttachment } from '@repo/shared/types';
+import { Button, useToast } from '@repo/ui';
+import { FileText, X } from 'lucide-react';
+import { ChangeEvent, useState } from 'react';
 
 export const useAttachment = () => {
   const [attachment, setAttachment] = useState<TAttachment>();
@@ -14,12 +14,12 @@ export const useAttachment = () => {
   const handlePdfUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
 
-    const fileTypes = ["application/pdf"];
+    const fileTypes = ['application/pdf'];
     if (file && !fileTypes.includes(file?.type)) {
       toast({
-        title: "Invalid format",
-        description: "Please select a valid PDF file.",
-        variant: "destructive",
+        title: 'Invalid format',
+        description: 'Please select a valid PDF file.',
+        variant: 'destructive',
       });
       return;
     }
@@ -33,7 +33,7 @@ export const useAttachment = () => {
   };
 
   const handleFileSelect = () => {
-    document.getElementById("pdf-fileInput")?.click();
+    document.getElementById('pdf-fileInput')?.click();
   };
 
   const renderAttachedPdf = () => {
@@ -42,7 +42,7 @@ export const useAttachment = () => {
         <div className="relative flex h-[60px] min-w-[60px] items-center justify-center rounded-xl border border-white/5 shadow-md">
           <FileText size={24} />
           <Button
-            size={"icon-xs"}
+            size={'icon-xs'}
             variant="default"
             onClick={clearAttachment}
             className="absolute right-[-4px] top-[-4px] z-10 h-4 w-4 flex-shrink-0"
@@ -57,12 +57,7 @@ export const useAttachment = () => {
   const renderPdfFileUpload = () => {
     return (
       <>
-        <input
-          type="file"
-          id="pdf-fileInput"
-          className="hidden"
-          onChange={handlePdfUpload}
-        />
+        <input type="file" id="pdf-fileInput" className="hidden" onChange={handlePdfUpload} />
         <Button onClick={handleFileSelect}>
           <FileText size={16} strokeWidth={1.5} />
           Upload PDF

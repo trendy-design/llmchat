@@ -1,8 +1,8 @@
-import { useAssistantUtils } from "@/hooks";
-import { useAuth, usePreferenceContext } from "@/libs/context";
-import { useRootContext } from "@/libs/context/root";
-import { Button, Flex, Type } from "@repo/ui";
-import { Plug } from "lucide-react";
+import { useAssistantUtils } from '@/hooks';
+import { useAuth, usePreferenceContext } from '@/libs/context';
+import { useRootContext } from '@/libs/context/root';
+import { Button, Flex, Type } from '@repo/ui';
+import { Plug } from 'lucide-react';
 
 export const ApiKeyStatus = () => {
   const { setOpenApiKeyModal, setApiKeyModalProvider } = useRootContext();
@@ -12,11 +12,9 @@ export const ApiKeyStatus = () => {
   const assistant = getAssistantByKey(preferences.defaultAssistant);
 
   const hasApiKeys =
-    apiKeys.filter(
-      (key) => assistant?.model.provider === key.provider && key.key,
-    ).length > 0;
+    apiKeys.filter((key) => assistant?.model.provider === key.provider && key.key).length > 0;
 
-  if (preferences.defaultAssistant === "llmchat") {
+  if (preferences.defaultAssistant === 'llmchat') {
     return (
       <Flex className="w-full" justify="between" items="center">
         <Type
@@ -24,14 +22,14 @@ export const ApiKeyStatus = () => {
           textColor="secondary"
           className="rounded-full bg-zinc-50 px-3 py-1.5 text-center"
         >
-          LLMChat is free to use with daily limits.{" "}
+          LLMChat is free to use with daily limits.{' '}
           {/* biome-ignore lint/a11y/useKeyWithClickEvents: <explanation> */}
           <span
             className="inline-block cursor-pointer px-1 underline decoration-zinc-500/20 underline-offset-2"
             onClick={openSignIn}
           >
             Sign in
-          </span>{" "}
+          </span>{' '}
           required.
         </Type>
       </Flex>

@@ -1,50 +1,45 @@
-import { RootLayout } from "@/components/layout";
-import { WelcomeMessage } from "@/components/welcome-message";
-import {
-  PreferenceProvider,
-  ReactQueryProvider,
-  SessionsProvider,
-} from "@/libs/context";
-import { AuthProvider } from "@/libs/context/auth";
-import { RootProvider } from "@/libs/context/root";
-import { TooltipProvider, cn } from "@repo/ui";
-import { GeistSans } from "geist/font/sans";
-import type { Viewport } from "next";
-import { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
-import "./globals.css";
+import { RootLayout } from '@/components/layout';
+import { WelcomeMessage } from '@/components/welcome-message';
+import { ReactQueryProvider } from '@/libs/context';
+import { AuthProvider } from '@/libs/context/auth';
+import { RootProvider } from '@/libs/context/root';
+import { TooltipProvider, cn } from '@repo/ui';
+import { GeistSans } from 'geist/font/sans';
+import type { Viewport } from 'next';
+import { Metadata } from 'next';
+import { ThemeProvider } from 'next-themes';
+import './globals.css';
 
 export const metadata: Metadata = {
-  title: "LLMChat - Your Ultimate AI Chat Experience",
-  description: "Chat with top LLMs in a minimal, privacy-focused UI.",
-  keywords:
-    "AI chat, LLM, language models, privacy, minimal UI, ollama, chatgpt",
-  authors: [{ name: "Trendy design", url: "https://trendy.design" }],
-  creator: "Trendy design",
-  publisher: "Trendy design",
+  title: 'LLMChat - Your Ultimate AI Chat Experience',
+  description: 'Chat with top LLMs in a minimal, privacy-focused UI.',
+  keywords: 'AI chat, LLM, language models, privacy, minimal UI, ollama, chatgpt',
+  authors: [{ name: 'Trendy design', url: 'https://trendy.design' }],
+  creator: 'Trendy design',
+  publisher: 'Trendy design',
   openGraph: {
-    title: "LLMChat - Your Ultimate AI Chat Experience",
-    siteName: "llmchat.co",
-    description: "Chat with top LLMs in a minimal, privacy-focused UI.",
-    url: "https://llmchat.co",
-    type: "website",
-    locale: "en_US",
+    title: 'LLMChat - Your Ultimate AI Chat Experience',
+    siteName: 'llmchat.co',
+    description: 'Chat with top LLMs in a minimal, privacy-focused UI.',
+    url: 'https://llmchat.co',
+    type: 'website',
+    locale: 'en_US',
     images: [
       {
-        url: "https://llmchat.co/og-image.jpg",
+        url: 'https://llmchat.co/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: "LLMChat Preview",
+        alt: 'LLMChat Preview',
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
-    title: "LLMChat - Your Ultimate AI Chat Experience",
-    site: "llmchat.co",
-    creator: "@llmchat_co",
-    description: "Chat with top LLMs in a minimal, privacy-focused UI.",
-    images: ["https://llmchat.co/twitter-image.jpg"],
+    card: 'summary_large_image',
+    title: 'LLMChat - Your Ultimate AI Chat Experience',
+    site: 'llmchat.co',
+    creator: '@llmchat_co',
+    description: 'Chat with top LLMs in a minimal, privacy-focused UI.',
+    images: ['https://llmchat.co/twitter-image.jpg'],
   },
   robots: {
     index: true,
@@ -52,18 +47,18 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
     },
   },
   alternates: {
-    canonical: "https://llmchat.co",
+    canonical: 'https://llmchat.co',
   },
 };
 
 export const viewport: Viewport = {
-  width: "device-width",
+  width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
@@ -77,7 +72,7 @@ export default function ParentLayout({
   return (
     <html
       lang="en"
-      className={cn(GeistSans.className, "antialiased", "light")}
+      className={cn(GeistSans.className, 'antialiased', 'light')}
       suppressHydrationWarning
     >
       <head>
@@ -99,11 +94,7 @@ export default function ParentLayout({
             <TooltipProvider>
               <ReactQueryProvider>
                 <AuthProvider>
-                  <PreferenceProvider>
-                    <SessionsProvider>
-                      <RootLayout>{children}</RootLayout>
-                    </SessionsProvider>
-                  </PreferenceProvider>
+                  <RootLayout>{children}</RootLayout>
                 </AuthProvider>
               </ReactQueryProvider>
               <WelcomeMessage />

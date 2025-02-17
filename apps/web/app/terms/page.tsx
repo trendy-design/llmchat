@@ -1,7 +1,7 @@
-"use client";
-import { Mdx } from "@/components/mdx";
-import { termsMdx } from "@repo/shared/config";
-import { Flex } from "@repo/ui";
+'use client';
+import { Mdx } from '@/components/mdx';
+import { termsMdx } from '@repo/shared/config';
+import { Flex } from '@repo/ui';
 
 const TermsPage = () => {
   return (

@@ -1,7 +1,7 @@
-import { schema } from "../db/schema";
-import { TAssistant } from "./assistants";
-import { TProvider } from "./models";
-import { ToolKey } from "./tools";
+import { schema } from '../db/schema';
+import { TAssistant } from './assistants';
+import { TProvider } from './models';
+import { ToolKey } from './tools';
 
 export type TApiKeys = typeof schema.apiKeys.$inferSelect;
 export type TApiKeyInsert = typeof schema.apiKeys.$inferInsert;
@@ -18,7 +18,7 @@ export type TPreferencesState = {
 export type TPreferences = typeof schema.preferences.$inferSelect;
 
 export type TLegacyPreferences = {
-  defaultAssistant: TAssistant["key"];
+  defaultAssistant: TAssistant['key'];
   systemPrompt: string;
   messageLimit: number;
   temperature: number;
@@ -27,10 +27,10 @@ export type TLegacyPreferences = {
   generateTitle: boolean;
   defaultPlugins: ToolKey[];
   whisperSpeechToTextEnabled: boolean;
-  dalleImageQuality: "standard" | "hd";
-  dalleImageSize: "1024x1024" | "1792x1024" | "1024x1792";
+  dalleImageQuality: 'standard' | 'hd';
+  dalleImageSize: '1024x1024' | '1792x1024' | '1024x1792';
   maxTokens: number;
-  defaultWebSearchEngine: "google" | "duckduckgo";
+  defaultWebSearchEngine: 'google' | 'duckduckgo';
   ollamaBaseUrl: string;
   topP: number;
   topK: number;

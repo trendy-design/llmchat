@@ -5,7 +5,7 @@ export const REVEAL_ANIMATION_VARIANTS = {
     y: 0,
     transition: {
       duration: 0.5,
-      ease: "easeIn",
+      ease: 'easeIn',
       delay: 0.1,
     },
   },
@@ -14,7 +14,7 @@ export const REVEAL_FAST_ANIMATION_VARIANTS = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { duration: 0.5, ease: "easeInOut", delay: 0.1 },
+    transition: { duration: 0.5, ease: 'easeInOut', delay: 0.1 },
   },
 };
 
@@ -31,7 +31,7 @@ const popInVariant = {
   visible: {
     scale: 1,
     opacity: 1,
-    transition: { duration: 0.2, ease: "easeInOut", delay: 0.1 },
+    transition: { duration: 0.2, ease: 'easeInOut', delay: 0.1 },
   },
 };
 
@@ -40,7 +40,7 @@ const zoomVariant = {
   animate: {
     scale: 1,
     opacity: 1,
-    transition: { duration: 0.5, ease: "easeInOut", delay: 1 },
+    transition: { duration: 0.5, ease: 'easeInOut', delay: 1 },
   },
 };
 

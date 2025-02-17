@@ -1,6 +1,6 @@
-import { useChatContext } from "@/lib/context";
-import { useRecordVoice } from "@/lib/hooks";
-import { formatTickerTime } from "@repo/shared/utils";
+import { useChatContext } from '@/lib/context';
+import { useRecordVoice } from '@/lib/hooks';
+import { formatTickerTime } from '@repo/shared/utils';
 import {
   AudioVisualizer,
   Button,
@@ -10,9 +10,9 @@ import {
   LinearSpinner,
   Tooltip,
   Type,
-} from "@repo/ui";
-import { Check, Circle, X } from "lucide-react";
-import { FC, useEffect, useState } from "react";
+} from '@repo/ui';
+import { Check, Circle, X } from 'lucide-react';
+import { FC, useEffect, useState } from 'react';
 
 export type TAudioRecorder = {
   sendMessage: (message: string) => void;
@@ -98,12 +98,7 @@ export const AudioRecorder: FC<TAudioRecorder> = ({ sendMessage }) => {
                   <Type size="base" weight="medium" className="flex-shrink-0">
                     {formatTickerTime(elapsedTime)}
                   </Type>
-                  <Type
-                    textColor="tertiary"
-                    size="base"
-                    weight="medium"
-                    className="flex-shrink-0"
-                  >
+                  <Type textColor="tertiary" size="base" weight="medium" className="flex-shrink-0">
                     / 1:00
                   </Type>
                 </Flex>

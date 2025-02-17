@@ -1,10 +1,10 @@
-import { Extension } from "@tiptap/react";
+import { Extension } from '@tiptap/react';
 
 export const ShiftEnterToLineBreak = Extension.create({
-  name: "shiftEnterToLineBreak",
+  name: 'shiftEnterToLineBreak',
   addKeyboardShortcuts() {
     return {
-      "Shift-Enter": (_) => {
+      'Shift-Enter': (_) => {
         return _.editor.commands.enter();
       },
     };
@@ -12,7 +12,7 @@ export const ShiftEnterToLineBreak = Extension.create({
 });
 
 export const DisableEnter = Extension.create({
-  name: "disableEnter",
+  name: 'disableEnter',
   addKeyboardShortcuts() {
     return {
       Enter: () => true,

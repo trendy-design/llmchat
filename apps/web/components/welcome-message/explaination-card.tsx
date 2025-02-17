@@ -1,15 +1,12 @@
-import { slideUpVariant } from "@repo/shared/utils";
-import { HoverCard, HoverCardContent, HoverCardTrigger, Type } from "@repo/ui";
-import { motion } from "framer-motion";
+import { slideUpVariant } from '@repo/shared/utils';
+import { HoverCard, HoverCardContent, HoverCardTrigger, Type } from '@repo/ui';
+import { motion } from 'framer-motion';
 export type ExplainationCard = {
   explanation: string;
   children: React.ReactNode;
 };
 
-export const ExplainationCard = ({
-  explanation,
-  children,
-}: ExplainationCard) => {
+export const ExplainationCard = ({ explanation, children }: ExplainationCard) => {
   return (
     <HoverCard>
       <HoverCardTrigger>

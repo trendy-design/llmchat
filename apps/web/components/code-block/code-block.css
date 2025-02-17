@@ -1,0 +1,66 @@
+/* Base styles from Prism tomorrow theme will be preserved */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #e5e7eb;
+}
+
+.token.punctuation {
+  color: #f1f5f9;
+}
+
+.token.property,
+.token.tag,
+.token.constant,
+.token.symbol {
+  color: #fda4af;
+}
+
+.token.boolean,
+.token.number,
+.token.variable {
+  color: #d8b4fe;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin {
+  color: #6ee7b7;
+}
+
+.token.operator,
+.token.entity,
+.token.url {
+  color: #fde68a;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.function,
+.token.class-name {
+  color: #93c5fd;
+}
+
+.token.keyword {
+  color: #c7d2fe;
+}
+
+.token.regex,
+.token.important {
+  color: #fed7aa;
+}
+
+.token.important {
+  font-weight: bold;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.token.parameter {
+  color: #fca5a5;
+}

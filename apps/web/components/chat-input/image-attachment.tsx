@@ -1,18 +1,15 @@
-import { TAttachment } from "@repo/shared/types";
-import { Button, Flex } from "@repo/ui";
-import { X } from "lucide-react";
-import Image from "next/image";
-import { FC } from "react";
+import { TAttachment } from '@repo/shared/types';
+import { Button, Flex } from '@repo/ui';
+import { X } from 'lucide-react';
+import Image from 'next/image';
+import { FC } from 'react';
 
 export type TImageAttachment = {
   attachment?: TAttachment;
   clearAttachment: () => void;
 };
 
-export const ImageAttachment: FC<TImageAttachment> = ({
-  attachment,
-  clearAttachment,
-}) => {
+export const ImageAttachment: FC<TImageAttachment> = ({ attachment, clearAttachment }) => {
   if (!attachment?.base64) return null;
 
   return (
@@ -27,7 +24,7 @@ export const ImageAttachment: FC<TImageAttachment> = ({
         />
 
         <Button
-          size={"icon-xs"}
+          size={'icon-xs'}
           variant="default"
           onClick={clearAttachment}
           className="absolute right-[-4px] top-[-4px] z-10 h-4 w-4 flex-shrink-0"

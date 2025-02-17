@@ -1,28 +1,23 @@
-import { blobToBase64 } from "@repo/shared/utils";
-import { useToast } from "@repo/ui";
-import { useRouter } from "next/navigation";
-import { OpenAI, toFile } from "openai";
-import { useEffect, useRef, useState } from "react";
-import { usePreferenceContext } from "../context";
+import { blobToBase64 } from '@repo/shared/utils';
+import { useToast } from '@repo/ui';
+import { useRouter } from 'next/navigation';
+import { OpenAI, toFile } from 'openai';
+import { useEffect, useRef, useState } from 'react';
 
 export const useRecordVoice = () => {
   const { push } = useRouter();
   const [startTime, setStartTime] = useState<number>(0);
-  const [text, setText] = useState<string>("");
+  const [text, setText] = useState<string>('');
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null,
-  );
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const { toast } = useToast();
-  const { getApiKey } = usePreferenceContext();
   const [recording, setRecording] = useState<boolean>(false);
   const [transcribing, setIsTranscribing] = useState<boolean>(false);
-  const { preferences } = usePreferenceContext();
   const chunks = useRef<Blob[]>([]);
   const [elapsedTime, setElapsedTime] = useState<number>(0);
 
   const startRecording = async (): Promise<void> => {
-    setText("");
+    setText('');
     chunks.current = [];
     setElapsedTime(0); // Reset elapsed time
     setStartTime(Date.now()); // Reset start time
@@ -44,11 +39,11 @@ export const useRecordVoice = () => {
       newMediaRecorder.start(1000);
       setRecording(true);
     } catch (error) {
-      console.error("Error accessing the microphone: ", error);
+      console.error('Error accessing the microphone: ', error);
       toast({
-        title: "Error",
-        description: "Failed to access the microphone.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to access the microphone.',
+        variant: 'destructive',
       });
     }
   };
@@ -57,7 +52,7 @@ export const useRecordVoice = () => {
     if (mediaRecorder) {
       mediaRecorder.stop();
       setRecording(false);
-      const audioBlob = new Blob(chunks.current, { type: "audio/wav" });
+      const audioBlob = new Blob(chunks.current, { type: 'audio/wav' });
       blobToBase64(audioBlob, getText);
     }
   };
@@ -72,25 +67,25 @@ export const useRecordVoice = () => {
   const getText = async (base64data: string): Promise<void> => {
     setIsTranscribing(true);
     try {
-      const apiKey = getApiKey("openai");
-      if (!apiKey) throw new Error("API key not found");
+      const apiKey = '';
+      if (!apiKey) throw new Error('API key not found');
       const openai = new OpenAI({
         apiKey,
         dangerouslyAllowBrowser: true,
       });
-      const audioBuffer = Buffer.from(base64data, "base64");
+      const audioBuffer = Buffer.from(base64data, 'base64');
 
       const transcription = await openai.audio.transcriptions.create({
-        file: await toFile(audioBuffer, "audio.wav", { type: "audio/wav" }),
-        model: "whisper-1",
+        file: await toFile(audioBuffer, 'audio.wav', { type: 'audio/wav' }),
+        model: 'whisper-1',
       });
-      setText(transcription?.text || "");
+      setText(transcription?.text || '');
     } catch (error) {
-      console.error("Error transcribing audio: ", error);
+      console.error('Error transcribing audio: ', error);
       toast({
-        title: "Transcription Error",
-        description: "Failed to transcribe the audio.",
-        variant: "destructive",
+        title: 'Transcription Error',
+        description: 'Failed to transcribe the audio.',
+        variant: 'destructive',
       });
     } finally {
       setIsTranscribing(false);
@@ -98,30 +93,29 @@ export const useRecordVoice = () => {
   };
 
   const startVoiceRecording = async () => {
-    const openAIAPIKeys = getApiKey("openai");
+    const openAIAPIKeys = '';
     if (!openAIAPIKeys) {
       toast({
-        title: "API key missing",
-        description:
-          "Recordings require OpenAI API key. Please check settings.",
-        variant: "destructive",
+        title: 'API key missing',
+        description: 'Recordings require OpenAI API key. Please check settings.',
+        variant: 'destructive',
       });
 
-      push("/settings/llms/openai");
+      push('/settings/llms/openai');
       return;
     }
 
-    if (preferences?.whisperSpeechToTextEnabled) {
-      startRecording();
-    } else {
-      toast({
-        title: "Enable Speech to Text",
-        description:
-          "Recordings require Speech to Text enabled. Please check settings.",
-        variant: "destructive",
-      });
-      push("/settings/voice");
-    }
+    // if (preferences?.whisperSpeechToTextEnabled) {
+    //   startRecording();
+    // } else {
+    //   toast({
+    //     title: "Enable Speech to Text",
+    //     description:
+    //       "Recordings require Speech to Text enabled. Please check settings.",
+    //     variant: "destructive",
+    //   });
+    //   push("/settings/voice");
+    // }
   };
 
   // const renderRecordingControls = () => {

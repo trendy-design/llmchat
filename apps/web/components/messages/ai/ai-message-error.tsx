@@ -1,10 +1,10 @@
-import { useAuth, useChatContext, usePreferenceContext } from "@/lib/context";
-import { useAssistantUtils, useLLMRunner } from "@/lib/hooks";
-import { TChatMessage, TProvider } from "@repo/shared/types";
-import { Button, Flex, Type } from "@repo/ui";
-import { AlertCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { FC } from "react";
+import { useAuth, useChatContext, usePreferenceContext } from '@/lib/context';
+import { useAssistantUtils, useLLMRunner } from '@/lib/hooks';
+import { TChatMessage, TProvider } from '@repo/shared/types';
+import { Button, Flex, Type } from '@repo/ui';
+import { AlertCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { FC } from 'react';
 
 type TAIMessageError = {
   stopReason?: string;
@@ -20,10 +20,7 @@ type ErrorConfig = {
   };
 };
 
-export const AIMessageError: FC<TAIMessageError> = ({
-  stopReason,
-  message,
-}) => {
+export const AIMessageError: FC<TAIMessageError> = ({ stopReason, message }) => {
   const { store } = useChatContext();
   const currentMessage = store((state) => state.currentMessage);
   const removeLastMessage = store((state) => state.removeLastMessage);
@@ -35,48 +32,45 @@ export const AIMessageError: FC<TAIMessageError> = ({
   const { getModelByKey } = useAssistantUtils();
   const { invokeModel } = useLLMRunner();
 
-  if (!stopReason || ["finish", "cancel", undefined].includes(stopReason)) {
+  if (!stopReason || ['finish', 'cancel', undefined].includes(stopReason)) {
     return null;
   }
 
   const assistant = message.runConfig.assistant;
 
-  const model = getModelByKey(
-    assistant.baseModel,
-    assistant.provider as TProvider,
-  );
+  const model = getModelByKey(assistant.baseModel, assistant.provider as TProvider);
 
   const errorConfigs: Record<string, ErrorConfig> = {
     apikey: {
       message: getApiKey(assistant.provider)
-        ? "API Key is invalid or expired."
-        : "API Key required",
+        ? 'API Key is invalid or expired.'
+        : 'API Key required',
       action: {
-        label: getApiKey(assistant.provider) ? "Check API Key" : "Set API Key",
+        label: getApiKey(assistant.provider) ? 'Check API Key' : 'Set API Key',
         onClick: () => push(`/settings/llms/${model?.provider}`),
       },
     },
     rateLimit: {
       message:
-        "You have reached your daily free usage limit. Please try again later or use your own API key.",
+        'You have reached your daily free usage limit. Please try again later or use your own API key.',
       action: {
-        label: "Open Settings",
-        onClick: () => push("/settings/llms"),
+        label: 'Open Settings',
+        onClick: () => push('/settings/llms'),
       },
     },
     unauthorized: {
-      message: "You are not authorized to access this resource.",
+      message: 'You are not authorized to access this resource.',
       action: {
-        label: "Sign In",
+        label: 'Sign In',
         onClick: openSignIn,
       },
     },
     default: {
       message:
         message?.errorMessage ||
-        "An unexpected error occurred. Please try again or contact support.",
+        'An unexpected error occurred. Please try again or contact support.',
       action: {
-        label: "Retry",
+        label: 'Retry',
         onClick: () => {
           if (currentMessage?.id !== message.id) {
             removeLastMessage();
@@ -88,8 +82,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
     },
   };
 
-  const { message: errorMessage, action } =
-    errorConfigs[stopReason] || errorConfigs.default;
+  const { message: errorMessage, action } = errorConfigs[stopReason] || errorConfigs.default;
 
   return (
     <Flex
@@ -106,12 +99,7 @@ export const AIMessageError: FC<TAIMessageError> = ({
       </Flex>
 
       {action && (
-        <Button
-          variant="secondary"
-          size="xs"
-          onClick={action.onClick}
-          rounded="full"
-        >
+        <Button variant="secondary" size="xs" onClick={action.onClick} rounded="full">
           {action.label}
         </Button>
       )}

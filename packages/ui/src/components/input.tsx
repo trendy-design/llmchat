@@ -1,36 +1,34 @@
-import * as React from "react";
+import * as React from 'react';
 
-import { VariantProps, cva } from "class-variance-authority";
-import { cn } from "../lib/utils";
-;
-
+import { VariantProps, cva } from 'class-variance-authority';
+import { cn } from '../lib/utils';
 const inputVariants = cva(
-  "flex h-9 w-full rounded-xl outline-none  border-none px-3 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50",
+  'flex h-9 w-full rounded-xl outline-none  border-none px-3 text-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       variant: {
-        default: "bg-black/5 dark:bg-white/5",
-        ghost: "bg-transparent",
+        default: 'bg-black/5 dark:bg-white/5',
+        ghost: 'bg-transparent',
       },
       size: {
-        default: "h-10 px-4 text-sm",
-        sm: "h-9 px-3 text-xs md:text-sm",
+        default: 'h-10 px-4 text-sm',
+        sm: 'h-9 px-3 text-xs md:text-sm',
       },
       rounded: {
-        lg: "rounded-lg",
-        full: "rounded-full",
+        lg: 'rounded-lg',
+        full: 'rounded-full',
       },
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
-      rounded: "lg",
+      variant: 'default',
+      size: 'default',
+      rounded: 'lg',
     },
-  },
+  }
 );
 
 export interface InputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size">,
+  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'>,
     VariantProps<typeof inputVariants> {}
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -44,8 +42,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {...props}
       />
     );
-  },
+  }
 );
-Input.displayName = "Input";
+Input.displayName = 'Input';
 
 export { Input };

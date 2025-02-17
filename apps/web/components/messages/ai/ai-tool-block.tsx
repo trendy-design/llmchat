@@ -1,5 +1,5 @@
-import { ToolDefinition, ToolExecutionState } from "@repo/shared/types";
-import { Flex, Spinner, Type } from "@repo/ui";
+import { ToolDefinition, ToolExecutionState } from '@repo/shared/types';
+import { Flex, Spinner, Type } from '@repo/ui';
 
 export type AiToolBlockProps = {
   tool: ToolExecutionState;
@@ -20,18 +20,12 @@ export const AiToolBlock = ({ tool, definition }: AiToolBlockProps) => {
             {tool.isLoading ? (
               <Spinner />
             ) : (
-              <Icon
-                size={14}
-                strokeWidth={2}
-                className="mt-0.5 flex-shrink-0"
-              />
+              <Icon size={14} strokeWidth={2} className="mt-0.5 flex-shrink-0" />
             )}
           </Flex>
           <Flex direction="col" gap="xs" className="w-full flex-1">
             <Type size="sm" weight="medium">
-              {tool.isLoading
-                ? definition.loadingMessage
-                : definition.successMessage}
+              {tool.isLoading ? definition.loadingMessage : definition.successMessage}
             </Type>
           </Flex>
         </Flex>

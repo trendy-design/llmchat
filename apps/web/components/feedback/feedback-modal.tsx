@@ -1,5 +1,5 @@
-"use client";
-import { cn } from "@repo/shared/utils";
+'use client';
+import { cn } from '@repo/shared/utils';
 import {
   Button,
   Dialog,
@@ -11,39 +11,39 @@ import {
   Textarea,
   Type,
   useToast,
-} from "@repo/ui";
-import { useFormik } from "formik";
-import { Flag, Frown, Meh, Smile } from "lucide-react";
-import { z } from "zod";
-import { toFormikValidationSchema } from "zod-formik-adapter";
+} from '@repo/ui';
+import { useFormik } from 'formik';
+import { Flag, Frown, Meh, Smile } from 'lucide-react';
+import { z } from 'zod';
+import { toFormikValidationSchema } from 'zod-formik-adapter';
 
 export type FeedbackModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export type FeedbackType = "positive" | "neutral" | "negative";
+export type FeedbackType = 'positive' | 'neutral' | 'negative';
 
 const feedbackSchema = z.object({
-  email: z.string().email("Invalid email address").optional(),
-  feedbackType: z.enum(["positive", "neutral", "negative"]),
-  feedback: z.string({ required_error: "Feedback is required" }),
+  email: z.string().email('Invalid email address').optional(),
+  feedbackType: z.enum(['positive', 'neutral', 'negative']),
+  feedback: z.string({ required_error: 'Feedback is required' }),
 });
 
 export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
   const { toast } = useToast();
   const formik = useFormik({
     initialValues: {
-      feedback: "",
-      email: "",
-      feedbackType: "positive",
+      feedback: '',
+      email: '',
+      feedbackType: 'positive',
     },
     validateOnBlur: true,
     validationSchema: toFormikValidationSchema(feedbackSchema),
     onSubmit: async (values) => {
       if (!values.feedback) return;
-      const response = await fetch("/api/feedback", {
-        method: "POST",
+      const response = await fetch('/api/feedback', {
+        method: 'POST',
         body: JSON.stringify({
           feedback: values.feedback,
           feedbackType: values.feedbackType,
@@ -51,16 +51,16 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
       });
       onOpenChange(false);
       toast({
-        title: "Feedback submitted",
-        description: "Thank you for your feedback!",
-        variant: "default",
+        title: 'Feedback submitted',
+        description: 'Thank you for your feedback!',
+        variant: 'default',
       });
     },
   });
   const feedbackOptions = [
-    { type: "positive", icon: Smile, color: "text-teal-400" },
-    { type: "neutral", icon: Meh, color: "" },
-    { type: "negative", icon: Frown, color: "text-rose-400" },
+    { type: 'positive', icon: Smile, color: 'text-teal-400' },
+    { type: 'neutral', icon: Meh, color: '' },
+    { type: 'negative', icon: Frown, color: 'text-rose-400' },
   ];
 
   return (
@@ -68,7 +68,7 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
       <DialogPortal>
         <DialogContent
           ariaTitle="Assistants"
-          className="rounded-xl bg-white p-0 dark:border dark:border-white/10 md:w-[450px]"
+          className="rounded-xl bg-white p-0 md:w-[450px] dark:border dark:border-white/10"
         >
           <div className="relative w-full space-y-4">
             <Flex className="w-full p-4" gap="sm" items="center">
@@ -79,8 +79,8 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
             </Flex>
             <Flex gap="sm" direction="col" className="w-full px-6 pb-6">
               <Type size="sm" textColor="secondary">
-                We&apos;re always looking for ways to improve our product.
-                Please let us know what you think.
+                We&apos;re always looking for ways to improve our product. Please let us know what
+                you think.
               </Type>
 
               <FormLabel label="Email" isOptional />
@@ -112,19 +112,11 @@ export const FeedbackModal = ({ open, onOpenChange }: FeedbackModalProps) => {
                 {feedbackOptions.map(({ type, icon: Icon, color }) => (
                   <Button
                     key={type}
-                    variant={
-                      formik.values.feedbackType === type
-                        ? "secondary"
-                        : "ghost"
-                    }
+                    variant={formik.values.feedbackType === type ? 'secondary' : 'ghost'}
                     size="icon"
-                    className={cn(
-                      formik.values.feedbackType === type && "opacity-100",
-                    )}
+                    className={cn(formik.values.feedbackType === type && 'opacity-100')}
                     rounded="full"
-                    onClick={() =>
-                      formik.setFieldValue("feedbackType", type as FeedbackType)
-                    }
+                    onClick={() => formik.setFieldValue('feedbackType', type as FeedbackType)}
                   >
                     <Icon size={24} strokeWidth={2} />
                   </Button>

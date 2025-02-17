@@ -1,0 +1,84 @@
+import { cn } from '@repo/ui';
+import { IconCircleCheckFilled } from '@tabler/icons-react';
+import { motion } from 'framer-motion';
+import React, { memo, type ReactNode } from 'react';
+
+interface ReasoningProps {
+  children: ReactNode;
+  index: number;
+  isComplete: boolean;
+  isLast: boolean;
+  isFirst: boolean;
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+
+const Spinner = memo(() => (
+  <div className="size-[0.825rem] shrink-0 animate-spin rounded-full border-[2px] border-zinc-200 border-l-blue-500 border-t-blue-500" />
+));
+
+Spinner.displayName = 'Spinner';
+
+export const Reasoning: React.FC<ReasoningProps> = memo(
+  ({ children, index, isComplete, isLast, isFirst }) => {
+    return (
+      <motion.div
+        key={`reasoning-${index}`}
+        className="flex flex-row"
+        variants={itemVariants}
+        initial="hidden"
+        animate="visible"
+        exit="hidden"
+        transition={{ duration: 0.1 }}
+      >
+        <div className="flex w-8 shrink-0 flex-col items-center justify-center">
+          <motion.div
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 1 }}
+            transition={{ duration: 0.1 }}
+            className={cn(
+              'h-8 w-[1px]',
+              isFirst ? 'bg-gradient-to-t from-zinc-200 from-20% to-transparent' : 'bg-zinc-200'
+            )}
+          />
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.1 }}>
+            {isComplete ? (
+              <IconCircleCheckFilled size={16} className="shrink-0 text-blue-500" />
+            ) : (
+              <Spinner />
+            )}
+          </motion.div>
+          <motion.div
+            className={cn(
+              'h-full w-[1px]',
+              isLast ? 'bg-gradient-to-b from-zinc-200 to-transparent' : 'bg-zinc-200'
+            )}
+            initial={{ scaleY: 0 }}
+            animate={{ scaleY: 1 }}
+            transition={{ duration: 0.1 }}
+          />
+        </div>
+        <motion.div
+          className="flex flex-1 flex-col gap-1"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.1 }}
+        >
+          <div className="relative flex w-full flex-row items-stretch justify-start">
+            <div className={cn('w-full rounded-lg px-3 text-sm')}>{children}</div>
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  },
+  (prevProps, nextProps) =>
+    prevProps.isComplete === nextProps.isComplete &&
+    prevProps.index === nextProps.index &&
+    prevProps.children === nextProps.children &&
+    prevProps.isLast === nextProps.isLast
+);
+
+Reasoning.displayName = 'Reasoning';

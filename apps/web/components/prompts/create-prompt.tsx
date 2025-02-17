@@ -1,20 +1,20 @@
-import { TPrompt } from "@repo/shared/types";
-import { Badge, Button, Input } from "@repo/ui";
-import Document from "@tiptap/extension-document";
-import HardBreak from "@tiptap/extension-hard-break";
-import Highlight from "@tiptap/extension-highlight";
-import Paragraph from "@tiptap/extension-paragraph";
-import Placeholder from "@tiptap/extension-placeholder";
-import Text from "@tiptap/extension-text";
-import { EditorContent, useEditor } from "@tiptap/react";
-import { ArrowLeft } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { TPrompt } from '@repo/shared/types';
+import { Badge, Button, Input } from '@repo/ui';
+import Document from '@tiptap/extension-document';
+import HardBreak from '@tiptap/extension-hard-break';
+import Highlight from '@tiptap/extension-highlight';
+import Paragraph from '@tiptap/extension-paragraph';
+import Placeholder from '@tiptap/extension-placeholder';
+import Text from '@tiptap/extension-text';
+import { EditorContent, useEditor } from '@tiptap/react';
+import { ArrowLeft } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 export type TCreatePrompt = {
   prompt?: TPrompt;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreatePrompt: (prompt: Omit<TPrompt, "id">) => void;
+  onCreatePrompt: (prompt: Omit<TPrompt, 'id'>) => void;
   onUpdatePrompt: (prompt: TPrompt) => void;
 };
 
@@ -34,16 +34,16 @@ export const CreatePrompt = ({
       Paragraph,
       Text,
       Placeholder.configure({
-        placeholder: "Enter prompt here...",
+        placeholder: 'Enter prompt here...',
       }),
       HardBreak,
       Highlight.configure({
         HTMLAttributes: {
-          class: "prompt-highlight",
+          class: 'prompt-highlight',
         },
       }),
     ],
-    content: prompt?.content || "",
+    content: prompt?.content || '',
     autofocus: true,
     immediatelyRender: false,
 
@@ -58,8 +58,8 @@ export const CreatePrompt = ({
   }, [open]);
 
   const clearPrompt = () => {
-    setPromptTitle("");
-    editor?.commands.setContent("");
+    setPromptTitle('');
+    editor?.commands.setContent('');
   };
 
   const savePrompt = async () => {
@@ -93,9 +93,7 @@ export const CreatePrompt = ({
         >
           <ArrowLeft size={16} strokeWidth={2} />
         </Button>
-        <p className="text-base font-medium">
-          {prompt ? "Edit Prompt" : "Create New Prompt"}
-        </p>
+        <p className="text-base font-medium">{prompt ? 'Edit Prompt' : 'Create New Prompt'}</p>
       </div>
       <div className="no-scrollbar flex h-full w-full flex-1 flex-col overflow-y-auto p-2 pb-[80px]">
         <Input
@@ -113,7 +111,7 @@ export const CreatePrompt = ({
           className="no-scrollbar [&>*]:no-scrollbar w-full cursor-text p-3 text-sm outline-none focus:outline-none md:text-base [&>*]:leading-7 [&>*]:outline-none"
         />
         <p className="flex flex-row items-center gap-2 px-3 py-2 text-xs text-zinc-500">
-          Use <Badge>{"::input::"}</Badge> for user input
+          Use <Badge>{'::input::'}</Badge> for user input
         </p>
       </div>
       <div className="absolute bottom-0 left-0 right-0 flex w-full flex-row items-center gap-3 border-t border-zinc-500/20 bg-white px-2 py-2 dark:bg-zinc-800">

@@ -1,6 +1,6 @@
-"use client";
-import { useRootContext } from "@/libs/context/root";
-import { cn, sortSessions } from "@repo/shared/utils";
+'use client';
+import { useRootContext } from '@/libs/context/root';
+import { cn, sortSessions } from '@repo/shared/utils';
 import {
   CommandDialog,
   CommandEmpty,
@@ -9,22 +9,21 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@repo/ui";
-import { Moon, Plus, Sun } from "lucide-react";
-import moment from "moment";
-import { useTheme } from "next-themes";
-import { useEffect } from "react";
-import { useSessions } from "../lib/context/sessions";
+} from '@repo/ui';
+import { Moon, Plus, Sun } from 'lucide-react';
+import moment from 'moment';
+import { useTheme } from 'next-themes';
+import { useEffect } from 'react';
 
 export const CommandSearch = () => {
   const { isCommandSearchOpen, setIsCommandSearchOpen } = useRootContext();
-  const { sessions, createSession, refetchSessions, setActiveSessionId } =
-    useSessions();
+  // const { sessions, createSession, refetchSessions, setActiveSessionId } =
+  //   useSessions();
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     if (isCommandSearchOpen) {
-      refetchSessions?.();
+      // refetchSessions?.();
     }
   }, [isCommandSearchOpen]);
 
@@ -32,39 +31,36 @@ export const CommandSearch = () => {
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setIsCommandSearchOpen(true);
       }
     };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
   }, []);
 
   const actions = [
     {
-      name: "New session",
+      name: 'New session',
       icon: Plus,
       action: () => {
-        createSession();
+        // createSession();
         onClose();
       },
     },
     {
-      name: `Switch to ${theme === "light" ? "dark" : "light"} mode`,
-      icon: theme === "light" ? Moon : Sun,
+      name: `Switch to ${theme === 'light' ? 'dark' : 'light'} mode`,
+      icon: theme === 'light' ? Moon : Sun,
       action: () => {
-        setTheme(theme === "light" ? "dark" : "light");
+        setTheme(theme === 'light' ? 'dark' : 'light');
         onClose();
       },
     },
   ];
 
   return (
-    <CommandDialog
-      open={isCommandSearchOpen}
-      onOpenChange={setIsCommandSearchOpen}
-    >
+    <CommandDialog open={isCommandSearchOpen} onOpenChange={setIsCommandSearchOpen}>
       <CommandInput placeholder="Search..." />
       <CommandSeparator />
 
@@ -79,30 +75,26 @@ export const CommandSearch = () => {
               onSelect={action.action}
             >
               <div className="flex h-6 w-6 items-center justify-center">
-                <action.icon
-                  size={16}
-                  strokeWidth="2"
-                  className="flex-shrink-0"
-                />
+                <action.icon size={16} strokeWidth="2" className="flex-shrink-0" />
               </div>
               {action.name}
             </CommandItem>
           ))}
         </CommandGroup>
         <CommandGroup heading="Recent Conversations">
-          {sortSessions(sessions, "updatedAt")?.map((session) => {
+          {sortSessions([], 'updatedAt')?.map((session) => {
             return (
               <CommandItem
                 key={session.id}
                 value={`${session.id}/${session.title}`}
-                className={cn("w-full gap-2")}
+                className={cn('w-full gap-2')}
                 onSelect={(value) => {
-                  setActiveSessionId(session.id);
+                  // setActiveSessionId(session.id);
                   onClose();
                 }}
               >
                 <span className="w-full truncate">{session.title}</span>
-                <span className="flex-shrink-0 pl-4 text-xs text-zinc-400 dark:text-zinc-700 md:text-xs">
+                <span className="flex-shrink-0 pl-4 text-xs text-zinc-400 md:text-xs dark:text-zinc-700">
                   {moment(session.createdAt).fromNow(true)}
                 </span>
               </CommandItem>

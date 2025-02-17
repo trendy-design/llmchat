@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { LucideIcon } from "lucide-react";
-import { useState } from "react";
-import { Button } from "./button";
-import { Flex } from "./flex";
-import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { LucideIcon } from 'lucide-react';
+import { useState } from 'react';
+import { Button } from './button';
+import { Flex } from './flex';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 export type TPopoverConfirm = {
   title: string;
   onConfirm: (dismiss: () => void) => void;
   confimBtnText?: string;
-  confimBtnVariant?: "destructive" | "default";
+  confimBtnVariant?: 'destructive' | 'default';
   confirmIcon?: LucideIcon;
   onCancel?: () => void;
   children: React.ReactNode;
@@ -20,7 +20,7 @@ export const PopOverConfirmProvider = ({
   onConfirm,
   confirmIcon,
   confimBtnVariant,
-  confimBtnText = "Confirm",
+  confimBtnText = 'Confirm',
   onCancel,
   children,
 }: TPopoverConfirm) => {
@@ -56,7 +56,7 @@ export const PopOverConfirmProvider = ({
           >
             Cancel
           </Button>
-        </Flex>{" "}
+        </Flex>{' '}
       </PopoverContent>
     </Popover>
   );

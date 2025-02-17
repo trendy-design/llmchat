@@ -1,7 +1,7 @@
-import { Flex, Type } from "@repo/ui";
-import { ImagePlus } from "lucide-react";
-import { FC } from "react";
-import { DropzoneState } from "react-dropzone";
+import { Flex, Type } from '@repo/ui';
+import { ImagePlus } from 'lucide-react';
+import { FC } from 'react';
+import { DropzoneState } from 'react-dropzone';
 
 export type TImageDropzone = {
   dropzonProps: DropzoneState;

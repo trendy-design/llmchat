@@ -1,6 +1,6 @@
-import { Flex, Type } from "@repo/ui";
-import { MessageSquareQuote } from "lucide-react";
-import { ToolBadge } from "../tools/tool-badge";
+import { Flex, Type } from '@repo/ui';
+import { MessageSquareQuote } from 'lucide-react';
+import { ToolBadge } from '../tools/tool-badge';
 
 export type ContextMessageProps = {
   context?: string;

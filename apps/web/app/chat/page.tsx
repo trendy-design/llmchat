@@ -1,23 +1,32 @@
-"use client";
-import { ChatInput } from "@/components/chat-input";
-import { ChatTopNav } from "@/components/chat-input/chat-top-nav";
-import { ChatMessages } from "@/components/messages";
-import { ChatProvider, PromptsProvider, useSessions } from "@/lib/context";
-import { Flex } from "@repo/ui";
+'use client';
+import { ChatInput } from '@/components/chat-input';
+import { Thread } from '@/components/thread/thread-combo';
+import { useChatStore } from '@/libs/store/chat.store';
+import { Flex } from '@repo/ui';
+import { useEffect } from 'react';
+import { useStickToBottom } from 'use-stick-to-bottom';
 
 const ChatSessionPage = () => {
-  const { activeSessionId } = useSessions();
+  const currentThreadId = useChatStore((state) => state.currentThreadId);
+  const switchThread = useChatStore((state) => state.switchThread);
+  const { scrollRef, contentRef } = useStickToBottom();
+
+
+  useEffect(() => {
+    if (currentThreadId) {
+      switchThread(currentThreadId);
+    }
+  }, []);
 
   return (
-    <ChatProvider sessionId={activeSessionId}>
-      <PromptsProvider>
-        <Flex className="w-full" direction="col">
-          <ChatTopNav />
-          <ChatMessages />
-          <ChatInput />
-        </Flex>
-      </PromptsProvider>
-    </ChatProvider>
+    <Flex className="mx-auto h-full w-full max-w-2xl items-center" direction="col">
+      <div className="w-full overflow-x-hidden no-scrollbar flex-1 overflow-y-auto" ref={scrollRef}>
+        <div ref={contentRef}>
+          <Thread />
+        </div>
+      </div>
+      <ChatInput />
+    </Flex>
   );
 };
 

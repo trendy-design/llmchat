@@ -1,32 +1,22 @@
-import {
-  messagesService,
-  sessionsService,
-} from "@/lib/services/sessions/client";
-import { TChatMessage, TChatSession, TCustomAssistant } from "@repo/shared/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { messagesService, sessionsService } from '@/lib/services/sessions/client';
+import { TChatMessage, TChatSession, TCustomAssistant } from '@repo/shared/types';
+import { useMutation, useQuery } from '@tanstack/react-query';
 
 export const useChatSessionQueries = () => {
   const sessionsQuery = useQuery({
-    queryKey: ["chat-sessions"],
+    queryKey: ['chat-sessions'],
     queryFn: () => sessionsService.getSessions(),
   });
 
   const setSessionMutation = useMutation({
-    mutationFn: async (session: TChatSession) =>
-      await sessionsService.setSession(session),
+    mutationFn: async (session: TChatSession) => await sessionsService.setSession(session),
     onSuccess: () => {
       sessionsQuery.refetch();
     },
   });
 
   const addMessageMutation = useMutation({
-    mutationFn: async ({
-      parentId,
-      message,
-    }: {
-      parentId: string;
-      message: TChatMessage;
-    }) => {
+    mutationFn: async ({ parentId, message }: { parentId: string; message: TChatMessage }) => {
       await messagesService.addMessage(parentId, message);
       const newMessages = await messagesService.getMessages(parentId);
       return newMessages;
@@ -42,7 +32,7 @@ export const useChatSessionQueries = () => {
       session,
     }: {
       sessionId: string;
-      session: Partial<Omit<TChatSession, "id">>;
+      session: Partial<Omit<TChatSession, 'id'>>;
     }) => {
       await sessionsService.updateSession(sessionId, session);
     },
@@ -52,8 +42,7 @@ export const useChatSessionQueries = () => {
   });
 
   const removeSessionMutation = useMutation({
-    mutationFn: async (sessionId: string) =>
-      await sessionsService.removeSessionById(sessionId),
+    mutationFn: async (sessionId: string) => await sessionsService.removeSessionById(sessionId),
     onSuccess: () => {
       sessionsQuery.refetch();
     },
@@ -61,7 +50,7 @@ export const useChatSessionQueries = () => {
 
   const useGetSessionByIdQuery = (id: string) =>
     useQuery({
-      queryKey: ["chat-session", id],
+      queryKey: ['chat-session', id],
       queryFn: async () => {
         if (!id) return;
         return await sessionsService.getSessionById(id);
@@ -71,7 +60,7 @@ export const useChatSessionQueries = () => {
 
   const useMessagesQuery = (id: string) =>
     useQuery({
-      queryKey: ["messages", id],
+      queryKey: ['messages', id],
       queryFn: () => messagesService.getMessages(id),
       enabled: !!id,
     });
@@ -91,17 +80,8 @@ export const useChatSessionQueries = () => {
   });
 
   const removeMessageByIdMutation = useMutation({
-    mutationFn: async ({
-      parentId,
-      messageId,
-    }: {
-      parentId: string;
-      messageId: string;
-    }) => {
-      const leftMessages = await messagesService.removeMessage(
-        parentId,
-        messageId,
-      );
+    mutationFn: async ({ parentId, messageId }: { parentId: string; messageId: string }) => {
+      const leftMessages = await messagesService.removeMessage(parentId, messageId);
       if (!leftMessages?.length) {
         await sessionsService.removeSessionById(parentId);
       }

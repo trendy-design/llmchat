@@ -1,28 +1,30 @@
-import { providers } from "@repo/shared/config";
-import { TProvider } from "@repo/shared/types";
+import { providers } from '@repo/shared/config';
+import { TProvider } from '@repo/shared/types';
 import {
-    Button, ButtonProps, DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-    Flex,
-    cn
-} from "@repo/ui";
-import { ChevronDown } from "lucide-react";
-import { FC, useState } from "react";
-import { ModelIcon } from "./model-icon";
+  Button,
+  ButtonProps,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  Flex,
+  cn,
+} from '@repo/ui';
+import { ChevronDown } from 'lucide-react';
+import { FC, useState } from 'react';
+import { ModelIcon } from './model-icon';
 
 export type TProviderSelect = {
   selectedProvider: TProvider;
   fullWidth?: boolean;
-  variant?: ButtonProps["variant"];
+  variant?: ButtonProps['variant'];
   setSelectedProvider: (provider: TProvider) => void;
   className?: string;
 };
 
 export const ProviderSelect: FC<TProviderSelect> = ({
   selectedProvider,
-  variant = "secondary",
+  variant = 'secondary',
   fullWidth,
   setSelectedProvider,
   className,
@@ -35,7 +37,7 @@ export const ProviderSelect: FC<TProviderSelect> = ({
         <DropdownMenuTrigger asChild>
           <Button
             variant={variant}
-            className={cn("justify-start gap-2 text-xs md:text-sm", className)}
+            className={cn('justify-start gap-2 text-xs md:text-sm', className)}
           >
             <ModelIcon type={selectedProvider} size="sm" />
             {selectedProvider}
@@ -48,18 +50,18 @@ export const ProviderSelect: FC<TProviderSelect> = ({
           align="end"
           sideOffset={4}
           className={cn(
-            "no-scrollbar z-[610] max-h-[260px] overflow-y-auto text-xs md:text-sm",
-            fullWidth ? "w-full" : "min-w-[250px]",
+            'no-scrollbar z-[610] max-h-[260px] overflow-y-auto text-xs md:text-sm',
+            fullWidth ? 'w-full' : 'min-w-[250px]'
           )}
         >
           {providers
-            ?.filter((a) => !["llmchat"].includes(a))
+            ?.filter((a) => !['llmchat'].includes(a))
             .map((p) => {
               return (
                 <DropdownMenuItem
                   className={cn(
-                    "text-xs font-medium md:text-sm",
-                    selectedProvider === p && "bg-zinc-50 dark:bg-black/30",
+                    'text-xs font-medium md:text-sm',
+                    selectedProvider === p && 'bg-zinc-50 dark:bg-black/30'
                   )}
                   key={p}
                   onClick={() => {

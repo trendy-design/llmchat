@@ -1,6 +1,6 @@
-"use client";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactNode } from "react";
+'use client';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactNode } from 'react';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -20,7 +20,5 @@ export const ReactQueryProvider = ({ children }: { children: ReactNode }) => {
   // }, []);
 
   // if (!isDBReady) return <FullPageLoader label="Initializing DB" />;
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 };

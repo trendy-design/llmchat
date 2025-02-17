@@ -1,24 +1,19 @@
-"use client";
-import { useMemo } from "react";
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
+'use client';
+import { useMemo } from 'react';
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 
-import { barChartSchema } from "@/libs/tools/bar-chart";
-import {
-  ChartContainer,
-  ChartLegend,
-  ChartTooltip,
-  ChartTooltipContent, Type
-} from "@repo/ui";
-import { z } from "zod";
-import { ErrorBoundary } from "./error-boundary";
+import { barChartSchema } from '@/libs/tools/bar-chart';
+import { ChartContainer, ChartLegend, ChartTooltip, ChartTooltipContent, Type } from '@repo/ui';
+import { z } from 'zod';
+import { ErrorBoundary } from './error-boundary';
 
 export const colors = [
-  "hsl(var(--color-red-600-value))",
-  "hsl(var(--color-blue-600-value))",
-  "hsl(var(--color-amber-600-value))",
-  "hsl(var(--color-purple-600-value))",
-  "hsl(var(--color-pink-600-value))",
-  "hsl(var(--color-teal-600-value))",
+  'hsl(var(--color-red-600-value))',
+  'hsl(var(--color-blue-600-value))',
+  'hsl(var(--color-amber-600-value))',
+  'hsl(var(--color-purple-600-value))',
+  'hsl(var(--color-pink-600-value))',
+  'hsl(var(--color-teal-600-value))',
 ];
 
 export type ChartComponentProps = z.infer<typeof barChartSchema>;
@@ -26,39 +21,33 @@ export type ChartComponentProps = z.infer<typeof barChartSchema>;
 const convertToKey = (label: string) => {
   return label
     .toLowerCase()
-    .replace(/\s+/g, "_")
-    .replace(/^[^a-z_]/, "_");
+    .replace(/\s+/g, '_')
+    .replace(/^[^a-z_]/, '_');
 };
 
 const trimLabel = (label: string | number, maxLength: number = 5): string => {
-  if (typeof label === "number") {
+  if (typeof label === 'number') {
     if (label >= 1e9) return `${(label / 1e9).toFixed(1)}B`;
     if (label >= 1e6) return `${(label / 1e6).toFixed(1)}M`;
     if (label >= 1e3) return `${(label / 1e3).toFixed(1)}K`;
-    return label.toLocaleString("en-US", { maximumFractionDigits: 1 });
+    return label.toLocaleString('en-US', { maximumFractionDigits: 1 });
   }
   return label.length > maxLength ? `${label.slice(0, maxLength)}...` : label;
 };
 
 // Error Boundary Component
 
-export function BarChartComponent({
-  title,
-  xData,
-  yData,
-  xLabel,
-  yLabel,
-}: ChartComponentProps) {
+export function BarChartComponent({ title, xData, yData, xLabel, yLabel }: ChartComponentProps) {
   const { combinedData, yAxisMax } = useMemo(() => {
     const xKey = convertToKey(xLabel);
     const combinedData = xData?.map((xValue, index) => {
       // biome-ignore lint/suspicious/noExplicitAny: <explanation>
-const  dataPoint: any = {
+      const dataPoint: any = {
         [xKey]: xValue,
         trimmedXLabel: trimLabel(xValue),
       };
       // biome-ignore lint/complexity/noForEach: <explanation>
-yData?.forEach((ySet) => {
+      yData?.forEach((ySet) => {
         const yKey = convertToKey(ySet.label);
         const numericYValue = Number(ySet.data[index]);
         dataPoint[yKey] = Number.isNaN(numericYValue) ? 0 : numericYValue;
@@ -68,9 +57,7 @@ yData?.forEach((ySet) => {
     });
 
     const maxYValue = Math.max(
-      ...(yData?.flatMap((ySet) =>
-        ySet.data.map((value) => Number(value) || 0),
-      ) ?? []),
+      ...(yData?.flatMap((ySet) => ySet.data.map((value) => Number(value) || 0)) ?? [])
     );
     const yAxisMax = maxYValue ? Math.ceil(maxYValue * 1.1) : 10;
 
@@ -98,10 +85,7 @@ yData?.forEach((ySet) => {
               tickFormatter={(value) => trimLabel(value)}
             />
             <ChartLegend margin={{ top: 100 }} />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dashed" />}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
             {yData?.map((ySet, index) => (
               <Bar
                 key={ySet.label}

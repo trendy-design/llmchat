@@ -1,0 +1,33 @@
+{
+  "name": "@repo/ai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "type-check": "tsc --noEmit"
+  },
+  "exports": {
+    ".": "./main.ts",
+    "./models": "./models.ts",
+    "./tools": "./aiSdkTools.ts"
+  },
+  "dependencies": {
+    "@ai-sdk/anthropic": "^1.1.8",
+    "@ai-sdk/openai": "^1.1.11",
+    "@ai-sdk/togetherai": "^0.1.11",
+    "@anthropic-ai/sdk": "^0.36.3",
+    "@types/node": "^20.11.5",
+    "ai": "^4.1.40",
+    "dotenv": "^16.4.5",
+    "openai": "^4.24.1",
+    "together-ai": "^0.13.0",
+    "uuid": "^11.0.5",
+    "zod": "^3.23.8",
+    "zod-to-json-schema": "^3.24.1"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.3"
+  }
+}

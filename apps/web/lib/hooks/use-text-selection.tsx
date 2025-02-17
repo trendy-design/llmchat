@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export const useTextSelection = () => {
-  const [selectedText, setSelectedText] = useState<string>("");
+  const [selectedText, setSelectedText] = useState<string>('');
   const [showPopup, setShowPopup] = useState<boolean>(false);
 
   useEffect(() => {
@@ -10,7 +10,7 @@ export const useTextSelection = () => {
 
       if (selection && selection?.rangeCount > 0) {
         var range = selection.getRangeAt(0);
-        var parentDiv = document.getElementById("chat-container");
+        var parentDiv = document.getElementById('chat-container');
         if (parentDiv?.contains(range.commonAncestorContainer)) {
           const selectedText = range.toString().trim();
           if (selectedText) {
@@ -25,22 +25,22 @@ export const useTextSelection = () => {
       }
     };
 
-    const chatContainer = document.getElementById("chat-container");
+    const chatContainer = document.getElementById('chat-container');
 
     if (!chatContainer) {
       return;
     }
 
-    document.addEventListener("selectionchange", handleMouseUp);
+    document.addEventListener('selectionchange', handleMouseUp);
 
     return () => {
-      chatContainer.removeEventListener("selectionchange", handleMouseUp);
+      chatContainer.removeEventListener('selectionchange', handleMouseUp);
     };
   }, [showPopup]);
 
   const handleClearSelection = () => {
     setShowPopup(false);
-    setSelectedText("");
+    setSelectedText('');
     window.getSelection()?.removeAllRanges();
   };
 

@@ -1,6 +1,6 @@
 // import { useChatSessionQueries } from "@/libs/services/sessions/queries";
-import { TCustomAssistant } from "./assistants";
-import { TChatMessage } from "./messages";
+import { TCustomAssistant } from './assistants';
+import { TChatMessage } from './messages';
 
 export type TSessionsState = {
   activeSessionId?: string;

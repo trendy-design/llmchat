@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Next.js",
-  
+
   "extends": "./base.json",
   "compilerOptions": {
     "plugins": [{ "name": "next" }],
@@ -15,8 +15,8 @@
     "moduleResolution": "bundler",
     "noEmit": true,
     "resolveJsonModule": true,
-    "target": "es5",
+    "target": "es5"
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
-} 
+}

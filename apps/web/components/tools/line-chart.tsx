@@ -1,25 +1,20 @@
-"use client";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+'use client';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
 
-import { lineChartSchema } from "@/libs/tools/line-chart";
-import {
-  ChartContainer,
-  ChartLegend,
-  ChartTooltip,
-  ChartTooltipContent, Type
-} from "@repo/ui";
-import { useMemo } from "react";
-import { z } from "zod";
-import { ErrorBoundary } from "./error-boundary";
+import { lineChartSchema } from '@/libs/tools/line-chart';
+import { ChartContainer, ChartLegend, ChartTooltip, ChartTooltipContent, Type } from '@repo/ui';
+import { useMemo } from 'react';
+import { z } from 'zod';
+import { ErrorBoundary } from './error-boundary';
 
 const colors = [
-  "hsl(var(--color-red-700-value))",
-  "hsl(var(--color-green-700-value))",
-  "hsl(var(--color-blue-700-value))",
-  "hsl(var(--color-amber-700-value))",
-  "hsl(var(--color-purple-700-value))",
-  "hsl(var(--color-pink-700-value))",
-  "hsl(var(--color-teal-700-value))",
+  'hsl(var(--color-red-700-value))',
+  'hsl(var(--color-green-700-value))',
+  'hsl(var(--color-blue-700-value))',
+  'hsl(var(--color-amber-700-value))',
+  'hsl(var(--color-purple-700-value))',
+  'hsl(var(--color-pink-700-value))',
+  'hsl(var(--color-teal-700-value))',
 ];
 
 export type ChartComponentProps = z.infer<typeof lineChartSchema>;
@@ -27,28 +22,23 @@ export type ChartComponentProps = z.infer<typeof lineChartSchema>;
 const convertToKey = (label: string) => {
   return label
     .toLowerCase()
-    .replace(/\s+/g, "_")
-    .replace(/^[^a-z_]/, "_");
+    .replace(/\s+/g, '_')
+    .replace(/^[^a-z_]/, '_');
 };
 
 const trimLabel = (label: string | number, maxLength: number = 5): string => {
-  if (typeof label === "number") {
+  if (typeof label === 'number') {
     if (label >= 1e9) return `${(label / 1e9).toFixed(1)}B`;
     if (label >= 1e6) return `${(label / 1e6).toFixed(1)}M`;
     if (label >= 1e3) return `${(label / 1e3).toFixed(1)}K`;
-    return label.toLocaleString("en-US", { maximumFractionDigits: 1 });
+    return label.toLocaleString('en-US', { maximumFractionDigits: 1 });
   }
   return label.length > maxLength ? `${label.slice(0, maxLength)}...` : label;
 };
 
 // Error Boundary Component
 
-export function LineChartComponent({
-  title,
-  xData,
-  ySeriesData,
-  xLabel,
-}: ChartComponentProps) {
+export function LineChartComponent({ title, xData, ySeriesData, xLabel }: ChartComponentProps) {
   const { combinedData, yAxisMax } = useMemo(() => {
     const xKey = convertToKey(xLabel);
 
@@ -70,9 +60,7 @@ export function LineChartComponent({
       }) ?? [];
 
     const maxYValue = Math.max(
-      ...(ySeriesData?.flatMap((series) =>
-        series.data.map((value) => Number(value) || 0),
-      ) ?? []),
+      ...(ySeriesData?.flatMap((series) => series.data.map((value) => Number(value) || 0)) ?? [])
     );
     const yAxisMax = maxYValue ? Math.ceil(maxYValue * 1.1) : 10;
 
@@ -95,15 +83,9 @@ export function LineChartComponent({
           >
             <CartesianGrid vertical={false} />
             <XAxis dataKey="trimmedXLabel" angle={45} textAnchor="start" />
-            <YAxis
-              domain={[0, yAxisMax]}
-              tickFormatter={(value) => trimLabel(value)}
-            />
+            <YAxis domain={[0, yAxisMax]} tickFormatter={(value) => trimLabel(value)} />
             <ChartLegend margin={{ top: 100 }} />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dashed" />}
-            />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="dashed" />} />
             {ySeriesData?.map((series, index) => (
               <Line
                 key={series.label}
