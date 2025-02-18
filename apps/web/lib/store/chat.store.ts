@@ -22,6 +22,7 @@ export type Block = {
   tokenUsage?: number;
   nodeInput?: string;
   nodeModel?: string;
+  nodeReasoning?: string;
 }
 
 export type ThreadItem = {

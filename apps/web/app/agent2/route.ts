@@ -7,7 +7,9 @@ import {
   CompletionRequestType
 } from "@repo/ai";
 import { ToolEnumType } from "@repo/ai/tools";
+import { promises as fs } from "fs";
 import type { NextRequest } from 'next/server';
+import { join } from "path";
 
 
 
@@ -72,57 +74,76 @@ async function executeStream(
 
   const graph = new AgentGraph(events, contextManager);
 
-// 1. Initial Search Node
-graph.addNode({
-  id: "initialSearch",
-  name: "Initial Search",
-  role: "assistant",
-  systemPrompt:
-    "Conduct an initial web search using the user’s query. " +
-    "Utilize the reader tool to examine the top results. " +
-    "Summarize key findings and insights, highlighting relevant sources.",
-  tools: [ToolEnumType.SEARCH, ToolEnumType.READER],
-  toolSteps: 4,
-});
+  // Read prompt files
+  const plannerPrompt = await fs.readFile(
+    join(process.cwd(), "app/agent2/prompts/planner.md"),
+    "utf8"
+  );
 
-// 2. Deep Search Node
-graph.addNode({
-  id: "deepSearch",
-  name: "Deep Search",
-  role: "assistant",
-  systemPrompt:
-    "Based on the initial findings, perform a more expansive research process. " +
-    "Analyze each relevant source in depth. Extract key insights, " +
-    "and dynamically discover additional sources as needed. " +
-    "Continue until you have a comprehensive understanding of the topic.",
-  tools: [ToolEnumType.SEARCH, ToolEnumType.READER],
-  toolSteps: 6,
-});
+  const researcherPrompt = await fs.readFile(
+    join(process.cwd(), "app/agent2/prompts/researcher.md"),
+    "utf8"
+  );
+  
 
-// 3. Aggregator Node
-graph.addNode({
-  id: "aggregator",
-  name: "Aggregator",
-  role: "assistant",
-  systemPrompt:
-    "Synthesize all information collected into a thorough, cohesive answer. " +
-    "Include important details, context, and properly cite all relevant sources.",
-});
+  const reflectionPrompt = await fs.readFile(
+    join(process.cwd(), "app/agent2/prompts/reflection.md"),
+    "utf8"
+  );
 
-// --- Edges ---
+  const summarizerPrompt = await fs.readFile(
+    join(process.cwd(), "app/agent2/prompts/summarizer.md"),
+    "utf8"
+  );
+  
+  console.log(plannerPrompt);
+
+  // Use the prompts in node definitions
+  graph.addNode({
+    id: "planner",
+    name: "Planner",
+    role: "assistant",
+    systemPrompt: plannerPrompt,
+  });
+
+  graph.addNode({
+    id: "reflection",
+    name: "Reflection",
+    role: "assistant",
+    systemPrompt: reflectionPrompt,
+  });
+
+  graph.addNode({
+    id: "researcher",
+    name: "Researcher",
+    role: "assistant",
+    systemPrompt: researcherPrompt,
+    tools: [ToolEnumType.SEARCH, ToolEnumType.READER],
+    toolSteps: 6,
+  });
+
+  graph.addNode({
+    id: "summarizer",
+    name: "Summarizer",
+    role: "assistant",
+    systemPrompt: summarizerPrompt,
+  });
+
+
+
 
 // From Initial Search -> Deep Search
 graph.addEdge({
-  from: "initialSearch",
-  to: "deepSearch",
+  from: "planner",
+  to: "reflection",
   pattern: "sequential",
   relationship: "next",
 });
 
 // Self-Edge (Revision) on Deep Search for iterative exploration
 graph.addEdge({
-  from: "deepSearch",
-  to: "deepSearch",
+  from: "reflection",
+  to: "researcher",
   pattern: "revision",
   relationship: "next",
   config: {
@@ -131,20 +152,20 @@ graph.addEdge({
       stopCondition:
         "Do you believe you now have enough information to craft a comprehensive answer?",
       revisionPrompt: (previousText: string) => {
-
-        return (
-          `Previously gathered insights:\n${previousText}\n\n` +
-          `Reflect on the information you have gathered and do further search using the search tool and reader tool to find more information to improve the answer.`
-        );
+        return `${reflectionPrompt}
+        
+        --------------------------------------
+        Here is the findings so far: 
+        ${previousText}`;
       },
     },
   },
 });
-  
+
 // From Deep Search -> Aggregator
 graph.addEdge({
-  from: "deepSearch",
-  to: "aggregator",
+  from: "researcher",
+  to: "summarizer",
   pattern: "sequential",
   relationship: "next",
 });
@@ -162,7 +183,7 @@ graph.addEdge({
     }
   });
 
-  await graph.execute("initialSearch", data.prompt);
+  await graph.execute("planner", data.prompt);
   controller.close();
 }
 

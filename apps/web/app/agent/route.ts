@@ -77,6 +77,7 @@ async function executeStream(
     id: "planner",
     name: "Task Planner",
     role: "planner",
+    enableReasoning: true,
     systemPrompt: `You are a meticulous task planning agent that thoroughly analyzes user questions and problems. Your role is to refine the user's question into 5 thoughtful, clear, and probing questions. These refined questions will guide subsequent steps toward providing a complete and accurate answer.
 For example, if the user asks "How can cities become more sustainable while accommodating growing populations?" 
 out put should be in following format:
@@ -97,6 +98,7 @@ out put should be in following format:
     id: "research",
     name: "Research",
     role: "research",
+    enableReasoning: true,
     systemPrompt: `You are a meticulous research assistant. Your task is to review the refined questions from the planner and perform comprehensive web searches for related information. Then, analyze the gathered data using the reader tool.use proper citations and references. `,
     tools: [ToolEnumType.SEARCH, ToolEnumType.READER],
     toolSteps: 4,
@@ -107,7 +109,7 @@ out put should be in following format:
     id: "summarizer",
     name: "Summarizer",
     role: "summarizer",
-    systemPrompt: `You are a concise summarization assistant. Utilizing the summaries produced by the research tool, generate a clear and succinct summary that consolidates the key insights without unnecessary repetition. use proper citations and references.`,
+    systemPrompt: `You are a research and writing assistant. Utilizing the summaries produced by the research tool, generate a thorough and detailed analysis that explores all facets of the research comprehensively. Provide in-depth explanations, multiple perspectives, in form of Report.`,
     tools: [],
     toolSteps: 1,
   };
@@ -141,21 +143,29 @@ out put should be in following format:
   nodes.forEach((node) => graph.addNode(node));
   edges.forEach((edge) => graph.addEdge(edge));
 
-  events.on('event', (event) => {
+  const eventHandler = (event: AgentEventPayload) => {
+    console.log('event', event);
     sendMessage(controller, encoder, {
       threadId: data.threadId,
       threadItemId: data.threadItemId,
       parentThreadItemId: data.parentThreadItemId,
       ...event,
     });
-
     if (event.status === 'error') {
-      controller.close();
+      events.off('event', eventHandler);
+      try {
+        controller.close();
+      } catch {}
     }
-  });
+  };
+
+  events.on('event', eventHandler);
 
   await graph.execute("planner", data.prompt);
-  controller.close();
+  events.off('event', eventHandler);
+  try {
+    controller.close();
+  } catch {}
 }
 
 function sendMessage(
@@ -164,5 +174,7 @@ function sendMessage(
   payload: AgentEventResponse
 ) {
   const message = `event: message\ndata: ${JSON.stringify(payload)}\n\n`;
-  controller.enqueue(encoder.encode(message));
+  try {
+    controller.enqueue(encoder.encode(message));
+  } catch {}
 }

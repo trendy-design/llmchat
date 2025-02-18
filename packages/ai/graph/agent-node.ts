@@ -1,4 +1,15 @@
 import { ToolEnumType } from '../aiSdkTools';
+import { ToolCallErrorType, ToolCallResultType, ToolCallType } from './types';
+
+export type GraphNodeState = {
+  reasoning?: string;
+  response?: string;
+  tokenUsage?: number;
+  status?: "pending" | "completed" | "error" | "reasoning";
+  toolCalls?: ToolCallType[];
+  toolCallResults?: ToolCallResultType[];
+  toolCallErrors?: ToolCallErrorType[];
+}
 
 export class GraphNode {
   id: string;
@@ -10,7 +21,17 @@ export class GraphNode {
   response: string;
   tools: ToolEnumType[];
   toolSteps: number;
+  enableReasoning: boolean;
   private metadata: Record<string, any>;
+  private state: GraphNodeState = {
+    reasoning: undefined,
+    response: undefined,
+    tokenUsage: undefined,
+    status: 'pending',
+    toolCalls: [],
+    toolCallResults: [],
+    toolCallErrors: [],
+  };
 
   constructor({
     id,
@@ -22,6 +43,7 @@ export class GraphNode {
     metadata = {},
     tools = [],
     toolSteps = 1,
+    enableReasoning = false,
   }: {
     id: string;
     name: string;
@@ -32,6 +54,7 @@ export class GraphNode {
     metadata?: Record<string, any>;
     tools?: ToolEnumType[];
     toolSteps?: number;
+    enableReasoning?: boolean;
   }) {
     this.id = id;
     this.name = name;
@@ -43,6 +66,15 @@ export class GraphNode {
     this.metadata = metadata;
     this.tools = tools;
     this.toolSteps = toolSteps;
+    this.enableReasoning = enableReasoning;
+  }
+
+  getState(): GraphNodeState {
+    return this.state;
+  }
+
+  setState(state: GraphNodeState): void {
+    this.state = state;
   }
 
   // Getters and setters for metadata

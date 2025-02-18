@@ -41,6 +41,9 @@ class AgentGraph {
     metadata?: Record<string, any>;
     tools?: ToolEnumType[];
     toolSteps?: number;
+    enableReasoning?: boolean;
+    reasoningPrompt?: string;
+
   }): void {
     const node = new GraphNode(nodeConfig);
     this.nodes.set(node.id, node);
@@ -68,15 +71,22 @@ class AgentGraph {
     nodeId: string,
     nodeKey: string,
     node: GraphNode,
-    message: string
+    message: string,
+    type: "text" | "object"
   ): Promise<string> {
     try {
-      this.events.emit('event', { nodeId, status: 'pending', nodeKey: nodeKey, nodeStatus: 'pending', nodeInput: message });
+      this.events.emit('event', {
+        nodeId,
+        status: 'pending',
+        nodeKey: nodeKey,
+        nodeStatus: 'pending',
+        nodeInput: message,
+      });
       const context = this.contextManager.getContext();
       const messages = [
         {
           role: 'system' as const,
-          content: `Today is ${new Date().toLocaleDateString()}.\n\n${node.systemPrompt}\n\nCitations and References are important. Use following format for citations and references: for example <Source>https://www.google.com</Source>`
+          content: `Today is ${new Date().toLocaleDateString()}.\n\n${node.systemPrompt}\n\n`
         },
         { role: 'user' as const, content: message },
       ];
@@ -84,44 +94,57 @@ class AgentGraph {
       const toolCallsMap = new Map<string, ToolCallType>();
       const toolResultsMap = new Map<string, ToolCallResultType>();
       const model = await this.defaultProvider;
+      let tokenUsage: number = 0;
       const tools = (node.tools || []).reduce(
         (acc, tool) => ({ ...acc, [tool]: aiSdkTools[tool] }),
         {} as Record<string, Tool>
       );
-      const { fullStream,usage } = streamText({
-        model,
-        messages,
-        tools,
-        toolCallStreaming: true,
-        maxSteps: node.toolSteps,
-      });
-      for await (const chunk of fullStream) {
-        switch (chunk.type) {
-          case 'text-delta':
-            fullResponse += chunk.textDelta;
-            break;
-          case 'tool-call':
-            toolCallsMap.set(chunk.toolCallId, chunk);
-            break;
-          case 'tool-result' as TextStreamPart<typeof tools>['type']:
-            toolResultsMap.set((chunk as any).toolCallId, chunk as any);
-            break;
-        }
-        this.events.emit('event', {
-          nodeId,
-          nodeKey: node.name,
-          status: 'pending',
-          content: fullResponse,
-          toolCalls: Array.from(toolCallsMap.values()),
-          toolCallResults: Array.from(toolResultsMap.values()),
-          nodeStatus: 'pending',
-          nodeModel: model.modelId,
+
+      if (type === "text") {
+        const { fullStream, usage } = streamText({
+          model,
+          messages,
+          tools,
+          toolCallStreaming: true,
+          maxSteps: node.toolSteps,
         });
+        for await (const chunk of fullStream) {
+          switch (chunk.type) {
+            case 'text-delta':
+              fullResponse += chunk.textDelta;
+              break;
+            case 'tool-call':
+              toolCallsMap.set(chunk.toolCallId, chunk);
+              break;
+            case 'tool-result' as TextStreamPart<typeof tools>['type']:
+              toolResultsMap.set((chunk as any).toolCallId, chunk as any);
+              break;
+          }
+          this.events.emit('event', {
+            nodeId,
+            nodeKey: node.name,
+            status: 'pending',
+            content: fullResponse,
+            toolCalls: Array.from(toolCallsMap.values()),
+            toolCallResults: Array.from(toolResultsMap.values()),
+            nodeStatus: 'pending',
+            nodeModel: model.modelId,
+          });
+        }
+        tokenUsage = (await usage).totalTokens;
+      } else {
+        const { object } = await generateObject({
+          model,
+          schema: z.object({
+            response: z.string(),
+          }),
+          prompt: message,
+        });
+        fullResponse = object.response;
       }
 
       const toolCalls = Array.from(toolCallsMap.values());
       const toolCallResults = Array.from(toolResultsMap.values());
-      const tokenUsage = (await usage).totalTokens;
       this.nodeResults.push({
         nodeId,
         nodeKey,
@@ -190,6 +213,21 @@ class AgentGraph {
     return [...this.edges];
   }
 
+  private async processReasoningStep(
+    node: GraphNode,
+    message: string
+  ): Promise<string> {
+    const model = await this.defaultProvider;
+    const prompt = `Before executing node "${node.name}" with input: "${message}", please think about next steps and provide a reasoning plan for the next step. for exmaple if user ask for "Agentic design pattern" then you should think and output like this:
+    "Okay, so I need to understand what the Agentic Design Pattern is. Let me start by breaking down the term. "Agentic" probably relates to agents, like software agents, which are autonomous entities that act on behalf of a user. Design patterns are common solutions to recurring problems in software design. So, putting that together, Agentic Design Pattern might refer to a design approach where software agents are the primary components, each handling specific tasks autonomously." `;
+    const { object } = await generateObject({
+      model,
+      schema: z.object({ reasoning: z.string() }),
+      prompt,
+    });
+    return object.reasoning;
+  }
+
   private async executeNode(
     nodeKey: string,
     message: string,
@@ -202,15 +240,39 @@ class AgentGraph {
     const node = this.nodes.get(nodeKey);
     if (!node) return;
     this.executionState.pending.add(nodeKey);
+    const nodeId = uuidv4();
     try {
-      const nodeId = uuidv4();
-      const response = await this.processAgentMessage(nodeId, node.name, node, message);
+      let reasoningResult = '';
+      if (node.enableReasoning) {
+        reasoningResult = await this.processReasoningStep(node, message);
+        console.log('reasoningResult', reasoningResult);
+        this.events.emit('event', {
+          nodeId,
+          nodeKey: node.name,
+          nodeStatus: 'reasoning',
+          status: 'pending',
+          nodeReasoning: reasoningResult,
+          content: reasoningResult,
+        });
+      }
+      const response = await this.processAgentMessage(
+        nodeId,
+        node.name,
+        node,
+        !!reasoningResult ? `${reasoningResult}\n\n${message}` : message,
+        'text'
+      );
       responses.push({ nodeId, response });
       this.executionState.results.set(nodeKey, response);
       const outgoingEdges = this.edges.filter(edge => edge.from === nodeKey);
       const edgeGroups = this.groupEdgesByPattern(outgoingEdges);
       for (const [pattern, edges] of Array.from(edgeGroups.entries())) {
-        const result = await this.processEdgePattern(pattern, edges, response, responses);
+        const result = await this.processEdgePattern(
+          pattern,
+          edges,
+          response,
+          responses
+        );
         if (pattern === 'revision') {
           this.executionState.results.set(nodeKey, result);
         }
@@ -225,7 +287,12 @@ class AgentGraph {
       if (remainingEdges.length > 0) {
         const remainingGroups = this.groupEdgesByPattern(remainingEdges);
         for (const [pattern, edges] of Array.from(remainingGroups.entries())) {
-          await this.processEdgePattern(pattern, edges, this.executionState.results.get(nodeKey) || response, responses);
+          await this.processEdgePattern(
+            pattern,
+            edges,
+            this.executionState.results.get(nodeKey) || response,
+            responses
+          );
         }
       }
     } catch (error) {
@@ -275,9 +342,10 @@ class AgentGraph {
         const maxIterations = config.maxIterations ?? 3;
         const stopCondition = config.stopCondition;
 
-        const revisionPrompt = config.revisionPrompt ?? ((prev: string) =>
-          `Please review and improve the following response: ${prev}`
-        );
+        const revisionPrompt =
+          config.revisionPrompt ??
+          ((prev: string) =>
+            `Please review and improve the following response: ${prev}`);
         let currentResponse = sourceResponse;
         let iterations = 0;
 
@@ -301,7 +369,26 @@ class AgentGraph {
           if (!nextNode) break;
           const nodeId = uuidv4();
           const prompt = revisionPrompt(currentResponse);
-          currentResponse = await this.processAgentMessage(nodeId, nextNode.name, nextNode, prompt);
+          let reasoningResult = '';
+          if (nextNode.enableReasoning) {
+            const reasoningResult = await this.processReasoningStep(nextNode, currentResponse);
+            this.events.emit('event', {
+              nodeId,
+              nodeKey: nextNode.name,
+              status: 'pending',
+              nodeStatus: 'reasoning',
+              nodeReasoning: reasoningResult,
+              content: reasoningResult,
+            });
+          }
+          
+          currentResponse = await this.processAgentMessage(
+            nodeId,
+            nextNode.name,
+            nextNode,
+            reasoningResult ? `${reasoningResult}\n\n${currentResponse}` : currentResponse,
+            'text'
+          );
           responses.push({ nodeId, response: currentResponse });
           iterations++;
         }
@@ -319,7 +406,7 @@ class AgentGraph {
     responses: MessageResponse[]
   ): Promise<void> {
     await Promise.all(
-      edges.map(edge =>
+      edges.map((edge) =>
         this.processEdgeWithFallback(edge, async () => {
           await this.executeNode(edge.to, sourceResponse, responses);
         })
@@ -339,11 +426,30 @@ class AgentGraph {
           : [sourceResponse];
         const mappedResponses: string[] = [];
         await Promise.all(
-          inputs.map(async input => {
+          inputs.map(async (input) => {
             const nextNode = this.nodes.get(edge.to);
             if (!nextNode) return;
             const nodeId = uuidv4();
-            const mapped = await this.processAgentMessage(nodeId, nextNode.name, nextNode, input);
+            
+            if (nextNode.enableReasoning) {
+              const reasoningResult = await this.processReasoningStep(nextNode, input);
+              this.events.emit('event', {
+                nodeId,
+                nodeKey: nextNode.name,
+                status: 'pending',
+                nodeStatus: 'reasoning',
+                nodeReasoning: reasoningResult,
+                content: reasoningResult,
+              });
+            }
+
+            const mapped = await this.processAgentMessage(
+              nodeId,
+              nextNode.name,
+              nextNode,
+              input,
+              'text'
+            );
             mappedResponses.push(mapped);
           })
         );
@@ -365,7 +471,9 @@ class AgentGraph {
     for (const edge of edges) {
       await this.processEdgeWithFallback(edge, async () => {
         const inputNodes = this.getInputNodes(edge.to);
-        const inputResponses = inputNodes.map(nodeId => this.executionState.results.get(nodeId) ?? '');
+        const inputResponses = inputNodes.map(
+          (nodeId) => this.executionState.results.get(nodeId) ?? ''
+        );
         const reduced = edge.config?.outputTransform
           ? await Promise.resolve(edge.config.outputTransform(inputResponses))
           : inputResponses.join('\n');
@@ -421,8 +529,8 @@ class AgentGraph {
 
   private getInputNodes(nodeId: string): string[] {
     return this.edges
-      .filter(edge => edge.to === nodeId)
-      .map(edge => edge.from);
+      .filter((edge) => edge.to === nodeId)
+      .map((edge) => edge.from);
   }
 
   private groupEdgesByPattern(edges: GraphEdgeType[]): Map<GraphEdgePatternType, GraphEdgeType[]> {

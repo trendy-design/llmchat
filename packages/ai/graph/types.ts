@@ -37,7 +37,8 @@ export type AgentContextType = {
 export type AgentEventPayload  = {
   nodeId: string;
   nodeKey: string;
-  nodeStatus: "pending" | "completed" | "error";
+  nodeStatus: "pending" | "completed" | "error" | "reasoning";
+  nodeReasoning?: string;
   nodeModel?: string;
   tokenUsage?: number;
   nodeInput?: string;
@@ -91,6 +92,7 @@ export const GraphNodeSchema = z.object({
   tools: z.array(z.nativeEnum(ToolEnumType)),
   isStep: z.boolean().default(false),
   returnOutput: z.boolean().default(true),
+  enableReasoning: z.boolean().default(false),
 });
 
 export type GraphNodeType = z.infer<typeof GraphNodeSchema>;
