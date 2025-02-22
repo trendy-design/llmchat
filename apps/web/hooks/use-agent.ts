@@ -1,36 +1,9 @@
 import { Block, useChatStore } from '@/libs/store/chat.store';
 import type { CompletionRequestType } from '@repo/ai';
-import { useEffect, useState } from 'react';
 
 export const useAgentStream = () => {
   const updateThreadItem = useChatStore((state) => state.updateThreadItem);
-  const [pendingUpdate, setPendingUpdate] = useState<{
-    threadItemId: string;
-    parentThreadItemId?: string;
-    threadId: string;
-    content: Block[];
-    status?: 'pending' | 'completed' | 'error';
-    updatedAt?: Date;
-  } | null>(null);
 
-  useEffect(() => {
-    if (!pendingUpdate) return;
-
-    const timeoutId = setTimeout(() => {
-      updateThreadItem({
-        id: pendingUpdate.threadItemId,
-        role: 'assistant' as const,
-        content: pendingUpdate.content,
-        status: pendingUpdate.status,
-        parentId: pendingUpdate.parentThreadItemId,
-        threadId: pendingUpdate.threadId,
-        updatedAt: pendingUpdate.updatedAt,
-      });
-      setPendingUpdate(null);
-    }, 100);
-
-    return () => clearTimeout(timeoutId);
-  }, [pendingUpdate, updateThreadItem]);
 
   const runAgent = async (body: CompletionRequestType) => {
     const nodes = new Map<string, Block>();
@@ -69,6 +42,7 @@ export const useAgentStream = () => {
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6));
+              if (!!data.nodeId) {
               nodes.set(data.nodeId, {
                 id: data.nodeId,
                 nodeKey: data.nodeKey,
@@ -78,12 +52,15 @@ export const useAgentStream = () => {
                 nodeStatus: data.nodeStatus,
                 tokenUsage: data.tokenUsage,
                 nodeInput: data.nodeInput,
+                sources: data.sources,
                 nodeModel: data.nodeModel,
-                nodeReasoning: data.nodeReasoning 
+                nodeReasoning: data.nodeReasoning,
+                isStep: data.isStep
               });
-              setPendingUpdate({
-                threadItemId: data.threadItemId,
-                parentThreadItemId: data.parentThreadItemId,
+              }
+              updateThreadItem({
+                id: data.threadItemId,
+                parentId: data.parentThreadItemId,
                 threadId: data.threadId,
                 content: Array.from(nodes.values()),
                 status: data.status as 'pending' | 'completed' | 'error',

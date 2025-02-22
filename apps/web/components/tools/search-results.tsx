@@ -16,13 +16,31 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
     return null;
   }
 
+  const getHostname = (url: string) => {
+    try {
+      const hostname = new URL(url).hostname.split('.')[0];
+
+    if (hostname === 'www') {
+      return new URL(url).hostname.split('.')[1];
+    }
+
+      return hostname;
+    } catch (error) {
+      return url;
+    }
+  };
+
+  const uniqueResults = searchResults.filter((result, index, self) =>
+    index === self.findIndex((t) => new URL(t.link).hostname === new URL(result.link).hostname)
+  );
+
   return (
     <Flex direction="col" gap="md" className="w-full">
       {Array.isArray(searchResults) && (
-        <Flex gap="sm" className="no-scrollbar mb-4 w-full overflow-x-auto" items="stretch">
-          {searchResults?.map((result) => (
+        <Flex gap="xs" className="flex-wrap  mb-4 w-full overflow-x-hidden" items="stretch">
+          {uniqueResults?.map((result) => (
             <Flex
-              className="min-w-[200px] cursor-pointer rounded-lg bg-zinc-500/10 p-2.5 hover:opacity-80"
+              className="max-w-[300px]  shrink-0 cursor-pointer rounded-md bg-zinc-500/10 p-1 px-2 hover:opacity-80"
               direction="col"
               key={result.link}
               justify="between"
@@ -32,13 +50,15 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
               gap="sm"
             >
            
-              <Type size="xs" weight="medium" className="line-clamp-2" >
+              {/* <Type size="xs" weight="medium" className="line-clamp-2 text-xs" >
                 {result.title}
-              </Type>
+
+              </Type> */}
               <Flex direction="row" items="center" gap="sm">
                 <SearchFavicon link={new URL(result.link).host} />
-                <Type size="xs" className="line-clamp-1 w-full" weight="medium" textColor="secondary">
-                  {new URL(result.link).host}
+                <Type size="xs" className=" w-full" textColor="secondary">
+                  {getHostname(result.link)}
+
                 </Type>
               </Flex>
             </Flex>
@@ -48,3 +68,4 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
     </Flex>
   );
 };
+

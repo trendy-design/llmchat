@@ -21,8 +21,10 @@ export type Block = {
   nodeStatus?: "pending" | "completed" | "error";
   tokenUsage?: number;
   nodeInput?: string;
+  sources?: string[];
   nodeModel?: string;
   nodeReasoning?: string;
+  isStep?: boolean;
 }
 
 export type ThreadItem = {
@@ -113,6 +115,28 @@ type Actions = {
   setCurrentThreadItem: (threadItem: ThreadItem) => void;
 }
 
+// Add this debounce utility at the top level
+const debounce = <T extends (...args: any[]) => any>(
+  fn: T,
+  delay: number
+): ((...args: Parameters<T>) => void) => {
+  let timeoutId: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  };
+};
+
+const debouncedThreadUpdate = debounce(
+  (thread: Thread) => db.threads.put(thread),
+  1000
+);
+
+const debouncedThreadItemUpdate = debounce(
+  (threadItem: ThreadItem) => db.threadItems.put(threadItem),
+  1000
+);
+
 export const useChatStore = create<State & Actions>((set, get) => ({
   model: models[0],
   isGenerating: false,
@@ -158,7 +182,7 @@ export const useChatStore = create<State & Actions>((set, get) => ({
   },
 
   updateThread: async (thread) => {
-    await db.threads.put(thread);
+    debouncedThreadUpdate(thread);
     set((state) => ({
       threads: state.threads.map((t) => (t.id === thread.id ? thread : t)),
     }));
@@ -173,14 +197,11 @@ export const useChatStore = create<State & Actions>((set, get) => ({
   },
 
   updateThreadItem: async (threadItem) => {
-    console.log('updateThreadItem', threadItem);
-
-    const threadId = get().currentThreadId;
     if (!threadItem.id) return;
     const existingItem = await db.threadItems.get(threadItem.id);
     if (existingItem) {
-      const updatedItem = { ...existingItem, ...threadItem, threadId };
-      await db.threadItems.put(updatedItem);
+      const updatedItem = { ...existingItem, ...threadItem, threadId: get().currentThreadId };
+      debouncedThreadItemUpdate(updatedItem);
       set((state) => ({
         threadItems: state.threadItems.map((t) =>
           t.id === threadItem.id ? updatedItem : t

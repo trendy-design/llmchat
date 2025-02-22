@@ -1,17 +1,12 @@
 import {
   AgentContextManager,
   AgentEventPayload,
-  AgentGraph,
   AgentGraphEvents,
   completionRequestSchema,
   CompletionRequestType
 } from "@repo/ai";
-import { ToolEnumType } from "@repo/ai/tools";
-import { promises as fs } from "fs";
+import { workflow1 } from "@repo/workflows";
 import type { NextRequest } from 'next/server';
-import { join } from "path";
-
-
 
 export type AgentEventResponse = {
   threadId: string;
@@ -72,103 +67,7 @@ async function executeStream(
     history: data.messages,
   });
 
-  const graph = new AgentGraph(events, contextManager);
-
-  // Read prompt files
-  const plannerPrompt = await fs.readFile(
-    join(process.cwd(), "app/agent2/prompts/planner.md"),
-    "utf8"
-  );
-
-  const researcherPrompt = await fs.readFile(
-    join(process.cwd(), "app/agent2/prompts/researcher.md"),
-    "utf8"
-  );
-  
-
-  const reflectionPrompt = await fs.readFile(
-    join(process.cwd(), "app/agent2/prompts/reflection.md"),
-    "utf8"
-  );
-
-  const summarizerPrompt = await fs.readFile(
-    join(process.cwd(), "app/agent2/prompts/summarizer.md"),
-    "utf8"
-  );
-  
-  console.log(plannerPrompt);
-
-  // Use the prompts in node definitions
-  graph.addNode({
-    id: "planner",
-    name: "Planner",
-    role: "assistant",
-    systemPrompt: plannerPrompt,
-  });
-
-  graph.addNode({
-    id: "reflection",
-    name: "Reflection",
-    role: "assistant",
-    systemPrompt: reflectionPrompt,
-  });
-
-  graph.addNode({
-    id: "researcher",
-    name: "Researcher",
-    role: "assistant",
-    systemPrompt: researcherPrompt,
-    tools: [ToolEnumType.SEARCH, ToolEnumType.READER],
-    toolSteps: 6,
-  });
-
-  graph.addNode({
-    id: "summarizer",
-    name: "Summarizer",
-    role: "assistant",
-    systemPrompt: summarizerPrompt,
-  });
-
-
-
-
-// From Initial Search -> Deep Search
-graph.addEdge({
-  from: "planner",
-  to: "reflection",
-  pattern: "sequential",
-  relationship: "next",
-});
-
-// Self-Edge (Revision) on Deep Search for iterative exploration
-graph.addEdge({
-  from: "reflection",
-  to: "researcher",
-  pattern: "revision",
-  relationship: "next",
-  config: {
-    revision: {
-      maxIterations: 2,
-      stopCondition:
-        "Do you believe you now have enough information to craft a comprehensive answer?",
-      revisionPrompt: (previousText: string) => {
-        return `${reflectionPrompt}
-        
-        --------------------------------------
-        Here is the findings so far: 
-        ${previousText}`;
-      },
-    },
-  },
-});
-
-// From Deep Search -> Aggregator
-graph.addEdge({
-  from: "researcher",
-  to: "summarizer",
-  pattern: "sequential",
-  relationship: "next",
-});
+  const graph = await workflow1(events, contextManager);
 
   events.on('event', (event) => {
     sendMessage(controller, encoder, {
@@ -183,7 +82,7 @@ graph.addEdge({
     }
   });
 
-  await graph.execute("planner", data.prompt);
+  await graph.execute("initiator", data.prompt);
   controller.close();
 }
 

@@ -8,8 +8,7 @@ import {
   DropdownMenuTrigger,
   Flex,
   Input,
-  Tooltip,
-  Type,
+  Type
 } from '@repo/ui';
 import { MoreHorizontal } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -35,10 +34,12 @@ export const HistoryItem = ({
   const { push } = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(thread.title);
+  const deleteThread = useChatStore((state) => state.deleteThread);
   const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const historyInputRef = useRef<HTMLInputElement>(null);
   const isChatPage = pathname.startsWith('/chat');
   const switchThread = useChatStore((state) => state.switchThread);
+  const [openOptions, setOpenOptions] = useState(false);
 
   useEffect(() => {
     if (isEditing) {
@@ -87,15 +88,7 @@ export const HistoryItem = ({
   };
 
   const handleDeleteConfirm = () => {
-    // removeSessionMutation.mutate(session.id, {
-    //   onSuccess: () => {
-    //     if (activeSessionId === session.id) {
-    //       createSession();
-    //     }
-    //     refetchSessions?.();
-    //     setOpenDeleteConfirm(false);
-    //   },
-    // });
+   deleteThread(thread.id);
   };
 
   return (
@@ -119,12 +112,12 @@ export const HistoryItem = ({
           </Flex>
         </>
       )}
-      {(!isEditing || openDeleteConfirm) && (
-        <Flex className={cn('hidden group-hover:flex', openDeleteConfirm && 'flex')}>
-          <Tooltip content="Delete">
-            <DropdownMenu>
+      <DropdownMenu open={openOptions} onOpenChange={setOpenOptions}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon-xs">
+                <Button variant="ghost" size="icon-xs" onClick={(e) =>{
+                  e.stopPropagation();
+                  setOpenOptions(!openOptions)
+                }}>
                   <MoreHorizontal size={14} strokeWidth="2" />
                 </Button>
               </DropdownMenuTrigger>
@@ -147,9 +140,7 @@ export const HistoryItem = ({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </Tooltip>
-        </Flex>
-      )}
+ 
     </div>
   );
 };

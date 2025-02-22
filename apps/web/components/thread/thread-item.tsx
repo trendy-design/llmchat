@@ -4,8 +4,8 @@ import { parseSourceTagsFromXML } from '@/libs/mdx/sources';
 import { MdxChunk, useMdxChunker } from '@/libs/mdx/use-mdx-chunks';
 import { Block, ThreadItem as ThreadItemType } from '@/libs/store/chat.store';
 import { ToolCallResultType, ToolCallType } from '@repo/ai';
-import { cn, Flex } from '@repo/ui';
-import { Loader } from 'lucide-react';
+import { Badge, Button, Flex } from '@repo/ui';
+import { IconCircleCheckFilled, IconCircleDashed, IconCircleDashedX } from '@tabler/icons-react';
 import { MDXRemote } from 'next-mdx-remote';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote/rsc';
 import { serialize } from 'next-mdx-remote/serialize';
@@ -157,6 +157,9 @@ import { VaulDrawer } from './vaul-drawer';
 
   export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: ThreadItemType }) => {
 
+    const steps = threadItem.content.filter(block => block.isStep);
+    const contentBlocks = threadItem.content.filter(block => !block?.isStep);
+
 
     return (
       <>
@@ -169,30 +172,10 @@ import { VaulDrawer } from './vaul-drawer';
         )}
 
         {threadItem.role === 'assistant' && (
-          <div className="flex w-full flex-col">
-
-
-            {(threadItem.content || []).map((block, index, array) => (
-          
-              <div className={cn("flex flex-col border rounded-lg p-4 my-4",
-                { "border-none bg-zinc-100 ": index === array.length - 1 }
-              )} key={index}>
-
-                <Fragment key={index}>
-                  <p className="text-xs text-zinc-500 flex flex-row items-center gap-2 mb-2">{block.nodeStatus === "pending" ? <Loader className="animate-spin size-4" /> : null} {block.nodeKey}</p>
-                  {block.nodeReasoning ? <p className="text-xs text-zinc-500">Reasoning: {block.nodeReasoning}</p> : null}  
-                  <ThreadItemBlock block={block} />
-                  <VaulDrawer renderContent={() => (<AIThreadItem content={block.content} key={index} />
-    )}>
-      <p className="text-xs text-zinc-500">Read more</p>
-        </VaulDrawer>
-        <VaulDrawer renderContent={() => (<ThreadBlockMetadata block={block} />
-    )}>
-      <p className="text-xs text-zinc-500">More details</p>
-        </VaulDrawer>
-                </Fragment>
-              </div>
-            
+          <div className="flex w-full flex-col gap-4">
+            <Steps steps={steps} />
+            {contentBlocks?.map((block, index) => (
+              <AIThreadItem content={block.content} key={block.id} />
             ))}
           </div>
         )}
@@ -204,11 +187,11 @@ import { VaulDrawer } from './vaul-drawer';
   export const ThreadItemBlock = ({ block }: { block: Block }) => {
 
     return (
-  
 
-        <div className="flex w-full flex-col gap-2">
-          <SearchAndReadingResults toolCalls={block.toolCalls || []} toolCallResults={block.toolCallResults || []} />
-        </div>
+
+      <div className="flex w-full flex-col gap-2">
+        <SearchAndReadingResults toolCalls={block.toolCalls || []} toolCallResults={block.toolCallResults || []} />
+      </div>
 
     );
   };
@@ -271,7 +254,7 @@ import { VaulDrawer } from './vaul-drawer';
       if (!readingToolResults?.length) return [];
 
       return readingToolResults
-        .map(result => result?.args?.url)
+        .flatMap(result => result?.args?.urls)
         .filter((url): url is string => typeof url === 'string');
     }, [readingToolResults]);
 
@@ -290,28 +273,183 @@ import { VaulDrawer } from './vaul-drawer';
     return (
       <Flex direction="col" gap="md" className="w-full">
         <p className="text-xs text-zinc-500">Search Queries</p>
-        {searchToolResults[0]?.args?.query as string ?? "No search queries"}
-        <SearchResults searchResults={searchResults} />
-        { searchToolResults[0]?.args?.reasoning ? <p className="text-xs text-zinc-500">tool Reasoning: {searchToolResults[0]?.args?.reasoning as string}</p> : null}
-        <p className="text-xs text-zinc-500">Reading ...</p>
-        <SearchResults searchResults={readResults} />
+        <div className='flex flex-row gap-2 flex-wrap'>
+          {/* {JSON.stringify(searchToolResults)} */}
+          {searchToolResults?.map((result, index) => (
+            (result.args.queries as string[] ?? []).map((query, index)=>
+            <Badge key={index} variant="default">{query}</Badge>)
+          ))}
+        </div>
+        {/* <SearchResults searchResults={searchResults} /> */}
+        {/* {searchToolResults[0]?.args?.reasoning ? <p className="text-xs text-zinc-500">tool Reasoning: {searchToolResults[0]?.args?.reasoning as string}</p> : null} */}
+        {searchResults?.length > 0 ? <>
+          <p className="text-xs text-zinc-500">READING SOURCES</p>
+          <SearchResults searchResults={searchResults} />
+        </> : null}
       </Flex>
     );
   };
 
   export const ThreadBlockMetadata = ({ block }: { block: Block }) => {
+    const copyToClipboard = (element: HTMLElement | null) => {
+      if (!element) return;
+      
+      const text = element.innerText;
+      navigator.clipboard.writeText(text).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      });
+    };
+
     return (
       <div className="flex w-full flex-col gap-4">
-      {
-        Object.entries(block).map(([key, value]) => (
-          <div className="flex flex-col gap-2">
-          <p key={key} className="text-sm text-zinc-800">{key}</p>
-          <p key={key} className="text-xs text-zinc-500 prose prose-sm">
-            <ReactMarkdown>{value?.toString()}</ReactMarkdown>
-          </p>
-                </div>
-        ))
-      }
+        {Object.entries(block).map(([key, value]) => (
+          <div className="flex flex-col gap-2" key={key}>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-zinc-800">{key}</p>
+              <Button
+                variant="ghost"
+                size="xs"
+                onClick={(e) => {
+                  const contentElement = e.currentTarget.parentElement?.nextElementSibling;
+                  copyToClipboard(contentElement as HTMLElement);
+                }}
+              >
+                Copy
+              </Button>
+            </div>
+            {["toolCalls", "toolCallResults"].includes(key) ? (
+              <p className="text-xs text-zinc-500 prose prose-sm">
+                <pre>{JSON.stringify(value, null, 2)}</pre>
+              </p>
+            ) : (
+              <p className="text-xs text-zinc-500 prose prose-sm">
+                <ReactMarkdown>{value?.toString()}</ReactMarkdown>
+              </p>
+            )}
+          </div>
+        ))}
       </div>
     );
   };
+
+
+  export const StepStatus = ({ status }: { status: Block['nodeStatus'] }) => {
+    switch (status) {
+      case 'pending':
+        return <SpinnerIcon size={16} className='size-4 animate-spin shrink-0 text-zinc-500'/>;
+      case 'completed':
+        return <IconCircleCheckFilled className="size-4 shrink-0 text-zinc-800"/>;
+      case 'error':
+        return <IconCircleDashedX className="size-4 shrink-0 text-zinc-500"/>;
+      default:
+        return <IconCircleDashed className="size-4 shrink-0 text-zinc-200" strokeWidth={1} />;
+    }
+  };
+
+  export const SpinnerIcon = ({ size = 24, ...props }: {
+    size?: number;
+    className?: string;
+  }) => {
+    return <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={size}
+        height={size}
+        viewBox="0 0 44 44"
+        stroke="currentColor"
+        {...props}
+      >
+        <title>Loading...</title>
+        <g fill="none" fillRule="evenodd" strokeWidth="2">
+          <circle cx="22" cy="22" r="2" strokeWidth={2}>
+            <animate
+              attributeName="r"
+              begin="0s"
+              dur="1.8s"
+              values="1; 20"
+              calcMode="spline"
+              keyTimes="0; 1"
+              keySplines="0.165, 0.84, 0.44, 1"
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="stroke-opacity"
+              begin="0s"
+              dur="1.8s"
+              values="1; 0"
+              calcMode="spline"
+              keyTimes="0; 1"
+              keySplines="0.3, 0.61, 0.355, 1"
+              repeatCount="indefinite"
+            />
+          </circle>
+          <circle cx="22" cy="22" r="2" strokeWidth={2}>
+            <animate
+              attributeName="r"
+              begin="-0.9s"
+              dur="1.8s"
+              values="1; 20"
+              calcMode="spline"
+              keyTimes="0; 1"
+              keySplines="0.165, 0.84, 0.44, 1"
+              repeatCount="indefinite"
+            />
+            <animate
+              attributeName="stroke-opacity"
+              begin="-0.9s"
+              dur="1.8s"
+              values="1; 0"
+              calcMode="spline"
+              keyTimes="0; 1"
+              keySplines="0.3, 0.61, 0.355, 1"
+              repeatCount="indefinite"
+            />
+          </circle>
+        </g>
+      </svg>
+  };
+
+  export const Steps = ({steps}: {steps: Block[]}) => {
+    return (
+      <div className="flex w-full flex-col border rounded-xl pl-4 pr-8 py-8">
+
+
+            {(steps || []).map((block, index, array) => (
+
+  <div className="flex flex-row gap-2 items-stretch justify-start">
+    <div className="flex flex-col items-center justify-start min-h-full px-2">
+      <div className='bg-white z-10'>
+        <StepStatus status={block.nodeStatus} />
+      </div>
+      <div className="min-h-full flex-1 w-[1px] bg-zinc-100"/>
+
+    </div>
+              <div className={"flex flex-col pb-4"} key={index}>
+
+                <Fragment key={index}>
+                  {/* <p className="text-xs text-zinc-500 flex flex-row items-center gap-2 mb-2">{block.nodeStatus === "pending" ? <Loader className="animate-spin size-4" /> : null} {block.nodeKey}</p> */}
+                  {block.nodeReasoning ? <p className="text-sm"> {block.nodeReasoning}</p> : null}
+                  <ThreadItemBlock block={block} />
+                  <div className="flex flex-row gap-2">
+                  <VaulDrawer renderContent={() => (<AIThreadItem content={block.content} key={index} />
+                  )}>
+                    <Button variant="default" size="xs">Read more</Button>
+                  </VaulDrawer>
+                  <VaulDrawer renderContent={() => (<ThreadBlockMetadata block={block} />
+                  )}>
+                    <Button variant="outlined" size="xs">More details</Button>
+                  </VaulDrawer>
+                  </div>
+                </Fragment>
+              </div>
+              </div>
+            ))}
+          </div>
+    );
+  };
+

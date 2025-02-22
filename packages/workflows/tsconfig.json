@@ -1,0 +1,11 @@
+{
+  "extends": "@repo/typescript-config",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "moduleResolution": "bundler",
+    "module": "ESNext"
+  },
+  "include": ["*.ts", "workflow1/workflow1.ts"],
+  "exclude": ["node_modules"]
+}
+

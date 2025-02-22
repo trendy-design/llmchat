@@ -1,36 +1,77 @@
-import { LanguageModelV1, TextStreamPart, Tool, generateObject, streamText } from 'ai';
+import { LanguageModelV1, Tool, generateObject, streamText } from 'ai';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
-import { ToolEnumType, aiSdkTools } from '../aiSdkTools';
-import { getLanguageModel } from '../llm/providers';
+import type { BaseEdgeConfig } from '../../ui/src/type';
+import { ModelEnum } from '../models';
+import { getLanguageModel } from '../providers';
+import { ToolEnumType, aiSdkTools } from '../tools';
 import type { AgentContextManager } from './agent-context-manager';
 import type { AgentGraphEvents } from './agent-graph-events';
 import { GraphNode } from './agent-node';
-import type { AgentContextType, EdgeExecutionState, GraphEdgePatternType, GraphEdgeType, ToolCallResultType, ToolCallType } from './types';
+import { EdgeHandlerStrategy, createEdgeHandlerStrategies } from './edge-pattern-handlers';
+import type {
+  AgentContextType,
+  ConditionConfigArg,
+  EdgeExecutionState,
+  GraphEdgePatternType,
+  GraphEdgeType,
+  NodeState,
+  ToolCallResultType,
+  ToolCallType
+} from './types';
 
 type MessageResponse = { nodeId: string; response: string };
 
-class AgentGraph {
-  private nodes: Map<string, GraphNode>;
-  private edges: GraphEdgeType[];
-  private events: AgentGraphEvents;
-  private contextManager: AgentContextManager;
-  private defaultProvider: LanguageModelV1;
-  private executionState: EdgeExecutionState;
-  private nodeResults: any[] = [];
+type GraphState = {
+  nodes: Map<string, NodeState>;
+  currentExecution: {
+    startTime: number;
+    nodeStates: Map<string, NodeState>;
+    executionPath: string[];
+  };
+  executionHistory: {
+    startTime: number;
+    endTime: number;
+    duration: number;
+    nodeStates: Map<string, NodeState>;
+    executionPath: string[];
+    input: string;
+    finalOutput?: string;
+  }[];
+};
+
+export class AgentGraph {
+  private nodes: Map<string, GraphNode> = new Map();
+  private edges: GraphEdgeType<GraphEdgePatternType>[] = [];
+  public events: AgentGraphEvents;
+  protected contextManager: AgentContextManager;
+  protected defaultProvider: LanguageModelV1;
+  public executionState: EdgeExecutionState;
+  protected graphState: GraphState;
+  protected edgeHandlerStrategies: Map<GraphEdgePatternType, EdgeHandlerStrategy<any>>;
 
   constructor(events: AgentGraphEvents, contextManager: AgentContextManager) {
-    this.nodes = new Map();
-    this.edges = [];
     this.events = events;
     this.contextManager = contextManager;
     this.defaultProvider = getLanguageModel(contextManager.getContext().model);
     this.executionState = {
       pending: new Set(),
       completed: new Set(),
-      results: new Map(),
+      results: new Map()
     };
+    this.graphState = {
+      nodes: new Map(),
+      currentExecution: {
+        startTime: 0,
+        nodeStates: new Map(),
+        executionPath: []
+      },
+      executionHistory: []
+    };
+    this.edgeHandlerStrategies = createEdgeHandlerStrategies(this);
   }
+
+  /* ------------------------- Node and Edge Management ------------------------- */
 
   addNode(nodeConfig: {
     id: string;
@@ -43,21 +84,35 @@ class AgentGraph {
     toolSteps?: number;
     enableReasoning?: boolean;
     reasoningPrompt?: string;
-
+    model?: ModelEnum;
+    maxTokens?: number;
+    outputAsReasoning?: boolean;
+    isStep?: boolean;
   }): void {
-    const node = new GraphNode(nodeConfig);
-    this.nodes.set(node.id, node);
+    this.nodes.set(nodeConfig.id, new GraphNode(nodeConfig));
   }
 
-  addEdge(edgeConfig: GraphEdgeType): void {
+  addEdge<T extends GraphEdgePatternType>(edgeConfig: GraphEdgeType<T>): void {
     if (!this.nodes.has(edgeConfig.from) || !this.nodes.has(edgeConfig.to)) {
-      throw new Error('Cannot add edge: one or both nodes do not exist');
+      throw new Error('Cannot add edge: one or both nodes do not exist.');
     }
     this.edges.push(edgeConfig);
   }
 
   getNode(id: string): GraphNode | undefined {
     return this.nodes.get(id);
+  }
+
+  getAllNodes(): GraphNode[] {
+    return Array.from(this.nodes.values());
+  }
+
+  getAllEdges<T extends GraphEdgePatternType>(): GraphEdgeType<T>[] {
+    return [...this.edges] as GraphEdgeType<T>[];
+  }
+
+  getNodeStates(): NodeState[] {
+    return Array.from(this.graphState.nodes.values());
   }
 
   getConnectedNodes(nodeId: string): GraphNode[] {
@@ -67,224 +122,98 @@ class AgentGraph {
       .filter((node): node is GraphNode => node !== undefined);
   }
 
-  private async processAgentMessage(
-    nodeId: string,
-    nodeKey: string,
-    node: GraphNode,
-    message: string,
-    type: "text" | "object"
-  ): Promise<string> {
-    try {
-      this.events.emit('event', {
-        nodeId,
-        status: 'pending',
-        nodeKey: nodeKey,
-        nodeStatus: 'pending',
-        nodeInput: message,
-      });
-      const context = this.contextManager.getContext();
-      const messages = [
-        {
-          role: 'system' as const,
-          content: `Today is ${new Date().toLocaleDateString()}.\n\n${node.systemPrompt}\n\n`
-        },
-        { role: 'user' as const, content: message },
-      ];
-      let fullResponse = '';
-      const toolCallsMap = new Map<string, ToolCallType>();
-      const toolResultsMap = new Map<string, ToolCallResultType>();
-      const model = await this.defaultProvider;
-      let tokenUsage: number = 0;
-      const tools = (node.tools || []).reduce(
-        (acc, tool) => ({ ...acc, [tool]: aiSdkTools[tool] }),
-        {} as Record<string, Tool>
-      );
-
-      if (type === "text") {
-        const { fullStream, usage } = streamText({
-          model,
-          messages,
-          tools,
-          toolCallStreaming: true,
-          maxSteps: node.toolSteps,
-        });
-        for await (const chunk of fullStream) {
-          switch (chunk.type) {
-            case 'text-delta':
-              fullResponse += chunk.textDelta;
-              break;
-            case 'tool-call':
-              toolCallsMap.set(chunk.toolCallId, chunk);
-              break;
-            case 'tool-result' as TextStreamPart<typeof tools>['type']:
-              toolResultsMap.set((chunk as any).toolCallId, chunk as any);
-              break;
-          }
-          this.events.emit('event', {
-            nodeId,
-            nodeKey: node.name,
-            status: 'pending',
-            content: fullResponse,
-            toolCalls: Array.from(toolCallsMap.values()),
-            toolCallResults: Array.from(toolResultsMap.values()),
-            nodeStatus: 'pending',
-            nodeModel: model.modelId,
-          });
-        }
-        tokenUsage = (await usage).totalTokens;
-      } else {
-        const { object } = await generateObject({
-          model,
-          schema: z.object({
-            response: z.string(),
-          }),
-          prompt: message,
-        });
-        fullResponse = object.response;
-      }
-
-      const toolCalls = Array.from(toolCallsMap.values());
-      const toolCallResults = Array.from(toolResultsMap.values());
-      this.nodeResults.push({
-        nodeId,
-        nodeKey,
-        fullResponse,
-        toolCalls: toolCalls.length,
-        toolCallResults: toolCallResults.length,
-        tokenUsage,
-      });
-      this.events.emit('event', {
-        nodeId,
-        nodeKey: node.name,
-        status: 'completed',
-        content: fullResponse,
-        toolCalls,
-        toolCallResults,
-        nodeStatus: 'completed',
-        nodeInput: message,
-      });
-      this.contextManager.addMessage({
-        role: 'assistant',
-        content: `\n\n${fullResponse}\n\n`,
-      });
-      this.contextManager.addToolCall(toolCalls);
-      this.contextManager.addToolCallResult(toolCallResults);
-      return fullResponse;
-    } catch (error) {
-      this.events.emit('event', {
-        nodeId,
-        nodeKey: node.name,
-        status: 'error',
-        error: error instanceof Error ? error.message : JSON.stringify(error),
-        nodeStatus: 'error',
-      });
-      throw error;
-    }
-  }
+  /* ------------------------- Execution Methods ------------------------- */
 
   async execute(startNodeId: string, message: string): Promise<MessageResponse[]> {
-    const responses: MessageResponse[] = [];
+    // Initialize current execution
+    this.graphState.currentExecution = {
+      startTime: Date.now(),
+      nodeStates: new Map(),
+      executionPath: []
+    };
+    // Clear any previous states
     this.executionState = {
       pending: new Set(),
       completed: new Set(),
-      results: new Map(),
+      results: new Map()
     };
-    this.contextManager.addMessage({
-      role: 'user',
-      content: message,
-    });
+
+    this.contextManager.addMessage({ role: 'user', content: message });
+
+    // Start the actual node execution
+    const responses: MessageResponse[] = [];
     await this.executeNode(startNodeId, message, responses);
+
+    // Finalize and record execution
+    const { startTime, executionPath, nodeStates } = this.graphState.currentExecution;
+    const endTime = Date.now();
+    this.graphState.executionHistory.push({
+      startTime,
+      endTime,
+      duration: endTime - startTime,
+      nodeStates: new Map(nodeStates),
+      executionPath: [...executionPath],
+      input: message,
+      finalOutput: responses[responses.length - 1]?.response
+    });
+
     return responses;
   }
 
-  updateContext(updates: Partial<AgentContextType>): void {
-    this.contextManager.updateContext(updates);
-  }
-
-  getContext(): AgentContextType {
-    return this.contextManager.getContext();
-  }
-
-  getAllNodes(): GraphNode[] {
-    return Array.from(this.nodes.values());
-  }
-
-  getAllEdges(): GraphEdgeType[] {
-    return [...this.edges];
-  }
-
-  private async processReasoningStep(
-    node: GraphNode,
-    message: string
-  ): Promise<string> {
-    const model = await this.defaultProvider;
-    const prompt = `Before executing node "${node.name}" with input: "${message}", please think about next steps and provide a reasoning plan for the next step. for exmaple if user ask for "Agentic design pattern" then you should think and output like this:
-    "Okay, so I need to understand what the Agentic Design Pattern is. Let me start by breaking down the term. "Agentic" probably relates to agents, like software agents, which are autonomous entities that act on behalf of a user. Design patterns are common solutions to recurring problems in software design. So, putting that together, Agentic Design Pattern might refer to a design approach where software agents are the primary components, each handling specific tasks autonomously." `;
-    const { object } = await generateObject({
-      model,
-      schema: z.object({ reasoning: z.string() }),
-      prompt,
-    });
-    return object.reasoning;
-  }
-
-  private async executeNode(
-    nodeKey: string,
-    message: string,
-    responses: MessageResponse[]
-  ): Promise<void> {
+  public async executeNode(nodeKey: string, message: string, responses: MessageResponse[]): Promise<void> {
+    // Detect loops
     if (this.executionState.completed.has(nodeKey)) return;
     if (this.executionState.pending.has(nodeKey)) {
       throw new Error(`Circular dependency detected at node: ${nodeKey}`);
     }
+
     const node = this.nodes.get(nodeKey);
-    if (!node) return;
+    if (!node) return; // Or throw
+
+    this.graphState.currentExecution.executionPath.push(nodeKey);
     this.executionState.pending.add(nodeKey);
+
     const nodeId = uuidv4();
     try {
       let reasoningResult = '';
       if (node.enableReasoning) {
         reasoningResult = await this.processReasoningStep(node, message);
-        console.log('reasoningResult', reasoningResult);
         this.events.emit('event', {
           nodeId,
           nodeKey: node.name,
           nodeStatus: 'reasoning',
           status: 'pending',
           nodeReasoning: reasoningResult,
-          content: reasoningResult,
+          content: reasoningResult
         });
       }
-      const response = await this.processAgentMessage(
-        nodeId,
-        node.name,
-        node,
-        !!reasoningResult ? `${reasoningResult}\n\n${message}` : message,
-        'text'
-      );
+
+      // Main message processing
+      const fullInput = reasoningResult ? `${reasoningResult}\n\n${message}` : message;
+      const response = await this.processAgentMessage(nodeId, node.name, node, fullInput, 'text');
       responses.push({ nodeId, response });
       this.executionState.results.set(nodeKey, response);
-      const outgoingEdges = this.edges.filter(edge => edge.from === nodeKey);
-      const edgeGroups = this.groupEdgesByPattern(outgoingEdges);
-      for (const [pattern, edges] of Array.from(edgeGroups.entries())) {
-        const result = await this.processEdgePattern(
-          pattern,
-          edges,
-          response,
-          responses
-        );
+
+      // Process outgoing edges
+      const outgoingEdges = this.edges.filter(e => e.from === nodeKey);
+      const groupedEdges = this.groupEdgesByPattern(outgoingEdges);
+      for (const [pattern, edges] of Array.from(groupedEdges.entries())) {
+        const result = await this.processEdgePattern(pattern, edges, response, responses);
         if (pattern === 'revision') {
+          // In revision edges, we may update the node's final result
           this.executionState.results.set(nodeKey, result);
         }
       }
+
+      // Mark node complete
       this.executionState.completed.add(nodeKey);
       this.executionState.pending.delete(nodeKey);
+
+      // Continue with any remaining edges whose 'from' nodes are complete
       const remainingEdges = this.edges.filter(
-        edge =>
-          this.executionState.completed.has(edge.from) &&
-          !this.executionState.completed.has(edge.to)
+        e => this.executionState.completed.has(e.from) && !this.executionState.completed.has(e.to)
       );
-      if (remainingEdges.length > 0) {
+      if (remainingEdges.length) {
         const remainingGroups = this.groupEdgesByPattern(remainingEdges);
         for (const [pattern, edges] of Array.from(remainingGroups.entries())) {
           await this.processEdgePattern(
@@ -301,248 +230,291 @@ class AgentGraph {
     }
   }
 
-  private async processEdgePattern(
-    pattern: GraphEdgePatternType,
-    edges: GraphEdgeType[],
-    sourceResponse: string,
-    responses: MessageResponse[]
+  /* ------------------------- Agent & LLM Helpers ------------------------- */
+
+  public async processAgentMessage(
+    nodeId: string,
+    nodeKey: string,
+    node: GraphNode,
+    message: string,
+    type: 'text' | 'object'
   ): Promise<string> {
-    let result = sourceResponse;
-    switch (pattern) {
-      case 'revision':
-        result = await this.processRevisionEdges(edges, sourceResponse, responses);
-        break;
-      case 'parallel':
-        await this.processParallelEdges(edges, sourceResponse, responses);
-        break;
-      case 'map':
-        await this.processMapEdges(edges, sourceResponse, responses);
-        break;
-      case 'reduce':
-        await this.processReduceEdges(edges, sourceResponse, responses);
-        break;
-      case 'condition':
-        await this.processConditionEdges(edges, sourceResponse, responses);
-        break;
-      default:
-        await this.processSequentialEdges(edges, sourceResponse, responses);
-    }
-    return result;
-  }
+    const startTime = Date.now();
+    this.saveNodeState(nodeId, {
+      ...node.getState(),
+      key: node.name,
+      status: 'pending',
+      input: message,
+      startTime,
+      output: '',
+      toolCalls: [],
+      toolCallResults: [],
+      toolCallErrors: [],
+      sources: [],
+      metadata: {},
+      isStep: node.isStep
+    });
 
-  private async processRevisionEdges(
-    edges: GraphEdgeType[],
-    sourceResponse: string,
-    responses: MessageResponse[]
-  ): Promise<string> {
-    let finalResponse = sourceResponse;
-    for (const edge of edges) {
-      await this.processEdgeWithFallback(edge, async () => {
-        const config = edge.config?.revision ?? {};
-        const maxIterations = config.maxIterations ?? 3;
-        const stopCondition = config.stopCondition;
-
-        const revisionPrompt =
-          config.revisionPrompt ??
-          ((prev: string) =>
-            `Please review and improve the following response: ${prev}`);
-        let currentResponse = sourceResponse;
-        let iterations = 0;
-
-        while (iterations < maxIterations) {
-          if (stopCondition) {
-            if (typeof stopCondition === 'string') {
-              const { object } = await generateObject({
-                model: this.defaultProvider,
-                schema: z.object({
-                  stop: z.boolean(),
-                }),
-                prompt: stopCondition,
-              });
-              if (object.stop) break;
-            } else if (await stopCondition(currentResponse)) {
-              break;
-            }
-          }
-
-          const nextNode = this.nodes.get(edge.to);
-          if (!nextNode) break;
-          const nodeId = uuidv4();
-          const prompt = revisionPrompt(currentResponse);
-          let reasoningResult = '';
-          if (nextNode.enableReasoning) {
-            const reasoningResult = await this.processReasoningStep(nextNode, currentResponse);
-            this.events.emit('event', {
-              nodeId,
-              nodeKey: nextNode.name,
-              status: 'pending',
-              nodeStatus: 'reasoning',
-              nodeReasoning: reasoningResult,
-              content: reasoningResult,
-            });
-          }
-          
-          currentResponse = await this.processAgentMessage(
-            nodeId,
-            nextNode.name,
-            nextNode,
-            reasoningResult ? `${reasoningResult}\n\n${currentResponse}` : currentResponse,
-            'text'
-          );
-          responses.push({ nodeId, response: currentResponse });
-          iterations++;
-        }
-        finalResponse = currentResponse;
-        this.executionState.results.set(edge.to, currentResponse);
-        this.executionState.completed.add(edge.to);
+    try {
+      this.events.emit('event', {
+        nodeId,
+        nodeKey,
+        nodeStatus: 'pending',
+        status: 'pending',
+        nodeInput: message,
+        isStep: node.isStep
       });
-    }
-    return finalResponse;
-  }
 
-  private async processParallelEdges(
-    edges: GraphEdgeType[],
-    sourceResponse: string,
-    responses: MessageResponse[]
-  ): Promise<void> {
-    await Promise.all(
-      edges.map((edge) =>
-        this.processEdgeWithFallback(edge, async () => {
-          await this.executeNode(edge.to, sourceResponse, responses);
-        })
-      )
-    );
-  }
+      // Prepare messages for LLM
+      const systemPrompt = `Today is ${new Date().toLocaleString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZoneName: 'short'
+      })}.\n\n${node.systemPrompt}\n\n`;
 
-  private async processMapEdges(
-    edges: GraphEdgeType[],
-    sourceResponse: string,
-    responses: MessageResponse[]
-  ): Promise<void> {
-    for (const edge of edges) {
-      await this.processEdgeWithFallback(edge, async () => {
-        const inputs = edge.config?.inputTransform
-          ? await Promise.resolve(edge.config.inputTransform(sourceResponse))
-          : [sourceResponse];
-        const mappedResponses: string[] = [];
-        await Promise.all(
-          inputs.map(async (input) => {
-            const nextNode = this.nodes.get(edge.to);
-            if (!nextNode) return;
-            const nodeId = uuidv4();
-            
-            if (nextNode.enableReasoning) {
-              const reasoningResult = await this.processReasoningStep(nextNode, input);
-              this.events.emit('event', {
-                nodeId,
-                nodeKey: nextNode.name,
-                status: 'pending',
-                nodeStatus: 'reasoning',
-                nodeReasoning: reasoningResult,
-                content: reasoningResult,
-              });
-            }
+      const model = getLanguageModel(node.model);
+      const tools = (node.tools || []).reduce(
+        (acc, tool) => ({ ...acc, [tool]: aiSdkTools[tool] }),
+        {} as Record<string, Tool>
+      );
+      let citations: string[] = [];
+      let fullResponse = '';
+      let tokenUsage = 0;
 
-            const mapped = await this.processAgentMessage(
-              nodeId,
-              nextNode.name,
-              nextNode,
-              input,
-              'text'
-            );
-            mappedResponses.push(mapped);
-          })
-        );
-        const finalResponse = edge.config?.outputTransform
-          ? await Promise.resolve(edge.config.outputTransform(mappedResponses))
-          : mappedResponses.join('\n');
-        responses.push({ nodeId: edge.to, response: finalResponse });
-        this.executionState.results.set(edge.to, finalResponse);
-        this.executionState.completed.add(edge.to);
-      });
-    }
-  }
-
-  private async processReduceEdges(
-    edges: GraphEdgeType[],
-    sourceResponse: string,
-    responses: MessageResponse[]
-  ): Promise<void> {
-    for (const edge of edges) {
-      await this.processEdgeWithFallback(edge, async () => {
-        const inputNodes = this.getInputNodes(edge.to);
-        const inputResponses = inputNodes.map(
-          (nodeId) => this.executionState.results.get(nodeId) ?? ''
-        );
-        const reduced = edge.config?.outputTransform
-          ? await Promise.resolve(edge.config.outputTransform(inputResponses))
-          : inputResponses.join('\n');
-        await this.executeNode(edge.to, reduced, responses);
-      });
-    }
-  }
-
-  private async processConditionEdges(
-    edges: GraphEdgeType[],
-    sourceResponse: string,
-    responses: MessageResponse[]
-  ): Promise<void> {
-    for (const edge of edges) {
-      if (edge.config?.condition?.(sourceResponse)) {
-        await this.processEdgeWithFallback(edge, async () => {
-          await this.executeNode(edge.to, sourceResponse, responses);
+      if (type === 'text') {
+        const { fullStream, usage } = streamText({
+          model,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: message }
+          ],
+          tools,
+          toolCallStreaming: true,
+          maxSteps: node.toolSteps,
+          maxTokens: node.maxTokens
         });
+
+        const toolCallsMap = new Map<string, ToolCallType>();
+        const toolResultsMap = new Map<string, ToolCallResultType>();
+
+        for await (const chunk of fullStream) {
+          switch (chunk.type) {
+            case 'text-delta':
+              fullResponse += chunk.textDelta;
+             citations = this.extractCitations(fullResponse);
+              break;
+            case 'tool-call':
+              toolCallsMap.set(chunk.toolCallId, chunk);
+              break;
+            case 'tool-result' as any:
+              const toolResult = chunk as any;
+              toolResultsMap.set(toolResult.toolCallId, toolResult);
+              break;
+          }
+          this.saveNodeState(nodeId, {
+            ...node.getState(),
+            key: node.name,
+            output: fullResponse,
+            toolCalls: Array.from(toolCallsMap.values()),
+            toolCallResults: Array.from(toolResultsMap.values()),
+            status: 'pending',
+            sources: citations,
+            isStep: node.isStep
+          });
+
+          this.events.emit('event', {
+            nodeId,
+            nodeKey: node.name,
+            status: 'pending',
+            content: fullResponse,
+            nodeModel: model.modelId,
+            nodeReasoning: node.outputAsReasoning ? fullResponse : undefined,
+            toolCalls: Array.from(toolCallsMap.values()),
+            toolCallResults: Array.from(toolResultsMap.values()),
+            nodeStatus: 'pending',
+            sources: citations,
+            isStep: node.isStep
+          });
+        }
+
+        tokenUsage = (await usage).totalTokens;
+      } else {
+        // 'object' case with zod schema
+        const { object } = await generateObject({
+          model,
+          schema: z.object({ response: z.string() }),
+          prompt: message
+        });
+        fullResponse = object.response;
       }
+
+      // Final updates & events
+      const endTime = Date.now();
+      node.completeExecution(fullResponse);
+      this.saveNodeState(nodeId, {
+        ...node.getState(),
+        key: node.name,
+        output: fullResponse,
+        endTime,
+        duration: endTime - startTime,
+        tokenUsage,
+        status: 'completed',
+        sources: citations,
+        isStep: node.isStep
+      });
+      this.events.emit('event', {
+        nodeId,
+        nodeKey: node.name,
+        status: 'completed',
+        content: fullResponse,
+        nodeStatus: 'completed',
+        nodeInput: message,
+        nodeReasoning: node.outputAsReasoning ? fullResponse : undefined,
+        sources: citations,
+        isStep: node.isStep
+      });
+
+      // Add final assistant message + calls to context
+      this.contextManager.addMessage({ role: 'assistant', content: `\n\n${fullResponse}\n\n` });
+      // tool calls and results are updated inside the streaming loop
+
+      return fullResponse;
+    } catch (error) {
+      const endTime = Date.now();
+      node.setError(error instanceof Error ? error.message : String(error));
+      this.saveNodeState(nodeId, {
+        ...node.getState(),
+        status: 'error',
+        endTime,
+        duration: endTime - startTime,
+        error: error instanceof Error ? error.message : String(error),
+        isStep: node.isStep
+      });
+      this.events.emit('event', {
+        nodeId,
+        nodeKey,
+        nodeStatus: 'error',
+        status: 'error',
+        error: error instanceof Error ? error.message : String(error),
+        isStep: node.isStep
+      });
+      throw error;
     }
   }
 
-  private async processSequentialEdges(
-    edges: GraphEdgeType[],
+  public async processReasoningStep(node: GraphNode, message: string): Promise<string> {
+    // You can simplify or remove this step if not needed.
+    const prompt = `Before executing node "${node.name}" with input: "${message}", please think about next steps and provide a reasoning plan.`;
+    const { object } = await generateObject({
+      model: this.defaultProvider,
+      schema: z.object({ reasoning: z.string() }),
+      prompt
+    });
+    return object.reasoning;
+  }
+
+  /* ------------------------- Edge Processing Logic ------------------------- */
+
+  private async processEdgePattern<T extends GraphEdgePatternType>(
+    pattern: T,
+    edges: GraphEdgeType<T>[],
     sourceResponse: string,
     responses: MessageResponse[]
-  ): Promise<void> {
-    const sortedEdges = edges.sort(
-      (a, b) => (a.config?.priority ?? 0) - (b.config?.priority ?? 0)
-    );
-    for (const edge of sortedEdges) {
-      await this.processEdgeWithFallback(edge, async () => {
-        await this.executeNode(edge.to, sourceResponse, responses);
-      });
+  ): Promise<string> {
+    const handler = this.edgeHandlerStrategies.get(pattern);
+    if (!handler) {
+      throw new Error(`No handler registered for edge pattern: ${pattern}`);
     }
+    return handler.handle(edges, sourceResponse, responses);
   }
 
-  private async processEdgeWithFallback(
-    edge: GraphEdgeType,
+  /* ------------------------- Utilities ------------------------- */
+
+  protected saveNodeState(nodeId: string, state: NodeState): void {
+    const existing = this.graphState.nodes.get(nodeId) || { ...state, status: 'pending' };
+    const merged = { ...existing, ...state };
+    this.graphState.nodes.set(nodeId, merged);
+    this.graphState.currentExecution.nodeStates.set(nodeId, merged);
+  }
+
+  protected groupEdgesByPattern<T extends GraphEdgePatternType>(edges: GraphEdgeType<T>[]): Map<T, GraphEdgeType<T>[]> {
+    return edges.reduce((map, edge) => {
+      const pattern = edge.pattern as T;
+      if (!map.has(pattern)) map.set(pattern, []);
+      map.get(pattern)!.push(edge);
+      return map;
+    }, new Map<T, GraphEdgeType<T>[]>());
+  }
+
+  public getInputNodes(nodeId: string): string[] {
+    return this.edges.filter(e => e.to === nodeId).map(e => e.from);
+  }
+
+  public async withFallback<T extends GraphEdgePatternType>(
+    edge: GraphEdgeType<T>,
     task: () => Promise<void>
   ): Promise<void> {
     try {
       await task();
     } catch (error) {
-      if (edge.config?.fallbackNode) {
-        const fallbackFromResponse = this.executionState.results.get(edge.from) || '';
-        await this.executeNode(edge.config.fallbackNode, fallbackFromResponse, []);
+      const config = edge.config as BaseEdgeConfig;
+      if (config?.fallbackNode) {
+        const fallbackInput = this.executionState.results.get(edge.from) || '';
+        await this.executeNode(config.fallbackNode, fallbackInput, []);
       } else {
         throw error;
       }
     }
   }
 
-  private getInputNodes(nodeId: string): string[] {
-    return this.edges
-      .filter((edge) => edge.to === nodeId)
-      .map((edge) => edge.from);
+  public async shouldStop(
+    stopCondition: string | ((args: ConditionConfigArg) => boolean | Promise<boolean>) | undefined,
+    currentResponse: string
+  ): Promise<boolean> {
+    if (!stopCondition) return false;
+    if (typeof stopCondition === 'string') {
+      const { object } = await generateObject({
+        model: this.defaultProvider,
+        schema: z.object({ stop: z.boolean() }),
+        prompt: stopCondition
+      });
+      return !!object.stop;
+    }
+    return !!stopCondition({ response: currentResponse, nodes: this.getNodeStates() });
   }
 
-  private groupEdgesByPattern(edges: GraphEdgeType[]): Map<GraphEdgePatternType, GraphEdgeType[]> {
-    return edges.reduce((groups, edge) => {
-      const pattern = edge.pattern;
-      if (!groups.has(pattern)) {
-        groups.set(pattern, []);
-      }
-      groups.get(pattern)!.push(edge);
-      return groups;
-    }, new Map<GraphEdgePatternType, GraphEdgeType[]>());
+  /* ------------------------- Context and State Getters ------------------------- */
+
+  updateContext(updates: Partial<AgentContextType>): void {
+    this.contextManager.updateContext(updates);
+  }
+
+  getContext(): AgentContextType {
+    return this.contextManager.getContext();
+  }
+
+  getNodeStateHistory(nodeId: string): NodeState | undefined {
+    return this.graphState.nodes.get(nodeId);
+  }
+
+  getCurrentNodeState(nodeId: string): NodeState | undefined {
+    return this.graphState.currentExecution.nodeStates.get(nodeId);
+  }
+
+  getExecutionHistory(): typeof this.graphState.executionHistory {
+    return this.graphState.executionHistory;
+  }
+
+  getCurrentExecutionPath(): string[] {
+    return this.graphState.currentExecution.executionPath;
+  }
+
+  extractCitations(response: string): string[] {
+    const citations = response.match(/<Source>(.*?)<\/Source>/g);
+    return Array.from(new Set(citations || []));
   }
 }
-
-export { AgentGraph };

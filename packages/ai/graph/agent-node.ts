@@ -1,36 +1,29 @@
-import { ToolEnumType } from '../aiSdkTools';
-import { ToolCallErrorType, ToolCallResultType, ToolCallType } from './types';
-
-export type GraphNodeState = {
-  reasoning?: string;
-  response?: string;
-  tokenUsage?: number;
-  status?: "pending" | "completed" | "error" | "reasoning";
-  toolCalls?: ToolCallType[];
-  toolCallResults?: ToolCallResultType[];
-  toolCallErrors?: ToolCallErrorType[];
-}
+import { ModelEnum } from '../models';
+import { ToolEnumType } from '../tools';
+import { NodeState, ToolCallErrorType, ToolCallResultType, ToolCallType } from './types';
 
 export class GraphNode {
   id: string;
   name: string;
   role: string;
-  status: 'idle' | 'pending' | 'completed' | 'failed';
   systemPrompt: string;
   temperature: number;
-  response: string;
+  maxTokens?: number;
+  model: ModelEnum;
   tools: ToolEnumType[];
   toolSteps: number;
+  isStep: boolean;
   enableReasoning: boolean;
   private metadata: Record<string, any>;
-  private state: GraphNodeState = {
-    reasoning: undefined,
-    response: undefined,
-    tokenUsage: undefined,
-    status: 'pending',
+  outputAsReasoning: boolean;
+  private state: NodeState = {
+    key: '',
+    status: 'idle',
     toolCalls: [],
     toolCallResults: [],
     toolCallErrors: [],
+    startTime: 0,
+    metadata: {}
   };
 
   constructor({
@@ -38,43 +31,99 @@ export class GraphNode {
     name,
     role,
     systemPrompt,
-    status = 'idle',
     temperature = 0.7,
     metadata = {},
     tools = [],
     toolSteps = 1,
     enableReasoning = false,
+    model = ModelEnum.GPT_4o_Mini,
+    maxTokens = undefined,
+    outputAsReasoning = false,
+    isStep = false,
   }: {
     id: string;
     name: string;
     role: string;
     systemPrompt: string;
-    status?: 'idle' | 'pending' | 'completed' | 'failed';
     temperature?: number;
     metadata?: Record<string, any>;
     tools?: ToolEnumType[];
     toolSteps?: number;
     enableReasoning?: boolean;
+    model?: ModelEnum;
+    maxTokens?: number;
+    outputAsReasoning?: boolean;
+    isStep?: boolean;
   }) {
     this.id = id;
     this.name = name;
     this.role = role;
-    this.response = '';
-    this.status = status;
     this.systemPrompt = systemPrompt;
     this.temperature = temperature;
     this.metadata = metadata;
     this.tools = tools;
     this.toolSteps = toolSteps;
     this.enableReasoning = enableReasoning;
+    this.model = model;
+    this.maxTokens = maxTokens;
+    this.outputAsReasoning = outputAsReasoning;
+    this.isStep = isStep;
+    
+    // Initialize state with the node name
+    this.state = {
+      ...this.state,
+      key: name
+    };
   }
 
-  getState(): GraphNodeState {
+  getState(): NodeState {
     return this.state;
   }
 
-  setState(state: GraphNodeState): void {
-    this.state = state;
+  setState(state: Partial<NodeState>): void {
+    this.state = { ...this.state, ...state };
+  }
+
+  startExecution(input: string): void {
+    this.state = {
+      ...this.state,
+      status: 'pending',
+      startTime: Date.now(),
+      input,
+    };
+  }
+
+  completeExecution(response: string): void {
+    this.state = {
+      ...this.state,
+      status: 'completed',
+      endTime: Date.now(),
+      duration: Date.now() - (this.state.startTime || 0),
+      output:  response,
+    };
+  }
+
+  setError(error: string): void {
+    this.state = {
+      ...this.state,
+      status: 'error',
+      endTime: Date.now(),
+      duration: Date.now() - (this.state.startTime || 0),
+      error,
+    };
+  }
+
+
+  addToolCall(toolCall: ToolCallType): void {
+    this.state.toolCalls = [...(this.state.toolCalls || []), toolCall];
+  }
+
+  addToolCallResult(result: ToolCallResultType): void {
+    this.state.toolCallResults = [...(this.state.toolCallResults || []), result];
+  }
+
+  addToolCallError(error: ToolCallErrorType): void {
+    this.state.toolCallErrors = [...(this.state.toolCallErrors || []), error];
   }
 
   // Getters and setters for metadata
@@ -109,7 +158,7 @@ export class GraphNode {
       id: this.id,
       name: this.name,
       role: this.role,
-      response: this.response,
+      output: this.state.output,
       systemPrompt: this.systemPrompt,
       temperature: this.temperature,
       metadata: this.metadata,

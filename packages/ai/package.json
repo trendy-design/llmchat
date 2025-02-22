@@ -9,10 +9,11 @@
   "exports": {
     ".": "./main.ts",
     "./models": "./models.ts",
-    "./tools": "./aiSdkTools.ts"
+    "./tools": "./tools.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.1.8",
+    "@ai-sdk/google": "^1.1.16",
     "@ai-sdk/openai": "^1.1.11",
     "@ai-sdk/togetherai": "^0.1.11",
     "@anthropic-ai/sdk": "^0.36.3",

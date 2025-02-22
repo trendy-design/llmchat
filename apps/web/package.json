@@ -40,6 +40,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@radix-ui/react-visually-hidden": "^1.1.0",
     "@repo/ai": "*",
+    "@repo/workflows": "*",
     "@repo/shared": "*",
     "@repo/ui": "*",
     "@sentry/nextjs": "^8",

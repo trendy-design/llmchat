@@ -1,14 +1,14 @@
 import { Tool, tool } from 'ai';
 import { z } from 'zod';
 
-export const getSERPResults = async (query: string) => {
+export const getSERPResults = async (queries: string[]) => {
   const myHeaders = new Headers();
   myHeaders.append("X-API-KEY", process.env.SERPER_API_KEY || '');
   myHeaders.append("Content-Type", "application/json");
   
-  const raw = JSON.stringify({
-    "q": query
-  });
+  const raw = JSON.stringify(queries.map((query) => ({
+    q: query
+  })));
   
   const requestOptions = {
     method: "POST" as const,
@@ -18,17 +18,27 @@ export const getSERPResults = async (query: string) => {
   };
   try {
     const response = await fetch("https://google.serper.dev/search", requestOptions);
-    const result = await response.json();
-    return result?.organic?.map((item: any) => item);
+    const batchResult = await response.json();
+
+    // Map each query's organic results, flatten into a single array, then remove duplicates based on the 'link'.
+    const organicResultsLists = batchResult?.map((result: any) => result.organic) || [];
+    const allOrganicResults = organicResultsLists.flat();
+    const uniqueOrganicResults = allOrganicResults.filter(
+      (result: any, index: number, self: any[]) =>
+        index === self.findIndex((r: any) => r.link === result.link)
+    );
+    
+    return uniqueOrganicResults.slice(0, 5);
   } catch (error) {
     console.error(error);
   };
 }
 
 const getWebPageContent = async (url: string) => {
-  const response = await fetch("http://localhost:3001/api/reader", {
-    method: "POST",
-    headers: {
+  try {
+    const response = await fetch("http://localhost:3001/api/reader", {
+      method: "POST",
+      headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({ url })
@@ -38,22 +48,28 @@ const getWebPageContent = async (url: string) => {
   const description = result?.result?.description ? `${result.result.description}\n\n` : '';
   const sourceUrl = result?.result?.url ? `Source: [${result.result.url}](${result.result.url})\n\n` : '';
   const content = result?.result?.markdown || result?.result?.content || '';
+  console.log('content', content.length);
 
   if (!content) return '';
 
-  return `${title}${description}${content}${sourceUrl}`;
+    return `${title}${description}${content}${sourceUrl}`;
+  } catch (error) {
+    console.error(error);
+    return `No Result Found for ${url}`;
+  }
 }
 
 export const searchTool = tool({
   description: 'Search the web for information',
   parameters: z.object({
     reasoning: z.string().describe('The reasoning for the search'),
-    query: z.string().min(1).describe('The query to search the web for'),
+    queries: z.array(z.string()).describe('The distinct queries to search the web for'),
   }),
   type:"function",
-  execute: async ({ query, reasoning }) => {
+  execute: async ({ queries, reasoning }) => {
 
-    const results = await getSERPResults(query);
+    const results = await getSERPResults(queries);
+    console.log('searchTool results', results.length);
 
     return results;
   },
@@ -61,15 +77,26 @@ export const searchTool = tool({
 
 
 export const readerTool = tool({
-  description: 'Read the web page information from the given url',
+  description: 'Read the web page information from the given urls',
   parameters: z.object({
-    url: z.string().describe('The url to read the web page information from'),
-    reasoning: z.string().describe('The reasoning for the reading'),
-  }),
+    urls: z.array(z.string()).describe('The urls to read the web page information from')  }),
   type:"function",
-  execute: async ({ url }) => {
-    const result = await getWebPageContent(url);
-    return result;
+  execute: async ({ urls }) => {
+    console.log('readerTool urls', urls);
+    const result = await Promise.all(urls.map(async (url) => {
+      const result = await getWebPageContent(url);
+      return result;
+    }));
+    console.log('result', result.length);
+    
+    const combinedResult = result.join('\n\n');
+    const words = combinedResult.split(/\s+/).length;
+    
+    if (words > 2000) {
+      return combinedResult.split(/\s+/).slice(0, 2000).join(' ');
+    }
+    
+    return combinedResult;
   },
 });
 
