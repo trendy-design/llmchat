@@ -20,11 +20,13 @@ export type Block = {
   toolCallResults?: AgentEventPayload['toolCallResults'];
   nodeStatus?: "pending" | "completed" | "error";
   tokenUsage?: number;
+  history?: AgentEventPayload['history'];
   nodeInput?: string;
   sources?: string[];
   nodeModel?: string;
   nodeReasoning?: string;
   isStep?: boolean;
+  nodeError?: string;
 }
 
 export type ThreadItem = {
@@ -113,6 +115,7 @@ type Actions = {
   loadThreadItems: (threadId: string) => Promise<void>;
   getMessageGroups: (threadId: string) => MessageGroup[];
   setCurrentThreadItem: (threadItem: ThreadItem) => void;
+  clearAllThreads: () => void;
 }
 
 // Add this debounce utility at the top level
@@ -160,6 +163,12 @@ export const useChatStore = create<State & Actions>((set, get) => ({
   loadThreadItems: async (threadId: string) => {
     const threadItems = await db.threadItems.where("threadId").equals(threadId).toArray();
     set({ threadItems });
+  },
+
+  clearAllThreads: async () => {
+    await db.threads.clear();
+    await db.threadItems.clear();
+    set({ threads: [], threadItems: [] });
   },
 
   createThread: async () => {

@@ -1,39 +1,15 @@
 import { CodeBlock } from '@/components/code-block/code-block';
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useContext } from 'react';
 
 import { Reasoning } from '@/components/reasoning-steps/reasoning';
+import { CitationProviderContext } from '@/components/thread/citation-provider';
+import { isValidUrl } from '@repo/shared/utils';
 import { AnimatePresence } from 'framer-motion';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { ComponentProps } from 'react';
 import { useStickToBottom } from 'use-stick-to-bottom';
 
-const isValidUrl = (url: string) => {
-  try {
-    new URL(url);
-    return true;
-  } catch (error) { 
-    return false;
-  }
-};
 
-const getHost = (url: string) => {
-  try {
-    return new URL(url).hostname;
-  } catch (error) {
-    return null;
-  }
-};
-
-const getFavIcon = (host?: string) => {
-  if (!host) {
-    return null;
-  }
-  try {
-    return `https://www.google.com/s2/favicons?domain=${host}&sz=128`;
-  } catch (error) {
-    return null;
-  }
-};
 
 export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
   Think: ({ children, isTagComplete }) => {
@@ -81,20 +57,19 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
     );
   },
   Source: ({ children }) => {
-    const url = children?.props?.children as string;
-    //check valid url
 
-    const host = getHost(url);
-    const favIcon = getFavIcon(url ??"");
-  
-    console.log("sourceii",url, host, favIcon)
-    if (isValidUrl(url)) {
-    
-    return <div className="inline-flex group bg-white border rounded-full p-0.5 text-xs items-center flex-row gap-1 text-zinc-500">
-        {favIcon && <img src={favIcon} className="size-3 rounded-full object-cover !my-0" />}
-        <span className="group-hover:flex hidden transition-all duration-300 pr-1">{host}</span>
-      </div>
+    const { citations } = useContext(CitationProviderContext);
+
+    const url = children?.props?.children as string;
+
+    const isValid = isValidUrl(url);
+    if (!isValid) {
+      return null;
     }
+    const citation = citations[url];
+    return <div className="inline-flex justify-center group bg-purple-100 rounded-md size-4 text-[10px] items-center flex-row gap-1 text-purple-500">
+      {citation?.index}
+    </div>
 
 
     return <></>

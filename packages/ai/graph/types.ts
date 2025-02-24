@@ -24,6 +24,7 @@ export type ToolCallErrorType = {
 
 
 export type AgentContextType = {
+  query?: string;
   formattingPrompt: string;
   threadId: string;
   threadItemId: string;
@@ -42,6 +43,7 @@ export type NodeState = {
   input?: string;
   output?: string;
   error?: string;
+  history?: LLMMessageType[];
   toolCalls?: ToolCallType[];
   toolCallResults?: ToolCallResultType[];
   toolCallErrors?: ToolCallErrorType[];
@@ -50,6 +52,8 @@ export type NodeState = {
   endTime?: number;
   duration?: number;
   metadata?: Record<string, any>;
+  isStep?: boolean;
+  skipRendering?: boolean;
 }
 
 export type AgentEventPayload  = {
@@ -60,6 +64,7 @@ export type AgentEventPayload  = {
   nodeModel?: string;
   tokenUsage?: number;
   nodeInput?: string;
+  history?: LLMMessageType[];
   status: "pending" | "completed" | "error";
   nodeError?: string;
   content?: string;
@@ -69,6 +74,8 @@ export type AgentEventPayload  = {
   toolCallErrors?: ToolCallErrorType[];
   sources?: string[];
   error?: string;
+  isStep?: boolean;
+  skipRendering?: boolean;
 };
 
 export type AgentResponseType = {
@@ -112,8 +119,8 @@ export const GraphNodeSchema = z.object({
   tools: z.array(z.nativeEnum(ToolEnumType)),
   isStep: z.boolean().default(false),
   returnOutput: z.boolean().default(true),
-  enableReasoning: z.boolean().default(false),
   outputAsReasoning: z.boolean().default(false),
+  skipRendering: z.boolean().default(false),
 });
 
 export type GraphNodeType = z.infer<typeof GraphNodeSchema>;
@@ -172,7 +179,7 @@ export type CompletionRequestType = z.infer<typeof completionRequestSchema>;
 
 export type LLMMessageType = z.infer<typeof messageSchema>;
 
-export type GraphEdgePatternType = "parallel" | "map" | "reduce" | "condition" | "sequential" | "revision" | "loop";
+export type GraphEdgePatternType = "sequential" | "loop";
 
 export type GraphEdgeType<T extends GraphEdgePatternType> = {
   from: string;
@@ -183,6 +190,7 @@ export type GraphEdgeType<T extends GraphEdgePatternType> = {
 
 
 export type InputTransformArg = {
+  query?: string;
   input: string;
   nodes: NodeState[];
 }
@@ -197,37 +205,23 @@ export type ConditionConfigArg = {
   nodes: NodeState[];
 }
 
-export type MapConfigType = {
-  inputTransform: (input: InputTransformArg) => string[] | Promise<string[]>;
-  outputTransform: (responses: OutputTransformArg) => string | Promise<string>;
+
+
+export type SpecialMessageType = {
+  history: LLMMessageType[];
+  userMessage: string;
 }
 
-export type ReduceConfigType = {
-  inputTransform: (input: InputTransformArg) => string[] | Promise<string[]>;
-  outputTransform: (responses: OutputTransformArg) => string | Promise<string>;
-}
-
-export type ConditionConfigType = {
-  condition: (condition: ConditionConfigArg) => boolean;
-  priority: number;
-  fallbackNode: string;
-}
-
-export type RevisionConfigType = {
-  maxIterations: number;
-  stopCondition: (condition: ConditionConfigArg) => boolean | Promise<boolean>;
-  revisionPrompt: (condition: ConditionConfigArg) => string | Promise<string>;
-}
 
 export type LoopConfigType = {
   maxIterations: number;
   stopCondition: (condition: ConditionConfigArg) => boolean | Promise<boolean>;
-  inputTransform: (input: InputTransformArg) => string | Promise<string>;
+  inputTransform: (input: InputTransformArg) =>  SpecialMessageType | Promise<SpecialMessageType>;
   outputTransform: (responses: OutputTransformArg) => string | Promise<string>;
 }
 
 export type SequentialConfigType = {
-  inputTransform: (input: InputTransformArg) => string | Promise<string> ;
+  inputTransform: (input: InputTransformArg) => SpecialMessageType | Promise<SpecialMessageType>;
   outputTransform: (responses: OutputTransformArg) => string | Promise<string>;
   priority: number;
 }
@@ -235,4 +229,4 @@ export type SequentialConfigType = {
 
 export type GraphConfigType<T extends GraphEdgePatternType> = {
   fallbackNode?: string;
-} & T extends "map" ? MapConfigType : T extends "reduce" ? ReduceConfigType : T extends "condition" ? ConditionConfigType : T extends "revision" ? RevisionConfigType : T extends "loop" ? LoopConfigType : T extends "sequential" ? SequentialConfigType : never;
+} &  T extends "loop" ? LoopConfigType : T extends "sequential" ? SequentialConfigType : never;

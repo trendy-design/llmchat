@@ -25,7 +25,7 @@ export const getSERPResults = async (queries: string[]) => {
     const allOrganicResults = organicResultsLists.flat();
     const uniqueOrganicResults = allOrganicResults.filter(
       (result: any, index: number, self: any[]) =>
-        index === self.findIndex((r: any) => r.link === result.link)
+        index === self.findIndex((r: any) => r?.link === result?.link)
     );
     
     return uniqueOrganicResults.slice(0, 5);
@@ -62,13 +62,13 @@ const getWebPageContent = async (url: string) => {
 export const searchTool = tool({
   description: 'Search the web for information',
   parameters: z.object({
-    reasoning: z.string().describe('The reasoning for the search'),
-    queries: z.array(z.string()).describe('The distinct queries to search the web for'),
+    queries: z.array(z.string()).describe('The distinct queries to search the web for information. Maximum 2 queries allowed.'),
   }),
   type:"function",
-  execute: async ({ queries, reasoning }) => {
+  execute: async ({ queries }) => {
+    const allowedQueries = queries.slice(0, 2);
 
-    const results = await getSERPResults(queries);
+    const results = await getSERPResults(allowedQueries);
     console.log('searchTool results', results.length);
 
     return results;
@@ -77,9 +77,9 @@ export const searchTool = tool({
 
 
 export const readerTool = tool({
-  description: 'Read the web page information from the given urls',
+  description: 'Read the web pages information from the given urls',
   parameters: z.object({
-    urls: z.array(z.string()).describe('The urls to read the web page information from')  }),
+    urls: z.array(z.string()).max(10).describe('The urls to read the web page information from. Maximum 10 urls allowed.')  }),
   type:"function",
   execute: async ({ urls }) => {
     console.log('readerTool urls', urls);

@@ -13,7 +13,7 @@ export class GraphNode {
   tools: ToolEnumType[];
   toolSteps: number;
   isStep: boolean;
-  enableReasoning: boolean;
+  skipRendering: boolean;
   private metadata: Record<string, any>;
   outputAsReasoning: boolean;
   private state: NodeState = {
@@ -23,7 +23,8 @@ export class GraphNode {
     toolCallResults: [],
     toolCallErrors: [],
     startTime: 0,
-    metadata: {}
+    metadata: {},
+    skipRendering: false
   };
 
   constructor({
@@ -35,11 +36,11 @@ export class GraphNode {
     metadata = {},
     tools = [],
     toolSteps = 1,
-    enableReasoning = false,
     model = ModelEnum.GPT_4o_Mini,
     maxTokens = undefined,
     outputAsReasoning = false,
     isStep = false,
+    skipRendering = false,
   }: {
     id: string;
     name: string;
@@ -49,11 +50,11 @@ export class GraphNode {
     metadata?: Record<string, any>;
     tools?: ToolEnumType[];
     toolSteps?: number;
-    enableReasoning?: boolean;
     model?: ModelEnum;
     maxTokens?: number;
     outputAsReasoning?: boolean;
     isStep?: boolean;
+    skipRendering?: boolean;
   }) {
     this.id = id;
     this.name = name;
@@ -63,12 +64,11 @@ export class GraphNode {
     this.metadata = metadata;
     this.tools = tools;
     this.toolSteps = toolSteps;
-    this.enableReasoning = enableReasoning;
     this.model = model;
     this.maxTokens = maxTokens;
     this.outputAsReasoning = outputAsReasoning;
     this.isStep = isStep;
-    
+    this.skipRendering = skipRendering;
     // Initialize state with the node name
     this.state = {
       ...this.state,

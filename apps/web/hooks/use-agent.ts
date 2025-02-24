@@ -51,9 +51,11 @@ export const useAgentStream = () => {
                 toolCallResults: data.toolCallResults,
                 nodeStatus: data.nodeStatus,
                 tokenUsage: data.tokenUsage,
+                history: data.history,
                 nodeInput: data.nodeInput,
                 sources: data.sources,
                 nodeModel: data.nodeModel,
+                nodeError: data.error,
                 nodeReasoning: data.nodeReasoning,
                 isStep: data.isStep
               });

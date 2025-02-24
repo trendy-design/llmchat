@@ -34,6 +34,7 @@ export const Sidebar = () => {
   const sortThreads = (threads: Thread[], sortBy: 'createdAt') => {
     return threads.sort((a, b) => moment(a[sortBy]).diff(moment(b[sortBy])));
   };
+  const clearAllThreads = useChatStore((state) => state.clearAllThreads);
 
   const groupedThreads: Record<string, Thread[]> = {
     today: [],
@@ -125,6 +126,13 @@ export const Sidebar = () => {
           </Flex>
         )}
         <Flex className="w-full p-2" direction="col" gap="sm">
+        <Button
+                size="icon-xs"
+                variant="ghost"
+                onClick={() => clearAllThreads()}
+              >
+                Clear All
+              </Button>
           {!user ? (
             <Button
               size="sm"

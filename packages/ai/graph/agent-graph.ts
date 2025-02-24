@@ -15,6 +15,7 @@ import type {
   EdgeExecutionState,
   GraphEdgePatternType,
   GraphEdgeType,
+  LLMMessageType,
   NodeState,
   ToolCallResultType,
   ToolCallType
@@ -87,6 +88,7 @@ export class AgentGraph {
     model?: ModelEnum;
     maxTokens?: number;
     outputAsReasoning?: boolean;
+    skipRendering?: boolean;
     isStep?: boolean;
   }): void {
     this.nodes.set(nodeConfig.id, new GraphNode(nodeConfig));
@@ -138,11 +140,12 @@ export class AgentGraph {
       results: new Map()
     };
 
+    this.contextManager.setContext('query', message);
     this.contextManager.addMessage({ role: 'user', content: message });
 
     // Start the actual node execution
     const responses: MessageResponse[] = [];
-    await this.executeNode(startNodeId, message, responses);
+    await this.executeNode(startNodeId, message, [],responses);
 
     // Finalize and record execution
     const { startTime, executionPath, nodeStates } = this.graphState.currentExecution;
@@ -160,7 +163,7 @@ export class AgentGraph {
     return responses;
   }
 
-  public async executeNode(nodeKey: string, message: string, responses: MessageResponse[]): Promise<void> {
+  public async executeNode(nodeKey: string, message: string, history: LLMMessageType[], responses: MessageResponse[]): Promise<void> {
     // Detect loops
     if (this.executionState.completed.has(nodeKey)) return;
     if (this.executionState.pending.has(nodeKey)) {
@@ -175,22 +178,22 @@ export class AgentGraph {
 
     const nodeId = uuidv4();
     try {
-      let reasoningResult = '';
-      if (node.enableReasoning) {
-        reasoningResult = await this.processReasoningStep(node, message);
-        this.events.emit('event', {
-          nodeId,
-          nodeKey: node.name,
-          nodeStatus: 'reasoning',
-          status: 'pending',
-          nodeReasoning: reasoningResult,
-          content: reasoningResult
-        });
-      }
+      // let reasoningResult = '';
+      // if (node.enableReasoning) {
+      //   reasoningResult = await this.processReasoningStep(node, message);
+      //   this.events.emit('event', {
+      //     nodeId,
+      //     nodeKey: node.name,
+      //     nodeStatus: 'reasoning',
+      //     status: 'pending',
+      //     nodeReasoning: reasoningResult,
+      //     content: reasoningResult
+      //   });
+      // }
 
       // Main message processing
-      const fullInput = reasoningResult ? `${reasoningResult}\n\n${message}` : message;
-      const response = await this.processAgentMessage(nodeId, node.name, node, fullInput, 'text');
+      const fullInput =  message;
+      const response = await this.processAgentMessage({nodeId, nodeKey: node.name, node, message: fullInput, type: 'text', history});
       responses.push({ nodeId, response });
       this.executionState.results.set(nodeKey, response);
 
@@ -199,10 +202,6 @@ export class AgentGraph {
       const groupedEdges = this.groupEdgesByPattern(outgoingEdges);
       for (const [pattern, edges] of Array.from(groupedEdges.entries())) {
         const result = await this.processEdgePattern(pattern, edges, response, responses);
-        if (pattern === 'revision') {
-          // In revision edges, we may update the node's final result
-          this.executionState.results.set(nodeKey, result);
-        }
       }
 
       // Mark node complete
@@ -232,13 +231,21 @@ export class AgentGraph {
 
   /* ------------------------- Agent & LLM Helpers ------------------------- */
 
-  public async processAgentMessage(
+  public async processAgentMessage({
+    nodeId,
+    nodeKey,
+    node,
+    message,
+    type,
+    history
+  }: {
     nodeId: string,
     nodeKey: string,
     node: GraphNode,
     message: string,
-    type: 'text' | 'object'
-  ): Promise<string> {
+    type: 'text' | 'object',
+    history?: LLMMessageType[]
+  }): Promise<string> {
     const startTime = Date.now();
     this.saveNodeState(nodeId, {
       ...node.getState(),
@@ -250,9 +257,11 @@ export class AgentGraph {
       toolCalls: [],
       toolCallResults: [],
       toolCallErrors: [],
+      history: history,
       sources: [],
       metadata: {},
-      isStep: node.isStep
+      isStep: node.isStep,
+      skipRendering: node.skipRendering
     });
 
     try {
@@ -261,8 +270,9 @@ export class AgentGraph {
         nodeKey,
         nodeStatus: 'pending',
         status: 'pending',
-        nodeInput: message,
-        isStep: node.isStep
+        nodeInput: `\n\n${message}\n\n${JSON.stringify(history)}`,
+        isStep: node.isStep,
+        skipRendering: node.skipRendering
       });
 
       // Prepare messages for LLM
@@ -276,6 +286,8 @@ export class AgentGraph {
         timeZoneName: 'short'
       })}.\n\n${node.systemPrompt}\n\n`;
 
+      console.log(systemPrompt);
+
       const model = getLanguageModel(node.model);
       const tools = (node.tools || []).reduce(
         (acc, tool) => ({ ...acc, [tool]: aiSdkTools[tool] }),
@@ -285,23 +297,32 @@ export class AgentGraph {
       let fullResponse = '';
       let tokenUsage = 0;
 
+      const completeMessages = [
+        { role: 'system' as const, content: systemPrompt },
+        ...(history ?? []),
+        { role: 'user' as const, content: message }
+      ];
+
+
+      const toolCallsMap = new Map<string, ToolCallType>();
+      const toolResultsMap = new Map<string, ToolCallResultType>();
+      const errors: unknown[] = [];
+
       if (type === 'text') {
-        const { fullStream, usage } = streamText({
+        const { fullStream, usage, } = streamText({
           model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: message }
-          ],
+          messages: completeMessages,
           tools,
           toolCallStreaming: true,
           maxSteps: node.toolSteps,
           maxTokens: node.maxTokens
         });
 
-        const toolCallsMap = new Map<string, ToolCallType>();
-        const toolResultsMap = new Map<string, ToolCallResultType>();
+        
+
 
         for await (const chunk of fullStream) {
+          console.log('chunk', chunk);
           switch (chunk.type) {
             case 'text-delta':
               fullResponse += chunk.textDelta;
@@ -314,16 +335,23 @@ export class AgentGraph {
               const toolResult = chunk as any;
               toolResultsMap.set(toolResult.toolCallId, toolResult);
               break;
+            case "error" as any:
+              errors.push(chunk);
+              break;
           }
+
           this.saveNodeState(nodeId, {
             ...node.getState(),
             key: node.name,
             output: fullResponse,
+            history: completeMessages,
             toolCalls: Array.from(toolCallsMap.values()),
             toolCallResults: Array.from(toolResultsMap.values()),
-            status: 'pending',
+            status: errors.length > 0 ? 'error' : 'pending',
             sources: citations,
-            isStep: node.isStep
+            error: errors?.map((error) => JSON.stringify(error)).join('\n\n\n\n') || '',
+            isStep: node.isStep,
+            skipRendering: node.skipRendering
           });
 
           this.events.emit('event', {
@@ -332,12 +360,15 @@ export class AgentGraph {
             status: 'pending',
             content: fullResponse,
             nodeModel: model.modelId,
+            history: completeMessages,
             nodeReasoning: node.outputAsReasoning ? fullResponse : undefined,
             toolCalls: Array.from(toolCallsMap.values()),
             toolCallResults: Array.from(toolResultsMap.values()),
-            nodeStatus: 'pending',
+            nodeStatus: errors.length > 0 ? 'error' : 'pending',
             sources: citations,
-            isStep: node.isStep
+            error: errors?.map((error) => JSON.stringify(error)).join('\n\n\n\n') || '',
+            isStep: node.isStep,
+            skipRendering: node.skipRendering
           });
         }
 
@@ -354,6 +385,10 @@ export class AgentGraph {
 
       // Final updates & events
       const endTime = Date.now();
+
+      console.log('fullResponse', fullResponse);
+
+
       node.completeExecution(fullResponse);
       this.saveNodeState(nodeId, {
         ...node.getState(),
@@ -362,20 +397,26 @@ export class AgentGraph {
         endTime,
         duration: endTime - startTime,
         tokenUsage,
-        status: 'completed',
+        status: errors.length > 0 ? 'error' : 'completed',
+        history: completeMessages,
         sources: citations,
-        isStep: node.isStep
+        isStep: node.isStep,
+        skipRendering: node.skipRendering,
+        error: errors?.map((error) => JSON.stringify(error)).join('\n\n\n\n') || '',
       });
       this.events.emit('event', {
         nodeId,
         nodeKey: node.name,
-        status: 'completed',
+        status: errors.length > 0 ? 'error' : 'completed',
         content: fullResponse,
+        history: completeMessages,  
         nodeStatus: 'completed',
-        nodeInput: message,
+        nodeInput: `\n\n${message}\n\n${JSON.stringify(history)}`,
         nodeReasoning: node.outputAsReasoning ? fullResponse : undefined,
         sources: citations,
-        isStep: node.isStep
+        isStep: node.isStep,
+        skipRendering: node.skipRendering,
+        error: errors?.map((error) => JSON.stringify(error)).join('\n\n\n\n') || '',
       });
 
       // Add final assistant message + calls to context
@@ -464,7 +505,7 @@ export class AgentGraph {
       const config = edge.config as BaseEdgeConfig;
       if (config?.fallbackNode) {
         const fallbackInput = this.executionState.results.get(edge.from) || '';
-        await this.executeNode(config.fallbackNode, fallbackInput, []);
+        await this.executeNode(config.fallbackNode, fallbackInput, [], []);
       } else {
         throw error;
       }
@@ -514,7 +555,9 @@ export class AgentGraph {
   }
 
   extractCitations(response: string): string[] {
-    const citations = response.match(/<Source>(.*?)<\/Source>/g);
+    const citations = response.match(/<Source>(.*?)<\/Source>/g)?.map(match => 
+      match.replace(/<Source>|<\/Source>/g, '')
+    );
     return Array.from(new Set(citations || []));
   }
 }
