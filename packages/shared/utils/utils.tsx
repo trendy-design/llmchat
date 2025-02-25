@@ -1,4 +1,3 @@
-import { TChatMessage, TChatSession } from '@repo/shared/types';
 import moment from 'moment';
 import { customAlphabet } from 'nanoid';
 
@@ -31,9 +30,7 @@ export function removeExtraSpaces(str?: string) {
   return str?.trim().replace(/\n{3,}/g, '\n\n');
 }
 
-export const sortSessions = (sessions: TChatSession[], sortBy: 'createdAt' | 'updatedAt') => {
-  return sessions.sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
-};
+
 export const isValidUrl = (url: string) => {
   try {
     new URL(url);
@@ -43,9 +40,6 @@ export const isValidUrl = (url: string) => {
   }
 };
 
-export const sortMessages = (messages: Partial<TChatMessage>[], sortBy: 'createdAt') => {
-  return messages.sort((a, b) => moment(a[sortBy]).diff(moment(b[sortBy])));
-};
 
 export const convertFileToBase64 = (file: File, onChange: (base64: string) => void): void => {
   if (!file) {
