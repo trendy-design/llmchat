@@ -1,39 +1,38 @@
-import { useSessions } from '@/lib/context';
-import { TChatSession } from '@repo/shared/types';
+import { useChatStore } from '@/libs/store/chat.store';
 import { Input } from '@repo/ui';
 import { FC, useEffect, useRef } from 'react';
 
 export type THistoryEdit = {
   title?: string;
-  session: TChatSession;
+  threadId: string;
   isEditing: boolean;
   onTitleChange: (title: string) => void;
   setIsEditing: (isEditing: boolean) => void;
 };
 export const HistoryEdit: FC<THistoryEdit> = ({
   title,
-  session,
+  threadId,
   isEditing,
   setIsEditing,
   onTitleChange,
 }) => {
-  const { updateSessionMutation } = useSessions();
+  const updateThread = useChatStore((state) => state.updateThread);
   const historyInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputBlur = () => {
     setIsEditing(false);
-    updateSessionMutation.mutate({
-      sessionId: session.id,
-      session: { title: title?.trim() || session?.title || 'Untitled' },
+    updateThread({
+      id: threadId,
+      title: title?.trim() || 'Untitled',
     });
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setIsEditing(false);
-      updateSessionMutation.mutate({
-        sessionId: session.id,
-        session: { title: title?.trim() || session?.title || 'Untitled' },
+      updateThread({
+        id: threadId,
+        title: title?.trim() || 'Untitled',
       });
     }
   };

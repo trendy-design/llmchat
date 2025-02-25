@@ -2,7 +2,6 @@
 
 import { Type } from '@repo/ui';
 import * as Sentry from '@sentry/nextjs';
-// biome-ignore lint/suspicious/noShadowRestrictedNames: <explanation>
 import Error from 'next/error';
 import { useEffect } from 'react';
 
@@ -14,7 +13,6 @@ export default function GlobalError({ error }: { error: Error }) {
   }, [error]);
 
   return (
-    // biome-ignore lint/a11y/useHtmlLang: <explanation>
     <html>
       <body>
         <div className="bg-zinc-25 flex h-screen w-screen flex-col items-center justify-center">

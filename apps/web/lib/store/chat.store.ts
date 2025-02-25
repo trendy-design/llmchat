@@ -10,6 +10,7 @@ export type Thread = {
   id: string;
   title: string;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 export type Block = {
@@ -71,7 +72,7 @@ const loadInitialData = async () => {
   };
 
   
-  const initialThreads = threads.length ? threads : [{ id: "default", title: "New Thread", createdAt: new Date() }];
+  const initialThreads = threads.length ? threads : [{ id: "default", title: "New Thread", createdAt: new Date(), updatedAt: new Date() }];
   
   return { 
     threads: initialThreads, 
@@ -104,7 +105,7 @@ type Actions = {
   stopGeneration: () => void;
   setAbortController: (abortController: AbortController) => void;
   createThread: () => void;
-  updateThread: (thread: Thread) => Promise<void>;
+  updateThread: (thread: Pick<Thread, 'id' | 'title'>) => Promise<void>;
   createThreadItem: (threadItem: ThreadItem) => Promise<void>;
   updateThreadItem: (threadItem: Partial<ThreadItem>) => Promise<void>;
   switchThread: (threadId: string) => void;
@@ -175,6 +176,7 @@ export const useChatStore = create<State & Actions>((set, get) => ({
     const newThread = {
       id: nanoid(),
       title: "New Thread",
+      updatedAt: new Date(),
       createdAt: new Date(),
     };
     await db.threads.add(newThread);
@@ -191,9 +193,16 @@ export const useChatStore = create<State & Actions>((set, get) => ({
   },
 
   updateThread: async (thread) => {
-    debouncedThreadUpdate(thread);
+    const existingThread = get().threads.find(t => t.id === thread.id);
+    const updatedThread: Thread = {
+      ...existingThread,
+      ...thread,
+      updatedAt: new Date(),
+      createdAt: existingThread?.createdAt || new Date()
+    };
+    debouncedThreadUpdate(updatedThread);
     set((state) => ({
-      threads: state.threads.map((t) => (t.id === thread.id ? thread : t)),
+      threads: state.threads.map((t) => (t.id === thread.id ? { ...t, ...updatedThread } : t)),
     }));
   },
 

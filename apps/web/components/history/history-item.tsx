@@ -23,19 +23,11 @@ export const HistoryItem = ({
   isActive?: boolean;
 }) => {
   const pathname = usePathname();
-  // const {
-  //   updateSessionMutation,
-  //   removeSessionMutation,
-  //   refetchSessions,
-  //   createSession,
-  //   setActiveSessionId,
-  //   activeSessionId,
-  // } = useSessions();
+  const updateThread = useChatStore((state) => state.updateThread);
   const { push } = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(thread.title);
   const deleteThread = useChatStore((state) => state.deleteThread);
-  const [openDeleteConfirm, setOpenDeleteConfirm] = useState(false);
   const historyInputRef = useRef<HTMLInputElement>(null);
   const isChatPage = pathname.startsWith('/chat');
   const switchThread = useChatStore((state) => state.switchThread);
@@ -58,12 +50,10 @@ export const HistoryItem = ({
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setIsEditing(false);
-      // updateSessionMutation.mutate({
-      //   sessionId: session.id,
-      //   session: {
-      //     title: title?.trim() || session?.title || "Untitled",
-      //   },
-      // });
+      updateThread({
+        id: thread.id,
+        title: title?.trim() || 'Untitled',
+      });
     }
   };
 

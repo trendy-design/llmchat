@@ -1,5 +1,4 @@
 import { RootLayout } from '@/components/layout';
-import { WelcomeMessage } from '@/components/welcome-message';
 import { ReactQueryProvider } from '@/libs/context';
 import { AuthProvider } from '@/libs/context/auth';
 import { RootProvider } from '@/libs/context/root';
@@ -97,7 +96,6 @@ export default function ParentLayout({
                   <RootLayout>{children}</RootLayout>
                 </AuthProvider>
               </ReactQueryProvider>
-              <WelcomeMessage />
             </TooltipProvider>
           </ThemeProvider>
         </RootProvider>

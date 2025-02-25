@@ -1,7 +1,6 @@
 import { useAuth } from '@/lib/context';
 import { useRootContext } from '@/libs/context/root';
 import { Thread, useChatStore } from '@/libs/store/chat.store';
-import { configs } from '@repo/shared/config';
 import { Button, Flex, Kbd, Tooltip, Type } from '@repo/ui';
 import {
   IconBrandGithub,
@@ -44,7 +43,6 @@ export const Sidebar = () => {
     previousMonths: [],
   };
 
-  // biome-ignore lint/complexity/noForEach: <explanation>
   sortThreads(threads, 'createdAt')?.forEach((thread) => {
     const createdAt = moment(thread.createdAt);
     const now = moment();
@@ -217,7 +215,7 @@ export const Sidebar = () => {
               </Button>
             </Flex>
             <Type size="xs" weight="medium" textColor="secondary" className="px-1">
-              v {configs.version}
+              v1
             </Type>
           </Flex>
         </Flex>

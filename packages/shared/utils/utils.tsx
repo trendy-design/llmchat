@@ -67,7 +67,6 @@ export const convertFileToBase64 = (file: File, onChange: (base64: string) => vo
   reader.readAsDataURL(file);
 };
 
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 export function generateAndDownloadJson(data: any, filename: string) {
   const json = JSON.stringify(data);
   const blob = new Blob([json], { type: 'application/json' });

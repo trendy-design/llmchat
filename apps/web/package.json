@@ -6,8 +6,6 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "biome lint .",
-    "format": "biome format . --write",
     "prepare": "husky",
     "generate": "bunx drizzle-kit generate"
   },
@@ -144,7 +142,6 @@
     "typescript": "^5",
     "yarn": "^1.22.22",
     "@repo/typescript-config": "*",
-    "@repo/tailwind-config": "*",
-    "@repo/biome-config": "*"
+    "@repo/tailwind-config": "*"
   }
 }
