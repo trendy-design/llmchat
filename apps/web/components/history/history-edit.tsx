@@ -16,7 +16,7 @@ export const HistoryEdit: FC<THistoryEdit> = ({
   setIsEditing,
   onTitleChange,
 }) => {
-  const updateThread = useChatStore((state) => state.updateThread);
+  const updateThread = useChatStore(state => state.updateThread);
   const historyInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputBlur = () => {
@@ -49,7 +49,7 @@ export const HistoryEdit: FC<THistoryEdit> = ({
       className="h-6 text-sm"
       ref={historyInputRef}
       value={title}
-      onChange={(e) => onTitleChange(e.target.value)}
+      onChange={e => onTitleChange(e.target.value)}
       onKeyDown={handleInputKeyDown}
       onBlur={handleInputBlur}
     />

@@ -80,19 +80,19 @@ export const SearchAndReadingResults = ({ toolCalls, toolCallResults }: SearchAn
 
         return (
                 <Flex direction="col" gap="md" className="w-full">
-                        <p className="text-xs text-zinc-500">Search Queries</p>
+                        <p className="text-xs text-muted-foreground">Search Queries</p>
                         <div className='flex flex-row gap-2 flex-wrap'>
                                 {/* {JSON.stringify(searchToolResults)} */}
                                 {searchToolResults?.map((result, index) => (
                                         (result.args.queries as string[] ?? []).map((query, index) =>
-                                                <Badge key={index} className="rounded-md px-2 py-1 text-xs bg-zinc-50 font-normal gap-1" variant="default">
+                                                <Badge key={index} className="rounded-md px-2 py-1 text-xs font-normal gap-1" variant="default">
                                                         <IconSearch size={12} className="opacity-50" />
                                                         {query}</Badge>)
                                 ))}
                         </div>
 
                         {searchResults?.length > 0 ? <>
-                                <p className="text-xs text-zinc-500">READING SOURCES</p>
+                                <p className="text-xs text-muted-foreground">READING SOURCES</p>
                                 <SearchResults searchResults={searchResults} />
                         </> : null}
                 </Flex>

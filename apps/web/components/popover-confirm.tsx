@@ -34,7 +34,7 @@ export const ConfirmPopover: FC<ConfirmPopoverProps> = ({
         <div className="flex flex-row gap-1">
           <Button
             variant={confirmVariant}
-            onClick={(e) => {
+            onClick={e => {
               onConfirm();
               e.stopPropagation();
             }}
@@ -43,7 +43,7 @@ export const ConfirmPopover: FC<ConfirmPopoverProps> = ({
           </Button>
           <Button
             variant={cancelVariant}
-            onClick={(e) => {
+            onClick={e => {
               onOpenChange(false);
               e.stopPropagation();
             }}

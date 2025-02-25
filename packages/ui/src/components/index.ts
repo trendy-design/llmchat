@@ -1,16 +1,11 @@
 export * from './accordion';
 export * from './alert';
 export * from './alert-dialog';
-export * from './audio-visualizer';
 export * from './avatar';
 export * from './badge';
 export * from './beta-tag';
-export * from './bot-avatar';
 export * from './button';
 export * from './carousel';
-export * from './chart';
-export * from './codeblock';
-export * from './coming-soon';
 export * from './command';
 export * from './dialog';
 export * from './dropdown-menu';
@@ -37,3 +32,4 @@ export * from './toaster';
 export * from './tooltip';
 export * from './use-confirm-popover';
 export * from './use-toast';
+

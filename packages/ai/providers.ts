@@ -40,7 +40,7 @@ export const getProviderInstance = (provider: ProviderEnumType) => {
 };
 
 export const getLanguageModel = (m: ModelEnum) => {
-  const model = models.find((model) => model.id === m);
+  const model = models.find(model => model.id === m);
   const instance = getProviderInstance(model?.provider as ProviderEnumType);
   return instance(model?.id || 'gpt-4o-mini') as LanguageModelV1;
 };

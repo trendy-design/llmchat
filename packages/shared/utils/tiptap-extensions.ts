@@ -4,7 +4,7 @@ export const ShiftEnterToLineBreak = Extension.create({
   name: 'shiftEnterToLineBreak',
   addKeyboardShortcuts() {
     return {
-      'Shift-Enter': (_) => {
+      'Shift-Enter': _ => {
         return _.editor.commands.enter();
       },
     };

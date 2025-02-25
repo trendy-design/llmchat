@@ -36,7 +36,7 @@ export const PopOverConfirmProvider = ({
           <Button
             variant={confimBtnVariant}
             size="sm"
-            onClick={(e) => {
+            onClick={e => {
               onConfirm(() => setOpenConfirm(false));
               e.stopPropagation();
             }}
@@ -48,7 +48,7 @@ export const PopOverConfirmProvider = ({
           <Button
             variant="secondary"
             size="sm"
-            onClick={(e) => {
+            onClick={e => {
               onCancel?.();
               setOpenConfirm(false);
               e.stopPropagation();

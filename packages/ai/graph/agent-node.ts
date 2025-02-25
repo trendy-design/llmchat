@@ -24,7 +24,7 @@ export class GraphNode {
     toolCallErrors: [],
     startTime: 0,
     metadata: {},
-    skipRendering: false
+    skipRendering: false,
   };
 
   constructor({
@@ -72,7 +72,7 @@ export class GraphNode {
     // Initialize state with the node name
     this.state = {
       ...this.state,
-      key: name
+      key: name,
     };
   }
 
@@ -99,7 +99,7 @@ export class GraphNode {
       status: 'completed',
       endTime: Date.now(),
       duration: Date.now() - (this.state.startTime || 0),
-      output:  response,
+      output: response,
     };
   }
 
@@ -112,7 +112,6 @@ export class GraphNode {
       error,
     };
   }
-
 
   addToolCall(toolCall: ToolCallType): void {
     this.state.toolCalls = [...(this.state.toolCalls || []), toolCall];

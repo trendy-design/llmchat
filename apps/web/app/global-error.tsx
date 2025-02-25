@@ -15,7 +15,7 @@ export default function GlobalError({ error }: { error: Error }) {
   return (
     <html>
       <body>
-        <div className="bg-zinc-25 flex h-screen w-screen flex-col items-center justify-center">
+        <div className="bg-stone-50 flex h-screen w-screen flex-col items-center justify-center">
           <div className="flex w-[300px] flex-col gap-2">
             <Type size="base">Oops! Something went wrong.</Type>
             <Type size="sm" textColor="secondary">

@@ -1,6 +1,7 @@
 'use client';
 import { useRootContext } from '@/libs/context/root';
-import { cn, sortSessions } from '@repo/shared/utils';
+import { useChatStore } from '@/libs/store/chat.store';
+import { cn } from '@repo/shared/utils';
 import {
   CommandDialog,
   CommandEmpty,
@@ -17,13 +18,13 @@ import { useEffect } from 'react';
 
 export const CommandSearch = () => {
   const { isCommandSearchOpen, setIsCommandSearchOpen } = useRootContext();
-  // const { sessions, createSession, refetchSessions, setActiveSessionId } =
-  //   useSessions();
+  const threads = useChatStore((state) => state.threads);
+  const switchThread = useChatStore((state) => state.switchThread);
+
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     if (isCommandSearchOpen) {
-      // refetchSessions?.();
     }
   }, [isCommandSearchOpen]);
 
@@ -67,7 +68,7 @@ export const CommandSearch = () => {
       <CommandList className="pt-1.5">
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
-          {actions.map((action) => (
+          {actions.map(action => (
             <CommandItem
               key={action.name}
               className="gap-2"
@@ -82,20 +83,20 @@ export const CommandSearch = () => {
           ))}
         </CommandGroup>
         <CommandGroup heading="Recent Conversations">
-          {sortSessions([], 'updatedAt')?.map((session) => {
+          {threads.map(thread => {
             return (
               <CommandItem
-                key={session.id}
-                value={`${session.id}/${session.title}`}
+                key={thread.id}
+                value={`${thread.id}/${thread.title}`}
                 className={cn('w-full gap-2')}
-                onSelect={(value) => {
-                  // setActiveSessionId(session.id);
+                onSelect={value => {
+                  switchThread(thread.id);
                   onClose();
                 }}
               >
-                <span className="w-full truncate">{session.title}</span>
-                <span className="flex-shrink-0 pl-4 text-xs text-zinc-400 md:text-xs dark:text-zinc-700">
-                  {moment(session.createdAt).fromNow(true)}
+                <span className="w-full truncate">{thread.title}</span>
+                <span className="flex-shrink-0 pl-4 text-xs text-muted-foreground">
+                  {moment(thread.createdAt).fromNow(true)}
                 </span>
               </CommandItem>
             );

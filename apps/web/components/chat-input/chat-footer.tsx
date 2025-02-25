@@ -9,7 +9,7 @@ export const ChatFooter = () => {
         <Link
           href="https://trendy.design"
           target="_blank"
-          className="inline-block text-teal-600 underline decoration-zinc-500/20 underline-offset-2"
+          className="inline-block text-brand underline decoration-brand underline-offset-2"
         >
           trendy.design
         </Link>

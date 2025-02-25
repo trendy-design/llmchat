@@ -27,7 +27,7 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-zinc-500/30 dark:bg-zinc-900/70',
+      'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-background/30 dark:bg-background/70',
       className
     )}
     {...props}
@@ -46,7 +46,7 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed left-[50%] top-[10%] z-50 grid w-[96dvw] translate-x-[-50%] translate-y-[-10%] gap-4 rounded-xl bg-white p-6 shadow-lg duration-200 md:top-[25%] md:w-full md:max-w-[600px] md:translate-y-[-25%] dark:bg-zinc-800',
+        'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] fixed left-[50%] top-[10%] z-50 grid w-[96dvw] translate-x-[-50%] translate-y-[-10%] gap-4 rounded-xl bg-background p-6 shadow-lg duration-200 md:top-[25%] md:w-full md:max-w-[600px] md:translate-y-[-25%] dark:bg-secondary',
         className
       )}
       {...props}
@@ -55,7 +55,7 @@ const DialogContent = React.forwardRef<
         <DialogTitle>{ariaTitle}</DialogTitle>
       </VisuallyHidden.Root>
       {children}
-      <DialogPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full opacity-70 transition-opacity hover:bg-zinc-500/20 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2">
+      <DialogPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute right-3 top-3 flex h-6 w-6 items-center justify-center rounded-full opacity-70 transition-opacity hover:bg-muted hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2">
         <X size={16} strokeWidth={2.5} />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
@@ -111,5 +111,6 @@ export {
   DialogOverlay,
   DialogPortal,
   DialogTitle,
-  DialogTrigger,
+  DialogTrigger
 };
+

@@ -18,17 +18,17 @@ export type TChatActions = {
 };
 
 export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) => {
-  const isGenerating = useChatStore((state) => state.isGenerating);
-  const editor = useChatStore((state) => state.editor);
-  const setModel = useChatStore((state) => state.setModel);
-  const model = useChatStore((state) => state.model);
-  const stopGeneration = useChatStore((state) => state.stopGeneration);
+  const isGenerating = useChatStore(state => state.isGenerating);
+  const editor = useChatStore(state => state.editor);
+  const setModel = useChatStore(state => state.setModel);
+  const model = useChatStore(state => state.model);
+  const stopGeneration = useChatStore(state => state.stopGeneration);
 
   const hasTextInput = !!editor?.getText();
 
   return (
     <Flex
-      className="w-full border-t border-neutral-100 bg-neutral-50 px-1 pb-1 pt-1.5 md:px-2 md:pb-2"
+      className="w-full px-1 pb-1 pt-1.5 md:px-2 md:pb-2"
       items="center"
       justify="between"
     >
@@ -40,7 +40,7 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" side="bottom">
-            {models.map((model) => (
+            {models.map(model => (
               <DropdownMenuItem key={model.id} onClick={() => setModel(model)}>
                 {model.name}
               </DropdownMenuItem>

@@ -30,7 +30,6 @@ export function removeExtraSpaces(str?: string) {
   return str?.trim().replace(/\n{3,}/g, '\n\n');
 }
 
-
 export const isValidUrl = (url: string) => {
   try {
     new URL(url);
@@ -39,7 +38,6 @@ export const isValidUrl = (url: string) => {
     return false;
   }
 };
-
 
 export const convertFileToBase64 = (file: File, onChange: (base64: string) => void): void => {
   if (!file) {
@@ -87,7 +85,7 @@ export async function imageUrlToBase64(imageUrl: string): Promise<string> {
       }`;
       resolve(base64Url);
     };
-    reader.onerror = (error) => reject(error);
+    reader.onerror = error => reject(error);
     reader.readAsDataURL(blob);
   });
 }

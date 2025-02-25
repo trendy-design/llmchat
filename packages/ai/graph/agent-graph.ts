@@ -18,7 +18,7 @@ import type {
   LLMMessageType,
   NodeState,
   ToolCallResultType,
-  ToolCallType
+  ToolCallType,
 } from './types';
 
 type MessageResponse = { nodeId: string; response: string };
@@ -58,16 +58,16 @@ export class AgentGraph {
     this.executionState = {
       pending: new Set(),
       completed: new Set(),
-      results: new Map()
+      results: new Map(),
     };
     this.graphState = {
       nodes: new Map(),
       currentExecution: {
         startTime: 0,
         nodeStates: new Map(),
-        executionPath: []
+        executionPath: [],
       },
-      executionHistory: []
+      executionHistory: [],
     };
     this.edgeHandlerStrategies = createEdgeHandlerStrategies(this);
   }
@@ -131,13 +131,13 @@ export class AgentGraph {
     this.graphState.currentExecution = {
       startTime: Date.now(),
       nodeStates: new Map(),
-      executionPath: []
+      executionPath: [],
     };
     // Clear any previous states
     this.executionState = {
       pending: new Set(),
       completed: new Set(),
-      results: new Map()
+      results: new Map(),
     };
 
     this.contextManager.setContext('query', message);
@@ -145,7 +145,7 @@ export class AgentGraph {
 
     // Start the actual node execution
     const responses: MessageResponse[] = [];
-    await this.executeNode(startNodeId, message, [],responses);
+    await this.executeNode(startNodeId, message, [], responses);
 
     // Finalize and record execution
     const { startTime, executionPath, nodeStates } = this.graphState.currentExecution;
@@ -157,13 +157,18 @@ export class AgentGraph {
       nodeStates: new Map(nodeStates),
       executionPath: [...executionPath],
       input: message,
-      finalOutput: responses[responses.length - 1]?.response
+      finalOutput: responses[responses.length - 1]?.response,
     });
 
     return responses;
   }
 
-  public async executeNode(nodeKey: string, message: string, history: LLMMessageType[], responses: MessageResponse[]): Promise<void> {
+  public async executeNode(
+    nodeKey: string,
+    message: string,
+    history: LLMMessageType[],
+    responses: MessageResponse[]
+  ): Promise<void> {
     // Detect loops
     if (this.executionState.completed.has(nodeKey)) return;
     if (this.executionState.pending.has(nodeKey)) {
@@ -192,8 +197,15 @@ export class AgentGraph {
       // }
 
       // Main message processing
-      const fullInput =  message;
-      const response = await this.processAgentMessage({nodeId, nodeKey: node.name, node, message: fullInput, type: 'text', history});
+      const fullInput = message;
+      const response = await this.processAgentMessage({
+        nodeId,
+        nodeKey: node.name,
+        node,
+        message: fullInput,
+        type: 'text',
+        history,
+      });
       responses.push({ nodeId, response });
       this.executionState.results.set(nodeKey, response);
 
@@ -237,14 +249,14 @@ export class AgentGraph {
     node,
     message,
     type,
-    history
+    history,
   }: {
-    nodeId: string,
-    nodeKey: string,
-    node: GraphNode,
-    message: string,
-    type: 'text' | 'object',
-    history?: LLMMessageType[]
+    nodeId: string;
+    nodeKey: string;
+    node: GraphNode;
+    message: string;
+    type: 'text' | 'object';
+    history?: LLMMessageType[];
   }): Promise<string> {
     const startTime = Date.now();
     this.saveNodeState(nodeId, {
@@ -261,7 +273,7 @@ export class AgentGraph {
       sources: [],
       metadata: {},
       isStep: node.isStep,
-      skipRendering: node.skipRendering
+      skipRendering: node.skipRendering,
     });
 
     try {
@@ -272,7 +284,7 @@ export class AgentGraph {
         status: 'pending',
         nodeInput: `\n\n${message}\n\n${JSON.stringify(history)}`,
         isStep: node.isStep,
-        skipRendering: node.skipRendering
+        skipRendering: node.skipRendering,
       });
 
       // Prepare messages for LLM
@@ -283,7 +295,7 @@ export class AgentGraph {
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
-        timeZoneName: 'short'
+        timeZoneName: 'short',
       })}.\n\n${node.systemPrompt}\n\n`;
 
       console.log(systemPrompt);
@@ -300,33 +312,29 @@ export class AgentGraph {
       const completeMessages = [
         { role: 'system' as const, content: systemPrompt },
         ...(history ?? []),
-        { role: 'user' as const, content: message }
+        { role: 'user' as const, content: message },
       ];
-
 
       const toolCallsMap = new Map<string, ToolCallType>();
       const toolResultsMap = new Map<string, ToolCallResultType>();
       const errors: unknown[] = [];
 
       if (type === 'text') {
-        const { fullStream, usage, } = streamText({
+        const { fullStream, usage } = streamText({
           model,
           messages: completeMessages,
           tools,
           toolCallStreaming: true,
           maxSteps: node.toolSteps,
-          maxTokens: node.maxTokens
+          maxTokens: node.maxTokens,
         });
-
-        
-
 
         for await (const chunk of fullStream) {
           console.log('chunk', chunk);
           switch (chunk.type) {
             case 'text-delta':
               fullResponse += chunk.textDelta;
-             citations = this.extractCitations(fullResponse);
+              citations = this.extractCitations(fullResponse);
               break;
             case 'tool-call':
               toolCallsMap.set(chunk.toolCallId, chunk);
@@ -335,7 +343,7 @@ export class AgentGraph {
               const toolResult = chunk as any;
               toolResultsMap.set(toolResult.toolCallId, toolResult);
               break;
-            case "error" as any:
+            case 'error' as any:
               errors.push(chunk);
               break;
           }
@@ -349,9 +357,9 @@ export class AgentGraph {
             toolCallResults: Array.from(toolResultsMap.values()),
             status: errors.length > 0 ? 'error' : 'pending',
             sources: citations,
-            error: errors?.map((error) => JSON.stringify(error)).join('\n\n\n\n') || '',
+            error: errors?.map(error => JSON.stringify(error)).join('\n\n\n\n') || '',
             isStep: node.isStep,
-            skipRendering: node.skipRendering
+            skipRendering: node.skipRendering,
           });
 
           this.events.emit('event', {
@@ -366,9 +374,9 @@ export class AgentGraph {
             toolCallResults: Array.from(toolResultsMap.values()),
             nodeStatus: errors.length > 0 ? 'error' : 'pending',
             sources: citations,
-            error: errors?.map((error) => JSON.stringify(error)).join('\n\n\n\n') || '',
+            error: errors?.map(error => JSON.stringify(error)).join('\n\n\n\n') || '',
             isStep: node.isStep,
-            skipRendering: node.skipRendering
+            skipRendering: node.skipRendering,
           });
         }
 
@@ -378,7 +386,7 @@ export class AgentGraph {
         const { object } = await generateObject({
           model,
           schema: z.object({ response: z.string() }),
-          prompt: message
+          prompt: message,
         });
         fullResponse = object.response;
       }
@@ -387,7 +395,6 @@ export class AgentGraph {
       const endTime = Date.now();
 
       console.log('fullResponse', fullResponse);
-
 
       node.completeExecution(fullResponse);
       this.saveNodeState(nodeId, {
@@ -402,21 +409,21 @@ export class AgentGraph {
         sources: citations,
         isStep: node.isStep,
         skipRendering: node.skipRendering,
-        error: errors?.map((error) => JSON.stringify(error)).join('\n\n\n\n') || '',
+        error: errors?.map(error => JSON.stringify(error)).join('\n\n\n\n') || '',
       });
       this.events.emit('event', {
         nodeId,
         nodeKey: node.name,
         status: errors.length > 0 ? 'error' : 'completed',
         content: fullResponse,
-        history: completeMessages,  
+        history: completeMessages,
         nodeStatus: 'completed',
         nodeInput: `\n\n${message}\n\n${JSON.stringify(history)}`,
         nodeReasoning: node.outputAsReasoning ? fullResponse : undefined,
         sources: citations,
         isStep: node.isStep,
         skipRendering: node.skipRendering,
-        error: errors?.map((error) => JSON.stringify(error)).join('\n\n\n\n') || '',
+        error: errors?.map(error => JSON.stringify(error)).join('\n\n\n\n') || '',
       });
 
       // Add final assistant message + calls to context
@@ -433,7 +440,7 @@ export class AgentGraph {
         endTime,
         duration: endTime - startTime,
         error: error instanceof Error ? error.message : String(error),
-        isStep: node.isStep
+        isStep: node.isStep,
       });
       this.events.emit('event', {
         nodeId,
@@ -441,7 +448,7 @@ export class AgentGraph {
         nodeStatus: 'error',
         status: 'error',
         error: error instanceof Error ? error.message : String(error),
-        isStep: node.isStep
+        isStep: node.isStep,
       });
       throw error;
     }
@@ -453,7 +460,7 @@ export class AgentGraph {
     const { object } = await generateObject({
       model: this.defaultProvider,
       schema: z.object({ reasoning: z.string() }),
-      prompt
+      prompt,
     });
     return object.reasoning;
   }
@@ -482,7 +489,9 @@ export class AgentGraph {
     this.graphState.currentExecution.nodeStates.set(nodeId, merged);
   }
 
-  protected groupEdgesByPattern<T extends GraphEdgePatternType>(edges: GraphEdgeType<T>[]): Map<T, GraphEdgeType<T>[]> {
+  protected groupEdgesByPattern<T extends GraphEdgePatternType>(
+    edges: GraphEdgeType<T>[]
+  ): Map<T, GraphEdgeType<T>[]> {
     return edges.reduce((map, edge) => {
       const pattern = edge.pattern as T;
       if (!map.has(pattern)) map.set(pattern, []);
@@ -521,7 +530,7 @@ export class AgentGraph {
       const { object } = await generateObject({
         model: this.defaultProvider,
         schema: z.object({ stop: z.boolean() }),
-        prompt: stopCondition
+        prompt: stopCondition,
       });
       return !!object.stop;
     }
@@ -555,9 +564,9 @@ export class AgentGraph {
   }
 
   extractCitations(response: string): string[] {
-    const citations = response.match(/<Source>(.*?)<\/Source>/g)?.map(match => 
-      match.replace(/<Source>|<\/Source>/g, '')
-    );
+    const citations = response
+      .match(/<Source>(.*?)<\/Source>/g)
+      ?.map(match => match.replace(/<Source>|<\/Source>/g, ''));
     return Array.from(new Set(citations || []));
   }
 }

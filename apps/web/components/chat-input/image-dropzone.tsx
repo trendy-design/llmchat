@@ -12,12 +12,12 @@ export const ImageDropzone: FC<TImageDropzone> = ({ dropzonProps }) => {
       <input {...dropzonProps.getInputProps()} />
       {dropzonProps.isDragActive && (
         <Flex
-          className="absolute inset-0 z-10 bg-white/50 backdrop-blur-sm dark:bg-black/50"
+          className="absolute inset-0 z-10 bg-background/50 backdrop-blur-sm"
           items="center"
           justify="center"
           gap="sm"
         >
-          <ImagePlus size={16} strokeWidth={2} className="text-zinc-500" />
+          <ImagePlus size={16} strokeWidth={2} className="text-muted-foreground" />
           <Type size="sm" textColor="secondary">
             Drag and drop an image here, or click to select an image
           </Type>

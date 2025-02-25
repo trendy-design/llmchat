@@ -1,5 +1,5 @@
-import { cn } from '../lib/utils';
 import { VariantProps, cva } from 'class-variance-authority';
+import { cn } from '../lib/utils';
 
 import React from 'react';
 
@@ -14,9 +14,9 @@ const typeVariants = cva('text flex !my-0', {
       xl: 'text-lg md:text-xl',
     },
     textColor: {
-      primary: 'text-zinc-800 dark:text-zinc-50',
-      secondary: 'text-zinc-600 dark:text-zinc-200',
-      tertiary: 'text-zinc-500',
+      primary: 'text-foreground',
+      secondary: 'text-muted-foreground',
+      tertiary: 'text-tertiary-foreground',
       white: 'text-white',
     },
     weight: {

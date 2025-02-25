@@ -9,6 +9,6 @@ const presetValues = {
 export const injectPresetValues = (prompt: string) => {
   return prompt.replace(
     /{{.*?}}/g,
-    (match) => presetValues?.[match as keyof typeof presetValues] || match
+    match => presetValues?.[match as keyof typeof presetValues] || match
   );
 };

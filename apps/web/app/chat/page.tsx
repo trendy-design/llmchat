@@ -7,10 +7,9 @@ import { useEffect } from 'react';
 import { useStickToBottom } from 'use-stick-to-bottom';
 
 const ChatSessionPage = () => {
-  const currentThreadId = useChatStore((state) => state.currentThreadId);
-  const switchThread = useChatStore((state) => state.switchThread);
+  const currentThreadId = useChatStore(state => state.currentThreadId);
+  const switchThread = useChatStore(state => state.switchThread);
   const { scrollRef, contentRef } = useStickToBottom();
-
 
   useEffect(() => {
     if (currentThreadId) {
@@ -20,7 +19,7 @@ const ChatSessionPage = () => {
 
   return (
     <Flex className="mx-auto h-full w-full max-w-2xl items-center" direction="col">
-      <div className="w-full overflow-x-hidden no-scrollbar flex-1 overflow-y-auto" ref={scrollRef}>
+      <div className="no-scrollbar w-full flex-1 overflow-y-auto overflow-x-hidden" ref={scrollRef}>
         <div ref={contentRef}>
           <Thread />
         </div>

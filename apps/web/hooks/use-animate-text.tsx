@@ -26,7 +26,7 @@ export function useAnimatedText(text: string, delimiter = ' ', shouldAnimate = t
       animatedCursor.jump(0);
     }
 
-    const controls = animate(animatedCursor, (text ?? "").split(delimiter).length, {
+    const controls = animate(animatedCursor, (text ?? '').split(delimiter).length, {
       duration: 2,
       ease: 'easeOut',
       onUpdate(latest) {
@@ -42,7 +42,7 @@ export function useAnimatedText(text: string, delimiter = ' ', shouldAnimate = t
   }, [animatedCursor, isSameText, text, shouldAnimate]);
 
   return {
-    text: shouldAnimate ? (text ?? "").split(delimiter).slice(0, cursor).join(delimiter) : text,
+    text: shouldAnimate ? (text ?? '').split(delimiter).slice(0, cursor).join(delimiter) : text,
     isDone,
   };
 }

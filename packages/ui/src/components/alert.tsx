@@ -3,17 +3,14 @@ import * as React from 'react';
 import { cn } from '../lib/utils';
 
 const alertVariants = cva(
-  'relative w-full rounded-lg px-3 py-3 text-sm md:text-base [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-3 [&>svg]:top-3 [&>svg]:text-zinc-950 [&>svg~*]:pl-6 dark:border-zinc-800 dark:[&>svg]:text-zinc-50',
+  'relative w-full rounded-lg px-3 py-3 text-sm md:text-base [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-3 [&>svg]:top-3 [&>svg]:text-foreground [&>svg~*]:pl-6 dark:border-border dark:[&>svg]:text-foreground',
   {
     variants: {
       variant: {
-        default: 'bg-zinc-50/20 text-zinc-500 dark:bg-black/20 dark:text-zinc-200',
-        success:
-          'bg-green-50 text-green-950 dark:bg-green-500/10 dark:text-green-500 [&>svg]:text-green-500 dark:[&>svg]:text-green-500',
-        warning:
-          'bg-yellow-500/10 text-yellow-950 dark:bg-yellow-300/10 dark:text-yellow-100 [&>svg]:text-yellow-500 dark:[&>svg]:text-yellow-100',
-        destructive:
-          'bg-transparent text-zinc-400  [&>svg]:text-red-300 dark:text-red-300  dark:[&>svg]:text-red-300',
+        default: 'bg-secondary text-secondary-foreground',
+        success: 'bg-brand/10 text-brand [&>svg]:text-brand ',
+        warning: 'bg-destructive/10 text-destructive [&>svg]:text-destructive',
+        destructive: 'bg-transparent text-muted-foreground [&>svg]:text-destructive',
       },
     },
     defaultVariants: {

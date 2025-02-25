@@ -3,9 +3,9 @@ import {
   AgentEventPayload,
   AgentGraphEvents,
   completionRequestSchema,
-  CompletionRequestType
-} from "@repo/ai";
-import { workflow1 } from "@repo/workflows";
+  CompletionRequestType,
+} from '@repo/ai';
+import { workflow1 } from '@repo/workflows';
 import type { NextRequest } from 'next/server';
 
 export type AgentEventResponse = {
@@ -69,7 +69,7 @@ async function executeStream(
 
   const graph = await workflow1(events, contextManager);
 
-  events.on('event', (event) => {
+  events.on('event', event => {
     sendMessage(controller, encoder, {
       threadId: data.threadId,
       threadItemId: data.threadItemId,
@@ -82,7 +82,7 @@ async function executeStream(
     }
   });
 
-  await graph.execute("initiator", data.prompt);
+  await graph.execute('initiator', data.prompt);
   controller.close();
 }
 

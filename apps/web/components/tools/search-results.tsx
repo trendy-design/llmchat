@@ -28,8 +28,9 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
     }
   };
 
-  const uniqueResults = searchResults.filter((result, index, self) =>
-    index === self.findIndex((t) => new URL(t.link).hostname === new URL(result.link).hostname)
+  const uniqueResults = searchResults.filter(
+    (result, index, self) =>
+      index === self.findIndex(t => new URL(t.link).hostname === new URL(result.link).hostname)
   );
 
   const visibleResults = uniqueResults.slice(0, 4);
@@ -38,10 +39,10 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
   return (
     <Flex direction="col" gap="md" className="w-full">
       {Array.isArray(searchResults) && (
-        <Flex gap="xs" className="flex-wrap mb-4 w-full overflow-x-hidden" items="stretch">
-          {visibleResults.map((result) => (
+        <Flex gap="xs" className="mb-4 w-full flex-wrap overflow-x-hidden" items="stretch">
+          {visibleResults.map(result => (
             <Flex
-              className="max-w-[300px] shrink-0 cursor-pointer rounded-md bg-zinc-500/10 p-1 px-2 hover:opacity-80"
+              className="max-w-[300px] shrink-0 cursor-pointer rounded-md bg-secondary p-1 px-2 hover:opacity-80"
               direction="col"
               key={result.link}
               justify="between"
@@ -60,12 +61,14 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
           ))}
           {remainingCount > 0 && (
             <Flex
-              className="max-w-[300px] shrink-0 cursor-pointer rounded-md bg-zinc-500/10 p-1 px-2"
+              className="max-w-[300px] shrink-0 cursor-pointer rounded-md bg-secondary p-1 px-2"
               direction="col"
               justify="center"
               items="center"
             >
-              <Type size="xs" textColor="secondary">+{remainingCount}</Type>
+              <Type size="xs" textColor="secondary">
+                +{remainingCount}
+              </Type>
             </Flex>
           )}
         </Flex>
@@ -73,4 +76,3 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
     </Flex>
   );
 };
-

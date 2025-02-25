@@ -9,7 +9,7 @@ export type TChatEditor = {
 };
 
 export const ChatEditor: FC<TChatEditor> = ({ sendMessage, editor }) => {
-  const isGenerating = useChatStore((state) => state.isGenerating);
+  const isGenerating = useChatStore(state => state.isGenerating);
 
   if (!editor) return null;
 

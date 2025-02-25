@@ -1,18 +1,11 @@
-const sharedConfig = require('@repo/tailwind-config');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  presets: [sharedConfig],
-  content: [
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
-    './components/**/*.{js,ts,jsx,tsx,mdx}',
-    '../../apps/web/components/**/*.{js,ts,jsx,tsx,mdx}',
-    '../../apps/web/lib/**/*.{js,ts,jsx,tsx,mdx}',
-  ],
-  theme: {
+
     extend: {
+    
       typography: ({ theme }) => ({
-        prosetheme: {
+        custom: {
           css: {
             '--tw-prose-body': 'hsl(var(--foreground))',
             '--tw-prose-headings': 'hsl(var(--foreground))',
@@ -52,5 +45,5 @@ module.exports = {
         },
       }),
     },
-  },
-};
+  }
+

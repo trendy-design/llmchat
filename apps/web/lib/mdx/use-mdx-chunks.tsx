@@ -6,12 +6,12 @@ import { useState } from 'react';
 //
 export type MdxChunk =
   | {
-      mdx: string;               // Raw text for this node (start -> end lines)
-      mdxTag: string;            // e.g., 'MyComponent', 'Source', 'img', etc.
+      mdx: string; // Raw text for this node (start -> end lines)
+      mdxTag: string; // e.g., 'MyComponent', 'Source', 'img', etc.
       mdxProps: Record<string, any>;
-      children: MdxChunk[];      // Nested chunks (usually inline or sub-items)
+      children: MdxChunk[]; // Nested chunks (usually inline or sub-items)
     }
-  | string;                      // For simple blocks like paragraphs, headings, code, etc.
+  | string; // For simple blocks like paragraphs, headings, code, etc.
 
 //
 // If you specifically want to track <Source> data, define a more precise type
@@ -20,7 +20,7 @@ export type MdxChunk =
 type SourceInfo = {
   mdxTag: string;
   mdxProps: Record<string, any>;
-  content: string;              // Possibly the chunk text or relevant URL, etc.
+  content: string; // Possibly the chunk text or relevant URL, etc.
 };
 
 /**
@@ -58,26 +58,22 @@ export const useMdxChunker = () => {
    * We consider these node types as "inline" elements to be collected
    * within a parent block. Typically text, inline code, or inline JSX.
    */
-  const inlineNodeTypes = new Set([
-    'text',
-    'inlineCode',
-    'mdxJsxTextElement',
-  ]);
+  const inlineNodeTypes = new Set(['text', 'inlineCode', 'mdxJsxTextElement']);
 
   /**
    * Extract the substring from the original MDX text for the given node's range.
    */
-  const getNodeText = (
-    node: any,
-    lines: string[]
-  ): string => {
+  const getNodeText = (node: any, lines: string[]): string => {
     if (!node.position || !node.position.start || !node.position.end) {
       return '';
     }
     const startLine = node.position.start.line;
     const endLine = node.position.end.line;
     // `slice` is zero-based, node positions are 1-based.
-    return lines.slice(startLine - 1, endLine).join('\n').trim();
+    return lines
+      .slice(startLine - 1, endLine)
+      .join('\n')
+      .trim();
   };
 
   /**
@@ -108,10 +104,7 @@ export const useMdxChunker = () => {
    *
    * Return `null` if the node type is something we don't want to chunk.
    */
-  const buildChunk = (
-    node: any,
-    lines: string[]
-  ): MdxChunk | null => {
+  const buildChunk = (node: any, lines: string[]): MdxChunk | null => {
     // If it's a recognized block node:
     if (blockNodeTypes.has(node.type)) {
       const nodeText = getNodeText(node, lines);
@@ -162,7 +155,7 @@ export const useMdxChunker = () => {
 
         // If this is specifically a <Source> element, we store it in sources:
         if (tagName.toLowerCase() === 'source') {
-          setSources((prev) => [
+          setSources(prev => [
             ...prev,
             {
               mdxTag: objectChunk.mdxTag,

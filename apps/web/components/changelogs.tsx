@@ -30,7 +30,7 @@ export type ChangelogsProps = {
 export const ChangeLogs = ({ open, setOpen }: ChangelogsProps) => {
   const { data, error } = useQuery<{ changelogs: Changelog[] }>({
     queryKey: ['changelogs'],
-    queryFn: () => fetch('/api/changelogs').then((res) => res.json()),
+    queryFn: () => fetch('/api/changelogs').then(res => res.json()),
     staleTime: 1000 * 60 * 30, // 30 min
   });
 
@@ -47,7 +47,7 @@ export const ChangeLogs = ({ open, setOpen }: ChangelogsProps) => {
             <Flame size={20} /> What&apos;s new
           </Type>
         </Flex>
-        {changelogs?.map((changelog) => (
+        {changelogs?.map(changelog => (
           <Flex key={changelog.id} className="px-6 py-4" direction="col" gap="md">
             <Flex direction="col" gap="none">
               <Type size="lg" weight="medium">
@@ -67,10 +67,10 @@ export const ChangeLogs = ({ open, setOpen }: ChangelogsProps) => {
                   delay: 2000,
                 }),
               ]}
-              className="w-full overflow-hidden rounded-xl bg-zinc-500/10"
+              className="w-full overflow-hidden rounded-xl bg-stone-500/10"
             >
               <CarouselContent>
-                {changelog.images.map((image) => (
+                {changelog.images.map(image => (
                   <CarouselItem key={image}>
                     <Image
                       src={image}

@@ -47,7 +47,7 @@ export const LinkBlock = ({ url }: TLinkBlock) => {
   const renderConatiner = (children: React.ReactNode, link?: string) => {
     return (
       <div
-        className="cursor-pointer rounded-xl border border-black/10 bg-white p-3 hover:scale-[101%] hover:text-blue-400"
+        className="cursor-pointer rounded-xl border border-border bg-background p-3 hover:scale-[101%] hover:text-brand"
         onClick={() => {
           link && window.open(link, '_blank');
         }}
@@ -83,21 +83,21 @@ export const LinkBlock = ({ url }: TLinkBlock) => {
             width={0}
             height={0}
             sizes="100vw"
-            className="h-6 min-w-6 rounded-md border border-black/10 object-cover"
+            className="h-6 min-w-6 rounded-md border border-border object-cover"
           />
 
           <div className="flex w-full flex-col items-start gap-1">
-            <p className="w-full overflow-hidden truncate text-sm text-zinc-800 md:text-base">
+            <p className="w-full overflow-hidden truncate text-sm text-foreground md:text-base">
               {ogResult.ogTitle}
             </p>
-            <p className="text-sm text-zinc-400 md:text-base">{ogResult.ogUrl}</p>
+            <p className="text-sm text-muted-foreground md:text-base">{ogResult.ogUrl}</p>
           </div>
         </div>,
         ogResult.ogUrl
       )
     : renderConatiner(
         <div>
-          <p className="text-sm text-zinc-400 md:text-base">{url}</p>
+          <p className="text-sm text-muted-foreground md:text-base">{url}</p>
         </div>,
         url
       );

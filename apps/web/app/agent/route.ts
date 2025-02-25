@@ -6,10 +6,9 @@ import {
   completionRequestSchema,
   CompletionRequestType,
   GraphEdgeType,
-} from "@repo/ai";
-import { ToolEnumType } from "@repo/ai/tools";
+} from '@repo/ai';
+import { ToolEnumType } from '@repo/ai/tools';
 import type { NextRequest } from 'next/server';
-
 
 export type AgentEventResponse = {
   threadId: string;
@@ -72,11 +71,10 @@ async function executeStream(
 
   const graph = new AgentGraph(events, contextManager);
 
-
   const plannerNode = {
-    id: "planner",
-    name: "Task Planner",
-    role: "planner",
+    id: 'planner',
+    name: 'Task Planner',
+    role: 'planner',
     enableReasoning: true,
     systemPrompt: `You are a meticulous task planning agent that thoroughly analyzes user questions and problems. Your role is to refine the user's question into 5 thoughtful, clear, and probing questions. These refined questions will guide subsequent steps toward providing a complete and accurate answer.
 For example, if the user asks "How can cities become more sustainable while accommodating growing populations?" 
@@ -95,9 +93,9 @@ out put should be in following format:
   };
 
   const researchNode = {
-    id: "research",
-    name: "Research",
-    role: "research",
+    id: 'research',
+    name: 'Research',
+    role: 'research',
     enableReasoning: true,
     systemPrompt: `You are a meticulous research assistant. Your task is to review the refined questions from the planner and perform comprehensive web searches for related information. Then, analyze the gathered data using the reader tool.use proper citations and references. `,
     tools: [ToolEnumType.SEARCH, ToolEnumType.READER],
@@ -106,42 +104,44 @@ out put should be in following format:
   };
 
   const summarizerNode = {
-    id: "summarizer",
-    name: "Summarizer",
-    role: "summarizer",
+    id: 'summarizer',
+    name: 'Summarizer',
+    role: 'summarizer',
     systemPrompt: `You are a research and writing assistant. Utilizing the summaries produced by the research tool, generate a thorough and detailed analysis that explores all facets of the research comprehensively. Provide in-depth explanations, multiple perspectives, in form of Report.`,
     tools: [],
     toolSteps: 1,
   };
 
   const nodes = [plannerNode, researchNode, summarizerNode];
-  const edges:GraphEdgeType[] =[ 
+  const edges: GraphEdgeType[] = [
     {
-      from: "planner",
-      to: "research",
-      relationship: "next",
-      pattern: "map",
+      from: 'planner',
+      to: 'research',
+      relationship: 'next',
+      pattern: 'map',
       config: {
         inputTransform: (question: string) => {
           const regex = /<question>(.*?)<\/question>/g;
           const matches = question.matchAll(regex);
-          return Array.from(matches, match => match[1].trim()).map(question => `question: ${question}`)
+          return Array.from(matches, match => match[1].trim()).map(
+            question => `question: ${question}`
+          );
         },
-        outputTransform: (questions: string[]) => questions.join("\n"),
-      }
+        outputTransform: (questions: string[]) => questions.join('\n'),
+      },
     },
     {
-      from: "research",
-      to: "summarizer",
-      relationship: "next",
-      pattern: "reduce",
+      from: 'research',
+      to: 'summarizer',
+      relationship: 'next',
+      pattern: 'reduce',
       config: {
-        outputTransform: (summaries: string[]) => summaries.join("\n"),
-      }
-    }
-  ]
-  nodes.forEach((node) => graph.addNode(node));
-  edges.forEach((edge) => graph.addEdge(edge));
+        outputTransform: (summaries: string[]) => summaries.join('\n'),
+      },
+    },
+  ];
+  nodes.forEach(node => graph.addNode(node));
+  edges.forEach(edge => graph.addEdge(edge));
 
   const eventHandler = (event: AgentEventPayload) => {
     console.log('event', event);
@@ -161,7 +161,7 @@ out put should be in following format:
 
   events.on('event', eventHandler);
 
-  await graph.execute("planner", data.prompt);
+  await graph.execute('planner', data.prompt);
   events.off('event', eventHandler);
   try {
     controller.close();

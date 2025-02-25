@@ -5,13 +5,13 @@ export class AgentGraphEvents extends EventEmitter {
   private cachedPayload: Partial<AgentEventPayload> = {};
   private currentNodeId: string | null = null;
 
-  emit(type: "event", body: AgentEventPayload): boolean {
+  emit(type: 'event', body: AgentEventPayload): boolean {
     if (body.nodeId && body.nodeId !== this.currentNodeId) {
       this.cachedPayload = {};
       this.currentNodeId = body.nodeId;
     }
 
-    Object.keys(body).forEach((key) => {
+    Object.keys(body).forEach(key => {
       const val = body[key as keyof AgentEventPayload];
       if (val !== undefined && val !== null) {
         this.cachedPayload[key as keyof AgentEventPayload] = val as any;
@@ -24,11 +24,11 @@ export class AgentGraphEvents extends EventEmitter {
     return super.emit(type, mergedPayload);
   }
 
-  on(type: "event", callback: (body: AgentEventPayload) => void) {
+  on(type: 'event', callback: (body: AgentEventPayload) => void) {
     return super.on(type, callback);
   }
 
-  off(type: "event", callback: (body: AgentEventPayload) => void) {
+  off(type: 'event', callback: (body: AgentEventPayload) => void) {
     return super.off(type, callback);
   }
 }

@@ -9,8 +9,6 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { ComponentProps } from 'react';
 import { useStickToBottom } from 'use-stick-to-bottom';
 
-
-
 export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
   Think: ({ children, isTagComplete }) => {
     const childs = React.Children.toArray(children).filter(Boolean);
@@ -22,7 +20,7 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
           <AccordionItem value="1" className="border-none">
             <div className={`sticky top-0 z-10 bg-white pt-4`}>
               <AccordionTrigger
-                className={`z-6 group rounded-xl rounded-b-none border border-x border-t border-b-transparent bg-white p-3 px-3 !pb-0 pt-3 text-sm font-medium text-zinc-900 transition-all duration-[5000ms] ease-in-out [&[data-state=open]]:border-b-zinc-200 [&[data-state=open]]:!pb-3`}
+                className={`z-6 group rounded-xl rounded-b-none border border-x border-t border-b-transparent bg-white p-3 px-3 !pb-0 pt-3 text-sm font-medium text-stone-900 transition-all duration-[5000ms] ease-in-out [&[data-state=open]]:border-b-stone-200 [&[data-state=open]]:!pb-3`}
               >
                 Some Thought
               </AccordionTrigger>
@@ -57,9 +55,7 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
     );
   },
   Source: ({ children }) => {
-
     const { citations } = useContext(CitationProviderContext);
-
     const url = children?.props?.children as string;
 
     const isValid = isValidUrl(url);
@@ -67,13 +63,11 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
       return null;
     }
     const citation = citations[url];
-    return <div className="inline-flex justify-center group bg-purple-100 rounded-md size-4 text-[10px] items-center flex-row gap-1 text-purple-500">
-      {citation?.index}
-    </div>
-
-
-    return <></>
-
+    return (
+      <div className="group inline-flex size-4 flex-row items-center justify-center gap-1 rounded-md bg-brand/10 text-[10px] text-brand">
+        {citation?.index}
+      </div>
+    );
   },
 
   pre: ({ children }) => {
@@ -90,7 +84,7 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
   code: ({ children, className }) => {
     if (!className) {
       return (
-        <code className="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-sm text-zinc-800">
+        <code className="rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-sm text-foreground">
           {children}
         </code>
       );

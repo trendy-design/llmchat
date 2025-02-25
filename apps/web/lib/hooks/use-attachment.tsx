@@ -25,7 +25,7 @@ export const useAttachment = () => {
     }
 
     if (file) {
-      setAttachment((prev) => ({
+      setAttachment(prev => ({
         ...prev,
         file,
       }));
@@ -39,7 +39,7 @@ export const useAttachment = () => {
   const renderAttachedPdf = () => {
     if (attachment?.file) {
       return (
-        <div className="relative flex h-[60px] min-w-[60px] items-center justify-center rounded-xl border border-white/5 shadow-md">
+        <div className="relative flex h-[60px] min-w-[60px] items-center justify-center rounded-xl border shadow-md">
           <FileText size={24} />
           <Button
             size={'icon-xs'}

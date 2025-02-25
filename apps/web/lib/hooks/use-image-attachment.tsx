@@ -55,14 +55,14 @@ export const useImageAttachment = () => {
     reader.onload = () => {
       if (typeof reader.result !== 'string') return;
       const base64String = reader?.result?.split(',')[1];
-      setAttachment((prev) => ({
+      setAttachment(prev => ({
         ...prev,
         base64: `data:${file?.type};base64,${base64String}`,
       }));
     };
 
     if (file) {
-      setAttachment((prev) => ({
+      setAttachment(prev => ({
         ...prev,
         file,
       }));

@@ -17,7 +17,7 @@ const itemVariants = {
 };
 
 const Spinner = memo(() => (
-  <div className="size-[0.825rem] shrink-0 animate-spin rounded-full border-[2px] border-zinc-200 border-l-blue-500 border-t-blue-500" />
+  <div className="size-[0.825rem] shrink-0 animate-spin rounded-full border-[2px] border-border border-l-brand border-t-brand" />
 ));
 
 Spinner.displayName = 'Spinner';
@@ -41,12 +41,12 @@ export const Reasoning: React.FC<ReasoningProps> = memo(
             transition={{ duration: 0.1 }}
             className={cn(
               'h-8 w-[1px]',
-              isFirst ? 'bg-gradient-to-t from-zinc-200 from-20% to-transparent' : 'bg-zinc-200'
+              isFirst ? 'bg-gradient-to-t from-border from-20% to-transparent' : 'bg-border'
             )}
           />
           <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.1 }}>
             {isComplete ? (
-              <IconCircleCheckFilled size={16} className="shrink-0 text-blue-500" />
+              <IconCircleCheckFilled size={16} className="shrink-0 text-brand" />
             ) : (
               <Spinner />
             )}
@@ -54,7 +54,7 @@ export const Reasoning: React.FC<ReasoningProps> = memo(
           <motion.div
             className={cn(
               'h-full w-[1px]',
-              isLast ? 'bg-gradient-to-b from-zinc-200 to-transparent' : 'bg-zinc-200'
+              isLast ? 'bg-gradient-to-b from-border to-transparent' : 'bg-border'
             )}
             initial={{ scaleY: 0 }}
             animate={{ scaleY: 1 }}

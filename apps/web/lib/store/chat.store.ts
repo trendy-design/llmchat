@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { AgentEventPayload } from "@repo/ai";
-import { Model, models } from "@repo/ai/models";
-import Dexie, { Table } from "dexie";
-import { nanoid } from "nanoid";
-import { create } from "zustand";
+import { AgentEventPayload } from '@repo/ai';
+import { Model, models } from '@repo/ai/models';
+import Dexie, { Table } from 'dexie';
+import { nanoid } from 'nanoid';
+import { create } from 'zustand';
 
 export type Thread = {
   id: string;
   title: string;
   createdAt: Date;
   updatedAt: Date;
-}
+};
 
 export type Block = {
   id: string;
@@ -19,7 +19,7 @@ export type Block = {
   content: string;
   toolCalls?: AgentEventPayload['toolCalls'];
   toolCallResults?: AgentEventPayload['toolCallResults'];
-  nodeStatus?: "pending" | "completed" | "error";
+  nodeStatus?: 'pending' | 'completed' | 'error';
   tokenUsage?: number;
   history?: AgentEventPayload['history'];
   nodeInput?: string;
@@ -28,54 +28,57 @@ export type Block = {
   nodeReasoning?: string;
   isStep?: boolean;
   nodeError?: string;
-}
+};
 
 export type ThreadItem = {
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   content: Block[];
   createdAt: Date;
-  status: "pending" | "completed" | "error";
+  status: 'pending' | 'completed' | 'error';
   updatedAt: Date;
   id: string;
   parentId?: string;
   threadId: string;
   metadata?: Record<string, any>;
-}
+};
 
 export type MessageGroup = {
   userMessage: ThreadItem;
   assistantMessages: ThreadItem[];
-}
+};
 
 class ThreadDatabase extends Dexie {
   threads!: Table<Thread>;
   threadItems!: Table<ThreadItem>;
 
   constructor() {
-    super("ThreadDatabase");
+    super('ThreadDatabase');
     this.version(1).stores({
-      threads: "id, createdAt",
-      threadItems: "id, threadId, parentId, createdAt"
+      threads: 'id, createdAt',
+      threadItems: 'id, threadId, parentId, createdAt',
     });
   }
 }
 
 const db = new ThreadDatabase();
-const CONFIG_KEY = "chat-config";
+const CONFIG_KEY = 'chat-config';
 
 const loadInitialData = async () => {
   const threads = await db.threads.toArray();
   const configStr = localStorage.getItem(CONFIG_KEY);
-  const config = configStr ? JSON.parse(configStr) : { 
-    model: models[0].id,
-    currentThreadId: "default"
-  };
+  const config = configStr
+    ? JSON.parse(configStr)
+    : {
+        model: models[0].id,
+        currentThreadId: 'default',
+      };
 
-  
-  const initialThreads = threads.length ? threads : [{ id: "default", title: "New Thread", createdAt: new Date(), updatedAt: new Date() }];
-  
-  return { 
-    threads: initialThreads, 
+  const initialThreads = threads.length
+    ? threads
+    : [{ id: 'default', title: 'New Thread', createdAt: new Date(), updatedAt: new Date() }];
+
+  return {
+    threads: initialThreads,
     model: models.find(m => m.id === config.model) || models[0],
     currentThreadId: config.currentThreadId || initialThreads[0].id,
   };
@@ -95,7 +98,7 @@ type State = {
   messageGroups: MessageGroup[];
   isLoadingThreads: boolean;
   isLoadingThreadItems: boolean;
-}
+};
 
 type Actions = {
   setModel: (model: Model) => void;
@@ -117,7 +120,7 @@ type Actions = {
   getMessageGroups: (threadId: string) => MessageGroup[];
   setCurrentThreadItem: (threadItem: ThreadItem) => void;
   clearAllThreads: () => void;
-}
+};
 
 // Add this debounce utility at the top level
 const debounce = <T extends (...args: any[]) => any>(
@@ -131,10 +134,7 @@ const debounce = <T extends (...args: any[]) => any>(
   };
 };
 
-const debouncedThreadUpdate = debounce(
-  (thread: Thread) => db.threads.put(thread),
-  1000
-);
+const debouncedThreadUpdate = debounce((thread: Thread) => db.threads.put(thread), 1000);
 
 const debouncedThreadItemUpdate = debounce(
   (threadItem: ThreadItem) => db.threadItems.put(threadItem),
@@ -145,24 +145,24 @@ export const useChatStore = create<State & Actions>((set, get) => ({
   model: models[0],
   isGenerating: false,
   editor: undefined,
-  context: "",
+  context: '',
   threads: [],
   threadItems: [],
-  currentThreadId: "default",
+  currentThreadId: 'default',
   currentThread: null,
   currentThreadItem: null,
   messageGroups: [],
   abortController: null,
   isLoadingThreads: false,
   isLoadingThreadItems: false,
-  setCurrentThreadItem: (threadItem) => set({ currentThreadItem: threadItem }),
-  setEditor: (editor) => set({ editor }),
-  setContext: (context) => set({ context }),
-  setIsGenerating: (isGenerating) => set({ isGenerating }),
+  setCurrentThreadItem: threadItem => set({ currentThreadItem: threadItem }),
+  setEditor: editor => set({ editor }),
+  setContext: context => set({ context }),
+  setIsGenerating: isGenerating => set({ isGenerating }),
   stopGeneration: () => set({ isGenerating: false }),
-  setAbortController: (abortController) => set({ abortController }),
+  setAbortController: abortController => set({ abortController }),
   loadThreadItems: async (threadId: string) => {
-    const threadItems = await db.threadItems.where("threadId").equals(threadId).toArray();
+    const threadItems = await db.threadItems.where('threadId').equals(threadId).toArray();
     set({ threadItems });
   },
 
@@ -175,12 +175,12 @@ export const useChatStore = create<State & Actions>((set, get) => ({
   createThread: async () => {
     const newThread = {
       id: nanoid(),
-      title: "New Thread",
+      title: 'New Thread',
       updatedAt: new Date(),
       createdAt: new Date(),
     };
     await db.threads.add(newThread);
-    set((state) => ({
+    set(state => ({
       threads: [...state.threads, newThread],
       currentThreadId: newThread.id,
       currentThread: newThread,
@@ -192,78 +192,79 @@ export const useChatStore = create<State & Actions>((set, get) => ({
     set({ model });
   },
 
-  updateThread: async (thread) => {
+  updateThread: async thread => {
     const existingThread = get().threads.find(t => t.id === thread.id);
     const updatedThread: Thread = {
       ...existingThread,
       ...thread,
       updatedAt: new Date(),
-      createdAt: existingThread?.createdAt || new Date()
+      createdAt: existingThread?.createdAt || new Date(),
     };
     debouncedThreadUpdate(updatedThread);
-    set((state) => ({
-      threads: state.threads.map((t) => (t.id === thread.id ? { ...t, ...updatedThread } : t)),
+    set(state => ({
+      threads: state.threads.map(t => (t.id === thread.id ? { ...t, ...updatedThread } : t)),
     }));
   },
 
-  createThreadItem: async (threadItem) => {
+  createThreadItem: async threadItem => {
     const threadId = get().currentThreadId;
     await db.threadItems.add(threadItem);
-    set((state) => ({
-      threadItems: [...state.threadItems, {...threadItem, threadId }],
+    set(state => ({
+      threadItems: [...state.threadItems, { ...threadItem, threadId }],
     }));
   },
 
-  updateThreadItem: async (threadItem) => {
+  updateThreadItem: async threadItem => {
     if (!threadItem.id) return;
     const existingItem = await db.threadItems.get(threadItem.id);
     if (existingItem) {
       const updatedItem = { ...existingItem, ...threadItem, threadId: get().currentThreadId };
       debouncedThreadItemUpdate(updatedItem);
-      set((state) => ({
-        threadItems: state.threadItems.map((t) =>
-          t.id === threadItem.id ? updatedItem : t
-        ),
+      set(state => ({
+        threadItems: state.threadItems.map(t => (t.id === threadItem.id ? updatedItem : t)),
       }));
     }
   },
 
   switchThread: async (threadId: string) => {
     const thread = get().threads.find(t => t.id === threadId);
-    localStorage.setItem(CONFIG_KEY, JSON.stringify({ 
-      model: get().model.id, 
-      currentThreadId: threadId 
-    }));
-    set({ 
+    localStorage.setItem(
+      CONFIG_KEY,
+      JSON.stringify({
+        model: get().model.id,
+        currentThreadId: threadId,
+      })
+    );
+    set({
       currentThreadId: threadId,
-      currentThread: thread || null 
+      currentThread: thread || null,
     });
     await get().loadThreadItems(threadId);
   },
 
-  deleteThreadItem: async (threadItemId) => {
+  deleteThreadItem: async threadItemId => {
     await db.threadItems.delete(threadItemId);
-    set((state) => ({
-      threadItems: state.threadItems.filter((t) => t.id !== threadItemId),
+    set(state => ({
+      threadItems: state.threadItems.filter(t => t.id !== threadItemId),
     }));
   },
 
-  deleteThread: async (threadId) => {
+  deleteThread: async threadId => {
     await db.threads.delete(threadId);
-    await db.threadItems.where("threadId").equals(threadId).delete();
-    set((state) => ({
-      threads: state.threads.filter((t) => t.id !== threadId),
-      currentThreadId: state.threads[0]?.id || "default",
+    await db.threadItems.where('threadId').equals(threadId).delete();
+    set(state => ({
+      threads: state.threads.filter(t => t.id !== threadId),
+      currentThreadId: state.threads[0]?.id || 'default',
       currentThread: state.threads[0] || null,
     }));
   },
 
-  getThreadItems: (threadId) => {
+  getThreadItems: threadId => {
     const state = get();
     return state.threadItems
-      .filter((item) => item.threadId === threadId)
+      .filter(item => item.threadId === threadId)
       .sort((a, b) => {
-        if (a.role !== b.role) return a.role === "user" ? -1 : 1;
+        if (a.role !== b.role) return a.role === 'user' ? -1 : 1;
         return a.createdAt.getTime() - b.createdAt.getTime();
       });
   },
@@ -275,19 +276,15 @@ export const useChatStore = create<State & Actions>((set, get) => ({
 
   getMessageGroups: (threadId: string) => {
     const threadItems = get().getThreadItems(threadId);
-    
-    const assistantMsgs = threadItems.filter(
-      (item) => item.role === "assistant"
-    );
-    
-    const userMsgs = threadItems.filter(
-      (item) => item.role === "user"
-    );
 
-    return userMsgs.map((userMessage) => ({
+    const assistantMsgs = threadItems.filter(item => item.role === 'assistant');
+
+    const userMsgs = threadItems.filter(item => item.role === 'user');
+
+    return userMsgs.map(userMessage => ({
       userMessage,
       assistantMessages: assistantMsgs.filter(
-        (assistantMsg) => assistantMsg.parentId === userMessage.id
+        assistantMsg => assistantMsg.parentId === userMessage.id
       ),
     }));
   },
@@ -295,8 +292,8 @@ export const useChatStore = create<State & Actions>((set, get) => ({
 
 // Initialize store with data from IndexedDB
 loadInitialData().then(({ threads, model, currentThreadId }) => {
-  useChatStore.setState({ 
-    threads, 
+  useChatStore.setState({
+    threads,
     model,
     currentThreadId,
     currentThread: threads.find(t => t.id === currentThreadId) || threads?.[0],

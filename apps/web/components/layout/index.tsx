@@ -15,10 +15,10 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
   const { isSidebarOpen, isMobileSidebarOpen, setIsMobileSidebarOpen } = useRootContext();
 
   const containerClass =
-    'relative flex flex-1 flex-col h-[100dvh] w-full overflow-hidden bg-white shadow-sm dark:border dark:border-white/5 dark:bg-zinc-800';
+    'relative flex flex-1 flex-col h-[100dvh] w-full overflow-hidden shadow-sm bg-background';
 
   return (
-    <div className="flex min-h-[98dvh] w-full flex-row overflow-hidden bg-zinc-50 dark:bg-zinc-900">
+    <div className="flex min-h-[98dvh] w-full flex-row overflow-hidden">
       <Flex className="hidden lg:flex">
         <AnimatePresence>{isSidebarOpen && <Sidebar />}</AnimatePresence>
       </Flex>
@@ -30,9 +30,9 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
         onOpenChange={setIsMobileSidebarOpen}
       >
         <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 z-30 bg-zinc-500/70 backdrop-blur-sm" />
+          <Drawer.Overlay className="fixed inset-0 z-30 backdrop-blur-sm" />
           <Drawer.Content className="fixed bottom-0 left-0 top-0 z-[50]">
-            <Flex className="bg-zinc-50 pr-2">
+            <Flex className="pr-2">
               <Sidebar />
             </Flex>
           </Drawer.Content>

@@ -64,7 +64,7 @@ const DropdownMenuContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        'bg-popover text-popover-foreground z-50 min-w-[12rem] overflow-hidden rounded-xl border border-zinc-500/20 p-1 shadow-xl dark:border dark:border-white/10 dark:bg-zinc-700',
+        'bg-popover text-popover-foreground z-50 min-w-[12rem] overflow-hidden rounded-xl border border-border p-1 shadow-xl',
         'data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
         className
       )}
@@ -83,7 +83,7 @@ const DropdownMenuItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex h-8 cursor-pointer select-none items-center gap-2 rounded-md px-2 text-xs font-medium outline-none transition-colors focus:bg-zinc-50 focus:text-zinc-800 data-[disabled]:pointer-events-none data-[disabled]:opacity-50 md:text-sm dark:focus:bg-black/30 dark:focus:text-white',
+      'relative flex h-8 cursor-pointer select-none items-center gap-2 rounded-md px-2 text-xs font-medium outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 md:text-sm',
       inset && 'pl-8',
       className
     )}
@@ -157,7 +157,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn('-mx-1 my-1 h-px bg-black/10 dark:bg-white/10', className)}
+    className={cn('-mx-1 my-1 h-px bg-border', className)}
     {...props}
   />
 ));
@@ -188,5 +188,6 @@ export {
   DropdownMenuSub,
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger
 };
+

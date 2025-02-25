@@ -8,7 +8,7 @@ export function useClipboard() {
   const [copiedText, setCopiedText] = useState<CopiedValue>(null);
   const [showCopied, setShowCopied] = useState<boolean>(false);
 
-  const copy: CopyFn = useCallback(async (text) => {
+  const copy: CopyFn = useCallback(async text => {
     if (!navigator?.clipboard) {
       console.warn('Clipboard not supported');
       return false;

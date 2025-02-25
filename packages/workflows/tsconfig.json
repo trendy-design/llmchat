@@ -8,4 +8,3 @@
   "include": ["*.ts", "workflow1/workflow1.ts"],
   "exclude": ["node_modules"]
 }
-

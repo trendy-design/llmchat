@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import { useChatStore } from '../store/chat.store';
 
 export const useChatEditor = () => {
-  const setEditor = useChatStore((state) => state.setEditor);
+  const setEditor = useChatStore(state => state.setEditor);
   const editor = useEditor({
     extensions: [
       Document,

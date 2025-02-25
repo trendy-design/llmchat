@@ -16,18 +16,14 @@ export type EdgeHandlerStrategy<T extends GraphEdgePatternType> = {
   ): Promise<string>;
 };
 
-
 export function createEdgeHandlerStrategies(
   graph: AgentGraph
 ): Map<GraphEdgePatternType, EdgeHandlerStrategy<any>> {
   return new Map<GraphEdgePatternType, EdgeHandlerStrategy<any>>([
     ['sequential', new SequentialEdgeHandler(graph)],
-    ['loop', new LoopEdgeHandler(graph)]
+    ['loop', new LoopEdgeHandler(graph)],
   ]);
-} 
-
-
-
+}
 
 // class RevisionEdgeHandler implements EdgeHandlerStrategy<'revision'> {
 //   constructor(private graph: AgentGraph) {

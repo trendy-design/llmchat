@@ -2,8 +2,7 @@ import { Block, useChatStore } from '@/libs/store/chat.store';
 import type { CompletionRequestType } from '@repo/ai';
 
 export const useAgentStream = () => {
-  const updateThreadItem = useChatStore((state) => state.updateThreadItem);
-
+  const updateThreadItem = useChatStore(state => state.updateThreadItem);
 
   const runAgent = async (body: CompletionRequestType) => {
     const nodes = new Map<string, Block>();
@@ -11,11 +10,11 @@ export const useAgentStream = () => {
     const response = await fetch('/agent2', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
       credentials: 'include',
-      cache: 'no-store'
+      cache: 'no-store',
     });
 
     if (!response.ok) {
@@ -43,22 +42,22 @@ export const useAgentStream = () => {
             try {
               const data = JSON.parse(line.slice(6));
               if (!!data.nodeId) {
-              nodes.set(data.nodeId, {
-                id: data.nodeId,
-                nodeKey: data.nodeKey,
-                content: data.content,
-                toolCalls: data.toolCalls,
-                toolCallResults: data.toolCallResults,
-                nodeStatus: data.nodeStatus,
-                tokenUsage: data.tokenUsage,
-                history: data.history,
-                nodeInput: data.nodeInput,
-                sources: data.sources,
-                nodeModel: data.nodeModel,
-                nodeError: data.error,
-                nodeReasoning: data.nodeReasoning,
-                isStep: data.isStep
-              });
+                nodes.set(data.nodeId, {
+                  id: data.nodeId,
+                  nodeKey: data.nodeKey,
+                  content: data.content,
+                  toolCalls: data.toolCalls,
+                  toolCallResults: data.toolCallResults,
+                  nodeStatus: data.nodeStatus,
+                  tokenUsage: data.tokenUsage,
+                  history: data.history,
+                  nodeInput: data.nodeInput,
+                  sources: data.sources,
+                  nodeModel: data.nodeModel,
+                  nodeError: data.error,
+                  nodeReasoning: data.nodeReasoning,
+                  isStep: data.isStep,
+                });
               }
               updateThreadItem({
                 id: data.threadItemId,
@@ -66,7 +65,7 @@ export const useAgentStream = () => {
                 threadId: data.threadId,
                 content: Array.from(nodes.values()),
                 status: data.status as 'pending' | 'completed' | 'error',
-                updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined
+                updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined,
               });
             } catch (e) {
               console.error('Error parsing SSE data:', e, 'Line:', line);

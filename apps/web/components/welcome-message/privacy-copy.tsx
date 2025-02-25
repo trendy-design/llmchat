@@ -6,7 +6,7 @@ export const PrivacyCopy = () => {
       We&apos;re{' '}
       <a
         href="/privacy"
-        className="cursor-pointer underline decoration-zinc-500/50 underline-offset-4"
+        className="cursor-pointer underline decoration-stone-500/50 underline-offset-4"
       >
         privacy-first
       </a>
@@ -14,7 +14,7 @@ export const PrivacyCopy = () => {
       <ExplainationCard explanation="We don't store your data on our server. All your data is stored locally in browser's in built database called IndexDB.">
         <a
           href="/privacy"
-          className="cursor-pointer underline decoration-zinc-500/50 underline-offset-4"
+          className="cursor-pointer underline decoration-stone-500/50 underline-offset-4"
         >
           locally
         </a>

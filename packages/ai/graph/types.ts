@@ -2,7 +2,6 @@ import { z } from 'zod';
 import { ModelEnum } from '../models';
 import { ToolEnumType } from '../tools';
 
-
 export type ToolCallType = {
   toolName: string;
   args: Record<string, unknown>;
@@ -21,8 +20,6 @@ export type ToolCallErrorType = {
   error: string;
 };
 
-
-
 export type AgentContextType = {
   query?: string;
   formattingPrompt: string;
@@ -36,7 +33,7 @@ export type AgentContextType = {
 };
 
 export type NodeState = {
-  status: "idle" | "pending" | "completed" | "error" | "reasoning";
+  status: 'idle' | 'pending' | 'completed' | 'error' | 'reasoning';
   model?: string;
   key: string;
   tokenUsage?: number;
@@ -54,18 +51,18 @@ export type NodeState = {
   metadata?: Record<string, any>;
   isStep?: boolean;
   skipRendering?: boolean;
-}
+};
 
-export type AgentEventPayload  = {
+export type AgentEventPayload = {
   nodeId: string;
   nodeKey: string;
-  nodeStatus: "pending" | "completed" | "error" | "reasoning";
+  nodeStatus: 'pending' | 'completed' | 'error' | 'reasoning';
   nodeReasoning?: string;
   nodeModel?: string;
   tokenUsage?: number;
   nodeInput?: string;
   history?: LLMMessageType[];
-  status: "pending" | "completed" | "error";
+  status: 'pending' | 'completed' | 'error';
   nodeError?: string;
   content?: string;
   fullResponse?: string;
@@ -179,54 +176,53 @@ export type CompletionRequestType = z.infer<typeof completionRequestSchema>;
 
 export type LLMMessageType = z.infer<typeof messageSchema>;
 
-export type GraphEdgePatternType = "sequential" | "loop";
+export type GraphEdgePatternType = 'sequential' | 'loop';
 
 export type GraphEdgeType<T extends GraphEdgePatternType> = {
   from: string;
   to: string;
   pattern: T;
   config: GraphConfigType<T>;
-}
-
+};
 
 export type InputTransformArg = {
   query?: string;
   input: string;
   nodes: NodeState[];
-}
+};
 
 export type OutputTransformArg = {
   responses: string[];
   nodes: NodeState[];
-}
+};
 
 export type ConditionConfigArg = {
   response: string;
   nodes: NodeState[];
-}
-
-
+};
 
 export type SpecialMessageType = {
   history: LLMMessageType[];
   userMessage: string;
-}
-
+};
 
 export type LoopConfigType = {
   maxIterations: number;
   stopCondition: (condition: ConditionConfigArg) => boolean | Promise<boolean>;
-  inputTransform: (input: InputTransformArg) =>  SpecialMessageType | Promise<SpecialMessageType>;
+  inputTransform: (input: InputTransformArg) => SpecialMessageType | Promise<SpecialMessageType>;
   outputTransform: (responses: OutputTransformArg) => string | Promise<string>;
-}
+};
 
 export type SequentialConfigType = {
   inputTransform: (input: InputTransformArg) => SpecialMessageType | Promise<SpecialMessageType>;
   outputTransform: (responses: OutputTransformArg) => string | Promise<string>;
   priority: number;
-}
-
+};
 
 export type GraphConfigType<T extends GraphEdgePatternType> = {
   fallbackNode?: string;
-} &  T extends "loop" ? LoopConfigType : T extends "sequential" ? SequentialConfigType : never;
+} & T extends 'loop'
+  ? LoopConfigType
+  : T extends 'sequential'
+    ? SequentialConfigType
+    : never;

@@ -66,8 +66,8 @@ export const HistoryItem = ({
   };
 
   const containerClasses = cn(
-    'gap-2 w-full group w-full cursor-pointer flex flex-row items-center h-8 py-0.5 pl-2 pr-1 rounded-md hover:bg-zinc-500/10',
-    (isActive && isChatPage) || isEditing ? 'bg-zinc-500/10' : ''
+    'gap-2 w-full group w-full cursor-pointer flex flex-row items-center h-8 py-0.5 pl-2 pr-1 rounded-md hover:bg-muted',
+    (isActive && isChatPage) || isEditing ? 'bg-muted' : ''
   );
 
   const handleEditClick = () => {

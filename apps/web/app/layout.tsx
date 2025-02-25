@@ -3,10 +3,10 @@ import { ReactQueryProvider } from '@/libs/context';
 import { AuthProvider } from '@/libs/context/auth';
 import { RootProvider } from '@/libs/context/root';
 import { TooltipProvider, cn } from '@repo/ui';
-import { GeistSans } from 'geist/font/sans';
 import type { Viewport } from 'next';
 import { Metadata } from 'next';
 import { ThemeProvider } from 'next-themes';
+import localFont from 'next/font/local';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -63,6 +63,10 @@ export const viewport: Viewport = {
   userScalable: false,
 };
 
+const inter = localFont({
+  src: "./InterVariable.woff2"
+})
+
 export default function ParentLayout({
   children,
 }: Readonly<{
@@ -71,7 +75,7 @@ export default function ParentLayout({
   return (
     <html
       lang="en"
-      className={cn(GeistSans.className, 'antialiased', 'light')}
+      className={cn(inter.className, 'antialiased', 'light')}
       suppressHydrationWarning
     >
       <head>

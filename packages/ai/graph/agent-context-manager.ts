@@ -1,5 +1,11 @@
 import { ModelEnum } from '../models';
-import type { AgentContextType, GraphNodeType, LLMMessageType, ToolCallResultType, ToolCallType } from './types';
+import type {
+  AgentContextType,
+  GraphNodeType,
+  LLMMessageType,
+  ToolCallResultType,
+  ToolCallType,
+} from './types';
 
 export class AgentContextManager {
   private context: AgentContextType;
@@ -7,7 +13,9 @@ export class AgentContextManager {
   constructor(initialContext?: Partial<AgentContextType>) {
     this.context = {
       formattingPrompt:
-        'Today is ' + new Date().toLocaleDateString() + '. you are helpful assistant. you are helping user with their questions. ',
+        'Today is ' +
+        new Date().toLocaleDateString() +
+        '. you are helpful assistant. you are helping user with their questions. ',
       threadId: '',
       threadItemId: '',
       parentThreadItemId: '',
@@ -57,7 +65,9 @@ export class AgentContextManager {
   clear() {
     this.context = {
       formattingPrompt:
-        'Today is ' + new Date().toLocaleDateString() + '. you are helpful assistant. you are helping user with their questions. ',
+        'Today is ' +
+        new Date().toLocaleDateString() +
+        '. you are helpful assistant. you are helping user with their questions. ',
       threadId: '',
       threadItemId: '',
       parentThreadItemId: '',

@@ -26,7 +26,7 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = 'base' }) => {
     return <Heading>{children}</Heading>;
   };
 
-  const renderHr = () => <hr className="my-4 border-black/5 dark:border-white/5" />;
+  const renderHr = () => <hr className="my-4 border-border" />;
   const renderLink = (href: string, text: ReactNode, messageId: string) => {
     if (text && isValidUrl(href)) {
       const url = new URL(href).host;
@@ -38,7 +38,7 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = 'base' }) => {
               href={href}
               target="_blank"
               data-message-id={messageId}
-              className="!my-0 font-normal text-teal-600 !no-underline dark:text-teal-600"
+              className="!my-0 font-normal text-brand !no-underline"
             >
               {text}
             </Link>
@@ -50,7 +50,7 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = 'base' }) => {
               window.open(href, '_blank');
             }}
           >
-            <Flex gap="sm" items="start" className="w-full text-zinc-500">
+            <Flex gap="sm" items="start" className="w-full text-muted-foreground">
               <SearchFavicon link={url} className="!m-0 !mt-1" size="md" />
               <Type size="sm" textColor="secondary" className="line-clamp-2 flex-1">
                 {href}
@@ -75,13 +75,13 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = 'base' }) => {
   );
 
   const renderCodespan = (code: string) => (
-    <span className="mono rounded-md border bg-zinc-50 px-1 py-0.5 text-xs text-zinc-800 dark:bg-white/10 dark:text-white">
+    <span className="mono rounded-md border bg-secondary px-1 py-0.5 text-xs text-foreground">
       {code}
     </span>
   );
 
   const articleClass = cn(
-    'prose dark:prose-invert max-w-full prose-zinc prose-h3:font-medium prose-h4:font-medium prose-h1:font-medium prose-h2:font-medium prose-h5:font-medium prose-h6:font-medium prose-h3:text-base md:prose-h3:text-base prose-h4:text-sm md:prose-h4:text-base prose-h5:text-sm md:prose-h5:text-base prose-h6:text-sm md:prose-h6:text-base !prose-heading:font-medium prose-strong:font-medium prose-headings:text-base prose-th:text-sm prose-th:text-left prose-td:text-sm',
+    'prose dark:prose-invert max-w-full prose-stone prose-h3:font-medium prose-h4:font-medium prose-h1:font-medium prose-h2:font-medium prose-h5:font-medium prose-h6:font-medium prose-h3:text-base md:prose-h3:text-base prose-h4:text-sm md:prose-h4:text-base prose-h5:text-sm md:prose-h5:text-base prose-h6:text-sm md:prose-h6:text-base !prose-heading:font-medium prose-strong:font-medium prose-headings:text-base prose-th:text-sm prose-th:text-left prose-td:text-sm',
     {
       'prose-sm': size === 'sm',
       'prose-sm md:prose-sm': size === 'base',
@@ -95,8 +95,8 @@ const Mdx: FC<TMdx> = ({ message, animate, messageId, size = 'base' }) => {
     <article className={articleClass} id={`message-${messageId}`}>
       <Markdown
         renderer={{
-          text: (text) => text,
-          paragraph: (children) => (
+          text: text => text,
+          paragraph: children => (
             <motion.p
               variants={REVEAL_ANIMATION_VARIANTS}
               animate={'visible'}

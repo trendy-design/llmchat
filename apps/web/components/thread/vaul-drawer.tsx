@@ -11,20 +11,18 @@ type VaulDrawerProps = {
 export function VaulDrawer({ children, renderContent }: VaulDrawerProps) {
   return (
     <Drawer.Root direction="right">
-      <Drawer.Trigger asChild>
-        {children}
-      </Drawer.Trigger>
+      <Drawer.Trigger asChild>{children}</Drawer.Trigger>
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 bg-black/40" />
+        <Drawer.Overlay className="fixed inset-0 bg-background/70" />
         <Drawer.Content
-          className="right-2 top-2 bottom-2 fixed z-10 outline-none w-[610px] flex"
+          className="fixed bottom-2 right-2 bg-secondary top-2 z-10 flex w-[610px] outline-none"
           style={{ '--initial-transform': 'calc(100% + 8px)' } as CSSProperties}
         >
-          <div className="bg-zinc-50 h-full overflow-y-auto w-full grow p-5 flex flex-col rounded-[16px]">
+          <div className="flex h-full w-full grow flex-col overflow-y-auto rounded-[16px] bg-secondary p-5">
             {renderContent()}
           </div>
         </Drawer.Content>
       </Drawer.Portal>
     </Drawer.Root>
   );
-} 
+}

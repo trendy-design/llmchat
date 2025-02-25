@@ -12,19 +12,18 @@ import { SourcesStack } from '../sources-stack';
 import { CitationProvider } from './citation-provider';
 import { Steps } from './steps';
 
-
 type NestedMDXRemoteSerializeResult =
   | MDXRemoteSerializeResult
   | {
-    source: string;
-    tag: string;
+      source: string;
+      tag: string;
 
-    tagProps: Record<string, string>;
-    children: NestedMDXRemoteSerializeResult[];
-  };
+      tagProps: Record<string, string>;
+      children: NestedMDXRemoteSerializeResult[];
+    };
 
 export const AIThreadItem = ({ content }: { content: string }) => {
-  const animatedText = content ?? "";
+  const animatedText = content ?? '';
   const sources = useMemo(() => {
     return parseSourceTagsFromXML(content);
   }, [content]);
@@ -65,7 +64,7 @@ export const AIThreadItem = ({ content }: { content: string }) => {
           },
         });
 
-        setCachedChunks((prev) => new Map(prev).set(chunkSource, mdx));
+        setCachedChunks(prev => new Map(prev).set(chunkSource, mdx));
         results.push(mdx);
       } else {
         // Process nested chunks first
@@ -132,7 +131,7 @@ export const AIThreadItem = ({ content }: { content: string }) => {
   };
 
   return (
-    <div className="animate-fade-in prose prose-sm min-w-full">
+    <div className="animate-fade-in prose prose-prosetheme prose-sm min-w-full">
       {mdxSources.map((source, index) => (
         <Fragment key={index}>{renderMdxSource(source)}</Fragment>
       ))}
@@ -169,7 +168,7 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
     <>
       {threadItem.role === 'user' && (
         <div className="flex w-full flex-row justify-start py-2">
-          <div className="rounded-xl bg-zinc-100 px-3 py-2.5 text-sm font-medium tracking-tight text-zinc-900">
+          <div className="rounded-xl bg-secondary px-3 py-2.5 text-sm font-medium tracking-tight text-secondary-foreground">
             {threadItem.content[0].content}
           </div>
         </div>
@@ -188,6 +187,3 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
     </>
   );
 };
-
-
-
