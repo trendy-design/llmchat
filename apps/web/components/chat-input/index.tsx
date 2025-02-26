@@ -86,18 +86,6 @@ export const ChatInput = () => {
 
   const renderChatInput = () => (
     <div className="bg-secondary w-full rounded-2xl border border-border p-1">
-      {/* <div className="w-full p-2.5 text-xs">
-        <p className="text-secondary-foreground">
-          You have 10 free messages left today.{" "}
-          <a
-            href="/pricing"
-            className="text-teal-600 underline decoration-stone-500/20 underline-offset-2"
-          >
-            Sign up
-          </a>{" "}
-          to continue.
-        </p>
-      </div> */}
       <Flex direction="col" className="bg-background w-full rounded-xl border border-border shadow-sm">
         <motion.div
           variants={slideUpVariant}

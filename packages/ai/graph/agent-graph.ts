@@ -306,6 +306,7 @@ export class AgentGraph {
       isStep: node.isStep,
       skipRendering: node.skipRendering,
     });
+    console.log('node-started', node.name, 'nodeKey', nodeKey, 'nodeId', nodeId);
 
     try {
       this.events.emit('event', {
@@ -468,6 +469,8 @@ export class AgentGraph {
       // Add final assistant message + calls to context
       this.contextManager.addMessage({ role: 'assistant', content: `\n\n${fullResponse}\n\n` });
 
+      console.log('node-completed', node.name, 'nodeKey', nodeKey, 'nodeId', nodeId);
+
       return fullResponse;
     } catch (error) {
       const endTime = Date.now();
@@ -488,6 +491,7 @@ export class AgentGraph {
         error: error instanceof Error ? error.message : String(error),
         isStep: node.isStep,
       });
+      console.log('node-error', node.name, 'nodeKey', nodeKey, 'nodeId', nodeId);
       throw error;
     }
   }
