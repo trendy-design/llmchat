@@ -220,9 +220,15 @@ export const useChatStore = create<State & Actions>((set, get) => ({
 
   updateThreadItem: async threadItem => {
     if (!threadItem.id) return;
+
     const existingItem = await db.threadItems.get(threadItem.id);
     if (existingItem) {
       const updatedItem = { ...existingItem, ...threadItem, threadId: get().currentThreadId };
+
+      if(existingItem.status !== threadItem.status) {
+        await db.threadItems.put(updatedItem);
+      }
+
       debouncedThreadItemUpdate(updatedItem);
       set(state => ({
         threadItems: state.threadItems.map(t => (t.id === threadItem.id ? updatedItem : t)),

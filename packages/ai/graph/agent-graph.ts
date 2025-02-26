@@ -297,7 +297,6 @@ export class AgentGraph {
         timeZoneName: 'short',
       })}.\n\n${node.systemPrompt}\n\n`;
 
-      console.log(systemPrompt);
 
       const model = getLanguageModel(node.model);
       const tools = (node.tools || []).reduce(
@@ -329,7 +328,6 @@ export class AgentGraph {
         });
 
         for await (const chunk of fullStream) {
-          console.log('chunk', chunk);
           switch (chunk.type) {
             case 'text-delta':
               fullResponse += chunk.textDelta;
@@ -393,7 +391,6 @@ export class AgentGraph {
       // Final updates & events
       const endTime = Date.now();
 
-      console.log('fullResponse', fullResponse);
 
       node.completeExecution(fullResponse);
       this.saveNodeState(nodeId, {
@@ -424,6 +421,9 @@ export class AgentGraph {
         skipRendering: node.skipRendering,
         error: errors?.map(error => JSON.stringify(error)).join('\n\n\n\n') || '',
       });
+
+      console.log('node completed', node.getState());
+
 
       // Add final assistant message + calls to context
       this.contextManager.addMessage({ role: 'assistant', content: `\n\n${fullResponse}\n\n` });
