@@ -104,7 +104,10 @@ export const Sidebar = () => {
               <IconSearch size={14} strokeWidth={2} /> Search
             </div>
             <div className="flex-1" />
-            <Kbd icon={IconCommand}>K</Kbd>
+            <div className="flex flex-row gap-1">
+            <Kbd className='w-5'><IconCommand className='size-3 shrink-0'/></Kbd>
+            <Kbd>K</Kbd>
+            </div>
           </Button>
         </Flex>
 

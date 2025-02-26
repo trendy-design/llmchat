@@ -9,7 +9,8 @@ import {
   Flex,
   Kbd,
 } from '@repo/ui';
-import { ArrowUp, CircleStop } from 'lucide-react';
+import { IconPlayerStopFilled } from '@tabler/icons-react';
+import { ArrowUp } from 'lucide-react';
 import { ImageUpload } from './image-upload';
 
 export type TChatActions = {
@@ -57,14 +58,19 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
         {editor?.getText() && (
           <p className="flex flex-row items-center gap-1 text-xs text-gray-500">
             use
-            <Kbd>Shift + Enter</Kbd>
+            <div className="inline-flex flex-row gap-1">
+            <Kbd>Shift</Kbd>
+            <Kbd>Enter</Kbd>
+            </div>
             for new line
           </p>
         )}
 
         {isGenerating ? (
-          <Button size="xs" variant="secondary" onClick={stopGeneration}>
-            <CircleStop size={14} strokeWidth={2} /> Stop
+          <Button   size="icon-sm"
+          variant="default"
+          rounded="full"onClick={stopGeneration}>
+            <IconPlayerStopFilled size={14} strokeWidth={2} /> 
           </Button>
         ) : (
           <Button

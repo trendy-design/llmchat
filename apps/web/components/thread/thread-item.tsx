@@ -142,6 +142,133 @@ export const AIThreadItem = ({ content }: { content: string }) => {
   );
 };
 
+export const AIThreadItemV2 = ({ content }: { content: string }) => {
+  const animatedText = content ?? '';
+  const sources = useMemo(() => {
+    return parseSourceTagsFromXML(content);
+  }, [content]);
+  const [serializedMdx, setSerializedMdx] = useState<MDXRemoteSerializeResult | null>(null);
+  // const { text: animatedText, isDone } = useAnimatedText(content);
+  const [mdxSources, setMdxSources] = useState<NestedMDXRemoteSerializeResult[]>([]);
+  const [cachedChunks, setCachedChunks] = useState<Map<string, MDXRemoteSerializeResult>>(
+    new Map()
+  );
+  const { chunkMdx } = useMdxChunker();
+
+  console.log('sourcessss', sources);
+
+  useEffect(() => {
+    (async () => {
+      const mdx = await serialize(animatedText, { mdxOptions: { remarkPlugins: [remarkGfm] } });
+      setSerializedMdx(mdx);
+    })();
+  }, [animatedText]);
+
+  // const fixedMdx = useMemo(
+  //   () =>
+  //     sanitizeMDX(
+  //       animatedText?.replaceAll('<think>', '\n\n<Think>').replaceAll('</think>', '\n\n</Think>')
+  //     ),
+  //   [animatedText]
+  // );
+
+  // const processChunk = async (chunks: MdxChunk[]): Promise<NestedMDXRemoteSerializeResult[]> => {
+  //   const results: NestedMDXRemoteSerializeResult[] = [];
+
+  //   for (const chunk of chunks || []) {
+  //     if (typeof chunk === 'string') {
+  //       let chunkSource = chunk;
+  //       chunkSource = chunkSource
+  //         .replaceAll('<think>', '\n\n<Think>')
+  //         .replaceAll('</think>', '\n\n</Think>');
+  //       const cachedChunk = cachedChunks.get(chunkSource);
+  //       if (cachedChunk) {
+  //         results.push(cachedChunk as NestedMDXRemoteSerializeResult);
+  //         continue;
+  //       }
+  //       const mdx = await serialize(chunkSource, {
+  //         mdxOptions: {
+  //           remarkPlugins: [remarkGfm],
+  //         },
+  //       });
+
+  //       setCachedChunks(prev => new Map(prev).set(chunkSource, mdx));
+  //       results.push(mdx);
+  //     } else {
+  //       // Process nested chunks first
+  //       const childResults = await processChunk(chunk.children);
+
+  //       if (chunk.mdxTag === 'Think') {
+  //         // For Think components, create a wrapper that preserves the children
+  //         const nestedResult: NestedMDXRemoteSerializeResult = {
+  //           source: '',
+  //           tag: 'Think',
+  //           tagProps: chunk.mdxProps || {},
+  //           children: childResults,
+  //         };
+  //         results.push(nestedResult);
+  //       } else {
+  //         // For other nested structures
+  //         results.push(...childResults);
+  //       }
+  //     }
+  //   }
+
+  //   return results;
+  // };
+
+  // useEffect(() => {
+  //   (async () => {
+  //     if (fixedMdx) {
+  //       const chunks = await chunkMdx(fixedMdx);
+  //       console.log('chunks', chunks);
+
+  //       if (!chunks) {
+  //         return;
+  //       }
+
+  //       const mdxSources = await processChunk(chunks.chunks);
+  //       setMdxSources(mdxSources);
+  //     }
+  //   })();
+  // }, [fixedMdx]);
+
+
+  // const renderMdxSource = (source: NestedMDXRemoteSerializeResult) => {
+
+  //   if ('tag' in source && source.tag === 'Think') {
+  //     const CustomComponent = mdxComponents![
+  //       source.tag as keyof typeof mdxComponents
+  //     ] as React.ComponentType<any>;
+  //     const customComponentProps = source.tagProps;
+  //     return (
+  //       <CustomComponent {...customComponentProps}>
+  //         {source.children.map((child, index) => (
+  //           <Fragment key={index}>{renderMdxSource(child)}</Fragment>
+  //         ))}
+  //       </CustomComponent>
+  //     );
+  //   }
+  //   if ('compiledSource' in source) {
+  //     console.log('child compiledSource', source);
+  //     return <MemoizedMdxChunk source={source} />;
+  //   }
+  //   return null;
+  // };
+
+
+  if (!serializedMdx) {
+    return null;
+  }
+
+  return (
+    <div className="animate-fade-in prose prose-prosetheme prose-sm min-w-full">
+      <MDXRemote {...serializedMdx} components={mdxComponents} />
+    </div>
+  );
+};
+
+
 const MemoizedMdxChunk = memo(({ source }: { source: MDXRemoteSerializeResult }) => {
   if (!source) {
     return null;
@@ -179,7 +306,7 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
           <Steps steps={steps} />
           {stableBlocks?.map((block, index) => (
             <CitationProvider block={block}>
-              <AIThreadItem content={block.content} key={block.id} />
+              <AIThreadItemV2 content={block.content} key={block.id} />
             </CitationProvider>
           ))}
         </div>
