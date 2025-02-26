@@ -64,8 +64,8 @@ export const viewport: Viewport = {
 };
 
 const inter = localFont({
-  src: "./InterVariable.woff2"
-})
+  src: './InterVariable.woff2',
+});
 
 export default function ParentLayout({
   children,

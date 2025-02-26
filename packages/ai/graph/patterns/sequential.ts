@@ -1,6 +1,6 @@
-import { AgentGraph } from 'graph/agent-graph';
-import { EdgeHandlerStrategy } from 'graph/edge-pattern-handlers';
-import { GraphEdgeType } from 'graph/types';
+import { AgentGraph } from '../agent-graph';
+import { EdgeHandlerStrategy } from '../edge-pattern-handlers';
+import { GraphEdgeType } from '../types';
 
 type MessageResponse = {
   nodeId: string;

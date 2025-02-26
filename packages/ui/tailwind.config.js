@@ -30,7 +30,7 @@ module.exports = {
             '--tw-prose-pre-bg': 'hsl(var(--muted))',
             '--tw-prose-th-borders': 'hsl(var(--border))',
             '--tw-prose-td-borders': 'hsl(var(--border))',
-            
+
             // Dark mode values
             '--tw-prose-invert-body': 'hsl(var(--foreground))',
             '--tw-prose-invert-headings': 'hsl(var(--foreground))',

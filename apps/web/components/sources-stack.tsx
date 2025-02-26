@@ -32,14 +32,14 @@ export const SourcesStack = ({ urls }: { urls: string[] }) => {
     return null;
   }
   return (
-    <div className="flex flex-row items-center gap-2 rounded-full border bg-secondary p-1 text-xs">
+    <div className="bg-secondary flex flex-row items-center gap-2 rounded-full border p-1 text-xs">
       <div className="-gap-2 flex flex-row">
         {urls.slice(0, 3).map(url => {
           const host = getHost(url);
           const favIcon = getFavIcon(host ?? '');
           if (isValidUrl(url)) {
             return (
-              <div className="relative -mr-2 h-6 w-6 overflow-hidden rounded-full border border-border bg-background">
+              <div className="border-border bg-background relative -mr-2 h-6 w-6 overflow-hidden rounded-full border">
                 {' '}
                 <Image
                   src={favIcon ?? ''}

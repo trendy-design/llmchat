@@ -27,11 +27,7 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
   const hasTextInput = !!editor?.getText();
 
   return (
-    <Flex
-      className="w-full px-1 pb-1 pt-1.5 md:px-2 md:pb-2"
-      items="center"
-      justify="between"
-    >
+    <Flex className="w-full px-1 pb-1 pt-1.5 md:px-2 md:pb-2" items="center" justify="between">
       <Flex gap="xs" items="center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -77,7 +73,9 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
             variant={hasTextInput ? 'default' : 'secondary'}
             disabled={!hasTextInput || isGenerating}
             onClick={() => {
-              editor?.getText() && sendMessage(editor?.getText());
+            if (editor?.getText()) {
+                sendMessage(editor.getText());
+            }
             }}
           >
             <ArrowUp size={14} strokeWidth="2" />

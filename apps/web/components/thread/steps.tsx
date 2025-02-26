@@ -20,7 +20,7 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
               <div className="z-10">
                 <StepStatus status={block.nodeStatus} />
               </div>
-              <div className="min-h-full w-[1px] flex-1 bg-border/50" />
+              <div className="bg-border/50 min-h-full w-[1px] flex-1" />
             </div>
             <div className={'flex flex-col pb-4'} key={index}>
               <Fragment key={index}>

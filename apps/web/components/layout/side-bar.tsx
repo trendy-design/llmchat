@@ -63,7 +63,7 @@ export const Sidebar = () => {
     if (threads.length === 0) return null;
     return (
       <Flex gap="xs" direction="col" items="start" className="w-full">
-        <Type size="xs" weight="regular" className="px-2 py-1 text-muted-foreground">
+        <Type size="xs" weight="regular" className="text-muted-foreground px-2 py-1">
           {title}
         </Type>
         <Flex className="w-full gap-0.5" gap="none" direction="col">
@@ -81,7 +81,7 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="border-border relative flex h-[100dvh] w-[240px] flex-shrink-0 flex-row border-r bg-secondary">
+    <div className="border-border bg-secondary relative flex h-[100dvh] w-[240px] flex-shrink-0 flex-row border-r">
       <Flex direction="col" className="no-scrollbar w-full">
         <Flex justify="between" items="center" direction="col" className="w-full p-2" gap="xs">
           <Button
@@ -140,11 +140,7 @@ export const Sidebar = () => {
               SignIn{' '}
             </Button>
           ) : (
-            <Flex
-              gap="sm"
-              items="center"
-              className="w-full rounded-lg border border-border p-1"
-            >
+            <Flex gap="sm" items="center" className="border-border w-full rounded-lg border p-1">
               <Avvvatars value={user.email || 'Anonymous'} size={24} />
               <Type size="xs" className="line-clamp-1 flex-grow">
                 {user.email}

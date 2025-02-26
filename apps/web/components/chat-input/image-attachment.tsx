@@ -14,7 +14,7 @@ export const ImageAttachment: FC<TImageAttachment> = ({ attachment, clearAttachm
 
   return (
     <Flex className="pl-2 pr-2 pt-2 md:pl-3" gap="sm">
-      <div className="relative h-[60px] min-w-[60px] rounded-lg border border-border shadow-sm">
+      <div className="border-border relative h-[60px] min-w-[60px] rounded-lg border shadow-sm">
         <Image
           src={attachment.base64}
           alt="uploaded image"

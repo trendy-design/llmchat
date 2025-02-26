@@ -68,14 +68,14 @@ export const AuthProvider = ({ children }: TAuthProvider) => {
         onOpenChange={setOpenSignIn}
       >
         <Drawer.Portal>
-          <Drawer.Overlay className="fixed inset-0 z-[400] bg-muted/50" />
+          <Drawer.Overlay className="bg-muted/50 fixed inset-0 z-[400]" />
           <Drawer.Content
             className={cn(
               'fixed bottom-0 left-0 right-0 z-[500] mx-auto mt-24 flex max-h-[530px] flex-col items-center outline-none md:bottom-8 md:left-[50%]',
               `w-full md:ml-[-190px] md:w-[380px]`
             )}
           >
-            <div className="relative w-full space-y-4 rounded-2xl bg-background border">
+            <div className="bg-background relative w-full space-y-4 rounded-2xl border">
               <Flex className="w-full p-6" items="center" direction="col" gap="lg">
                 <Flex gap="xs" direction="col">
                   <Type weight="bold" size="lg">

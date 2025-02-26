@@ -64,7 +64,7 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
     }
     const citation = citations[url];
     return (
-      <div className="group inline-flex size-4 flex-row items-center justify-center gap-1 rounded-md bg-brand/10 text-[10px] text-brand">
+      <div className="bg-brand/10 text-brand group inline-flex size-4 flex-row items-center justify-center gap-1 rounded-md text-[10px]">
         {citation?.index}
       </div>
     );
@@ -84,7 +84,7 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
   code: ({ children, className }) => {
     if (!className) {
       return (
-        <code className="rounded border border-border bg-secondary px-1.5 py-0.5 font-mono text-sm text-foreground">
+        <code className="border-border bg-secondary text-foreground rounded border px-1.5 py-0.5 font-mono text-sm">
           {children}
         </code>
       );

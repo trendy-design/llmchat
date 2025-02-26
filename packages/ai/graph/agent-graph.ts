@@ -1,7 +1,6 @@
 import { LanguageModelV1, Tool, generateObject, streamText } from 'ai';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
-import type { BaseEdgeConfig } from '../../ui/src/type';
 import { ModelEnum } from '../models';
 import { getLanguageModel } from '../providers';
 import { ToolEnumType, aiSdkTools } from '../tools';
@@ -511,7 +510,7 @@ export class AgentGraph {
     try {
       await task();
     } catch (error) {
-      const config = edge.config as BaseEdgeConfig;
+      const config = edge.config as any;
       if (config?.fallbackNode) {
         const fallbackInput = this.executionState.results.get(edge.from) || '';
         await this.executeNode(config.fallbackNode, fallbackInput, [], []);

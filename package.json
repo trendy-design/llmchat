@@ -9,9 +9,13 @@
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\""
   },
   "devDependencies": {
-    "turbo": "latest",
+    "@typescript-eslint/parser": "^8.25.0",
+    "eslint": "^9.21.0",
+    "eslint-plugin-prettier": "^5.2.3",
+    "globals": "^16.0.0",
     "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.5.12"
+    "prettier-plugin-tailwindcss": "^0.5.12",
+    "turbo": "latest"
   },
   "packageManager": "bun@1.1.19",
   "workspaces": [
@@ -19,6 +23,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
     "ai": "^2.2.0"
   }
 }

@@ -11,7 +11,7 @@ export type TSheetContent = {
 export const SheetContent = ({ children, width = 'md', className }: TSheetContent) => {
   return (
     <Drawer.Portal>
-      <Drawer.Overlay className="fixed inset-0 z-30 bg-background/70 backdrop-blur-sm" />
+      <Drawer.Overlay className="bg-background/70 fixed inset-0 z-30 backdrop-blur-sm" />
       <Drawer.Content
         className={cn(
           'fixed bottom-0 left-0 right-0 z-40 mx-auto mt-24 flex max-h-[80%] flex-col rounded-3xl outline-none md:bottom-4 md:left-[50%]',
@@ -20,8 +20,8 @@ export const SheetContent = ({ children, width = 'md', className }: TSheetConten
           className
         )}
       >
-        <div className="flex-1 rounded-3xl bg-background pt-4">
-          <div className="-col mx-auto mb-4 h-1 w-8 flex-shrink-0 rounded-full bg-muted" />
+        <div className="bg-background flex-1 rounded-3xl pt-4">
+          <div className="-col bg-muted mx-auto mb-4 h-1 w-8 flex-shrink-0 rounded-full" />
           <div className="flex flex-col">{children}</div>
         </div>
       </Drawer.Content>

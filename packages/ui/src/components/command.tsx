@@ -89,7 +89,7 @@ const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={cn(
-      'text-foreground overflow-hidden md:text-base [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground',
+      'text-foreground [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden md:text-base [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-sm [&_[cmdk-group-heading]]:font-medium',
       className
     )}
     {...props}
@@ -117,7 +117,7 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex min-h-11 cursor-pointer items-center gap-2 rounded-lg !px-3 !py-2 text-xs font-medium text-foreground outline-none aria-disabled:pointer-events-none aria-disabled:opacity-50 aria-selected:bg-accent aria-selected:text-accent-foreground md:text-sm',
+      'text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground relative flex min-h-11 cursor-pointer items-center gap-2 rounded-lg !px-3 !py-2 text-xs font-medium outline-none aria-disabled:pointer-events-none aria-disabled:opacity-50 md:text-sm',
       className
     )}
     {...props}
@@ -148,6 +148,5 @@ export {
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut
+  CommandShortcut,
 };
-

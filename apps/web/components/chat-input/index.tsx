@@ -6,7 +6,6 @@ import { Flex } from '@repo/ui';
 import { motion } from 'framer-motion';
 import { nanoid } from 'nanoid';
 import { useCallback, useState } from 'react';
-import { ChangeLogs } from '../changelogs';
 import { ChatActions } from './chat-actions';
 import { ChatEditor } from './chat-editor';
 import { ChatFooter } from './chat-footer';
@@ -85,9 +84,8 @@ export const ChatInput = () => {
     editor.commands.clearContent();
   }, [editor, currentThreadId, model]);
 
-
   const renderChatInput = () => (
-    <div className="w-full rounded-2xl border bg-tertiary p-1">
+    <div className="bg-tertiary w-full rounded-2xl border p-1">
       {/* <div className="w-full p-2.5 text-xs">
         <p className="text-secondary-foreground">
           You have 10 free messages left today.{" "}
@@ -100,10 +98,7 @@ export const ChatInput = () => {
           to continue.
         </p>
       </div> */}
-      <Flex
-        direction="col"
-        className="w-full rounded-xl border shadow-sm bg-secondary"
-      >
+      <Flex direction="col" className="bg-secondary w-full rounded-xl border shadow-sm">
         <motion.div
           variants={slideUpVariant}
           initial="initial"
@@ -140,21 +135,19 @@ export const ChatInput = () => {
   );
 
   return (
-    <div className={cn(
-      "flex w-full flex-col items-center",
-      !threadItems?.length && "h-[calc(100vh-12rem)] justify-center"
-    )}>
-      <Flex 
-        items="center" 
-        justify="center" 
-        direction="col" 
-        gap="sm" 
-        className={cn(
-          "w-full",
-          threadItems?.length > 0 ? "mb-2" : "h-full"
-        )}
+    <div
+      className={cn(
+        'flex w-full flex-col items-center',
+        !threadItems?.length && 'h-[calc(100vh-12rem)] justify-center'
+      )}
+    >
+      <Flex
+        items="center"
+        justify="center"
+        direction="col"
+        gap="sm"
+        className={cn('w-full', threadItems?.length > 0 ? 'mb-2' : 'h-full')}
       >
-        <ChangeLogs open={openChangelog} setOpen={setOpenChangelog} />
         {renderChatBottom()}
         <ChatFooter />
       </Flex>

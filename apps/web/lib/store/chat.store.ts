@@ -60,8 +60,12 @@ class ThreadDatabase extends Dexie {
   }
 }
 
-const db = new ThreadDatabase();
-const CONFIG_KEY = 'chat-config';
+let db: ThreadDatabase;
+let CONFIG_KEY = 'chat-config';
+if (typeof window !== 'undefined') {
+  db = new ThreadDatabase();
+  CONFIG_KEY = 'chat-config';
+}
 
 const loadInitialData = async () => {
   const threads = await db.threads.toArray();
@@ -290,12 +294,15 @@ export const useChatStore = create<State & Actions>((set, get) => ({
   },
 }));
 
-// Initialize store with data from IndexedDB
-loadInitialData().then(({ threads, model, currentThreadId }) => {
-  useChatStore.setState({
+if (typeof window !== 'undefined') {
+  // Initialize store with data from IndexedDB
+  loadInitialData().then(({ threads, model, currentThreadId }) => {
+    useChatStore.setState({
     threads,
     model,
     currentThreadId,
     currentThread: threads.find(t => t.id === currentThreadId) || threads?.[0],
   });
 });
+
+}

@@ -15,7 +15,7 @@ export const Avatar = ({ name, size = 'md', className }: TAvatar) => {
   return (
     <div
       className={cn(
-        'relative rounded-full bg-secondary text-secondary-foreground',
+        'bg-secondary text-secondary-foreground relative rounded-full',
         size === 'sm' && 'h-7 min-w-7',
         size === 'md' && 'h-8 min-w-8',
         size === 'lg' && 'h-12 min-w-12',

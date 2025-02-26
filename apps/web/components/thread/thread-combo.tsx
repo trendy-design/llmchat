@@ -12,8 +12,6 @@ export function Thread() {
 
   const currentMessageGroups = messageGroups;
 
-  console.log('currentMessageGroups', currentMessageGroups, currentThreadId, threadItems);
-
   return (
     <div className="relative flex flex-col gap-2" id="thread-container">
       <div className="min-w-ful h-full  py-4">

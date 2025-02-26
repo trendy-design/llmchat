@@ -1,4 +1,4 @@
-import { ProviderEnumType } from 'providers';
+import { ProviderEnumType } from './providers';
 
 export enum ModelEnum {
   GPT_4o_Mini = 'gpt-4o-mini',

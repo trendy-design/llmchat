@@ -8,7 +8,7 @@ import {
   DropdownMenuTrigger,
   Flex,
   Input,
-  Type
+  Type,
 } from '@repo/ui';
 import { MoreHorizontal } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -23,14 +23,14 @@ export const HistoryItem = ({
   isActive?: boolean;
 }) => {
   const pathname = usePathname();
-  const updateThread = useChatStore((state) => state.updateThread);
+  const updateThread = useChatStore(state => state.updateThread);
   const { push } = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(thread.title);
-  const deleteThread = useChatStore((state) => state.deleteThread);
+  const deleteThread = useChatStore(state => state.deleteThread);
   const historyInputRef = useRef<HTMLInputElement>(null);
   const isChatPage = pathname.startsWith('/chat');
-  const switchThread = useChatStore((state) => state.switchThread);
+  const switchThread = useChatStore(state => state.switchThread);
   const [openOptions, setOpenOptions] = useState(false);
 
   useEffect(() => {
@@ -78,7 +78,7 @@ export const HistoryItem = ({
   };
 
   const handleDeleteConfirm = () => {
-   deleteThread(thread.id);
+    deleteThread(thread.id);
   };
 
   return (
@@ -103,34 +103,37 @@ export const HistoryItem = ({
         </>
       )}
       <DropdownMenu open={openOptions} onOpenChange={setOpenOptions}>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon-xs" onClick={(e) =>{
-                  e.stopPropagation();
-                  setOpenOptions(!openOptions)
-                }}>
-                  <MoreHorizontal size={14} strokeWidth="2" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" side="right">
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleEditClick();
-                  }}
-                >
-                  Rename
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteConfirm();
-                  }}
-                >
-                  Delete Chat
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
- 
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            onClick={e => {
+              e.stopPropagation();
+              setOpenOptions(!openOptions);
+            }}
+          >
+            <MoreHorizontal size={14} strokeWidth="2" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" side="right">
+          <DropdownMenuItem
+            onClick={e => {
+              e.stopPropagation();
+              handleEditClick();
+            }}
+          >
+            Rename
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={e => {
+              e.stopPropagation();
+              handleDeleteConfirm();
+            }}
+          >
+            Delete Chat
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };

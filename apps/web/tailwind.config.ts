@@ -1,7 +1,6 @@
 import sharedConfig from '@repo/tailwind-config';
-import type { Config } from 'tailwindcss';
 
-const config: Config = {
+const config = {
   presets: [sharedConfig],
   content: [
     './components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -12,7 +11,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      typography: ({ }) => ({
+      colors: {
+        border: 'hsl(var(--border))',
+      },
+      typography: ({}) => ({
         prosetheme: {
           css: {
             '--tw-prose-body': 'hsl(var(--muted-foreground))',
@@ -31,7 +33,7 @@ const config: Config = {
             '--tw-prose-pre-bg': 'hsl(var(--muted))',
             '--tw-prose-th-borders': 'hsl(var(--border))',
             '--tw-prose-td-borders': 'hsl(var(--border))',
-            
+
             // Dark mode values
             '--tw-prose-invert-body': 'hsl(var(--foreground))',
             '--tw-prose-invert-headings': 'hsl(var(--foreground))',

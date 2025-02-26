@@ -12,7 +12,7 @@ export const ImageDropzone: FC<TImageDropzone> = ({ dropzonProps }) => {
       <input {...dropzonProps.getInputProps()} />
       {dropzonProps.isDragActive && (
         <Flex
-          className="absolute inset-0 z-10 bg-background/50 backdrop-blur-sm"
+          className="bg-background/50 absolute inset-0 z-10 backdrop-blur-sm"
           items="center"
           justify="center"
           gap="sm"

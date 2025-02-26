@@ -12,27 +12,28 @@ const Kbd = React.forwardRef<HTMLElement, KbdProps>(
   ({ className, icon: Icon, children, ...props }, ref) => {
     return (
       <div className="flex flex-row items-center gap-1">
-      { Icon && <kbd
-        ref={ref}
-        className={cn(
-          'flex size-5 items-center justify-center rounded-md border font-mono text-[10px] font-medium text-muted-foreground',
-          className
+        {Icon && (
+          <kbd
+            ref={ref}
+            className={cn(
+              'text-muted-foreground flex size-5 items-center justify-center rounded-md border font-mono text-[10px] font-medium',
+              className
+            )}
+            {...props}
+          >
+            <Icon className="size-3" strokeWidth={2} />
+          </kbd>
         )}
-        {...props}
-      >
-          <Icon className="size-3" strokeWidth={2} />
+        <kbd
+          ref={ref}
+          className={cn(
+            'text-muted-foreground flex size-5 items-center justify-center rounded-md border px-1.5 font-mono text-[10px] font-medium',
+            className
+          )}
+          {...props}
+        >
+          {children}
         </kbd>
-  }
-      <kbd
-        ref={ref}
-        className={cn(
-          'flex size-5 items-center justify-center rounded-md border px-1.5 font-mono text-[10px] font-medium text-muted-foreground',
-          className
-        )}
-        {...props}
-      >
-        {children}
-      </kbd>
       </div>
     );
   }

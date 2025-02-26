@@ -2,6 +2,7 @@
 import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig = {
+  transpilePackages: ['next-mdx-remote'],
   images: {
     remotePatterns: [
       { hostname: 'icon.horse' },

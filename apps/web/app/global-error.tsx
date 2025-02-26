@@ -1,6 +1,5 @@
 'use client';
 
-import { Type } from '@repo/ui';
 import * as Sentry from '@sentry/nextjs';
 import Error from 'next/error';
 import { useEffect } from 'react';
@@ -15,14 +14,14 @@ export default function GlobalError({ error }: { error: Error }) {
   return (
     <html>
       <body>
-        <div className="bg-stone-50 flex h-screen w-screen flex-col items-center justify-center">
+        <div className="flex h-screen w-screen flex-col items-center justify-center bg-stone-50">
           <div className="flex w-[300px] flex-col gap-2">
-            <Type size="base">Oops! Something went wrong.</Type>
-            <Type size="sm" textColor="secondary">
+            <p className="text-base">Oops! Something went wrong.</p>
+            <p className="text-sm text-stone-500">
               It seems we encountered an unexpected error. Please try refreshing the page or check
               back later. If the problem persists, feel free to{' '}
               <a href="mailto:hello@llmchat.com">contact team</a>.
-            </Type>
+            </p>
           </div>
         </div>
       </body>

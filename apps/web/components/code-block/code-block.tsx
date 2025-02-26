@@ -33,9 +33,9 @@ export const CodeBlock = ({ lang = 'plaintext', code, showHeader = true }: CodeB
   }, [code, lang]);
 
   return (
-    <div className="not-prose my-4 rounded-xl border border-border bg-tertiary p-1">
+    <div className="not-prose border-border bg-tertiary my-4 rounded-xl border p-1">
       {showHeader && (
-        <div className="flex items-center justify-between pb-1 pl-2 text-foreground">
+        <div className="text-foreground flex items-center justify-between pb-1 pl-2">
           <p className="text-muted-foreground text-xs tracking-wide">{lang}</p>
           <Button
             variant="ghost"
@@ -50,7 +50,7 @@ export const CodeBlock = ({ lang = 'plaintext', code, showHeader = true }: CodeB
           </Button>
         </div>
       )}
-      <pre className="overflow-x-auto rounded-lg border border-border bg-background p-4 text-foreground">
+      <pre className="border-border bg-background text-foreground overflow-x-auto rounded-lg border p-4">
         <code className={cn(`language-${lang}`)} ref={ref}>
           {code}
         </code>

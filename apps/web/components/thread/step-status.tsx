@@ -4,13 +4,13 @@ import { IconCircleCheckFilled, IconCircleDashed, IconCircleDashedX } from '@tab
 export const StepStatus = ({ status }: { status: Block['nodeStatus'] }) => {
   switch (status) {
     case 'pending':
-      return <SpinnerIcon size={16} className="size-4 shrink-0 animate-spin text-tertiary" />;
+      return <SpinnerIcon size={16} className="text-tertiary size-4 shrink-0 animate-spin" />;
     case 'completed':
-      return <IconCircleCheckFilled className="size-4 shrink-0 text-brand" />;
+      return <IconCircleCheckFilled className="text-brand size-4 shrink-0" />;
     case 'error':
-      return <IconCircleDashedX className="size-4 shrink-0 text-tertiary" />;
+      return <IconCircleDashedX className="text-tertiary size-4 shrink-0" />;
     default:
-      return <IconCircleDashed className="size-4 shrink-0 text-tertiary" strokeWidth={1} />;
+      return <IconCircleDashed className="text-tertiary size-4 shrink-0" strokeWidth={1} />;
   }
 };
 

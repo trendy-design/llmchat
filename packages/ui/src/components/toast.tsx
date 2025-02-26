@@ -28,10 +28,8 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          'border bg-background text-foreground',
-        destructive:
-          'border bg-destructive text-destructive-foreground',
+        default: 'border bg-background text-foreground',
+        destructive: 'border bg-destructive text-destructive-foreground',
       },
     },
     defaultVariants: {
@@ -61,7 +59,7 @@ const ToastAction = React.forwardRef<
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
-      'inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium transition-colors hover:bg-secondary focus:outline-none focus:ring-1 focus:ring-ring disabled:pointer-events-none disabled:opacity-50 group-[.destructive]:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive md:text-base',
+      'hover:bg-secondary focus:ring-ring group-[.destructive]:border-destructive/30 group-[.destructive]:hover:bg-destructive group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium transition-colors focus:outline-none focus:ring-1 disabled:pointer-events-none disabled:opacity-50 md:text-base',
       className
     )}
     {...props}
@@ -76,7 +74,7 @@ const ToastClose = React.forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
-      'absolute right-2 top-2 rounded-lg bg-muted/50 p-1.5 text-foreground/50 opacity-100 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100 group-[.destructive]:text-destructive-foreground/50 group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive',
+      'bg-muted/50 text-foreground/50 hover:text-foreground group-[.destructive]:text-destructive-foreground/50 group-[.destructive]:hover:text-destructive-foreground group-[.destructive]:focus:ring-destructive absolute right-2 top-2 rounded-lg p-1.5 opacity-100 transition-opacity focus:opacity-100 focus:outline-none focus:ring-1 group-hover:opacity-100',
       className
     )}
     toast-close=""
@@ -124,6 +122,5 @@ export {
   ToastTitle,
   ToastViewport,
   type ToastActionElement,
-  type ToastProps
+  type ToastProps,
 };
-

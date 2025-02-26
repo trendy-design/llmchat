@@ -1,5 +1,4 @@
 'use client';
-import { TProvider } from '@repo/shared/types';
 import { initHotjar } from '@repo/shared/utils';
 import { createContext, useContext, useEffect, useState } from 'react';
 
@@ -8,10 +7,6 @@ export type RootContextType = {
   setIsSidebarOpen: (isSidebarOpen: boolean) => void;
   isCommandSearchOpen: boolean;
   setIsCommandSearchOpen: (isCommandSearchOpen: boolean) => void;
-  openApiKeyModal: boolean;
-  setOpenApiKeyModal: (openApiKeyModal: boolean) => void;
-  apiKeyModalProvider: TProvider | null;
-  setApiKeyModalProvider: (apiKeyModalProvider: TProvider | null) => void;
   isMobileSidebarOpen: boolean;
   setIsMobileSidebarOpen: (isMobileSidebarOpen: boolean) => void;
 };
@@ -25,8 +20,6 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isCommandSearchOpen, setIsCommandSearchOpen] = useState(false);
-  const [openApiKeyModal, setOpenApiKeyModal] = useState(false);
-  const [apiKeyModalProvider, setApiKeyModalProvider] = useState<TProvider | null>(null);
 
   return (
     <RootContext.Provider
@@ -35,10 +28,6 @@ export const RootProvider = ({ children }: { children: React.ReactNode }) => {
         setIsSidebarOpen,
         isCommandSearchOpen,
         setIsCommandSearchOpen,
-        openApiKeyModal,
-        setOpenApiKeyModal,
-        apiKeyModalProvider,
-        setApiKeyModalProvider,
         isMobileSidebarOpen,
         setIsMobileSidebarOpen,
       }}

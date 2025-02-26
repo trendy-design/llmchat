@@ -168,7 +168,7 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
     <>
       {threadItem.role === 'user' && (
         <div className="flex w-full flex-row justify-start py-2">
-          <div className="rounded-xl bg-secondary px-3 py-2.5 text-sm font-medium tracking-tight text-secondary-foreground">
+          <div className="bg-secondary text-secondary-foreground rounded-xl px-3 py-2.5 text-sm font-medium tracking-tight">
             {threadItem.content[0].content}
           </div>
         </div>

@@ -4,8 +4,6 @@ const { fontFamily } = require('tailwindcss/defaultTheme');
 module.exports = {
   darkMode: ['class'],
   theme: {
-
-  
     container: {
       center: true,
       padding: '2rem',
@@ -74,7 +72,7 @@ module.exports = {
           DEFAULT: 'hsl(var(--border))',
           soft: 'hsl(var(--border-soft))',
           hard: 'hsl(var(--border-hard))',
-        }
+        },
       },
       borderRadius: {
         lg: 'var(--radius)',
@@ -125,7 +123,7 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
-       typography: ({ theme }) => ({
+      typography: ({ theme }) => ({
         prosetheme: {
           css: {
             '--tw-prose-body': 'hsl(var(--foreground))',
@@ -144,7 +142,7 @@ module.exports = {
             '--tw-prose-pre-bg': 'hsl(var(--muted))',
             '--tw-prose-th-borders': 'hsl(var(--border))',
             '--tw-prose-td-borders': 'hsl(var(--border))',
-            
+
             // Dark mode values
             '--tw-prose-invert-body': 'hsl(var(--foreground))',
             '--tw-prose-invert-headings': 'hsl(var(--foreground))',
@@ -167,8 +165,6 @@ module.exports = {
       }),
     },
   },
-
-     
 
   plugins: [
     require('@tailwindcss/typography'),

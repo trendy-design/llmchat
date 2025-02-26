@@ -18,8 +18,8 @@ import { useEffect } from 'react';
 
 export const CommandSearch = () => {
   const { isCommandSearchOpen, setIsCommandSearchOpen } = useRootContext();
-  const threads = useChatStore((state) => state.threads);
-  const switchThread = useChatStore((state) => state.switchThread);
+  const threads = useChatStore(state => state.threads);
+  const switchThread = useChatStore(state => state.switchThread);
 
   const { theme, setTheme } = useTheme();
 
@@ -95,7 +95,7 @@ export const CommandSearch = () => {
                 }}
               >
                 <span className="w-full truncate">{thread.title}</span>
-                <span className="flex-shrink-0 pl-4 text-xs text-muted-foreground">
+                <span className="text-muted-foreground flex-shrink-0 pl-4 text-xs">
                   {moment(thread.createdAt).fromNow(true)}
                 </span>
               </CommandItem>

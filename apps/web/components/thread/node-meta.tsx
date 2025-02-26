@@ -37,11 +37,11 @@ export const ThreadBlockMetadata = ({ block }: { block: Block }) => {
             </Button>
           </div>
           {['toolCalls', 'toolCallResults', 'history', 'nodeError'].includes(key) ? (
-            <div className="prose prose-sm text-xs prose-prosetheme min-w-full">
+            <div className="prose prose-sm prose-prosetheme min-w-full text-xs">
               <CodeBlock code={JSON.stringify(value, null, 2)} lang="json" />
             </div>
           ) : (
-            <p className="prose prose-sm text-xs prose-prosetheme">
+            <p className="prose prose-sm prose-prosetheme text-xs">
               <ReactMarkdown>{value?.toString()}</ReactMarkdown>
             </p>
           )}
