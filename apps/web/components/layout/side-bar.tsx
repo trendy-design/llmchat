@@ -96,8 +96,8 @@ export const Sidebar = () => {
           </Button>
           <Button
             size="sm"
-            variant="bordered"
-            className="w-full gap-2 px-2 "
+            variant="ghost"
+            className="w-full gap-2 px-2"
             onClick={() => setIsCommandSearchOpen(true)}
           >
             <div className="flex flex-row items-center gap-1 opacity-50">
@@ -117,7 +117,7 @@ export const Sidebar = () => {
           <Flex
             direction="col"
             gap="md"
-            className="no-scrollbar border-border w-full flex-1 overflow-y-auto border-t p-2"
+            className="no-scrollbar border-border w-full flex-1 overflow-y-auto p-2"
           >
             {renderGroup('Today', groupedThreads.today)}
             {renderGroup('Tomorrow', groupedThreads.tomorrow)}

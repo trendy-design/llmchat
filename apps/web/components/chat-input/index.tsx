@@ -85,7 +85,7 @@ export const ChatInput = () => {
   }, [editor, currentThreadId, model]);
 
   const renderChatInput = () => (
-    <div className="bg-tertiary w-full rounded-2xl border p-1">
+    <div className="bg-secondary w-full rounded-2xl border border-border p-1">
       {/* <div className="w-full p-2.5 text-xs">
         <p className="text-secondary-foreground">
           You have 10 free messages left today.{" "}
@@ -98,7 +98,7 @@ export const ChatInput = () => {
           to continue.
         </p>
       </div> */}
-      <Flex direction="col" className="bg-secondary w-full rounded-xl border shadow-sm">
+      <Flex direction="col" className="bg-background w-full rounded-xl border border-border shadow-sm">
         <motion.div
           variants={slideUpVariant}
           initial="initial"

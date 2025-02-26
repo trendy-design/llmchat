@@ -64,7 +64,7 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
     }
     const citation = citations[url];
     return (
-      <div className="bg-brand/10 text-brand group inline-flex size-4 flex-row items-center justify-center gap-1 rounded-md text-[10px]">
+      <div className="bg-brand/20 text-brand group inline-flex size-5 flex-row items-center justify-center gap-1 rounded-md text-xs">
         {citation?.index}
       </div>
     );

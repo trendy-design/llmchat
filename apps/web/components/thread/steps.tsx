@@ -13,7 +13,7 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
       <Button variant="link" size="xs" className="p-0" onClick={() => setDebugMode(!debugMode)}>
         Debug Mode
       </Button>
-      <div className="flex w-full flex-col rounded-xl border py-8 pl-4 pr-8">
+      <div className="flex w-full flex-col rounded-xl border border-border bg-secondary/50 py-8 pl-4 pr-8">
         {(steps || []).map((block, index, array) => (
           <div className="flex flex-row items-stretch justify-start gap-2">
             <div className="flex min-h-full flex-col items-center justify-start px-2">
