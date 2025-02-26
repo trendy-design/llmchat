@@ -38,7 +38,7 @@ export const getSERPResults = async (queries: string[]) => {
 
 const getWebPageContent = async (url: string) => {
   try {
-    const response = await fetch('http://localhost:3001/api/reader', {
+    const response = await fetch(`${process.env.VERCEL_URL}/reader`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

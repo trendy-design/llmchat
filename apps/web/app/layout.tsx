@@ -75,7 +75,7 @@ export default function ParentLayout({
   return (
     <html
       lang="en"
-      className={cn(inter.className, 'antialiased', 'light')}
+      className={cn(inter.className, 'antialiased')}
       suppressHydrationWarning
     >
       <head>
