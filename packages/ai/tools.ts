@@ -38,7 +38,7 @@ export const getSERPResults = async (queries: string[]) => {
 
 const getWebPageContent = async (url: string) => {
   try {
-    const response = await fetch(`${process.env.VERCEL_URL}/reader`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/reader`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
