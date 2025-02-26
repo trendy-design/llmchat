@@ -1,5 +1,4 @@
 import { useChatStore } from '@/libs/store/chat.store';
-import { models } from '@repo/ai/models';
 import {
   Button,
   DropdownMenu,
@@ -9,7 +8,7 @@ import {
   Flex,
   Kbd,
 } from '@repo/ui';
-import { IconPlayerStopFilled } from '@tabler/icons-react';
+import { IconBolt, IconChevronDown, IconPlayerStopFilled, IconSchool } from '@tabler/icons-react';
 import { ArrowUp } from 'lucide-react';
 import { ImageUpload } from './image-upload';
 
@@ -18,14 +17,32 @@ export type TChatActions = {
   handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
+export type ChatMode = 'deep' | 'fast';
+
 export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) => {
   const isGenerating = useChatStore(state => state.isGenerating);
   const editor = useChatStore(state => state.editor);
-  const setModel = useChatStore(state => state.setModel);
-  const model = useChatStore(state => state.model);
+  const chatMode = useChatStore(state => state.chatMode);
+  const setChatMode = useChatStore(state => state.setChatMode);
   const stopGeneration = useChatStore(state => state.stopGeneration);
 
   const hasTextInput = !!editor?.getText();
+
+  const chatOptions = [
+    {
+      label: "Deep Research",
+      value: "deep",
+      icon: <IconSchool size={14} strokeWidth={2} className="text-blue-400" />,
+      onClick: () => setChatMode('deep')
+    },
+    {
+      label: "Fast Research",
+      value: "fast",
+      icon: <IconBolt size={14} strokeWidth={2} className="text-emerald-500" />,
+      onClick: () => setChatMode('fast')
+    },
+    
+  ]
 
   return (
     <Flex className="w-full px-1 pb-1 pt-1.5 md:px-2 md:pb-2" items="center" justify="between">
@@ -33,13 +50,16 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="xs" variant="bordered">
-              {model.name}
+              {chatOptions.find(option => option.value === chatMode)?.icon}
+              {chatOptions.find(option => option.value === chatMode)?.label}
+              <IconChevronDown size={12} strokeWidth={2} />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="bottom">
-            {models.map(model => (
-              <DropdownMenuItem key={model.id} onClick={() => setModel(model)}>
-                {model.name}
+          <DropdownMenuContent align="start" side="bottom">
+            {chatOptions.map(option => (
+              <DropdownMenuItem key={option.label} onClick={option.onClick}>
+                {option.icon}
+                {option.label}
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

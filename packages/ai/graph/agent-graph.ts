@@ -20,6 +20,15 @@ import type {
   ToolCallType,
 } from './types';
 
+
+const isValidUrl = (url: string) => {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+};
 type MessageResponse = { nodeId: string; response: string };
 
 type GraphState = {
@@ -380,6 +389,8 @@ export class AgentGraph {
                 break;
             }
 
+            fullResponse = this.sanitizeResponse(fullResponse);
+
             // Continuously update node state
             this.saveNodeState(nodeId, {
               ...node.getState(),
@@ -604,10 +615,21 @@ export class AgentGraph {
     return this.graphState.currentExecution.executionPath;
   }
 
+
+  sanitizeResponse(response: string): string {
+    return response.replace(/<Source>.*?<\/Source>/g, match => {
+      const url = match.replace(/<Source>|<\/Source>/g, '').trim();
+      return isValidUrl(url) ? match : '';
+    });
+  }
+
   extractCitations(response: string): string[] {
     const citations = response
       .match(/<Source>(.*?)<\/Source>/g)
       ?.map(match => match.replace(/<Source>|<\/Source>/g, ''));
-    return Array.from(new Set(citations || []));
+    const citationsArray = Array.from(new Set(citations || []));
+
+    const sanitizedCitations = citationsArray.map(citation => citation.trim()).filter(isValidUrl)
+    return sanitizedCitations;
   }
 }

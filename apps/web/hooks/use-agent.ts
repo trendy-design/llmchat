@@ -3,11 +3,14 @@ import type { CompletionRequestType } from '@repo/ai';
 
 export const useAgentStream = () => {
   const updateThreadItem = useChatStore(state => state.updateThreadItem);
+  const chatMode = useChatStore(state => state.chatMode);
 
   const runAgent = async (body: CompletionRequestType) => {
     const nodes = new Map<string, Block>();
 
-    const response = await fetch('/agent2', {
+    const modeEndpoint = chatMode === 'deep' ? '/deep' : '/fast';
+
+    const response = await fetch(`${modeEndpoint}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

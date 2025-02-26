@@ -88,10 +88,14 @@ const loadInitialData = async () => {
   };
 };
 
+
+type ChatMode = 'fast' | 'deep';
+
 type State = {
   model: Model;
   isGenerating: boolean;
   editor: any;
+  chatMode: ChatMode;
   context: string;
   abortController: AbortController | null;
   threads: Thread[];
@@ -112,6 +116,7 @@ type Actions = {
   stopGeneration: () => void;
   setAbortController: (abortController: AbortController) => void;
   createThread: () => void;
+  setChatMode: (chatMode: ChatMode) => void;
   updateThread: (thread: Pick<Thread, 'id' | 'title'>) => Promise<void>;
   createThreadItem: (threadItem: ThreadItem) => Promise<void>;
   updateThreadItem: (threadItem: Partial<ThreadItem>) => Promise<void>;
@@ -151,11 +156,13 @@ export const useChatStore = create<State & Actions>((set, get) => ({
   editor: undefined,
   context: '',
   threads: [],
+  chatMode: 'fast',
   threadItems: [],
   currentThreadId: 'default',
   currentThread: null,
   currentThreadItem: null,
   messageGroups: [],
+  setChatMode: (chatMode: ChatMode) => set({ chatMode }),
   abortController: null,
   isLoadingThreads: false,
   isLoadingThreadItems: false,
