@@ -10,10 +10,10 @@
   },
   "dependencies": {
     "@latitude-data/sdk": "^2.1.6",
-    "@repo/ai": "workspace:*"
+    "@repo/ai": "*"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*",
+    "@repo/typescript-config": "*",
     "@types/node": "^20.0.0",
     "eslint": "^8.0.0",
     "tsup": "^8.0.0",
