@@ -38,6 +38,8 @@ export const getSERPResults = async (queries: string[]) => {
 
 const getWebPageContent = async (url: string) => {
   try {
+
+    console.log(`${process.env.NEXT_PUBLIC_APP_URL}/reader`);
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/reader`, {
       method: 'POST',
       headers: {
@@ -167,12 +169,12 @@ const webbrowsingTool = ({emit}:{emit: (event: string, data: any) => void}) => {
     execute: async ({ queries }) => {
       const webSearchResults = await Promise.all(queries.map(async (query) => {
         const result = await getSERPResults([query]);
-        return result;
+        return result.slice(0, 5);
       }));
 
       const uniqueWebSearchResults = webSearchResults.flat().filter((result, index, self) =>
         index === self.findIndex((t) => t.link === result.link)
-      );
+      )
 
       emit('search', { queries, uniqueWebSearchResults });
 
