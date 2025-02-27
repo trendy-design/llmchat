@@ -389,7 +389,6 @@ export class AgentGraph {
         // Wrap streaming in a timeout
         const streamEndPromise = (async () => {
           for await (const chunk of fullStream) {
-
             switch (chunk.type) {
               case 'text-delta':
                 delta = chunk.textDelta;
@@ -450,6 +449,8 @@ export class AgentGraph {
               isStep: node.isStep,
               skipRendering: node.skipRendering,
             });
+
+            delta = '';
           }
         })();
 
