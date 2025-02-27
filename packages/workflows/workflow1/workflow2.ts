@@ -21,7 +21,7 @@ import { ToolEnumType } from "@repo/ai/tools";
           role: "assistant",
           model: ModelEnum.GEMINI_2_FLASH,
           systemPrompt: "You are a deep research expert. Search the web to find relevant information about the user's query and related queries to the user's query. Focus on finding factual and up-to-date information. and after searching write detailed report of the search results.Must use cite each statements using <Source>https://www.google.com</Source> tag. ",
-          tools: [ToolEnumType.SEARCH, ToolEnumType.READER],
+          tools: [ToolEnumType.SEARCH],
           toolSteps: 4,
           isStep: true
         });

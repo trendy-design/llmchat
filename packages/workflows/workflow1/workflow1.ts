@@ -56,8 +56,8 @@ export async function workflow1(
     role: "assistant",
     systemPrompt: executorPrompt,
     model: ModelEnum.GEMINI_2_FLASH,
-    tools: [ToolEnumType.SEARCH, ToolEnumType.READER],
-    toolSteps: 3,
+    tools: [ToolEnumType.SEARCH],
+    toolSteps: 2,
     isStep: true
   });
 

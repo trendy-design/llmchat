@@ -1,5 +1,3 @@
-import { Readability } from '@mozilla/readability';
-import { JSDOM } from 'jsdom';
 import { NextResponse, type NextRequest } from 'next/server';
 import sanitizeHtml from 'sanitize-html';
 import TurndownService from 'turndown';
@@ -107,27 +105,30 @@ const fetchWithJina = async (url: string): Promise<TReaderResult> => {
 
 const readURL = async (url: string): Promise<TReaderResult> => {
   try {
-    const response = await fetch(url);
-    const html = await response.text();
-    const cleanedHtml = cleanHtml(html);
-    const doc = new JSDOM(cleanedHtml);
-    const article = new Readability(doc.window.document).parse();
+    // const response = await fetch(url);
+    // const html = await response.text();
+    // const cleanedHtml = cleanHtml(html);
+    // const doc = new JSDOM(cleanedHtml);
+    // const article = new Readability(doc.window.document).parse();
 
-    if (article?.content) {
-      let markdown = turndownService.turndown(article.content);
-      markdown = truncateContent(markdown, MAX_CONTENT_LENGTH);
-      if (markdown.length >= MIN_CONTENT_LENGTH) {
-        return {
-          success: true,
-          title: article.title,
-          url,
-          markdown,
-          source: 'readability',
-        };
-      }
-    }
+    // if (article?.content) {
+    //   let markdown = turndownService.turndown(article.content);
+    //   markdown = truncateContent(markdown, MAX_CONTENT_LENGTH);
+    //   if (markdown.length >= MIN_CONTENT_LENGTH) {
+    //     return {
+    //       success: true,
+    //       title: article.title,
+    //       url,
+    //       markdown,
+    //       source: 'readability',
+    //     };
+    //   }
+    // }
     if (process.env.JINA_API_KEY) {
       return await fetchWithJina(url);
+    }
+    else{
+      console.log('No Jina API key found');
     }
     return { success: false };
   } catch (error) {

@@ -1,4 +1,4 @@
-import { LanguageModelV1, Tool, generateObject, streamText } from 'ai';
+import { InvalidToolArgumentsError, LanguageModelV1, Tool, generateObject, streamText } from 'ai';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { ModelEnum } from '../models';
@@ -60,7 +60,7 @@ export class AgentGraph {
   protected edgeHandlerStrategies: Map<GraphEdgePatternType, EdgeHandlerStrategy<any>>;
 
   // Change or make configurable as desired
-  private STREAM_TIMEOUT_MS = 60000;
+  private STREAM_TIMEOUT_MS = 600000;
 
   constructor(events: AgentGraphEvents, contextManager: AgentContextManager) {
     this.events = events;
@@ -341,7 +341,11 @@ export class AgentGraph {
 
       const model = getLanguageModel(node.model);
       const tools = (node.tools || []).reduce(
-        (acc, tool) => ({ ...acc, [tool]: aiSdkTools[tool] }),
+        (acc, tool) => ({ ...acc, [tool]: aiSdkTools[tool]?.((event, data) => {
+          console.log('web browsing event', event);
+        })
+      
+      }),
         {} as Record<string, Tool>
       );
 
@@ -360,7 +364,7 @@ export class AgentGraph {
       const errors: unknown[] = [];
 
       if (type === 'text') {
-        const { fullStream, usage } = streamText({
+        const { fullStream, usage, toolCalls } = streamText({
           model,
           messages: completeMessages,
           tools,
@@ -378,13 +382,22 @@ export class AgentGraph {
                 citations = this.extractCitations(fullResponse);
                 break;
               case 'tool-call':
-                toolCallsMap.set(chunk.toolCallId, chunk);
+              toolCallsMap.set(chunk.toolCallId, chunk);
                 break;
               case 'tool-result' as any:
                 const toolResult = chunk as any;
                 toolResultsMap.set(toolResult.toolCallId, toolResult);
                 break;
               case 'error':
+
+                if (InvalidToolArgumentsError.isInstance(chunk)) {
+                  console.log('invalid tool arguments error', chunk);
+
+              console.log(toolCalls)
+                }
+
+              
+                console.log('error', chunk);
                 errors.push(chunk);
                 break;
             }
@@ -425,12 +438,12 @@ export class AgentGraph {
           }
         })();
 
-        await Promise.race([
-          streamEndPromise,
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('LLM stream timed out')), this.STREAM_TIMEOUT_MS)
-          ),
-        ]);
+        // await Promise.race([
+        //   streamEndPromise,
+        //   new Promise((_, reject) =>
+        //     setTimeout(() => reject(new Error('LLM stream timed out')), this.STREAM_TIMEOUT_MS)
+        //   ),
+        // ]);
 
         tokenUsage = (await usage).totalTokens;
       } else {
@@ -485,6 +498,13 @@ export class AgentGraph {
       return fullResponse;
     } catch (error) {
       const endTime = Date.now();
+
+      if (InvalidToolArgumentsError.isInstance(error)) {
+
+        console.log('invalid tool arguments error', error);
+        // Handle the error
+      }
+      console.log('node-error', node.name, 'nodeKey', nodeKey, 'nodeId', nodeId);
       node.setError(error instanceof Error ? error.message : String(error));
       this.saveNodeState(nodeId, {
         ...node.getState(),

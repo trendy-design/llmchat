@@ -82,7 +82,7 @@ async function executeStream(
     }
   });
 
-  await graph.execute('initiator', data.prompt);
+  const result = await graph.execute('initiator', data.prompt);
   controller.close();
 }
 

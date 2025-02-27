@@ -9,9 +9,7 @@ export const useAgentStream = () => {
     const nodes = new Map<string, Block>();
 
     const modeEndpoint = chatMode === 'deep' ? '/deep' : '/fast';
-
-    console.log('modeEndpoint', modeEndpoint);
-
+    
     const response = await fetch(`${modeEndpoint}`, {
       method: 'POST',
       headers: {

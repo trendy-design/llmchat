@@ -23,8 +23,8 @@ const executorPrompt = `
 **Instruction:**
 You are an expert researcher. Your job is to analyze the requirements perform web search and provide a detailed report.
 
-You have access to tools like searchTool and readerTool that can search the web for information and read the web page information respectively.
-**Important:** Maximun 2 queries allowed to search the web using searchTool.
+You have access to tools like web browsing tool that can search the web for information.
+**Important:** Maximun 2 queries allowed to search the web using web browsing tool.
 
 **Scope & Detail**
 - Follow the research direction provided by the coordinator
@@ -208,10 +208,11 @@ Provide exactly 3 sentences:
 "Analysis of renewable energy adoption shows 40% cost reduction in solar installation over 5 years, with significant variations across different regions and regulatory frameworks. The findings draw from extensive government reports, industry data, and market analysis from reputable sources, creating a comprehensive picture of the current landscape. Based on the gathered evidence, we can confidently answer the original query about solar energy cost trends and their implications for industry growth."`;
 
 export {
-  analysisPrompt,
-  analysisReflectorPrompt,
-  coordinatorPrompt,
-  executorPrompt,
-  initiatorPrompt,
-  summarizerPrompt,
+        analysisPrompt,
+        analysisReflectorPrompt,
+        coordinatorPrompt,
+        executorPrompt,
+        initiatorPrompt,
+        summarizerPrompt
 };
+

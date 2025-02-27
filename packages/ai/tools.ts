@@ -30,7 +30,7 @@ export const getSERPResults = async (queries: string[]) => {
         index === self.findIndex((r: any) => r?.link === result?.link)
     );
 
-    return uniqueOrganicResults.slice(0, 10);
+    return uniqueOrganicResults.slice(0, 10).map((item: any) => ({ title: item.title, link: item.link  }));
   } catch (error) {
     console.error(error);
   }
@@ -63,7 +63,8 @@ const getWebPageContent = async (url: string) => {
   }
 };
 
-export const searchTool = tool({
+export const searchTool = ({cb}:{cb: (event: string, data: any) => void}) => {
+  return tool({
   description: 'Search the web for information',
   parameters: z.object({
     queries: z
@@ -77,11 +78,16 @@ export const searchTool = tool({
     const allowedQueries = queries.slice(0, 2);
 
     const results = await getSERPResults(allowedQueries);
+
+    cb('searchTool', { queries: allowedQueries, results });
+
+    console.log('searchTool queries', allowedQueries);
     console.log('searchTool results', results.length);
 
     return results;
   },
-});
+})
+}
 
 export const readerTool = tool({
   description: 'Read the web pages information from the given urls',
@@ -152,20 +158,48 @@ export const plannerTool = tool({
   },
 });
 
+const webbrowsingTool = ({emit}:{emit: (event: string, data: any) => void}) => {
+  return tool({
+    description: 'Search the web for information. max 2 queries allowed',
+    parameters: z.object({
+      queries: z.array(z.string()).describe('The queries to search the web for information. max 2 queries allowed'),
+    }),
+    execute: async ({ queries }) => {
+      const webSearchResults = await Promise.all(queries.map(async (query) => {
+        const result = await getSERPResults([query]);
+        return result;
+      }));
+
+      const uniqueWebSearchResults = webSearchResults.flat().filter((result, index, self) =>
+        index === self.findIndex((t) => t.link === result.link)
+      );
+
+      emit('search', { queries, uniqueWebSearchResults });
+
+      const webPageContents = await Promise.all(uniqueWebSearchResults.map(async (result) => {
+        const content = await getWebPageContent(result.link);
+        return {
+          title: result.title,
+          link: result.link,
+          content,
+        };
+      }));
+
+      return webPageContents;
+    },
+  });
+};
+
 export enum ToolEnumType {
   SEARCH = 'search',
-  CALCULATOR = 'calculator',
-  WEATHER = 'weather',
-  PLANNER = 'planner',
-  READER = 'reader',
+
 }
 
 export type AiSdkTools = Record<ToolEnumType, Tool>;
 
-export const aiSdkTools: AiSdkTools = {
-  [ToolEnumType.SEARCH]: searchTool,
-  [ToolEnumType.CALCULATOR]: calculatorTool,
-  [ToolEnumType.WEATHER]: weatherTool,
-  [ToolEnumType.PLANNER]: plannerTool,
-  [ToolEnumType.READER]: readerTool,
+export const aiSdkTools: Record<ToolEnumType, (emit: (event: string, data: any) => void) => Tool> = {
+  [ToolEnumType.SEARCH]: (emit) => webbrowsingTool({ emit }),
+
 };
+
+
