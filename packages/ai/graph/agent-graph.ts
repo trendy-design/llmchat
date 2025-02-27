@@ -20,6 +20,17 @@ import type {
   ToolCallType,
 } from './types';
 
+export const processToolCallResult = (toolCallResult: ToolCallResultType) => {
+  return {
+    ...toolCallResult,
+    result: toolCallResult.result.map((r: any) => ({
+      title: r.title,
+      link: r.link,
+      content: r.content?.length,
+    })),
+  };
+};
+
 
 const isValidUrl = (url: string) => {
   try {
@@ -373,11 +384,15 @@ export class AgentGraph {
           maxTokens: node.maxTokens,
         });
 
+        let delta = '';
+
         // Wrap streaming in a timeout
         const streamEndPromise = (async () => {
           for await (const chunk of fullStream) {
+
             switch (chunk.type) {
               case 'text-delta':
+                delta = chunk.textDelta;
                 fullResponse += chunk.textDelta;
                 citations = this.extractCitations(fullResponse);
                 break;
@@ -423,12 +438,12 @@ export class AgentGraph {
               nodeId,
               nodeKey: node.name,
               status: 'pending',
-              content: fullResponse,
+              content: delta,
               nodeModel: model.modelId,
               history: completeMessages,
               nodeReasoning: node.outputAsReasoning ? fullResponse : undefined,
               toolCalls: Array.from(toolCallsMap.values()),
-              toolCallResults: Array.from(toolResultsMap.values()),
+              toolCallResults: Array.from(toolResultsMap.values()).map(processToolCallResult),
               nodeStatus: errors?.length > 0 ? 'error' : 'pending',
               sources: citations,
               error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',
@@ -479,12 +494,14 @@ export class AgentGraph {
         nodeId,
         nodeKey: node.name,
         status: errors.length > 0 ? 'error' : 'completed',
-        content: fullResponse,
+        content: "",
         history: completeMessages,
         nodeStatus: 'completed',
         nodeInput: `\n\n${message}\n\n${JSON.stringify(history)}`,
-        nodeReasoning: node.outputAsReasoning ? fullResponse : undefined,
+        // nodeReasoning: node.outputAsReasoning ? fullResponse : undefined,
         sources: citations,
+        toolCalls: Array.from(toolCallsMap.values()),
+        toolCallResults: Array.from(toolResultsMap.values()).map(processToolCallResult),
         isStep: node.isStep,
         skipRendering: node.skipRendering,
         error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',

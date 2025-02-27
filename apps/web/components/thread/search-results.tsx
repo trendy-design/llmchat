@@ -64,7 +64,7 @@ export const SearchAndReadingResults = ({
   }, [searchToolResults]);
 
   const readingToolResults = useMemo(() => {
-    return toolCallsWithResults.filter(call => call?.toolName === 'reader');
+    return toolCallsWithResults.filter(call => call?.toolName === 'search');
   }, [toolCallsWithResults]);
 
   const readingResults = useMemo(() => {

@@ -159,8 +159,12 @@ export const AIThreadItemV2 = ({ content }: { content: string }) => {
 
   useEffect(() => {
     (async () => {
-      const mdx = await serialize(animatedText, { mdxOptions: { remarkPlugins: [remarkGfm] } });
-      setSerializedMdx(mdx);
+      try {
+        const mdx = await serialize(animatedText, { mdxOptions: { remarkPlugins: [remarkGfm] } });
+        setSerializedMdx(mdx);
+      } catch (error) {
+        console.error('Error serializing MDX:', error);
+      }
     })();
   }, [animatedText]);
 

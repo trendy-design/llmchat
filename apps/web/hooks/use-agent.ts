@@ -7,6 +7,7 @@ export const useAgentStream = () => {
 
   const runAgent = async (body: CompletionRequestType) => {
     const nodes = new Map<string, Block>();
+    const contentBuffer = new Map<string, string>();
 
     const modeEndpoint = chatMode === 'deep' ? '/deep' : '/fast';
     
@@ -45,21 +46,18 @@ export const useAgentStream = () => {
             try {
               const data = JSON.parse(line.slice(6));
               if (!!data.nodeId) {
+                const existingNode = nodes.get(data.nodeId);
+                if (!existingNode) {
+                  contentBuffer.clear();
+                }
+                
+                const existingContent = contentBuffer.get(data.nodeId) || '';
+                const mergedContent = existingContent + (data.content || '');
+                contentBuffer.set(data.nodeId, mergedContent);
+
                 nodes.set(data.nodeId, {
-                  id: data.nodeId,
-                  nodeKey: data.nodeKey,
-                  content: data.content,
-                  toolCalls: data.toolCalls,
-                  toolCallResults: data.toolCallResults,
-                  nodeStatus: data.nodeStatus,
-                  tokenUsage: data.tokenUsage,
-                  history: data.history,
-                  nodeInput: data.nodeInput,
-                  sources: data.sources,
-                  nodeModel: data.nodeModel,
-                  nodeError: data.error,
-                  nodeReasoning: data.nodeReasoning,
-                  isStep: data.isStep,
+                  ...data,
+                  content: mergedContent,
                 });
               }
               updateThreadItem({
