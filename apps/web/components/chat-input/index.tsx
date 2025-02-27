@@ -16,7 +16,6 @@ import { SelectedContext } from './selected-context';
 export const ChatInput = () => {
   const { editor } = useChatEditor();
   const { attachment, clearAttachment, handleImageUpload, dropzonProps } = useImageAttachment();
-  const [openChangelog, setOpenChangelog] = useState(false);
   const threadItems = useChatStore(state => state.threadItems);
   const createThreadItem = useChatStore(state => state.createThreadItem);
   const setCurrentThreadItem = useChatStore(state => state.setCurrentThreadItem);
@@ -24,6 +23,7 @@ export const ChatInput = () => {
   const setIsGenerating = useChatStore(state => state.setIsGenerating);
   const { runAgent } = useAgentStream();
   const model = useChatStore(state => state.model);
+  const chatMode = useChatStore(state => state.chatMode);
   const [responseNodesMap] = useState(() => new Map<string, Map<string, Block>>());
 
   const handleSubmit = (formData: FormData) => {
@@ -82,7 +82,7 @@ export const ChatInput = () => {
     formData.append('query', editor.getText());
     handleSubmit(formData);
     editor.commands.clearContent();
-  }, [editor, currentThreadId, model]);
+  }, [editor, currentThreadId, model, chatMode]);
 
   const renderChatInput = () => (
     <div className="bg-secondary w-full rounded-2xl border border-border p-1">

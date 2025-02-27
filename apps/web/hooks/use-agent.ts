@@ -10,6 +10,8 @@ export const useAgentStream = () => {
 
     const modeEndpoint = chatMode === 'deep' ? '/deep' : '/fast';
 
+    console.log('modeEndpoint', modeEndpoint);
+
     const response = await fetch(`${modeEndpoint}`, {
       method: 'POST',
       headers: {

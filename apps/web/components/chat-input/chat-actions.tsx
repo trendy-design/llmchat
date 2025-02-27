@@ -32,14 +32,12 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
     {
       label: "Deep Research",
       value: "deep",
-      icon: <IconSchool size={14} strokeWidth={2} className="text-blue-400" />,
-      onClick: () => setChatMode('deep')
+      icon: <IconSchool size={14} strokeWidth={2} className="text-blue-400" />
     },
     {
       label: "Fast Research",
       value: "fast",
-      icon: <IconBolt size={14} strokeWidth={2} className="text-emerald-500" />,
-      onClick: () => setChatMode('fast')
+      icon: <IconBolt size={14} strokeWidth={2} className="text-emerald-500" />
     },
     
   ]
@@ -57,7 +55,9 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" side="bottom">
             {chatOptions.map(option => (
-              <DropdownMenuItem key={option.label} onClick={option.onClick}>
+              <DropdownMenuItem key={option.label} onSelect={()=>{
+                setChatMode(option.value as ChatMode);
+              }}>
                 {option.icon}
                 {option.label}
               </DropdownMenuItem>

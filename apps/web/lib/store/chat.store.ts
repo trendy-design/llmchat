@@ -162,7 +162,10 @@ export const useChatStore = create<State & Actions>((set, get) => ({
   currentThread: null,
   currentThreadItem: null,
   messageGroups: [],
-  setChatMode: (chatMode: ChatMode) => set({ chatMode }),
+  setChatMode: (chatMode: ChatMode) => {
+    localStorage.setItem(CONFIG_KEY, JSON.stringify({ chatMode }));
+    set({ chatMode });
+  },
   abortController: null,
   isLoadingThreads: false,
   isLoadingThreadItems: false,
