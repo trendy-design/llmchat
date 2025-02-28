@@ -70,6 +70,7 @@ async function executeStream(
   const graph = await workflow1(events, contextManager);
 
   events.on('event', event => {
+    console.log('event', event);
     sendMessage(controller, encoder, {
       threadId: data.threadId,
       threadItemId: data.threadItemId,
