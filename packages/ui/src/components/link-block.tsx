@@ -1,31 +1,37 @@
 'use client';
 
+import { CitationProviderContext } from '@/components/thread/citation-provider';
 import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
-import { Skeleton } from './skeleton';
+import React, { useContext, useEffect, useState } from 'react';
+import { Popover, PopoverContent, PopoverTrigger } from './popover';
 export type TLinkBlock = {
   url: string;
+  children: React.ReactNode;
 };
-export const LinkBlock = ({ url }: TLinkBlock) => {
+export const LinkBlock = ({ url, children }: TLinkBlock) => {
   const [isLoading, setIsLoading] = useState(false);
   const [ogResult, setOgResult] = useState<any | null>(null);
+  const { citations } = useContext(CitationProviderContext)
+  const [isHovered, setIsHovered] = useState(false);
 
   const fetchOg = async (url: string) => {
     try {
-      const res = await fetch('/api/og', {
-        method: 'POST',
-        body: JSON.stringify({ url }),
+      console.log('fetching og', url);
+      const res = await fetch(`/og?url=${url}`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
 
+
       const data = await res.json();
 
-      const result = data.result;
+      console.log('fetching og', data);
 
-      if (result) {
-        setOgResult(result);
+
+      if (data) {
+        setOgResult(data);
         setIsLoading(false);
       } else {
         setIsLoading(false);
@@ -38,67 +44,75 @@ export const LinkBlock = ({ url }: TLinkBlock) => {
   };
 
   useEffect(() => {
-    if (url?.trim()?.length > 0) {
+    if (url?.trim()?.length > 0 && isHovered && !ogResult) {
       setIsLoading(true);
       fetchOg(url);
     }
-  }, [url]);
+  }, [url, isHovered]);
 
-  const renderConatiner = (children: React.ReactNode, link?: string) => {
-    return (
-      <div
-        className="border-border bg-background hover:text-brand cursor-pointer rounded-xl border p-3 hover:scale-[101%]"
-        onClick={() => {
-          link && window.open(link, '_blank');
-        }}
-      >
-        {children}
-      </div>
-    );
-  };
 
   if (!url?.trim()?.length) {
     return null;
   }
 
-  if (isLoading) {
-    return renderConatiner(
-      <div className="flex flex-row items-start gap-2">
-        <Skeleton className="h-6 w-6 rounded-xl" />
-
-        <div className="flex w-full flex-col items-start gap-1">
-          <Skeleton className="h-[10px] w-[80%] rounded-full" />
-          <Skeleton className="h-[10px] w-[50%] rounded-full" />
-        </div>
-      </div>
-    );
+  const handleMouseEnter = () => {
+    console.log('mouse enter');
+    setIsHovered(true);
   }
 
-  return ogResult && ogResult.ogTitle && ogResult.ogUrl
-    ? renderConatiner(
-        <div className="flex flex-row items-start gap-2">
-          <Image
-            src={ogResult.favicon}
-            alt={ogResult.ogTitle}
-            width={0}
-            height={0}
-            sizes="100vw"
-            className="border-border h-6 min-w-6 rounded-md border object-cover"
-          />
+  const handleMouseLeave = () => {
+    console.log('mouse leave');
+    setIsHovered(false);
+  }
 
-          <div className="flex w-full flex-col items-start gap-1">
-            <p className="text-foreground w-full overflow-hidden truncate text-sm md:text-base">
-              {ogResult.ogTitle}
-            </p>
-            <p className="text-muted-foreground text-sm md:text-base">{ogResult.ogUrl}</p>
+
+  return <Popover open={isHovered} onOpenChange={setIsHovered}>
+    <PopoverTrigger onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={e => {
+        e.preventDefault();
+      }} asChild>
+      {children}
+    </PopoverTrigger>
+    <PopoverContent className='z-[10] bg-background p-0'>
+      {
+        ogResult && ogResult.title && ogResult.url
+          ? <div className="flex flex-col items-start">
+            <div className="flex w-full flex-col items-start gap-1.5 p-4">
+              <div className='flex flex-row items-center gap-1.5'>
+                <Image
+                  src={ogResult.favicon}
+                  alt={ogResult?.title}
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="h-4 w-4 rounded-full object-cover"
+                />
+                <p className="text-muted-foreground text-xs line-clamp-1 w-full">{new URL(ogResult.url).hostname}</p>
+              </div>
+              <p className="text-foreground w-full overflow-hidden line-clamp-2 text-xs">
+                {ogResult.title}
+              </p>
+              <p className="text-muted-foreground text-xs line-clamp-4">
+                {ogResult.description}
+              </p>
+
+            </div>
+
+          </div> : <div className='flex flex-row items-center gap-1.5 p-2'>
+            <Image
+              src={`https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=128`}
+              alt={ogResult?.title}
+              width={0}
+              height={0}
+              sizes="100vw"
+              className="h-4 w-4 rounded-full object-cover"
+            />
+            <p className="text-muted-foreground text-xs line-clamp-1 w-full">{new URL(url).hostname}</p>
           </div>
-        </div>,
-        ogResult.ogUrl
-      )
-    : renderConatiner(
-        <div>
-          <p className="text-muted-foreground text-sm md:text-base">{url}</p>
-        </div>,
-        url
-      );
+
+      }
+    </PopoverContent>
+  </Popover>
 };
+

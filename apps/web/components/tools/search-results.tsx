@@ -1,5 +1,5 @@
 'use client';
-import { Flex, Type } from '@repo/ui';
+import { Flex, LinkBlock, Type } from '@repo/ui';
 import { SearchFavicon } from './search-favicon';
 
 export type TSearchResult = {
@@ -51,12 +51,14 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
               }}
               gap="sm"
             >
+              <LinkBlock url={result.link}>
               <Flex direction="row" items="center" gap="sm">
                 <SearchFavicon link={new URL(result.link).host} />
                 <Type size="xs" className="w-full" textColor="secondary">
                   {getHostname(result.link)}
                 </Type>
               </Flex>
+              </LinkBlock>
             </Flex>
           ))}
           {remainingCount > 0 && (

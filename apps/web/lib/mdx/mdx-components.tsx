@@ -4,6 +4,7 @@ import React, { ReactElement, useContext } from 'react';
 import { Reasoning } from '@/components/reasoning-steps/reasoning';
 import { CitationProviderContext } from '@/components/thread/citation-provider';
 import { isValidUrl } from '@repo/shared/utils';
+import { LinkBlock } from '@repo/ui/src/components/link-block';
 import { AnimatePresence } from 'framer-motion';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { ComponentProps } from 'react';
@@ -63,10 +64,15 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
       return null;
     }
     const citation = citations[url];
+    if (!citation) {
+      return null;
+    }
     return (
-      <div className="bg-brand/20 text-brand group inline-flex size-5 flex-row items-center justify-center gap-1 rounded-md text-xs">
-        {citation?.index}
-      </div>
+      <LinkBlock url={url}>
+        <div className="bg-brand/20 text-brand group inline-flex size-5 flex-row items-center justify-center gap-1 rounded-md text-xs">
+          {citation?.index}
+        </div>
+      </LinkBlock>
     );
   },
 
