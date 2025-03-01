@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
+import robotsParser from 'robots-parser';
 import sanitizeHtml from 'sanitize-html';
 import TurndownService from 'turndown';
 
@@ -20,6 +21,7 @@ export type TReaderResult = {
   description?: string;
   markdown?: string;
   source?: 'jina' | 'readability';
+  error?: string;
 };
 
 const MIN_CONTENT_LENGTH = 500;
@@ -60,10 +62,23 @@ function cleanHtml(html: string): string {
       a: ['href', 'name', 'target'],
     },
     allowedSchemes: ['http', 'https', 'mailto'],
-    exclusiveFilter: frame =>
-      ['script', 'style', 'header', 'footer', 'nav', 'iframe', 'form', 'aside'].includes(frame.tag),
+    exclusiveFilter: frame => {
+      // Remove internal links completely
+      if (frame.tag === 'a' && frame.attribs.href && 
+          !frame.attribs.href.startsWith('http') && 
+          !frame.attribs.href.startsWith('https') && 
+          !frame.attribs.href.startsWith('mailto:')) {
+        return true;
+      }
+      return ['script', 'style', 'header', 'footer', 'nav', 'iframe', 'form', 'aside'].includes(frame.tag);
+    },
     transformTags: {
-      a: sanitizeHtml.simpleTransform('a', { rel: 'nofollow' }),
+      a: (tagName, attribs) => {
+        return {
+          tagName: 'a',
+          attribs: { ...attribs, rel: 'nofollow' }
+        };
+      },
       '*': (tagName, attribs) => {
         Object.keys(attribs).forEach(key => {
           if (key.startsWith('on')) {
@@ -74,6 +89,36 @@ function cleanHtml(html: string): string {
       },
     },
   });
+}
+
+async function isScrapingAllowed(url: string): Promise<boolean> {
+  try {
+    const parsedUrl = new URL(url);
+    const robotsUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/robots.txt`;
+    
+    const response = await fetch(robotsUrl, {
+      headers: {
+        'User-Agent': 'Chaindesk-Reader'
+      },
+      signal: AbortSignal.timeout(5000) // 5 second timeout
+    });
+    
+    if (!response.ok) {
+      console.log(`No robots.txt found at ${robotsUrl} or status: ${response.status}`);
+      return true; // If robots.txt doesn't exist or can't be fetched, assume scraping is allowed
+    }
+    
+    const robotsTxt = await response.text();
+    const robots = robotsParser(robotsUrl, robotsTxt);
+    
+    const isAllowed = robots.isAllowed(url, 'Chaindesk-Reader');
+    console.log(`Scraping ${url} allowed: ${isAllowed !== false}`);
+    
+    return isAllowed !== false; // Explicitly handle undefined case (which means allowed)
+  } catch (error) {
+    console.error('Error checking robots.txt:', error);
+    return true; // In case of error, proceed with caution
+  }
 }
 
 const fetchWithJina = async (url: string): Promise<TReaderResult> => {
@@ -105,6 +150,15 @@ const fetchWithJina = async (url: string): Promise<TReaderResult> => {
 
 const readURL = async (url: string): Promise<TReaderResult> => {
   try {
+    // Check if scraping is allowed
+    const scrapingAllowed = await isScrapingAllowed(url);
+    if (!scrapingAllowed) {
+      return { 
+        success: false, 
+        error: 'Scraping not allowed by robots.txt' 
+      };
+    }
+
     // const response = await fetch(url);
     // const html = await response.text();
     // const cleanedHtml = cleanHtml(html);
@@ -124,24 +178,33 @@ const readURL = async (url: string): Promise<TReaderResult> => {
     //     };
     //   }
     // }
+    
     if (process.env.JINA_API_KEY) {
       return await fetchWithJina(url);
-    }
-    else{
+    } else {
       console.log('No Jina API key found');
     }
+    
     return { success: false };
   } catch (error) {
     console.error('Error in readURL:', error);
-    return { success: false };
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 };
 
 export async function POST(req: NextRequest) {
-  const { url } = await req.json();
-  if (!url) {
-    return NextResponse.json({ success: false, error: 'No URL provided' });
+  try {
+    const { url } = await req.json();
+    if (!url) {
+      return NextResponse.json({ success: false, error: 'No URL provided' });
+    }
+    
+    const result = await readURL(url);
+    return NextResponse.json({ result });
+  } catch (error) {
+    return NextResponse.json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error processing request' 
+    });
   }
-  const result = await readURL(url);
-  return NextResponse.json({ result });
 }

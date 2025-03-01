@@ -105,6 +105,7 @@
     "react-markdown": "^9.0.3",
     "recharts": "^2.12.7",
     "remark-gfm": "^4.0.1",
+    "robots-parser": "^3.0.1",
     "sanitize-html": "^2.14.0",
     "selection-popover": "^0.3.0",
     "sonner": "^1.4.41",

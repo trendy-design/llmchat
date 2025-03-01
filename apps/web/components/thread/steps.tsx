@@ -2,10 +2,11 @@ import { Block } from '@/libs/store/chat.store';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Button } from '@repo/ui';
 import { IconStack2 } from '@tabler/icons-react';
 import { Fragment, useState } from 'react';
+import { CitationProvider } from './citation-provider';
 import { ThreadBlockMetadata } from './node-meta';
 import { SearchAndReadingResults } from './search-results';
 import { StepStatus } from './step-status';
-import { AIThreadItem } from './thread-item';
+import { AIThreadItemV2 } from './thread-item';
 import { VaulDrawer } from './vaul-drawer';
 
 export const Steps = ({ steps }: { steps: Block[] }) => {
@@ -16,6 +17,9 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
   }
   return (
     <>
+    <Button variant="bordered" size="xs" className="p-0" onClick={() => setDebugMode(!debugMode)}>
+      {debugMode ? 'Hide Workflow' : 'Show Workflow'}
+    </Button>
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="workflow" className="rounded-xl overflow-hidden border border-border bg-secondary/50 p-0">
           <AccordionTrigger className="flex flex-row items-center bg-secondary gap-2 py-3 px-4">
@@ -49,7 +53,13 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
                         {debugMode && (
                           <div className="flex flex-row gap-2">
                             <VaulDrawer
-                              renderContent={() => <AIThreadItem content={block.content} key={index} />}
+                              renderContent={() => (
+                                <CitationProvider block={block}>
+
+                              <AIThreadItemV2 content={block.content} key={index}
+                               />
+                               </CitationProvider>
+                              )}
                             >
                               <Button variant="link" size="xs" className="p-0">
                                 Read more

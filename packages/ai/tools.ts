@@ -23,14 +23,14 @@ export const getSERPResults = async (queries: string[]) => {
     const batchResult = await response.json();
 
     // Map each query's organic results, flatten into a single array, then remove duplicates based on the 'link'.
-    const organicResultsLists = batchResult?.map((result: any) => result.organic) || [];
+    const organicResultsLists = batchResult?.map((result: any) => result.organic?.slice(0, 3)) || [];
     const allOrganicResults = organicResultsLists.flat();
     const uniqueOrganicResults = allOrganicResults.filter(
       (result: any, index: number, self: any[]) =>
         index === self.findIndex((r: any) => r?.link === result?.link)
     );
 
-    return uniqueOrganicResults.slice(0, 10).map((item: any) => ({ title: item.title, link: item.link  }));
+    return uniqueOrganicResults.slice(0, 8).map((item: any) => ({ title: item.title, link: item.link  }));
   } catch (error) {
     console.error(error);
   }
@@ -39,6 +39,7 @@ export const getSERPResults = async (queries: string[]) => {
 const getWebPageContent = async (url: string) => {
   try {
 
+    console.time('reader');
     console.log(`${process.env.NEXT_PUBLIC_APP_URL}/reader`);
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/reader`, {
       method: 'POST',
@@ -54,8 +55,12 @@ const getWebPageContent = async (url: string) => {
       ? `Source: [${result.result.url}](${result.result.url})\n\n`
       : '';
     const content = result?.result?.markdown || result?.result?.content || '';
-    console.log('content', content.length);
-
+    console.log('url', url);
+    console.log('\n\n-------------\n\n');
+    console.log('content', content);
+    console.log('\n\n-------------\n\n');
+    console.log('reader', result.result.source);
+    console.timeEnd('reader');
     if (!content) return '';
 
     return `${title}${description}${content}${sourceUrl}`;
@@ -180,12 +185,15 @@ const webbrowsingTool = ({emit}:{emit: (event: string, data: any) => void}) => {
 
       const webPageContents = await Promise.all(uniqueWebSearchResults.map(async (result) => {
         const content = await getWebPageContent(result.link);
+
+        console.log('content', {});
         return {
           title: result.title,
           link: result.link,
           content,
         };
       }));
+
 
       return webPageContents;
     },

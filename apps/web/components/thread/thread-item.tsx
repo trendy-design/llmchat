@@ -270,6 +270,8 @@ export const AIThreadItemV2 = ({ content }: { content: string }) => {
   return (
     <div className={cn("animate-fade-in prose prose-prosetheme prose-base prose-p:font-light prose-headings:text-lg prose-headings:font-semibold prose-strong:font-medium prose-li:font-light prose-th:font-m min-w-full","prose-th:font-medium prose-th:text-sm" )}>
       <MDXRemote {...serializedMdx} components={mdxComponents} />
+      {"---------------------------------------------------------"}
+      {JSON.stringify(animatedText, null, 2)}
     </div>
   );
 };
