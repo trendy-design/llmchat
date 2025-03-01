@@ -94,7 +94,7 @@ export const SearchAndReadingResults = ({
           ((result.args.queries as string[]) ?? []).map((query, index) => (
             <Badge
               key={index}
-              className="gap-1 rounded-md px-2 py-1 text-xs font-normal"
+              className="gap-1 rounded-md px-2 py-1.5 text-xs font-normal"
               variant="default"
             >
               <IconSearch size={12} className="opacity-50" />
@@ -106,7 +106,7 @@ export const SearchAndReadingResults = ({
 
       {searchResults?.length > 0 ? (
         <>
-          <p className="text-muted-foreground text-xs">READING SOURCES</p>
+          <p className="text-muted-foreground text-xs">Reading Sources</p>
           <SearchResults searchResults={searchResults} />
         </>
       ) : null}

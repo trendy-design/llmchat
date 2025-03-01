@@ -31,7 +31,7 @@ export const Sidebar = () => {
   const currentThreadId = useChatStore(state => state.currentThreadId);
   const createThread = useChatStore(state => state.createThread);
   const sortThreads = (threads: Thread[], sortBy: 'createdAt') => {
-    return threads.sort((a, b) => moment(a[sortBy]).diff(moment(b[sortBy])));
+    return [...threads].sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
   };
   const clearAllThreads = useChatStore(state => state.clearAllThreads);
 
@@ -83,7 +83,7 @@ export const Sidebar = () => {
   return (
     <div className="border-border bg-secondary relative flex h-[100dvh] w-[240px] flex-shrink-0 flex-row border-r">
       <Flex direction="col" className="no-scrollbar w-full">
-        <Flex justify="between" items="center" direction="col" className="w-full p-2" gap="xs">
+        <Flex justify="between" items="center" direction="col" className="w-full p-3" gap="xs">
           <Button
             size="sm"
             className="w-full"
@@ -92,12 +92,12 @@ export const Sidebar = () => {
               createThread();
             }}
           >
-            <IconPlus size={14} strokeWidth={2} /> New Chat
+            <IconPlus size={14} strokeWidth={3} /> New Chat
           </Button>
           <Button
             size="sm"
             variant="ghost"
-            className="w-full gap-2 px-2"
+            className="w-full gap-3 px-3"
             onClick={() => setIsCommandSearchOpen(true)}
           >
             <div className="flex flex-row items-center gap-1 opacity-50">
@@ -117,7 +117,7 @@ export const Sidebar = () => {
           <Flex
             direction="col"
             gap="md"
-            className="no-scrollbar border-border w-full flex-1 overflow-y-auto p-2"
+            className="no-scrollbar border-border w-full flex-1 overflow-y-auto p-3"
           >
             {renderGroup('Today', groupedThreads.today)}
             {renderGroup('Tomorrow', groupedThreads.tomorrow)}

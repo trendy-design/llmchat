@@ -266,7 +266,7 @@ export const AIThreadItemV2 = ({ content }: { content: string }) => {
   }
 
   return (
-    <div className="animate-fade-in prose prose-prosetheme prose-sm min-w-full">
+    <div className="animate-fade-in prose prose-prosetheme prose-base min-w-full">
       <MDXRemote {...serializedMdx} components={mdxComponents} />
     </div>
   );
@@ -298,8 +298,8 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
   return (
     <>
       {threadItem.role === 'user' && (
-        <div className="flex w-full flex-row justify-start py-2">
-          <div className="bg-secondary text-secondary-foreground rounded-xl px-3 py-2.5 text-sm font-medium tracking-tight">
+        <div className="flex w-full flex-row justify-start py-8">
+          <div className="text-secondary-foreground rounded-xl text-2xl font-normal tracking-tight font-sg">
             {threadItem.content[0].content}
           </div>
         </div>

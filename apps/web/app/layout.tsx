@@ -67,6 +67,11 @@ const inter = localFont({
   src: './InterVariable.woff2',
 });
 
+const spaceGrotesk = localFont({
+  src: './SpaceGrotesk-Variable.woff2',
+  variable: '--font-space-grotesk',
+});
+
 export default function ParentLayout({
   children,
 }: Readonly<{
@@ -75,7 +80,7 @@ export default function ParentLayout({
   return (
     <html
       lang="en"
-      className={cn(inter.className, 'antialiased')}
+      className={cn(inter.className, spaceGrotesk.className)}
       suppressHydrationWarning
     >
       <head>

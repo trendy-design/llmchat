@@ -136,6 +136,10 @@ export const ChatInput = () => {
         gap="sm"
         className={cn('w-full', threadItems?.length > 0 ? 'mb-2' : 'h-full')}
       >
+        {!threadItems?.length && (
+          <h1 className="text-3xl font-medium font-sg tracking-tight">How can i help you?</h1>
+        )}
+
         {renderChatBottom()}
         <ChatFooter />
       </Flex>

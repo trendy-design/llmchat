@@ -90,7 +90,7 @@ export const LinkBlock = ({ url, children }: TLinkBlock) => {
                 />
                 <p className="text-muted-foreground text-xs line-clamp-1 w-full">{new URL(ogResult.url).hostname}</p>
               </div>
-              <p className="text-foreground w-full overflow-hidden line-clamp-2 text-xs">
+              <p className="text-foreground w-full overflow-hidden line-clamp-2 text-sm">
                 {ogResult.title}
               </p>
               <p className="text-muted-foreground text-xs line-clamp-4">

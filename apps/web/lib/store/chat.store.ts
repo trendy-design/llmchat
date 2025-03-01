@@ -5,6 +5,7 @@ import { Model, models } from '@repo/ai/models';
 import Dexie, { Table } from 'dexie';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
+import { immer } from 'zustand/middleware/immer';
 
 export type Thread = {
   id: string;
@@ -150,165 +151,210 @@ const debouncedThreadItemUpdate = debounce(
   1000
 );
 
-export const useChatStore = create<State & Actions>((set, get) => ({
-  model: models[0],
-  isGenerating: false,
-  editor: undefined,
-  context: '',
-  threads: [],
-  chatMode: 'fast',
-  threadItems: [],
-  currentThreadId: 'default',
-  currentThread: null,
-  currentThreadItem: null,
-  messageGroups: [],
-  setChatMode: (chatMode: ChatMode) => {
-    localStorage.setItem(CONFIG_KEY, JSON.stringify({ chatMode }));
-    set({ chatMode });
-  },
-  abortController: null,
-  isLoadingThreads: false,
-  isLoadingThreadItems: false,
-  setCurrentThreadItem: threadItem => set({ currentThreadItem: threadItem }),
-  setEditor: editor => set({ editor }),
-  setContext: context => set({ context }),
-  setIsGenerating: isGenerating => set({ isGenerating }),
-  stopGeneration: () => set({ isGenerating: false }),
-  setAbortController: abortController => set({ abortController }),
-  loadThreadItems: async (threadId: string) => {
-    const threadItems = await db.threadItems.where('threadId').equals(threadId).toArray();
-    set({ threadItems });
-  },
-
-  clearAllThreads: async () => {
-    await db.threads.clear();
-    await db.threadItems.clear();
-    set({ threads: [], threadItems: [] });
-  },
-
-  createThread: async () => {
-    const newThread = {
-      id: nanoid(),
-      title: 'New Thread',
-      updatedAt: new Date(),
-      createdAt: new Date(),
-    };
-    await db.threads.add(newThread);
-    set(state => ({
-      threads: [...state.threads, newThread],
-      currentThreadId: newThread.id,
-      currentThread: newThread,
-    }));
-  },
-
-  setModel: async (model: Model) => {
-    localStorage.setItem(CONFIG_KEY, JSON.stringify({ model: model.id }));
-    set({ model });
-  },
-
-  updateThread: async thread => {
-    const existingThread = get().threads.find(t => t.id === thread.id);
-    const updatedThread: Thread = {
-      ...existingThread,
-      ...thread,
-      updatedAt: new Date(),
-      createdAt: existingThread?.createdAt || new Date(),
-    };
-    debouncedThreadUpdate(updatedThread);
-    set(state => ({
-      threads: state.threads.map(t => (t.id === thread.id ? { ...t, ...updatedThread } : t)),
-    }));
-  },
-
-  createThreadItem: async threadItem => {
-    const threadId = get().currentThreadId;
-    await db.threadItems.add(threadItem);
-    set(state => ({
-      threadItems: [...state.threadItems, { ...threadItem, threadId }],
-    }));
-  },
-
-  updateThreadItem: async threadItem => {
-    if (!threadItem.id) return;
-
-    const existingItem = await db.threadItems.get(threadItem.id);
-    if (existingItem) {
-      const updatedItem = { ...existingItem, ...threadItem, threadId: get().currentThreadId };
-
-      if(existingItem.status !== threadItem.status) {
-        await db.threadItems.put(updatedItem);
-      }
-
-      debouncedThreadItemUpdate(updatedItem);
-      set(state => ({
-        threadItems: state.threadItems.map(t => (t.id === threadItem.id ? updatedItem : t)),
-      }));
-    }
-  },
-
-  switchThread: async (threadId: string) => {
-    const thread = get().threads.find(t => t.id === threadId);
-    localStorage.setItem(
-      CONFIG_KEY,
-      JSON.stringify({
-        model: get().model.id,
-        currentThreadId: threadId,
-      })
-    );
-    set({
-      currentThreadId: threadId,
-      currentThread: thread || null,
-    });
-    await get().loadThreadItems(threadId);
-  },
-
-  deleteThreadItem: async threadItemId => {
-    await db.threadItems.delete(threadItemId);
-    set(state => ({
-      threadItems: state.threadItems.filter(t => t.id !== threadItemId),
-    }));
-  },
-
-  deleteThread: async threadId => {
-    await db.threads.delete(threadId);
-    await db.threadItems.where('threadId').equals(threadId).delete();
-    set(state => ({
-      threads: state.threads.filter(t => t.id !== threadId),
-      currentThreadId: state.threads[0]?.id || 'default',
-      currentThread: state.threads[0] || null,
-    }));
-  },
-
-  getThreadItems: threadId => {
-    const state = get();
-    return state.threadItems
-      .filter(item => item.threadId === threadId)
-      .sort((a, b) => {
-        if (a.role !== b.role) return a.role === 'user' ? -1 : 1;
-        return a.createdAt.getTime() - b.createdAt.getTime();
+export const useChatStore = create(
+  immer<State & Actions>((set, get) => ({
+    model: models[0],
+    isGenerating: false,
+    editor: undefined,
+    context: '',
+    threads: [],
+    chatMode: 'fast',
+    threadItems: [],
+    currentThreadId: 'default',
+    currentThread: null,
+    currentThreadItem: null,
+    messageGroups: [],
+    abortController: null,
+    isLoadingThreads: false,
+    isLoadingThreadItems: false,
+    
+    setChatMode: (chatMode: ChatMode) => {
+      localStorage.setItem(CONFIG_KEY, JSON.stringify({ chatMode }));
+      set(state => {
+        state.chatMode = chatMode;
       });
-  },
+    },
+    
+    setCurrentThreadItem: threadItem => set(state => {
+      state.currentThreadItem = threadItem;
+    }),
+    
+    setEditor: editor => set(state => {
+      state.editor = editor;
+    }),
+    
+    setContext: context => set(state => {
+      state.context = context;
+    }),
+    
+    setIsGenerating: isGenerating => set(state => {
+      state.isGenerating = isGenerating;
+    }),
+    
+    stopGeneration: () => set(state => {
+      state.isGenerating = false;
+    }),
+    
+    setAbortController: abortController => set(state => {
+      state.abortController = abortController;
+    }),
+    
+    loadThreadItems: async (threadId: string) => {
+      const threadItems = await db.threadItems.where('threadId').equals(threadId).toArray();
+      set(state => {
+        state.threadItems = threadItems;
+      });
+    },
 
-  getCurrentThread: () => {
-    const state = get();
-    return state.threads.find(t => t.id === state.currentThreadId) || null;
-  },
+    clearAllThreads: async () => {
+      await db.threads.clear();
+      await db.threadItems.clear();
+      set(state => {
+        state.threads = [];
+        state.threadItems = [];
+      });
+    },
 
-  getMessageGroups: (threadId: string) => {
-    const threadItems = get().getThreadItems(threadId);
+    createThread: async () => {
+      const newThread = {
+        id: nanoid(),
+        title: 'New Thread',
+        updatedAt: new Date(),
+        createdAt: new Date(),
+      };
+      await db.threads.add(newThread);
+      set(state => {
+        state.threads.push(newThread);
+        state.currentThreadId = newThread.id;
+        state.currentThread = newThread;
+      });
+    },
 
-    const assistantMsgs = threadItems.filter(item => item.role === 'assistant');
+    setModel: async (model: Model) => {
+      localStorage.setItem(CONFIG_KEY, JSON.stringify({ model: model.id }));
+      set(state => {
+        state.model = model;
+      });
+    },
 
-    const userMsgs = threadItems.filter(item => item.role === 'user');
+    updateThread: async thread => {
+      const existingThread = get().threads.find(t => t.id === thread.id);
+      if (!existingThread) return;
+      
+      const updatedThread: Thread = {
+        ...existingThread,
+        ...thread,
+        updatedAt: new Date(),
+      };
+      
+      set(state => {
+        const index = state.threads.findIndex((t: Thread) => t.id === thread.id);
+        if (index !== -1) {
+          state.threads[index] = updatedThread;
+        }
+        if (state.currentThreadId === thread.id) {
+          state.currentThread = updatedThread;
+        }
+      });
+      
+      try {
+        await db.threads.put(updatedThread);
+      } catch (error) {
+        console.error("Failed to update thread in database:", error);
+      }
+    },
 
-    return userMsgs.map(userMessage => ({
-      userMessage,
-      assistantMessages: assistantMsgs.filter(
-        assistantMsg => assistantMsg.parentId === userMessage.id
-      ),
-    }));
-  },
-}));
+    createThreadItem: async threadItem => {
+      const threadId = get().currentThreadId;
+      await db.threadItems.add(threadItem);
+      set(state => {
+        state.threadItems.push({ ...threadItem, threadId });
+      });
+    },
+
+    updateThreadItem: async threadItem => {
+      if (!threadItem.id) return;
+
+      const existingItem = await db.threadItems.get(threadItem.id);
+      if (existingItem) {
+        const updatedItem = { ...existingItem, ...threadItem, threadId: get().currentThreadId };
+
+        if(existingItem.status !== threadItem.status) {
+          await db.threadItems.put(updatedItem);
+        }
+
+        debouncedThreadItemUpdate(updatedItem);
+        set(state => {
+          const index = state.threadItems.findIndex((t: ThreadItem) => t.id === threadItem.id);
+          if (index !== -1) {
+            state.threadItems[index] = updatedItem;
+          }
+        });
+      }
+    },
+
+    switchThread: async (threadId: string) => {
+      const thread = get().threads.find(t => t.id === threadId);
+      localStorage.setItem(
+        CONFIG_KEY,
+        JSON.stringify({
+          model: get().model.id,
+          currentThreadId: threadId,
+        })
+      );
+      set(state => {
+        state.currentThreadId = threadId;
+        state.currentThread = thread || null;
+      });
+      await get().loadThreadItems(threadId);
+    },
+
+    deleteThreadItem: async threadItemId => {
+      await db.threadItems.delete(threadItemId);
+      set(state => {
+        state.threadItems = state.threadItems.filter((t: ThreadItem) => t.id !== threadItemId);
+      });
+    },
+
+    deleteThread: async threadId => {
+      await db.threads.delete(threadId);
+      await db.threadItems.where('threadId').equals(threadId).delete();
+      set(state => {
+        state.threads = state.threads.filter((t: Thread) => t.id !== threadId);
+        state.currentThreadId = state.threads[0]?.id || 'default';
+        state.currentThread = state.threads[0] || null;
+      });
+    },
+
+    getThreadItems: threadId => {
+      const state = get();
+      return state.threadItems
+        .filter(item => item.threadId === threadId)
+        .sort((a, b) => {
+          if (a.role !== b.role) return a.role === 'user' ? -1 : 1;
+          return a.createdAt.getTime() - b.createdAt.getTime();
+        });
+    },
+
+    getCurrentThread: () => {
+      const state = get();
+      return state.threads.find(t => t.id === state.currentThreadId) || null;
+    },
+
+    getMessageGroups: (threadId: string) => {
+      const threadItems = get().getThreadItems(threadId);
+      const assistantMsgs = threadItems.filter(item => item.role === 'assistant');
+      const userMsgs = threadItems.filter(item => item.role === 'user');
+
+      return userMsgs.map(userMessage => ({
+        userMessage,
+        assistantMessages: assistantMsgs.filter(
+          assistantMsg => assistantMsg.parentId === userMessage.id
+        ),
+      }));
+    },
+  }))
+);
 
 if (typeof window !== 'undefined') {
   // Initialize store with data from IndexedDB

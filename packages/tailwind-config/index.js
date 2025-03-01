@@ -82,11 +82,12 @@ module.exports = {
       fontFamily: {
         sans: ['var(--font-geist-sans)', ...fontFamily.sans],
         mono: ['var(--font-geist-mono)', ...fontFamily.mono],
+        sg: ['var(--font-space-grotesk)', ...fontFamily.sans],
       },
       fontSize: {
-        xs: ['0.75rem', { lineHeight: '1rem' }],
-        sm: ['0.825rem', { lineHeight: '1.25rem' }],
-        base: ['0.875rem', { lineHeight: '1.5rem' }],
+        xs: ['0.800rem', { lineHeight: '1rem' }],
+        sm: ['0.850rem', { lineHeight: '1.25rem' }],
+        base: ['0.925rem', { lineHeight: '1.5rem' }],
         lg: ['1.115rem', { lineHeight: '1.75rem' }],
         xl: ['1.25rem', { lineHeight: '1.75rem' }],
         '2xl': ['1.563rem', { lineHeight: '2rem' }],
@@ -95,11 +96,11 @@ module.exports = {
         '5xl': ['3.052rem', { lineHeight: '1' }],
       },
       fontWeight: {
-        normal: '300',
-        medium: '400',
+        normal: '400',
+        medium: '450',
         semibold: '500',
         bold: '550',
-        black: '650',
+        black: '600',
       },
       keyframes: {
         'accordion-down': {

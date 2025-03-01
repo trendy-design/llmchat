@@ -45,6 +45,10 @@ export const HistoryItem = ({
 
   const handleInputBlur = () => {
     setIsEditing(false);
+    updateThread({
+      id: thread.id,
+      title: title?.trim() || 'Untitled',
+    });
   };
 
   const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {

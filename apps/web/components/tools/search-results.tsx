@@ -42,7 +42,7 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
         <Flex gap="xs" className="mb-4 w-full flex-wrap overflow-x-hidden" items="stretch">
           {visibleResults.map(result => (
             <Flex
-              className="bg-secondary max-w-[300px] shrink-0 cursor-pointer rounded-md p-1 px-2 hover:opacity-80"
+              className="bg-tertiary max-w-[300px] shrink-0 cursor-pointer rounded-md p-1.5 px-2 hover:opacity-80"
               direction="col"
               key={result.link}
               justify="between"
@@ -54,7 +54,7 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
               <LinkBlock url={result.link}>
               <Flex direction="row" items="center" gap="sm">
                 <SearchFavicon link={new URL(result.link).host} />
-                <Type size="xs" className="w-full" textColor="secondary">
+                <Type size="xs" className="w-full text-foreground" >
                   {getHostname(result.link)}
                 </Type>
               </Flex>
@@ -63,12 +63,12 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
           ))}
           {remainingCount > 0 && (
             <Flex
-              className="bg-secondary max-w-[300px] shrink-0 cursor-pointer rounded-md p-1 px-2"
+              className="bg-tertiary max-w-[300px] shrink-0 cursor-pointer rounded-md p-1.5 px-2"
               direction="col"
               justify="center"
               items="center"
             >
-              <Type size="xs" textColor="secondary">
+              <Type size="xs" className="text-foreground">
                 +{remainingCount}
               </Type>
             </Flex>

@@ -5,11 +5,11 @@ import { LucideIcon } from '../../../shared/types/icons';
 import { cn } from '../lib/utils';
 
 const buttonVariants = cva(
-  'inline-flex items-center gap-1 justify-center font-medium whitespace-nowrap rounded-md transition-colors focus-visible:outline-none ',
+  'inline-flex items-center gap-1 justify-center font-medium whitespace-nowrap rounded-lg transition-colors focus-visible:outline-none ',
   {
     variants: {
       variant: {
-        default: 'bg-brand text-brand-foreground hover:opacity-90',
+        default: 'bg-brand-foreground/50 text-brand font-semibold hover:opacity-90',
         accent: 'text-teal-600 bg-teal-600/10 hover:bg-teal-600/20',
         outlined: 'bg-background text-foreground outline outline-border hover:bg-secondary',
         destructive: 'bg-destructive text-destructive-foreground hover:opacity-90',
@@ -20,9 +20,9 @@ const buttonVariants = cva(
         text: 'p-0 text-xs',
       },
       size: {
-        default: 'h-9 px-3 text-xs md:text-[0.850rem]',
-        sm: 'h-8 px-3 text-xs md:text-[0.825rem]',
-        xs: 'h-7 px-2 text-xs md:text-[0.825rem]',
+        default: 'h-9 px-3 text-xs md:text-sm',
+        sm: 'h-8 px-3 text-xs md:text-sm',
+        xs: 'h-7 px-2 text-xs md:text-sm',
         md: 'h-9 px-4 text-xs md:text-sm font-semibold',
         lg: 'h-12 md:h-14  px-8 text-xs md:text-base font-semibold',
         icon: 'h-8 min-w-8 text-xs md:text-sm',
