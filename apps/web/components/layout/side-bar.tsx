@@ -81,7 +81,7 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="border-border bg-secondary relative flex h-[100dvh] w-[240px] flex-shrink-0 flex-row border-r">
+    <div className="border-border bg-secondary/50 relative flex h-[100dvh] w-[240px] flex-shrink-0 flex-row border-r">
       <Flex direction="col" className="no-scrollbar w-full">
         <Flex justify="between" items="center" direction="col" className="w-full p-3" gap="xs">
           <Button

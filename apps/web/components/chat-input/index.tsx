@@ -32,7 +32,7 @@ export const ChatInput = () => {
     const optimisticUserThreadItemId = nanoid();
     const optimisticAiThreadItemId = nanoid();
 
-    if(threadItems?.length === 0 && thread?.id) {
+    if(thread?.id) {
       updateThread({
         id: thread.id,
         title: formData.get('query') as string,

@@ -100,7 +100,7 @@ export const HistoryItem = ({
       ) : (
         <>
           <Flex direction="col" items="start" className="w-full" gap="none">
-            <Type className=" w-full" size="sm" textColor="primary">
+            <Type className="w-full line-clamp-1" size="sm" textColor="primary">
               {thread.title}
             </Type>
           </Flex>
