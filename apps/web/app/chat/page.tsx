@@ -26,25 +26,25 @@ const ChatSessionPage = () => {
           Share
         </Button>
       </div>
-    <div className='flex flex-row flex-1 overflow-hidden w-full'>
-    <Flex className="mx-auto h-full flex-1 max-w-2xl items-center" direction="col">
-      <div className="no-scrollbar flex-1 overflow-y-auto overflow-x-hidden" ref={scrollRef}>
-        <div ref={contentRef}>
-          <Thread />
-        </div>
+      <div className='flex flex-row flex-1 overflow-hidden w-full'>
+        <Flex className="mx-auto h-full flex-1 max-w-2xl items-center" direction="col">
+          <div className="no-scrollbar flex-1 overflow-y-auto overflow-x-hidden" ref={scrollRef}>
+            <div ref={contentRef}>
+              <Thread />
+            </div>
+          </div>
+          <ChatInput />
+
+        </Flex>
+        {currentSources?.length > 0 && <div className='flex flex-col shrink-0 gap-2 w-[360px] p-8 h-full border-border'>
+          {
+            currentSources.map(source => (
+              <WebsitePreview key={source} url={source} />
+            ))
+          }
+        </div>}
       </div>
-      <ChatInput />
-   
-    </Flex>
-       <div className='flex flex-col shrink-0 gap-2 w-[360px] p-8 h-full border-border'> 
-        {
-          currentSources.map(source => (
-            <WebsitePreview key={source} url={source} />
-          ))
-        }
-       </div>
-       </div>
-       </div>
+    </div>
   );
 };
 
