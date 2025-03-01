@@ -50,7 +50,7 @@ export const CodeBlock = ({ lang = 'plaintext', code, showHeader = true }: CodeB
           </Button>
         </div>
       )}
-      <pre className="border-border bg-background text-foreground overflow-x-auto rounded-lg border p-4">
+      <pre className="border-border text-muted-foreground bg-background text-sm overflow-x-auto font-mono rounded-lg border p-4">
         <code className={cn(`language-${lang}`)} ref={ref}>
           {code}
         </code>

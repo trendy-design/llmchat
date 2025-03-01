@@ -96,11 +96,11 @@ module.exports = {
         '5xl': ['3.052rem', { lineHeight: '1' }],
       },
       fontWeight: {
-        normal: '400',
-        medium: '450',
-        semibold: '500',
-        bold: '550',
-        black: '600',
+        normal: '350',
+        medium: '400',
+        semibold: '450',
+        bold: '500',
+        black: '550',
       },
       keyframes: {
         'accordion-down': {

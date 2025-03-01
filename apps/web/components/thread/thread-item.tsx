@@ -3,6 +3,8 @@ import { sanitizeMDX } from '@/libs/mdx/mdx-sanitization';
 import { parseSourceTagsFromXML } from '@/libs/mdx/sources';
 import { MdxChunk, useMdxChunker } from '@/libs/mdx/use-mdx-chunks';
 import { ThreadItem as ThreadItemType } from '@/libs/store/chat.store';
+import { cn } from '@repo/ui';
+import { IconBook } from '@tabler/icons-react';
 import { MDXRemote } from 'next-mdx-remote';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote/rsc';
 import { serialize } from 'next-mdx-remote/serialize';
@@ -15,12 +17,12 @@ import { Steps } from './steps';
 type NestedMDXRemoteSerializeResult =
   | MDXRemoteSerializeResult
   | {
-      source: string;
-      tag: string;
+    source: string;
+    tag: string;
 
-      tagProps: Record<string, string>;
-      children: NestedMDXRemoteSerializeResult[];
-    };
+    tagProps: Record<string, string>;
+    children: NestedMDXRemoteSerializeResult[];
+  };
 
 export const AIThreadItem = ({ content }: { content: string }) => {
   const animatedText = content ?? '';
@@ -266,7 +268,7 @@ export const AIThreadItemV2 = ({ content }: { content: string }) => {
   }
 
   return (
-    <div className="animate-fade-in prose prose-prosetheme prose-base min-w-full">
+    <div className={cn("animate-fade-in prose prose-prosetheme prose-base prose-p:font-light prose-headings:text-lg prose-headings:font-semibold prose-strong:font-medium prose-li:font-light prose-th:font-m min-w-full","prose-th:font-medium prose-th:text-sm" )}>
       <MDXRemote {...serializedMdx} components={mdxComponents} />
     </div>
   );
@@ -308,8 +310,14 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
       {threadItem.role === 'assistant' && (
         <div className="flex w-full flex-col gap-4">
           <Steps steps={steps} />
+
+          {stableBlocks?.length > 0 && <div className='flex flex-row items-center gap-1'>
+            <IconBook size={16} strokeWidth={2} className="text-brand" />
+            <p className='text-sm text-muted-foreground'>Answer</p>
+          </div>}
           {stableBlocks?.map((block, index) => (
             <CitationProvider block={block}>
+
               <AIThreadItemV2 content={block.content} key={block.id} />
             </CitationProvider>
           ))}

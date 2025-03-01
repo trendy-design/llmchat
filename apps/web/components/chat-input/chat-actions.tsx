@@ -17,7 +17,7 @@ export type TChatActions = {
   handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export type ChatMode = 'deep' | 'fast';
+export type ChatMode = 'deep' | 'fast' | 'gpt-4o-mini';
 
 export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) => {
   const isGenerating = useChatStore(state => state.isGenerating);
@@ -38,6 +38,10 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
       label: "Fast Research",
       value: "fast",
       icon: <IconBolt size={14} strokeWidth={2} className="text-emerald-500" />
+    },
+    {
+      label: "GPT-4o Mini",
+      value: "gpt-4o-mini",
     },
     
   ]

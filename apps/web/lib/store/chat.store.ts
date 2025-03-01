@@ -90,7 +90,7 @@ const loadInitialData = async () => {
 };
 
 
-type ChatMode = 'fast' | 'deep';
+type ChatMode = 'fast' | 'deep' | 'gpt-4o-mini';
 
 type State = {
   model: Model;
@@ -107,6 +107,7 @@ type State = {
   messageGroups: MessageGroup[];
   isLoadingThreads: boolean;
   isLoadingThreadItems: boolean;
+  currentSources: string[];
 };
 
 type Actions = {
@@ -130,6 +131,7 @@ type Actions = {
   getMessageGroups: (threadId: string) => MessageGroup[];
   setCurrentThreadItem: (threadItem: ThreadItem) => void;
   clearAllThreads: () => void;
+  setCurrentSources: (sources: string[]) => void;
 };
 
 // Add this debounce utility at the top level
@@ -167,11 +169,18 @@ export const useChatStore = create(
     abortController: null,
     isLoadingThreads: false,
     isLoadingThreadItems: false,
+    currentSources: [],
     
     setChatMode: (chatMode: ChatMode) => {
       localStorage.setItem(CONFIG_KEY, JSON.stringify({ chatMode }));
       set(state => {
         state.chatMode = chatMode;
+      });
+    },
+    
+    setCurrentSources: (sources: string[]) => {
+      set(state => {
+        state.currentSources = sources;
       });
     },
     

@@ -9,7 +9,7 @@ export const useAgentStream = () => {
     const nodes = new Map<string, Block>();
     const contentBuffer = new Map<string, string>();
 
-    const modeEndpoint = chatMode === 'deep' ? '/deep' : '/fast';
+    const modeEndpoint = chatMode === 'deep' ? '/deep' : chatMode === 'gpt-4o-mini' ? '/completion' : '/fast';
     
     const response = await fetch(`${modeEndpoint}`, {
       method: 'POST',

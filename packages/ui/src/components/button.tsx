@@ -9,7 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-brand-foreground/50 text-brand font-semibold hover:opacity-90',
+        default: 'bg-foreground text-background font-semibold hover:opacity-90',
+        brand: 'bg-brand-foreground text-brand font-semibold hover:opacity-90',
         accent: 'text-teal-600 bg-teal-600/10 hover:bg-teal-600/20',
         outlined: 'bg-background text-foreground outline outline-border hover:bg-secondary',
         destructive: 'bg-destructive text-destructive-foreground hover:opacity-90',

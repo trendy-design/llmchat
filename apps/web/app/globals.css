@@ -23,37 +23,37 @@
     --vaul-overlay-background-start: transparent;
     --vaul-overlay-background-end: rgba(0,0,0,.4);
 
-    --background: 60 20% 99%;
-    --foreground: 60 20% 10%;
+    --background: 40 30% 98%;
+    --foreground: 20 15% 10%;
 
-    --secondary: 60 17% 94%;
-    --secondary-foreground: 60 17% 10%;
+    --secondary: 40 20% 94%;
+    --secondary-foreground: 20 15% 10%;
 
-    --tertiary: 60 15% 89%;
-    --tertiary-foreground: 60 15% 10%;
+    --tertiary: 40 15% 89%;
+    --tertiary-foreground: 20 15% 10%;
 
-    --card: 60 20% 99%;
-    --card-foreground: 60 20% 10%;
+    --card: 40 30% 98%;
+    --card-foreground: 20 15% 10%;
 
-    --popover: 60 20% 99%;
-    --popover-foreground: 60 20% 10%;
+    --popover: 40 30% 98%;
+    --popover-foreground: 20 15% 10%;
 
-    --brand: 220 70% 50%;
-    --brand-foreground: 0 0% 100%;
+    --brand: 188 100% 16%;
+    --brand-foreground: 188 100% 80%;
 
    
-    --muted: 60 15% 95%;
-    --muted-foreground: 60 10% 45%;
+    --muted: 40 15% 92%;
+    --muted-foreground: 20 10% 45%;
 
-    --accent: 60 15% 95%;
-    --accent-foreground: 60 15% 10%;
+    --accent: 40 15% 92%;
+    --accent-foreground: 20 15% 10%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 60 20% 99%;
+    --destructive-foreground: 40 30% 98%;
 
-    --border: 60 15% 90%;
-    --input: 60 15% 90%;
-    --ring: 60 20% 10%;
+    --border: 40 15% 85%;
+    --input: 40 15% 85%;
+    --ring: 20 15% 10%;
 
     --radius: 0.5rem;
   }

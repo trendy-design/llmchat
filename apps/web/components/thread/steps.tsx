@@ -10,11 +10,12 @@ import { VaulDrawer } from './vaul-drawer';
 
 export const Steps = ({ steps }: { steps: Block[] }) => {
   const [debugMode, setDebugMode] = useState(false);
+
+  if(steps.length === 0) {
+    return null;
+  }
   return (
     <>
-      {/* <Button variant="link" size="xs" className="p-0" onClick={() => setDebugMode(!debugMode)}>
-        Debug Mode
-      </Button> */}
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="workflow" className="rounded-xl overflow-hidden border border-border bg-secondary/50 p-0">
           <AccordionTrigger className="flex flex-row items-center bg-secondary gap-2 py-3 px-4">
