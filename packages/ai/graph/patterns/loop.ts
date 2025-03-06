@@ -1,12 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import { AgentGraph } from '../agent-graph';
-import { EdgeHandlerStrategy } from '../edge-pattern-handlers';
+import { EdgeHandlerStrategy, MessageResponse } from '../edge-pattern-handlers';
 import { GraphEdgeType } from '../types';
 
-type MessageResponse = {
-  nodeId: string;
-  response: string;
-};
 
 export class LoopEdgeHandler implements EdgeHandlerStrategy<'loop'> {
   constructor(private graph: AgentGraph) {}
@@ -35,11 +31,13 @@ export class LoopEdgeHandler implements EdgeHandlerStrategy<'loop'> {
                 input: currentResponse,
                 nodes: this.graph.getNodeStates(),
                 query: this.graph.getContext().query,
+                context: this.graph.getContext(),
+                updateContext: this.graph.updateContext,
               })
             : { userMessage: currentResponse, history: [] };
           let nodeId = uuidv4();
 
-          const toResponse = await this.graph.processAgentMessage({
+          const toResponse = await this.graph.generate({
             nodeId,
             nodeKey: toNode.name,
             node: toNode,
@@ -51,7 +49,7 @@ export class LoopEdgeHandler implements EdgeHandlerStrategy<'loop'> {
           loopResponses.push(toResponse);
           nodeId = uuidv4();
 
-          const fromResponse = await this.graph.processAgentMessage({
+          const fromResponse = await this.graph.generate({
             nodeId,
             nodeKey: fromNode.name,
             node: fromNode,
@@ -69,6 +67,8 @@ export class LoopEdgeHandler implements EdgeHandlerStrategy<'loop'> {
               await config.outputTransform({
                 responses: loopResponses,
                 nodes: this.graph.getNodeStates(),
+                context: this.graph.getContext(),
+                updateContext: this.graph.updateContext,
               })
             )
           : loopResponses.join('\n\n');

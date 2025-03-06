@@ -8,7 +8,7 @@ import {
   Flex,
   Kbd,
 } from '@repo/ui';
-import { IconBolt, IconChevronDown, IconPlayerStopFilled, IconSchool } from '@tabler/icons-react';
+import { IconBolt, IconChevronDown, IconGlobe, IconPlayerStopFilled, IconSchool } from '@tabler/icons-react';
 import { ArrowUp } from 'lucide-react';
 import { ImageUpload } from './image-upload';
 
@@ -31,23 +31,30 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
   const chatOptions = [
     {
       label: "Deep Research",
+      description: "Advance reserch",
       value: "deep",
-      icon: <IconSchool size={14} strokeWidth={2} className="text-blue-400" />
+      icon: <IconSchool size={16} strokeWidth={2} className="text-blue-400" />,
+      webSearch: true,
     },
     {
       label: "Fast Research",
+      description: "Quick web research",
       value: "fast",
-      icon: <IconBolt size={14} strokeWidth={2} className="text-emerald-500" />
+      icon: <IconBolt size={16} strokeWidth={2} className="text-emerald-500" />,
+      webSearch: true,
     },
     {
       label: "GPT-4o Mini",
+      description: "Open AI's older model",
       value: "gpt-4o-mini",
+      icon: <IconBolt size={16} strokeWidth={2} className="text-emerald-500" />,
+
     },
     
   ]
 
   return (
-    <Flex className="w-full px-1 pb-1 pt-1.5 md:px-2 md:pb-2" items="center" justify="between">
+    <Flex className="w-full bg-secondary/50 border-t border-border px-1 pb-1 pt-1.5 md:px-2 md:pb-2" items="center" justify="between">
       <Flex gap="xs" items="center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -57,13 +64,22 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
               <IconChevronDown size={12} strokeWidth={2} />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" side="bottom">
+          <DropdownMenuContent align="start" side="bottom" className='w-[320px]'>
             {chatOptions.map(option => (
               <DropdownMenuItem key={option.label} onSelect={()=>{
                 setChatMode(option.value as ChatMode);
-              }}>
+              }} className='h-auto'>
+                <div className='flex flex-row w-full items-center gap-2.5 py-1.5 px-1.5'>
                 {option.icon}
-                {option.label}
+
+                  <div className='flex flex-col gap-0'> 
+                  {<p className='text-sm font-medium'>{option.label}</p>}
+                  {option.description && <p className='text-xs text-muted-foreground'>{option.description}</p>}
+                  </div>
+                  <div className='flex-1' />
+                  {option.webSearch && <IconGlobe size={14} strokeWidth={2} className="text-muted-foreground" />}
+                </div>
+             
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>

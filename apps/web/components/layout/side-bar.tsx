@@ -1,19 +1,24 @@
-import { useAuth } from '@/lib/context';
 import { useRootContext } from '@/libs/context/root';
+import { useAppStore } from '@/libs/store/app.store';
 import { Thread, useChatStore } from '@/libs/store/chat.store';
-import { Button, Flex, Kbd, Tooltip, Type } from '@repo/ui';
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  UserButton,
+} from '@clerk/nextjs';
+import { Button, cn, Flex, Kbd, Type } from '@repo/ui';
 import {
   IconBrandGithub,
   IconBrandX,
   IconCommand,
-  IconLogin,
-  IconLogout,
+  IconLayoutSidebar,
   IconMoon,
   IconPlus,
   IconSearch,
-  IconSun,
+  IconSun
 } from '@tabler/icons-react';
-import Avvvatars from 'avvvatars-react';
 import moment from 'moment';
 import { useTheme } from 'next-themes';
 import { usePathname, useRouter } from 'next/navigation';
@@ -25,7 +30,6 @@ export const Sidebar = () => {
   const { setIsCommandSearchOpen } = useRootContext();
   const { theme, setTheme } = useTheme();
   const { push } = useRouter();
-  const { open: openSignIn, logout, user } = useAuth();
   const isChatPage = pathname.startsWith('/chat');
   const threads = useChatStore(state => state.threads);
   const currentThreadId = useChatStore(state => state.currentThreadId);
@@ -34,6 +38,8 @@ export const Sidebar = () => {
     return [...threads].sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
   };
   const clearAllThreads = useChatStore(state => state.clearAllThreads);
+  const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
+  const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
 
   const groupedThreads: Record<string, Thread[]> = {
     today: [],
@@ -71,7 +77,7 @@ export const Sidebar = () => {
             <HistoryItem
               thread={thread}
               key={thread.id}
-              dismiss={() => {}}
+              dismiss={() => { }}
               isActive={thread.id === currentThreadId}
             />
           ))}
@@ -81,33 +87,40 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="border-border bg-secondary/50 relative flex h-[100dvh] w-[240px] flex-shrink-0 flex-row border-r">
-      <Flex direction="col" className="no-scrollbar w-full">
-        <Flex justify="between" items="center" direction="col" className="w-full p-3" gap="xs">
+    <div className={cn("border-border bg-secondary/50 relative flex flex-1 h-[100dvh] pt-[1px] w-[240px] flex-shrink-0 flex-col", isSidebarOpen ? 'w-[240px]' : 'w-[50px]')}>
+      <Flex className='w-full justify-between items-center px-3 pb-2 pt-4 '>
+        <p className={cn('text-sm font-semibold', isSidebarOpen ? 'flex' : 'hidden')}>deep.new</p>
+        <Button variant='ghost' size="icon-sm" onClick={() => setIsSidebarOpen(prev => !prev)}>
+          <IconLayoutSidebar size={16} strokeWidth={2} className='text-muted-foreground' />
+        </Button>
+      </Flex>
+      <Flex direction="col" className="no-scrollbar w-full flex-1">
+        <Flex justify="between" items="center" direction="col" className="w-full p-3" gap="sm">
           <Button
-            size="sm"
+            size={isSidebarOpen ? 'sm' : 'icon-sm'}
+            variant="brand"
             className="w-full"
             onClick={() => {
               !isChatPage && push('/chat');
               createThread();
             }}
           >
-            <IconPlus size={14} strokeWidth={3} /> New Chat
+            <IconPlus size={16} strokeWidth={3} /> {isSidebarOpen ? 'New Chat' : ''}
           </Button>
           <Button
-            size="sm"
+            size={isSidebarOpen ? "sm" : "icon-sm"}
             variant="ghost"
-            className="w-full gap-3 px-3"
+            className="w-full gap-3 px-2"
             onClick={() => setIsCommandSearchOpen(true)}
           >
             <div className="flex flex-row items-center gap-1 opacity-50">
-              <IconSearch size={14} strokeWidth={2} /> Search
+              <IconSearch size={16} strokeWidth={2} /> {isSidebarOpen ? 'Search' : ''}
             </div>
-            <div className="flex-1" />
-            <div className="flex flex-row gap-1">
-            <Kbd className='w-5'><IconCommand className='size-3 shrink-0'/></Kbd>
-            <Kbd>K</Kbd>
-            </div>
+            {isSidebarOpen && <div className="flex-1" />}
+            {isSidebarOpen && <div className="flex flex-row gap-1">
+              <Kbd className='w-5'><IconCommand className='size-3 shrink-0' /></Kbd>
+              <Kbd>K</Kbd>
+            </div>}
           </Button>
         </Flex>
 
@@ -117,70 +130,30 @@ export const Sidebar = () => {
           <Flex
             direction="col"
             gap="md"
-            className="no-scrollbar border-border w-full flex-1 overflow-y-auto p-3"
+            className={cn("no-scrollbar border-border w-full flex-1 overflow-y-auto p-3", isSidebarOpen ? 'flex' : 'hidden')}
           >
             {renderGroup('Today', groupedThreads.today)}
             {renderGroup('Tomorrow', groupedThreads.tomorrow)}
             {renderGroup('Last 7 Days', groupedThreads.last7Days)}
             {renderGroup('Last 30 Days', groupedThreads.last30Days)}
             {renderGroup('Previous Months', groupedThreads.previousMonths)}
+            <Button variant="ghost" onClick={() => clearAllThreads()}>
+              Clear All
+            </Button>
           </Flex>
         )}
-        <Flex className="w-full p-2" direction="col" gap="sm">
-          <Button size="icon-xs" variant="ghost" onClick={() => clearAllThreads()}>
-            Clear All
-          </Button>
-          {!user ? (
-            <Button
-              size="sm"
-              variant="secondary"
-              className="w-full gap-2"
-              onClick={() => {
-                openSignIn();
-              }}
-            >
-              <IconLogin size={14} strokeWidth={2} />
-              SignIn{' '}
-            </Button>
-          ) : (
-            <Flex gap="sm" items="center" className="border-border w-full rounded-lg border p-1">
-              <Avvvatars value={user.email || 'Anonymous'} size={24} />
-              <Type size="xs" className="line-clamp-1 flex-grow">
-                {user.email}
-              </Type>
-              <Tooltip content="Sign Out">
-                <Button size="icon-xs" variant="ghost" onClick={() => logout()}>
-                  <IconLogout size={14} strokeWidth={2} />
-                </Button>
-              </Tooltip>
-            </Flex>
-          )}
+        <div className='flex-1' />
+        <Flex className="w-full" direction="col" gap="sm">
 
-          {/* <Flex gap="sm" className="w-full">
-            <Button
-              variant="bordered"
-              size="sm"
-              className="w-full gap-2"
-              onClick={() => {
-                setOpenApiKeyModal(true);
-              }}
-            >
-              <KeyRound size={16} strokeWidth={2} />
-              Add API
-            </Button>
-            <Button
-              variant="bordered"
-              size="sm"
-              className="w-full gap-2"
-              onClick={() => {
-                push("/settings");
-              }}
-            >
-              <Bolt size={16} strokeWidth={2} />
-              Settings
-            </Button> 
-          </Flex>*/}
-          <Flex className="w-full items-center justify-between opacity-70">
+
+          <SignedOut>
+            <SignInButton />
+            <SignUpButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <Flex className="w-full items-center border-t p-2.5 border-border justify-between opacity-70">
             <Flex gap="xs">
               <Button
                 size="icon-xs"

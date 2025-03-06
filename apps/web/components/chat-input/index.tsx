@@ -52,6 +52,7 @@ export const ChatInput = () => {
           id: optimisticUserThreadItemId,
           content: formData.get('query') as string,
           nodeKey: optimisticUserThreadItemId,
+          contentType: 'text',
         },
       ],
       status: 'completed' as const,
@@ -95,8 +96,8 @@ export const ChatInput = () => {
   }, [editor, currentThreadId, model, chatMode]);
 
   const renderChatInput = () => (
-    <div className="bg-secondary w-full rounded-2xl border border-border p-1">
-      <Flex direction="col" className="bg-background w-full rounded-xl border border-border shadow-sm">
+    <div className=" w-full">
+      <Flex direction="col" className="bg-background w-full rounded-lg border border-border">
         <motion.div
           variants={slideUpVariant}
           initial="initial"
@@ -135,19 +136,23 @@ export const ChatInput = () => {
   return (
     <div
       className={cn(
-        'flex w-full flex-col items-center',
-        !threadItems?.length && 'h-[calc(100vh-12rem)] justify-center'
+        'flex w-full flex-col items-start',
+        !threadItems?.length && 'h-[calc(100vh-12rem)] justify-start'
       )}
     >
       <Flex
-        items="center"
-        justify="center"
+        items="start"
+        justify="start"
         direction="col"
         gap="sm"
         className={cn('w-full', threadItems?.length > 0 ? 'mb-2' : 'h-full')}
       >
         {!threadItems?.length && (
+          <div className='flex flex-col gap-2'>
+                    <h1 className="text-3xl font-medium font-sg tracking-tight">Good Morning,</h1>
+
           <h1 className="text-3xl font-medium font-sg tracking-tight">How can i help you?</h1>
+          </div>
         )}
 
         {renderChatBottom()}

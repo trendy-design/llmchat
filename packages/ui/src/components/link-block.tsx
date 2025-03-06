@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from './popover';
 export type TLinkBlock = {
   url: string;
@@ -82,6 +82,18 @@ export const WebsitePreview = memo(({ url }: { url: string }) => {
   useEffect(() => {
     fetchOg(url);
   }, [url]);
+  
+  const parsedUrl = useMemo(() => {
+    try {
+      return new URL(url);
+    } catch (e) {
+      return null;
+    }
+  }, [url]);
+
+  if (!parsedUrl) {
+    return null;
+  }
 
   return <div>
     {
@@ -97,7 +109,7 @@ export const WebsitePreview = memo(({ url }: { url: string }) => {
                 sizes="100vw"
                 className="h-4 w-4 rounded-full object-cover"
               />
-              <p className="text-muted-foreground text-xs line-clamp-1 w-full">{new URL(ogResult.url).hostname}</p>
+              <p className="text-muted-foreground text-xs line-clamp-1 w-full">{parsedUrl.hostname}</p>
             </div>
             <p className="text-foreground w-full overflow-hidden line-clamp-2 text-sm">
               {ogResult.title}
@@ -108,16 +120,16 @@ export const WebsitePreview = memo(({ url }: { url: string }) => {
 
           </div>
 
-        </div> : <div className='flex flex-row items-center gap-1.5 p-2'>
+        </div> : <div className='flex flex-row items-center gap-1.5 p-4'>
           <Image
-            src={`https://www.google.com/s2/favicons?domain=${new URL(url).hostname}&sz=128`}
+            src={`https://www.google.com/s2/favicons?domain=${parsedUrl.hostname}&sz=128`}
             alt={ogResult?.title}
             width={0}
             height={0}
             sizes="100vw"
             className="h-4 w-4 rounded-full object-cover"
           />
-          <p className="text-muted-foreground text-xs line-clamp-1 w-full">{new URL(url).hostname}</p>
+            <p className="text-muted-foreground text-xs line-clamp-1 w-full">{parsedUrl.hostname}</p>
         </div>
 
     }

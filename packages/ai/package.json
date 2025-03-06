@@ -9,7 +9,7 @@
   "exports": {
     ".": "./main.ts",
     "./models": "./models.ts",
-    "./tools": "./tools.ts"
+    "./tools": "./tools/index.ts"
   },
   "dependencies": {
     "@repo/shared": "*",

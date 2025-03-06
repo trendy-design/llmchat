@@ -45,29 +45,12 @@ export const useAgentStream = () => {
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6));
-              if (!!data.nodeId) {
-                const existingNode = nodes.get(data.nodeId);
-                if (!existingNode) {
-                  contentBuffer.clear();
-                }
-                
-                const existingContent = contentBuffer.get(data.nodeId) || '';
-                const mergedContent = existingContent + (data.content || '');
-                contentBuffer.set(data.nodeId, mergedContent);
 
-                nodes.set(data.nodeId, {
-                  ...data,
-                  content: mergedContent,
-                });
+              if (data.type === "event") {
+                updateEvent(data, nodes, contentBuffer);
+              } else if (data.type === "context") {
+                updateContext(data);
               }
-              updateThreadItem({
-                id: data.threadItemId,
-                parentId: data.parentThreadItemId,
-                threadId: data.threadId,
-                content: Array.from(nodes.values()),
-                status: data.status as 'pending' | 'completed' | 'error',
-                updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined,
-              });
             } catch (e) {
               console.error('Error parsing SSE data:', e, 'Line:', line);
             }
@@ -78,6 +61,63 @@ export const useAgentStream = () => {
       reader.releaseLock();
     }
   };
+
+  const updateEvent = (data: any, nodes: Map<string, Block>, contentBuffer: Map<string, string>) => {
+    if (!!data.nodeId) {
+      const existingNode = nodes.get(data.nodeId);
+      if (!existingNode) {
+        contentBuffer.clear();
+      }
+      
+      const existingContent = contentBuffer.get(data.nodeId) || '';
+      const mergedContent = existingContent + (data.chunk || '');
+      contentBuffer.set(data.nodeId, mergedContent);
+
+      console.log("chunkType",  data.chunkType)
+
+      if (data.chunkType === "text") {
+        nodes.set(data.nodeId, {
+          ...data,
+          content: mergedContent,
+        });
+      } 
+      else if (data.chunkType === "object") {
+        try {
+          const object = JSON.parse(data.chunk);
+          nodes.set(data.nodeId, {
+            ...data,
+            object: object,
+          });
+        } catch (e) {
+          console.error('Error parsing object:', e, 'Content:', mergedContent);
+        }
+      }
+      else if (data.chunkType === "reasoning") {
+        nodes.set(data.nodeId, {
+          ...data,
+          nodeReasoning: mergedContent,
+        });
+      }
+    }
+    updateThreadItem({
+      id: data.threadItemId,
+      parentId: data.parentThreadItemId,
+      threadId: data.threadId,
+      content: Array.from(nodes.values()),
+      status: data.status as 'pending' | 'completed' | 'error',
+      updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined,
+    });
+  }
+
+  const updateContext = (data: any) => {
+    console.log("updateContext", data)
+    updateThreadItem({
+      id: data.threadItemId,
+      parentId: data.parentThreadItemId,
+      threadId: data.threadId,
+      metadata: data.context
+    });
+  }
 
   return { runAgent };
 };

@@ -2,6 +2,7 @@ import {
   AgentContextManager,
   AgentGraph,
   AgentGraphEvents,
+  GraphStateManager,
   InputTransformArg,
   LLMMessageType,
   OutputTransformArg
@@ -11,9 +12,10 @@ import { ToolEnumType } from "@repo/ai/tools";
       
       export async function webSearchWorkflow(
         events: AgentGraphEvents,
-        contextManager: AgentContextManager
+        contextManager: AgentContextManager,
+        stateManager: GraphStateManager
       ): Promise<AgentGraph> {
-        const graph = new AgentGraph(events, contextManager);
+        const graph = new AgentGraph(events, contextManager, stateManager);
       
         graph.addNode({
           id: "searcher",

@@ -4,8 +4,9 @@ import {
         AgentGraphEvents,
         completionRequestSchema,
         CompletionRequestType,
+        GraphStateManager
 } from '@repo/ai';
-import { webSearchWorkflow } from '@repo/workflows';
+import { workflow3 } from '@repo/workflows';
 import type { NextRequest } from 'next/server';
 
 export type AgentEventResponse = {
@@ -61,15 +62,28 @@ async function executeStream(
         data: CompletionRequestType
 ) {
         const contextManager = new AgentContextManager({
-                threadId: data.threadId,
-                threadItemId: data.threadItemId,
-                parentThreadItemId: data.parentThreadItemId,
-                history: data.messages,
+                initialContext: {
+                        history: data.messages,
+                },
+                onContextUpdate: (context) => {
+                        console.log('context', context);
+                },
         });
 
-        const graph = await webSearchWorkflow(events, contextManager);
+        const stateManager = new GraphStateManager({
+                onStateUpdate: (state) => {
+                        console.log('state', state);
+                },
+                onNodeUpdate: (nodeId, state) => {
+                        // persist to db
+                        console.log('nodeId', nodeId, 'state', state);
+                },
+        });
+
+        const graph = await workflow3(events, contextManager, stateManager);
 
         events.on('event', event => {
+                console.log('event', event);
                 sendMessage(controller, encoder, {
                         threadId: data.threadId,
                         threadItemId: data.threadItemId,
@@ -82,7 +96,7 @@ async function executeStream(
                 }
         });
 
-        await graph.execute('searcher', data.prompt);
+        await graph.execute('initiator', data.prompt);
         controller.close();
 }
 

@@ -10,20 +10,20 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: 'bg-foreground text-background font-semibold hover:opacity-90',
-        brand: 'bg-brand-foreground text-brand font-semibold hover:opacity-90',
+        brand: 'bg-brand text-brand-foreground font-semibold hover:opacity-90',
         accent: 'text-teal-600 bg-teal-600/10 hover:bg-teal-600/20',
         outlined: 'bg-background text-foreground outline outline-border hover:bg-secondary',
         destructive: 'bg-destructive text-destructive-foreground hover:opacity-90',
         bordered: 'border border-border bg-background text-foreground opacity-100 hover:opacity-80',
         secondary: 'bg-tertiary text-tertiary-foreground opacity-100 hover:opacity-80',
-        ghost: 'hover:bg-secondary text-foreground opacity-100 hover:opacity-80',
+        ghost: 'hover:bg-foreground/5 text-foreground opacity-100 hover:opacity-80',
         link: 'text-muted-foreground underline-offset-4 hover:underline h-auto decoration-border',
         text: 'p-0 text-xs',
       },
       size: {
         default: 'h-9 px-3 text-xs md:text-sm',
         sm: 'h-8 px-3 text-xs md:text-sm',
-        xs: 'h-7 px-2 text-xs md:text-sm',
+        xs: 'h-7 px-2 text-xs md:text-xs',
         md: 'h-9 px-4 text-xs md:text-sm font-semibold',
         lg: 'h-12 md:h-14  px-8 text-xs md:text-base font-semibold',
         icon: 'h-8 min-w-8 text-xs md:text-sm',

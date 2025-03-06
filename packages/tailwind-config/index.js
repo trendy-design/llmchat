@@ -83,15 +83,15 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        sans: ['var(--font-geist-sans)', ...fontFamily.sans],
+        sans: ['var(--font-inter)', ...fontFamily.sans],
         mono: ['var(--font-geist-mono)', ...fontFamily.mono],
-        sg: ['var(--font-space-grotesk)', ...fontFamily.sans],
+        // sg: ['var(--font-satoshi)', ...fontFamily.sans],
       },
       fontSize: {
-        xs: ['0.800rem', { lineHeight: '1rem' }],
-        sm: ['0.850rem', { lineHeight: '1.25rem' }],
-        base: ['0.925rem', { lineHeight: '1.5rem' }],
-        lg: ['1.115rem', { lineHeight: '1.75rem' }],
+        xs: ['0.75rem', { lineHeight: '1.2rem', letterSpacing: '0.01em' }],
+        sm: ['0.825rem', { lineHeight: '1.5rem', letterSpacing: '0.008em' }],
+        base: ['0.875rem', { lineHeight: '1.5rem'}],
+        lg: ['1.115rem', { lineHeight: '1.75rem', letterSpacing: '-0.01em' }],
         xl: ['1.25rem', { lineHeight: '1.75rem' }],
         '2xl': ['1.563rem', { lineHeight: '2rem' }],
         '3xl': ['1.953rem', { lineHeight: '2.25rem' }],
@@ -101,9 +101,9 @@ module.exports = {
       fontWeight: {
         normal: '350',
         medium: '400',
-        semibold: '450',
-        bold: '500',
-        black: '550',
+        semibold: '500',
+        bold: '550',
+        black: '600',
       },
       keyframes: {
         'accordion-down': {

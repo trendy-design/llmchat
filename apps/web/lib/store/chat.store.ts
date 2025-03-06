@@ -18,6 +18,8 @@ export type Block = {
   id: string;
   nodeKey: string;
   content: string;
+  contentType: 'text' | 'object';
+  object?: any;
   toolCalls?: AgentEventPayload['toolCalls'];
   toolCallResults?: AgentEventPayload['toolCallResults'];
   nodeStatus?: 'pending' | 'completed' | 'error';
@@ -134,7 +136,7 @@ type Actions = {
   setCurrentSources: (sources: string[]) => void;
 };
 
-// Add this debounce utility at the top level
+// Add these utility functions at the top level
 const debounce = <T extends (...args: any[]) => any>(
   fn: T,
   delay: number
@@ -146,11 +148,76 @@ const debounce = <T extends (...args: any[]) => any>(
   };
 };
 
+const throttle = <T extends (...args: any[]) => any>(
+  fn: T,
+  limit: number
+): ((...args: Parameters<T>) => void) => {
+  let inThrottle = false;
+  let lastArgs: Parameters<T> | null = null;
+  
+  return (...args: Parameters<T>) => {
+    if (!inThrottle) {
+      fn(...args);
+      inThrottle = true;
+      setTimeout(() => {
+        inThrottle = false;
+        if (lastArgs) {
+          fn(...lastArgs);
+          lastArgs = null;
+        }
+      }, limit);
+    } else {
+      lastArgs = args;
+    }
+  };
+};
+
+// Add batch update functionality
+type BatchUpdateQueue = {
+  items: ThreadItem[];
+  timeoutId: NodeJS.Timeout | null;
+};
+
+const batchUpdateQueue: BatchUpdateQueue = {
+  items: [],
+  timeoutId: null
+};
+
+const processBatchUpdate = async () => {
+  if (batchUpdateQueue.items.length === 0) return;
+  
+  const itemsToUpdate = [...batchUpdateQueue.items];
+  batchUpdateQueue.items = [];
+  
+  try {
+    await db.threadItems.bulkPut(itemsToUpdate);
+  } catch (error) {
+    console.error("Failed to batch update thread items:", error);
+  }
+};
+
+const queueThreadItemForBatchUpdate = (threadItem: ThreadItem) => {
+  const existingIndex = batchUpdateQueue.items.findIndex(item => item.id === threadItem.id);
+  
+  if (existingIndex !== -1) {
+    batchUpdateQueue.items[existingIndex] = threadItem;
+  } else {
+    batchUpdateQueue.items.push(threadItem);
+  }
+  
+  if (!batchUpdateQueue.timeoutId) {
+    batchUpdateQueue.timeoutId = setTimeout(() => {
+      processBatchUpdate();
+      batchUpdateQueue.timeoutId = null;
+    }, 100); // Process batch every 2 seconds
+  }
+};
+
 const debouncedThreadUpdate = debounce((thread: Thread) => db.threads.put(thread), 1000);
 
-const debouncedThreadItemUpdate = debounce(
-  (threadItem: ThreadItem) => db.threadItems.put(threadItem),
-  1000
+const throttledThreadItemUpdate = throttle(
+  (threadItem: ThreadItem) => queueThreadItemForBatchUpdate(threadItem),
+  500
 );
 
 export const useChatStore = create(
@@ -288,11 +355,14 @@ export const useChatStore = create(
       if (existingItem) {
         const updatedItem = { ...existingItem, ...threadItem, threadId: get().currentThreadId };
 
+        // Immediately update status changes in the database
         if(existingItem.status !== threadItem.status) {
           await db.threadItems.put(updatedItem);
+        } else {
+          // For other changes, use throttled batch updates
+          throttledThreadItemUpdate(updatedItem);
         }
 
-        debouncedThreadItemUpdate(updatedItem);
         set(state => {
           const index = state.threadItems.findIndex((t: ThreadItem) => t.id === threadItem.id);
           if (index !== -1) {

@@ -69,7 +69,7 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
     }
     return (
       <LinkBlock url={url}>
-        <div className="bg-brand/20 text-brand group inline-flex size-5 flex-row items-center justify-center gap-1 rounded-md text-xs">
+        <div className="bg-brand/20 text-brand group inline-flex size-4 flex-row items-center justify-center gap-1 rounded-sm text-[10px]">
           {citation?.index}
         </div>
       </LinkBlock>

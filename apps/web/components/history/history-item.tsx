@@ -70,7 +70,7 @@ export const HistoryItem = ({
   };
 
   const containerClasses = cn(
-    'gap-2 w-full group w-full cursor-pointer flex flex-row items-center h-8 py-0.5 pl-2 pr-1 rounded-md hover:bg-muted',
+    'gap-2 w-full group w-full cursor-pointer flex flex-row items-center h-8 py-0.5 pl-2 pr-1 rounded-md hover:bg-foreground/5',
     (isActive && isChatPage) || isEditing ? 'bg-muted' : ''
   );
 
@@ -116,7 +116,7 @@ export const HistoryItem = ({
               setOpenOptions(!openOptions);
             }}
           >
-            <MoreHorizontal size={14} strokeWidth="2" />
+            <MoreHorizontal size={14} strokeWidth="2" className='text-muted-foreground/50' />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" side="right">

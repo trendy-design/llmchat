@@ -2,11 +2,15 @@ import { RootLayout } from '@/components/layout';
 import { ReactQueryProvider } from '@/libs/context';
 import { AuthProvider } from '@/libs/context/auth';
 import { RootProvider } from '@/libs/context/root';
+import {
+  ClerkProvider
+} from '@clerk/nextjs';
 import { TooltipProvider, cn } from '@repo/ui';
 import type { Viewport } from 'next';
 import { Metadata } from 'next';
 import { ThemeProvider } from 'next-themes';
 import localFont from 'next/font/local';
+
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -65,11 +69,17 @@ export const viewport: Viewport = {
 
 const inter = localFont({
   src: './InterVariable.woff2',
+  variable: '--font-inter',
 });
 
 const spaceGrotesk = localFont({
   src: './SpaceGrotesk-Variable.woff2',
   variable: '--font-space-grotesk',
+});
+
+const satoshi = localFont({
+  src: './Satoshi-Variable.woff2',
+  variable: '--font-satoshi',
 });
 
 export default function ParentLayout({
@@ -80,7 +90,7 @@ export default function ParentLayout({
   return (
     <html
       lang="en"
-      className={cn(inter.className, spaceGrotesk.className)}
+      className={cn(inter.className)}
       suppressHydrationWarning
     >
       <head>
@@ -92,6 +102,7 @@ export default function ParentLayout({
         />
       </head>
       <body>
+        <ClerkProvider>
         <RootProvider>
           <ThemeProvider
             attribute="class"
@@ -108,6 +119,7 @@ export default function ParentLayout({
             </TooltipProvider>
           </ThemeProvider>
         </RootProvider>
+        </ClerkProvider>
       </body>
     </html>
   );

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { ModelEnum } from '../models';
-import { ToolEnumType } from '../tools';
+import { ToolEnumType } from '../tools/types';
 
 export type ToolCallType = {
   toolName: string;
@@ -22,23 +22,21 @@ export type ToolCallErrorType = {
 
 export type AgentContextType = {
   query?: string;
-  formattingPrompt: string;
-  threadId: string;
-  threadItemId: string;
-  parentThreadItemId: string;
   history: LLMMessageType[];
   model: ModelEnum;
-  toolCalls?: ToolCallType[];
-  toolCallResults?: ToolCallResultType[];
+  [key: string]: any;
 };
 
+
 export type NodeState = {
-  status: 'idle' | 'pending' | 'completed' | 'error' | 'reasoning';
+  status: 'idle' | 'pending' | 'completed' | 'error';
   model?: string;
   key: string;
   tokenUsage?: number;
   input?: string;
   output?: string;
+  outputMode: 'text' | 'object';
+  outputSchema: z.ZodSchema | undefined;
   error?: string;
   history?: LLMMessageType[];
   toolCalls?: ToolCallType[];
@@ -56,23 +54,22 @@ export type NodeState = {
 export type AgentEventPayload = {
   nodeId: string;
   nodeKey: string;
-  nodeStatus: 'pending' | 'completed' | 'error' | 'reasoning';
-  nodeReasoning?: string;
+  nodeStatus: 'pending' | 'completed' | 'error';
   nodeModel?: string;
   tokenUsage?: number;
   nodeInput?: string;
   history?: LLMMessageType[];
   status: 'pending' | 'completed' | 'error';
   nodeError?: string;
-  content?: string;
-  fullResponse?: string;
+  chunkType: "text" | "reasoning" | "object";
+  chunk?: string;
   toolCalls?: ToolCallType[];
   toolCallResults?: ToolCallResultType[];
   toolCallErrors?: ToolCallErrorType[];
   sources?: string[];
   error?: string;
   isStep?: boolean;
-  skipRendering?: boolean;
+  [key: string]: any;
 };
 
 export type AgentResponseType = {
@@ -122,39 +119,6 @@ export const GraphNodeSchema = z.object({
 
 export type GraphNodeType = z.infer<typeof GraphNodeSchema>;
 
-// export const RevisionConfigSchema = z.object({
-//   maxIterations: z.number().optional(),
-//   stopCondition: z.union([z.function().args(z.string()).returns(z.promise(z.boolean())), z.string()]).optional(),
-//   revisionPrompt: z.function().args(z.string()).returns(z.string()).optional(),
-// });
-
-// export const LoopConfigSchema = z.object({
-//   maxIterations: z.number().optional(),
-//   stopCondition: z.union([z.function().args(z.string()).returns(z.promise(z.boolean())), z.string()]).optional(),
-//   inputTransform: z.function().args(z.string()).returns(z.union([z.promise(z.array(z.string())), z.array(z.string())])).optional(),
-//   outputTransform: z.function().args(z.array(z.string())).returns(z.union([z.promise(z.string()), z.string()])).optional(),
-// });
-
-// export const GraphEdgePatternSchema = z.enum(['parallel', 'map', 'reduce', 'condition', 'sequential', 'revision', 'loop']);
-// export type GraphEdgePatternType = z.infer<typeof GraphEdgePatternSchema>;
-// export const GraphConfigSchema = z.object({
-//   inputTransform: z.function().args(z.string()).returns(z.union([z.promise(z.array(z.string())), z.array(z.string())])).optional(),
-//   outputTransform: z.function().args(z.array(z.string())).returns(z.union([z.promise(z.string()), z.string()])).optional(),
-//   condition: z.function().args(z.string()).returns(z.boolean()).optional(),
-//   priority: z.number().optional(),
-//   fallbackNode: z.string().optional(),
-//   revision: RevisionConfigSchema.optional(),
-//   loop: LoopConfigSchema.optional(),
-// });
-
-// const GraphEdgeSchema = z.object({
-//   from: z.string(),
-//   to: z.string(),
-//   relationship: z.string(),
-//   pattern: GraphEdgePatternSchema,
-//   config: GraphConfigSchema.optional(),
-// });
-
 export const completionRequestSchema = z.object({
   threadId: z.string(),
   threadItemId: z.string(),
@@ -169,31 +133,58 @@ export type EdgeExecutionState = {
   results: Map<string, string>;
 };
 
-// export type GraphEdgeType = z.infer<typeof GraphEdgeSchema>;
-
 export type FunctionSchemaType = z.infer<typeof FunctionSchema>;
 export type CompletionRequestType = z.infer<typeof completionRequestSchema>;
 
 export type LLMMessageType = z.infer<typeof messageSchema>;
 
-export type GraphEdgePatternType = 'sequential' | 'loop';
+export type GraphEdgePatternType = 'sequential' | 'loop' | 'condition';
 
-export type GraphEdgeType<T extends GraphEdgePatternType> = {
+export type GraphEdgeType<T extends GraphEdgePatternType> = T extends 'sequential'
+  ? SequentialEdge
+  : T extends 'loop'
+    ? LoopEdge
+    : T extends 'condition'
+      ? ConditionEdge
+      : never;
+
+export type SequentialEdge = {
   from: string;
   to: string;
-  pattern: T;
-  config: GraphConfigType<T>;
+  pattern: 'sequential';
+  config: SequentialConfigType;
 };
+
+export type LoopEdge = {
+  from: string;
+  to: string;
+  pattern: 'loop';
+  config: LoopConfigType;
+};
+
+export type ConditionEdge = {
+  from: string;
+  trueBranch: string;
+  falseBranch: string;
+  pattern: 'condition';
+  config: ConditionConfigType;
+};
+
 
 export type InputTransformArg = {
   query?: string;
   input: string;
   nodes: NodeState[];
+  context: AgentContextType;
+  updateContext: (context: (prev: AgentContextType) => Partial<AgentContextType>) => void;
+
 };
 
 export type OutputTransformArg = {
   responses: string[];
   nodes: NodeState[];
+  context: AgentContextType;
+  updateContext: (context: (prev: AgentContextType) => Partial<AgentContextType>) => void;
 };
 
 export type ConditionConfigArg = {
@@ -218,6 +209,13 @@ export type SequentialConfigType = {
   outputTransform: (responses: OutputTransformArg) => string | Promise<string>;
   priority: number;
 };
+
+export type ConditionConfigType = {
+  condition: (condition: ConditionConfigArg) => boolean | Promise<boolean>;
+  inputTransform: (input: InputTransformArg) => SpecialMessageType | Promise<SpecialMessageType>;
+  outputTransform: (responses: OutputTransformArg) => string | Promise<string>;
+};
+
 
 export type GraphConfigType<T extends GraphEdgePatternType> = {
   fallbackNode?: string;

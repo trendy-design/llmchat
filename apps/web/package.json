@@ -10,6 +10,7 @@
     "generate": "bunx drizzle-kit generate"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.12.3",
     "@electric-sql/pglite": "0.2.13",
     "@electric-sql/pglite-repl": "^0.2.15",
     "@hotjar/browser": "^1.0.9",
@@ -77,6 +78,7 @@
     "idb": "^7.1.1",
     "idb-keyval": "^6.2.1",
     "immer": "^10.1.1",
+    "install": "^0.13.0",
     "js-tiktoken": "^1.0.12",
     "jsdom": "^24.1.1",
     "langchain": "^0.2.0",
@@ -88,6 +90,7 @@
     "next": "14.2.3",
     "next-mdx-remote": "^5.0.0",
     "next-themes": "^0.3.0",
+    "npm": "^11.2.0",
     "open-graph-scraper": "^6.9.0",
     "openai": "^4.47.1",
     "pdf-parse": "^1.1.1",

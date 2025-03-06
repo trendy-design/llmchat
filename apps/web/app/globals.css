@@ -38,7 +38,7 @@
     --popover: 40 30% 98%;
     --popover-foreground: 20 15% 10%;
 
-    --brand: 188 100% 16%;
+    --brand: 180 68% 16%;
     --brand-foreground: 188 100% 80%;
 
    
@@ -95,7 +95,7 @@
     --destructive: 0 63% 31%;
     --destructive-foreground: 60 1% 90%;
 
-    --border: 0 0% 15%;
+    --border: 0 0% 17%;
     --input: 60 1% 15%;
     --ring: 60 1% 83%;
   }
@@ -107,7 +107,11 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans font-light;
+  }
+
+  strong {
+    @apply font-medium;
   }
 }
 

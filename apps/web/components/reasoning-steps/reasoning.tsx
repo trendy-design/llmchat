@@ -17,7 +17,7 @@ const itemVariants = {
 };
 
 const Spinner = memo(() => (
-  <div className="border-border border-l-brand border-t-brand size-[0.825rem] shrink-0 animate-spin rounded-full border-[2px]" />
+  <div className="border-border border-l-brand border-t-brand size-sm shrink-0 animate-spin rounded-full border-[2px]" />
 ));
 
 Spinner.displayName = 'Spinner';

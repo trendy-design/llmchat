@@ -42,7 +42,7 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
         <Flex gap="xs" className="mb-4 w-full flex-wrap overflow-x-hidden" items="stretch">
           {visibleResults.map(result => (
             <Flex
-              className="bg-tertiary max-w-[300px] shrink-0 cursor-pointer rounded-md p-1.5 px-2 hover:opacity-80"
+              className="bg-tertiary max-w-[300px] shrink-0 cursor-pointer rounded-md p-1 px-1.5 hover:opacity-80"
               direction="col"
               key={result.link}
               justify="between"
@@ -63,7 +63,7 @@ export const SearchResults = ({ searchResults }: TSearchResults) => {
           ))}
           {remainingCount > 0 && (
             <Flex
-              className="bg-tertiary max-w-[300px] shrink-0 cursor-pointer rounded-md p-1.5 px-2"
+              className="bg-tertiary max-w-[300px] shrink-0 cursor-pointer rounded-md p-1 px-1.5"
               direction="col"
               justify="center"
               items="center"

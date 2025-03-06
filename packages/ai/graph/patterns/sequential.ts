@@ -1,11 +1,7 @@
 import { AgentGraph } from '../agent-graph';
-import { EdgeHandlerStrategy } from '../edge-pattern-handlers';
+import { EdgeHandlerStrategy, MessageResponse } from '../edge-pattern-handlers';
 import { GraphEdgeType } from '../types';
 
-type MessageResponse = {
-  nodeId: string;
-  response: string;
-};
 export class SequentialEdgeHandler implements EdgeHandlerStrategy<'sequential'> {
   constructor(private graph: AgentGraph) {}
 
@@ -25,6 +21,8 @@ export class SequentialEdgeHandler implements EdgeHandlerStrategy<'sequential'> 
               input: currentResponse,
               nodes: this.graph.getNodeStates(),
               query: this.graph.getContext().query,
+              context: this.graph.getContext(),
+              updateContext: this.graph.updateContext,
             })
           : { userMessage: currentResponse, history: [] };
 
@@ -36,6 +34,8 @@ export class SequentialEdgeHandler implements EdgeHandlerStrategy<'sequential'> 
               await config.outputTransform({
                 responses: [currentResponse, lastResponse],
                 nodes: this.graph.getNodeStates(),
+                context: this.graph.getContext(),
+                updateContext: this.graph.updateContext,
               })
             )
           : lastResponse;

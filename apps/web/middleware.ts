@@ -1,7 +1,6 @@
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { Ratelimit } from '@upstash/ratelimit';
 import { kv } from '@vercel/kv';
-import { NextRequest, NextResponse } from 'next/server';
-import { updateSession } from './lib/supabase/middleware';
 
 let ratelimit: Ratelimit;
 
@@ -18,23 +17,18 @@ if (process.env.NEXT_PUBLIC_ENABLE_AUTH === 'true') {
   });
 }
 
+
+const isProtectedRoute = createRouteMatcher(['/chat(.*)'])
+
+export default clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) await auth.protect()
+})
+
 export const config = {
-  matcher: '/api/llmchat/chat/completions',
-};
-
-export default async function middleware(request: NextRequest) {
-  if (process.env.NEXT_PUBLIC_ENABLE_AUTH !== 'true') {
-    return NextResponse.json({ message: 'Service is not available' }, { status: 401 });
-  }
-  const { supabaseResponse, user } = await updateSession(request);
-
-  if (!user) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-  }
-
-  const { success } = await ratelimit.limit(user.id);
-
-  return success
-    ? supabaseResponse
-    : NextResponse.json({ message: 'Rate limit exceeded' }, { status: 429 });
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
 }

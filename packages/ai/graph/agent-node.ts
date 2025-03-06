@@ -1,7 +1,7 @@
+import { z } from 'zod';
 import { ModelEnum } from '../models';
-import { ToolEnumType } from '../tools';
+import { ToolEnumType } from '../tools/types';
 import { NodeState, ToolCallErrorType, ToolCallResultType, ToolCallType } from './types';
-
 export class GraphNode {
   id: string;
   name: string;
@@ -16,6 +16,9 @@ export class GraphNode {
   skipRendering: boolean;
   private metadata: Record<string, any>;
   outputAsReasoning: boolean;
+  outputMode: 'text' | 'object';
+  outputSchema?: z.ZodSchema;
+
   private state: NodeState = {
     key: '',
     status: 'idle',
@@ -25,6 +28,8 @@ export class GraphNode {
     startTime: 0,
     metadata: {},
     skipRendering: false,
+    outputMode: 'text',
+    outputSchema: undefined,
   };
 
   constructor({
@@ -41,6 +46,8 @@ export class GraphNode {
     outputAsReasoning = false,
     isStep = false,
     skipRendering = false,
+    outputMode = 'text',
+    outputSchema = undefined,
   }: {
     id: string;
     name: string;
@@ -55,6 +62,8 @@ export class GraphNode {
     outputAsReasoning?: boolean;
     isStep?: boolean;
     skipRendering?: boolean;
+    outputMode?: 'text' | 'object';
+    outputSchema?: z.ZodSchema;
   }) {
     this.id = id;
     this.name = name;
@@ -69,6 +78,8 @@ export class GraphNode {
     this.outputAsReasoning = outputAsReasoning;
     this.isStep = isStep;
     this.skipRendering = skipRendering;
+    this.outputMode = outputMode;
+    this.outputSchema = outputSchema;
     // Initialize state with the node name
     this.state = {
       ...this.state,
@@ -82,6 +93,10 @@ export class GraphNode {
 
   setState(state: Partial<NodeState>): void {
     this.state = { ...this.state, ...state };
+  }
+
+  setId(id: string): void {
+    this.id = id;
   }
 
   startExecution(input: string): void {

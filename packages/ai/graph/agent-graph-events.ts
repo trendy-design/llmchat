@@ -1,34 +1,43 @@
 import { EventEmitter } from 'node:events';
-import type { AgentEventPayload } from './types';
+import type { AgentContextType, AgentEventPayload } from './types';
 
 export class AgentGraphEvents extends EventEmitter {
   private cachedPayload: Partial<AgentEventPayload> = {};
   private currentNodeId: string | null = null;
 
-  emit(type: 'event', body: AgentEventPayload): boolean {
-    if (body.nodeId && body.nodeId !== this.currentNodeId) {
-      this.cachedPayload = {};
-      this.currentNodeId = body.nodeId;
-    }
-
-    Object.keys(body).forEach(key => {
-      const val = body[key as keyof AgentEventPayload];
-      if (val !== undefined && val !== null) {
-        this.cachedPayload[key as keyof AgentEventPayload] = val as any;
+  emit(type: 'event' | 'context', body: AgentEventPayload | AgentContextType): boolean {
+    if (type === 'event') {
+      const eventBody = body as AgentEventPayload;
+      if (eventBody.nodeId && eventBody.nodeId !== this.currentNodeId) {
+        this.cachedPayload = {};
+        this.currentNodeId = eventBody.nodeId;
       }
-    });
 
-    const mergedPayload: AgentEventPayload = {
-      ...this.cachedPayload,
-    } as AgentEventPayload;
-    return super.emit(type, mergedPayload);
+      Object.keys(eventBody).forEach(key => {
+        const val = eventBody[key as keyof AgentEventPayload];
+        if (val !== undefined && val !== null) {
+          this.cachedPayload[key as keyof AgentEventPayload] = val as any;
+        }
+      });
+
+      const mergedPayload: AgentEventPayload = {
+        ...this.cachedPayload,
+      } as AgentEventPayload;
+      return super.emit(type, mergedPayload);
+    }
+    
+    return super.emit(type, body);
   }
 
-  on(type: 'event', callback: (body: AgentEventPayload) => void) {
+  on(type: 'event', callback: (body: AgentEventPayload) => void): this;
+  on(type: 'context', callback: (body: AgentContextType) => void): this;
+  on(type: 'event' | 'context', callback: (body: any) => void): this {
     return super.on(type, callback);
   }
 
-  off(type: 'event', callback: (body: AgentEventPayload) => void) {
+  off(type: 'event', callback: (body: AgentEventPayload) => void): this;
+  off(type: 'context', callback: (body: AgentContextType) => void): this;
+  off(type: 'event' | 'context', callback: (body: any) => void): this {
     return super.off(type, callback);
   }
 }

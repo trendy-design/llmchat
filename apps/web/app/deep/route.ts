@@ -4,6 +4,7 @@ import {
   AgentGraphEvents,
   completionRequestSchema,
   CompletionRequestType,
+  GraphStateManager,
 } from '@repo/ai';
 import { workflow1 } from '@repo/workflows';
 import type { NextRequest } from 'next/server';
@@ -61,20 +62,34 @@ async function executeStream(
   data: CompletionRequestType
 ) {
   const contextManager = new AgentContextManager({
-    threadId: data.threadId,
-    threadItemId: data.threadItemId,
-    parentThreadItemId: data.parentThreadItemId,
-    history: data.messages,
-  });
+    initialContext: {
+      history: data.messages,
+    },
+    onContextUpdate: (context) => {
 
-  const graph = await workflow1(events, contextManager);
+      sendMessage(controller, encoder, {
+        threadId: data.threadId,
+        threadItemId: data.threadItemId,
+        parentThreadItemId: data.parentThreadItemId,
+        type: "context",
+        context: {
+          searchResults: context.webSearchResults,
+        },
+      });
+    },
+  });
+  const stateManager = new GraphStateManager({
+    onStateUpdate: (state) => {
+    },
+  });
+  const graph = await workflow1(events, contextManager, stateManager);
 
   events.on('event', event => {
-    console.log('event', event);
     sendMessage(controller, encoder, {
       threadId: data.threadId,
       threadItemId: data.threadItemId,
       parentThreadItemId: data.parentThreadItemId,
+      type: "event",
       ...event,
     });
 
@@ -90,7 +105,7 @@ async function executeStream(
 function sendMessage(
   controller: StreamController,
   encoder: TextEncoder,
-  payload: AgentEventResponse
+  payload: any
 ) {
   const message = `event: message\ndata: ${JSON.stringify(payload)}\n\n`;
   controller.enqueue(encoder.encode(message));

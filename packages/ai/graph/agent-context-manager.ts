@@ -2,29 +2,19 @@ import { ModelEnum } from '../models';
 import type {
   AgentContextType,
   GraphNodeType,
-  LLMMessageType,
-  ToolCallResultType,
-  ToolCallType,
+  LLMMessageType
 } from './types';
 
 export class AgentContextManager {
   private context: AgentContextType;
-
-  constructor(initialContext?: Partial<AgentContextType>) {
+  private onContextUpdate: (context: AgentContextType) => void;
+  constructor({ initialContext, onContextUpdate }: { initialContext?: Partial<AgentContextType>, onContextUpdate?: (context: AgentContextType) => void }) {
     this.context = {
-      formattingPrompt:
-        'Today is ' +
-        new Date().toLocaleDateString() +
-        '. you are helpful assistant. you are helping user with their questions. ',
-      threadId: '',
-      threadItemId: '',
-      parentThreadItemId: '',
       history: [],
       model: ModelEnum.GPT_4o_Mini,
-      toolCalls: [],
-      toolCallResults: [],
       ...initialContext,
     };
+    this.onContextUpdate = onContextUpdate ?? (() => { });
   }
 
   setContext<K extends keyof AgentContextType>(key: K, value: AgentContextType[K]) {
@@ -35,23 +25,16 @@ export class AgentContextManager {
     return { ...this.context };
   }
 
-  updateContext(updates: Partial<AgentContextType>) {
+  updateContext(updates: (prev: AgentContextType) => Partial<AgentContextType>) {
     this.context = {
       ...this.context,
-      ...updates,
+      ...updates(this.context),
     };
+    this.onContextUpdate(this.context);
   }
 
   addMessage(message: LLMMessageType) {
     this.context.history.push(message);
-  }
-
-  addToolCall(toolCalls: ToolCallType[]) {
-    this.context.toolCalls = [...(this.context.toolCalls || []), ...toolCalls];
-  }
-
-  addToolCallResult(toolCallResults: ToolCallResultType[]) {
-    this.context.toolCallResults = [...(this.context.toolCallResults || []), ...toolCallResults];
   }
 
   mergeNodeContext(node: GraphNodeType) {
@@ -64,13 +47,6 @@ export class AgentContextManager {
 
   clear() {
     this.context = {
-      formattingPrompt:
-        'Today is ' +
-        new Date().toLocaleDateString() +
-        '. you are helpful assistant. you are helping user with their questions. ',
-      threadId: '',
-      threadItemId: '',
-      parentThreadItemId: '',
       history: [],
       model: ModelEnum.GPT_4o_Mini,
     };

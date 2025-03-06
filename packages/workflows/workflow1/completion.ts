@@ -1,7 +1,8 @@
 import {
         AgentContextManager,
         AgentGraph,
-        AgentGraphEvents
+        AgentGraphEvents,
+        GraphStateManager
 } from "@repo/ai";
 import { ModelEnum } from "@repo/ai/models";
 
@@ -11,9 +12,10 @@ import { ModelEnum } from "@repo/ai/models";
 export async function completion(
         model: ModelEnum,
         events: AgentGraphEvents,
-        contextManager: AgentContextManager
+        contextManager: AgentContextManager,
+        stateManager: GraphStateManager
 ): Promise<AgentGraph> {
-        const graph = new AgentGraph(events, contextManager);
+        const graph = new AgentGraph(events, contextManager, stateManager);
 
 
         graph.addNode({

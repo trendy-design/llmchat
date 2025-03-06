@@ -15,7 +15,7 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
   const { isSidebarOpen, isMobileSidebarOpen, setIsMobileSidebarOpen } = useRootContext();
 
   const containerClass =
-    'relative flex flex-1 flex-col h-[100dvh] w-full overflow-hidden shadow-sm bg-background';
+    'relative flex bg-secondary/50 dark:bg-background flex-1 flex-col h-[100dvh] w-full overflow-hidden shadow-sm';
 
   return (
     <div className="flex min-h-[98dvh] w-full flex-row overflow-hidden">

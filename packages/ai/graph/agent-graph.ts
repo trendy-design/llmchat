@@ -3,11 +3,13 @@ import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { ModelEnum } from '../models';
 import { getLanguageModel } from '../providers';
-import { ToolEnumType, aiSdkTools } from '../tools';
+import { toolsDirectory } from '../tools/index';
+import { ToolEnumType } from '../tools/types';
 import type { AgentContextManager } from './agent-context-manager';
 import type { AgentGraphEvents } from './agent-graph-events';
 import { GraphNode } from './agent-node';
 import { EdgeHandlerStrategy, createEdgeHandlerStrategies } from './edge-pattern-handlers';
+import { GraphStateManager } from './graph-state-manager';
 import type {
   AgentContextType,
   ConditionConfigArg,
@@ -19,82 +21,33 @@ import type {
   ToolCallResultType,
   ToolCallType,
 } from './types';
-
-export const processToolCallResult = (toolCallResult: ToolCallResultType) => {
-  return {
-    ...toolCallResult,
-    result: toolCallResult.result.map((r: any) => ({
-      title: r.title,
-      link: r.link,
-      content: r.content?.length,
-    })),
-  };
-};
+import { isValidUrl, processToolCallResult } from './utils';
 
 
-const isValidUrl = (url: string) => {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-};
 type MessageResponse = { nodeId: string; response: string };
-
-type GraphState = {
-  nodes: Map<string, NodeState>;
-  currentExecution: {
-    startTime: number;
-    nodeStates: Map<string, NodeState>;
-    executionPath: string[];
-  };
-  executionHistory: {
-    startTime: number;
-    endTime: number;
-    duration: number;
-    nodeStates: Map<string, NodeState>;
-    executionPath: string[];
-    input: string;
-    finalOutput?: string;
-  }[];
-};
 
 export class AgentGraph {
   private nodes: Map<string, GraphNode> = new Map();
   private edges: GraphEdgeType<GraphEdgePatternType>[] = [];
   public events: AgentGraphEvents;
   protected contextManager: AgentContextManager;
+  protected stateManager: GraphStateManager;
   protected defaultProvider: LanguageModelV1;
   public executionState: EdgeExecutionState;
-  protected graphState: GraphState;
   protected edgeHandlerStrategies: Map<GraphEdgePatternType, EdgeHandlerStrategy<any>>;
 
-  // Change or make configurable as desired
-  private STREAM_TIMEOUT_MS = 600000;
-
-  constructor(events: AgentGraphEvents, contextManager: AgentContextManager) {
+  constructor(events: AgentGraphEvents, contextManager: AgentContextManager, stateManager: GraphStateManager) {
     this.events = events;
     this.contextManager = contextManager;
+    this.stateManager = stateManager;
     this.defaultProvider = getLanguageModel(contextManager.getContext().model);
     this.executionState = {
       pending: new Set(),
       completed: new Set(),
       results: new Map(),
     };
-    this.graphState = {
-      nodes: new Map(),
-      currentExecution: {
-        startTime: 0,
-        nodeStates: new Map(),
-        executionPath: [],
-      },
-      executionHistory: [],
-    };
     this.edgeHandlerStrategies = createEdgeHandlerStrategies(this);
   }
-
-  /* ------------------------- Node and Edge Management ------------------------- */
 
   addNode(nodeConfig: {
     id: string;
@@ -112,14 +65,26 @@ export class AgentGraph {
     outputAsReasoning?: boolean;
     skipRendering?: boolean;
     isStep?: boolean;
+    outputMode?: 'text' | 'object';
+    outputSchema?: z.ZodSchema;
   }): void {
     this.nodes.set(nodeConfig.id, new GraphNode(nodeConfig));
   }
 
   addEdge<T extends GraphEdgePatternType>(edgeConfig: GraphEdgeType<T>): void {
-    if (!this.nodes.has(edgeConfig.from) || !this.nodes.has(edgeConfig.to)) {
-      throw new Error('Cannot add edge: one or both nodes do not exist.');
+    if (!this.nodes.has(edgeConfig.from)) {
+      throw new Error(`Cannot add edge: source node ${edgeConfig.from} does not exist.`);
     }
+
+    if (edgeConfig.pattern === 'condition') {
+      const conditionEdge = edgeConfig as GraphEdgeType<'condition'>;
+      if (!this.nodes.has(conditionEdge.trueBranch) || !this.nodes.has(conditionEdge.falseBranch)) {
+        throw new Error('Cannot add condition edge: one or both target nodes do not exist.');
+      }
+    } else if (!this.nodes.has(edgeConfig.to)) {
+      throw new Error(`Cannot add edge: target node ${edgeConfig.to} does not exist.`);
+    }
+
     this.edges.push(edgeConfig);
   }
 
@@ -136,26 +101,30 @@ export class AgentGraph {
   }
 
   getNodeStates(): NodeState[] {
-    return Array.from(this.graphState.nodes.values());
+    return this.stateManager.getAllNodeStates();
   }
 
   getConnectedNodes(nodeId: string): GraphNode[] {
     return this.edges
-      .filter(edge => edge.from === nodeId)
-      .map(edge => this.nodes.get(edge.to))
+      .flatMap(edge => {
+        if (edge.from === nodeId) {
+          if (edge.pattern === 'condition') {
+            const conditionEdge = edge as GraphEdgeType<'condition'>;
+            return [
+              this.nodes.get(conditionEdge.trueBranch),
+              this.nodes.get(conditionEdge.falseBranch)
+            ];
+          } else {
+            return [this.nodes.get(edge.to)];
+          }
+        }
+        return [];
+      })
       .filter((node): node is GraphNode => node !== undefined);
   }
 
-  /* ------------------------- Execution ------------------------- */
-
   async execute(startNodeId: string, message: string): Promise<MessageResponse[]> {
-    // Initialize current execution
-    this.graphState.currentExecution = {
-      startTime: Date.now(),
-      nodeStates: new Map(),
-      executionPath: [],
-    };
-    // Clear any previous states
+    this.stateManager.startExecution(message);
     this.executionState = {
       pending: new Set(),
       completed: new Set(),
@@ -165,34 +134,24 @@ export class AgentGraph {
     this.contextManager.setContext('query', message);
     this.contextManager.addMessage({ role: 'user', content: message });
 
-    // Start the actual node execution
     const responses: MessageResponse[] = [];
     await this.executeNode(startNodeId, message, [], responses);
 
-    // Finalize and record execution
-    const { startTime, executionPath, nodeStates } = this.graphState.currentExecution;
-    const endTime = Date.now();
-    this.graphState.executionHistory.push({
-      startTime,
-      endTime,
-      duration: endTime - startTime,
-      nodeStates: new Map(nodeStates),
-      executionPath: [...executionPath],
-      input: message,
-      finalOutput: responses[responses.length - 1]?.response,
-    });
+    this.stateManager.completeExecution(responses[responses.length - 1]?.response);
 
     return responses;
   }
 
-  /**
-   * Returns `true` if all parent nodes that point into `nodeKey` have completed.
-   * If you want to run a node as soon as ANY parent finishes, tweak this logic.
-   */
+
   private allParentsComplete(nodeKey: string): boolean {
-    // Find all edges leading INTO this node
-    const incomingEdges = this.edges.filter(e => e.to === nodeKey);
-    // If no parents, then it can run by default
+    const incomingEdges = this.edges.filter(e => {
+      if (e.pattern === 'condition') {
+        const conditionEdge = e as GraphEdgeType<'condition'>;
+        return conditionEdge.trueBranch === nodeKey || conditionEdge.falseBranch === nodeKey;
+      }
+      return e.to === nodeKey;
+    });
+
     if (incomingEdges.length === 0) return true;
 
     return incomingEdges.every(e => this.executionState.completed.has(e.from));
@@ -204,12 +163,9 @@ export class AgentGraph {
     history: LLMMessageType[],
     responses: MessageResponse[]
   ): Promise<void> {
-    // Already done? no-op
     if (this.executionState.completed.has(nodeKey)) {
       return;
     }
-
-    // If not all parents are done yet, skip for now (may be triggered again after parent finishes)
     if (!this.allParentsComplete(nodeKey)) {
       return;
     }
@@ -218,34 +174,28 @@ export class AgentGraph {
       throw new Error(`Circular dependency detected at node: ${nodeKey}`);
     }
 
-    const node = this.nodes.get(nodeKey);
-    if (!node) return; // or throw an error
 
-    this.graphState.currentExecution.executionPath.push(nodeKey);
+    const node = this.nodes.get(nodeKey);
+    if (!node) return;
+
+    this.stateManager.addToExecutionPath(nodeKey);
     this.executionState.pending.add(nodeKey);
 
     const nodeId = uuidv4();
-    try {
-      // (Optional) If your node has "reasoning" steps, you can do them here
-      // let reasoningResult = '';
-      // if (node.enableReasoning) {
-      //   reasoningResult = await this.processReasoningStep(node, message);
-      //   this.events.emit('event', {
-      //     nodeId,
-      //     nodeKey: node.name,
-      //     nodeStatus: 'reasoning',
-      //     status: 'pending',
-      //     nodeReasoning: reasoningResult,
-      //     content: reasoningResult
-      //   });
-      // }
+    node?.setId(nodeId);
 
-      // Main message processing
+    const updatedNode = this.nodes.get(nodeKey);
+    if (!updatedNode) return;
+    
+
+
+    try {
+
       const fullInput = message;
-      const response = await this.processAgentMessage({
+      const response = await this.generate({
         nodeId,
         nodeKey: node.name,
-        node,
+        node: updatedNode,
         message: fullInput,
         type: 'text',
         history,
@@ -253,24 +203,23 @@ export class AgentGraph {
 
       responses.push({ nodeId, response });
       this.executionState.results.set(nodeKey, response);
-
-      // Mark node complete
       this.executionState.completed.add(nodeKey);
       this.executionState.pending.delete(nodeKey);
 
-      // Process outgoing edges (the ones from this node)
       const outgoingEdges = this.edges.filter(e => e.from === nodeKey);
       const groupedEdges = this.groupEdgesByPattern(outgoingEdges);
       for (const [pattern, edges] of Array.from(groupedEdges.entries())) {
         await this.processEdgePattern(pattern, edges, response, responses);
       }
 
-      // After finishing this node, see if there are new nodes unblocked
-      // by completing this node. We look for edges whose `from` is completed
-      // but whose `to` is neither completed nor pending. Then we check if
-      // all parents of that `to` are also done:
       const possiblyUnblocked = this.edges
-        .map(e => e.to)
+        .flatMap(e => {
+          if (e.pattern === 'condition') {
+            const conditionEdge = e as GraphEdgeType<'condition'>;
+            return [conditionEdge.trueBranch, conditionEdge.falseBranch];
+          }
+          return [e.to];
+        })
         .filter(
           toNodeId =>
             !this.executionState.completed.has(toNodeId) &&
@@ -279,9 +228,6 @@ export class AgentGraph {
 
       for (const toNodeId of possiblyUnblocked) {
         if (this.allParentsComplete(toNodeId)) {
-          // The parent's final response for the new node might come from different parents,
-          // so choose whichever logic you want here. We'll re-use the last known response,
-          // or you might aggregate or pass the original message:
           const nextInput = this.executionState.results.get(nodeKey) || response;
           await this.executeNode(toNodeId, nextInput, [], responses);
         }
@@ -292,9 +238,29 @@ export class AgentGraph {
     }
   }
 
-  /* ------------------------- Agent & LLM Helpers ------------------------- */
+  getSystemPrompt(node: GraphNode): string {
+    return `Today is ${new Date().toLocaleString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZoneName: 'short',
+    })}.\n\n${node.systemPrompt}\n\n`;
+  }
 
-  public async processAgentMessage({
+  getTools(node: GraphNode): Record<string, Tool> {
+    return (node.tools || []).reduce(
+      (acc, tool) => ({
+        ...acc, [tool]: toolsDirectory[tool as ToolEnumType](this)
+      }),
+      {} as Record<string, Tool>
+    );
+  }
+
+
+  public async generate({
     nodeId,
     nodeKey,
     node,
@@ -324,203 +290,31 @@ export class AgentGraph {
       sources: [],
       metadata: {},
       isStep: node.isStep,
+      outputMode: node.outputMode,
+      outputSchema: node.outputSchema,
       skipRendering: node.skipRendering,
     });
     console.log('node-started', node.name, 'nodeKey', nodeKey, 'nodeId', nodeId);
 
     try {
-      this.events.emit('event', {
-        nodeId,
-        nodeKey,
-        nodeStatus: 'pending',
-        status: 'pending',
-        // nodeInput: `\n\n${message}\n\n${JSON.stringify(history)}`,
-        isStep: node.isStep,
-        skipRendering: node.skipRendering,
-      });
 
-      // Prepare messages for LLM
-      const systemPrompt = `Today is ${new Date().toLocaleString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZoneName: 'short',
-      })}.\n\n${node.systemPrompt}\n\n`;
-
-      const model = getLanguageModel(node.model);
-      const tools = (node.tools || []).reduce(
-        (acc, tool) => ({ ...acc, [tool]: aiSdkTools[tool]?.((event, data) => {
-          console.log('web browsing event', event);
-        })
-      
-      }),
-        {} as Record<string, Tool>
-      );
-
-      let citations: string[] = [];
-      let fullResponse = '';
-      let tokenUsage = 0;
-
-      const completeMessages = [
-        { role: 'system' as const, content: systemPrompt },
-        ...(history ?? []),
-        { role: 'user' as const, content: message },
-      ];
-
-      const toolCallsMap = new Map<string, ToolCallType>();
-      const toolResultsMap = new Map<string, ToolCallResultType>();
-      const errors: unknown[] = [];
-
-      if (type === 'text') {
-        const { fullStream, usage, toolCalls } = streamText({
-          model,
-          messages: completeMessages,
-          tools,
-          toolCallStreaming: true,
-          maxSteps: node.toolSteps,
-          maxTokens: node.maxTokens,
-        });
-
-        let delta = '';
-
-        // Wrap streaming in a timeout
-        const streamEndPromise = (async () => {
-          for await (const chunk of fullStream) {
-            switch (chunk.type) {
-              case 'text-delta':
-                delta = chunk.textDelta;
-                fullResponse += chunk.textDelta;
-                citations = this.extractCitations(fullResponse);
-                break;
-              case 'tool-call':
-              toolCallsMap.set(chunk.toolCallId, chunk);
-                break;
-              case 'tool-result' as any:
-                const toolResult = chunk as any;
-                toolResultsMap.set(toolResult.toolCallId, toolResult);
-                break;
-              case 'error':
-
-                if (InvalidToolArgumentsError.isInstance(chunk)) {
-                  console.log('invalid tool arguments error', chunk);
-
-              console.log(toolCalls)
-                }
-
-              
-                console.log('error', chunk);
-                errors.push(chunk);
-                break;
-            }
-
-            fullResponse = this.sanitizeResponse(fullResponse);
-
-            // Continuously update node state
-            this.saveNodeState(nodeId, {
-              ...node.getState(),
-              key: node.name,
-              output: fullResponse,
-              history: completeMessages,
-              toolCalls: Array.from(toolCallsMap.values()),
-              toolCallResults: Array.from(toolResultsMap.values()),
-              status: errors?.length > 0 ? 'error' : 'pending',
-              sources: citations,
-              error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',
-              isStep: node.isStep,
-              skipRendering: node.skipRendering,
-            });
-
-            this.events.emit('event', {
-              nodeId,
-              nodeKey: node.name,
-              status: 'pending',
-              content: delta,
-              nodeModel: model.modelId,
-              // history: completeMessages,
-              nodeReasoning: node.outputAsReasoning ? fullResponse : undefined,
-              toolCalls: Array.from(toolCallsMap.values()),
-              toolCallResults: Array.from(toolResultsMap.values()).map(processToolCallResult),
-              nodeStatus: errors?.length > 0 ? 'error' : 'pending',
-              sources: citations,
-              error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',
-              isStep: node.isStep,
-              skipRendering: node.skipRendering,
-            });
-
-            delta = '';
-          }
-        })();
-
-        // await Promise.race([
-        //   streamEndPromise,
-        //   new Promise((_, reject) =>
-        //     setTimeout(() => reject(new Error('LLM stream timed out')), this.STREAM_TIMEOUT_MS)
-        //   ),
-        // ]);
-
-        tokenUsage = (await usage).totalTokens;
+      let finalResponse = '';
+      if (node.outputMode === 'text') {
+        finalResponse = await this.generateText({ nodeId, nodeKey, node, userMessage: message, history });
       } else {
-        // 'object' schema-based call
-        const { object } = await generateObject({
-          model,
-          schema: z.object({ response: z.string() }),
-          prompt: message,
-        });
-        fullResponse = object.response;
+        finalResponse = await this.generateObject({ nodeId, nodeKey, node, userMessage: message, history });
       }
 
-      // Final updates & events
-      const endTime = Date.now();
-
-      node.completeExecution(fullResponse);
-      this.saveNodeState(nodeId, {
-        ...node.getState(),
-        key: node.name,
-        output: fullResponse,
-        endTime,
-        duration: endTime - startTime,
-        tokenUsage,
-        status: errors.length > 0 ? 'error' : 'completed',
-        history: completeMessages,
-        sources: citations,
-        isStep: node.isStep,
-        skipRendering: node.skipRendering,
-        error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',
-      });
-
-      this.events.emit('event', {
-        nodeId,
-        nodeKey: node.name,
-        status: errors.length > 0 ? 'error' : 'completed',
-        content: "",
-        // history: completeMessages,
-        nodeStatus: 'completed',
-        // nodeInput: `\n\n${message}\n\n${JSON.stringify(history)}`,
-        // nodeReasoning: node.outputAsReasoning ? fullResponse : undefined,
-        sources: citations,
-        toolCalls: Array.from(toolCallsMap.values()),
-        toolCallResults: Array.from(toolResultsMap.values()).map(processToolCallResult),
-        isStep: node.isStep,
-        skipRendering: node.skipRendering,
-        error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',
-      });
-
-      // Add final assistant message + calls to context
-      this.contextManager.addMessage({ role: 'assistant', content: `\n\n${fullResponse}\n\n` });
-
+      node.completeExecution(finalResponse);
+      this.contextManager.addMessage({ role: 'assistant', content: `\n\n${finalResponse}\n\n` });
       console.log('node-completed', node.name, 'nodeKey', nodeKey, 'nodeId', nodeId);
 
-      return fullResponse;
+      return finalResponse;
     } catch (error) {
       const endTime = Date.now();
 
       if (InvalidToolArgumentsError.isInstance(error)) {
-
         console.log('invalid tool arguments error', error);
-        // Handle the error
       }
       console.log('node-error', node.name, 'nodeKey', nodeKey, 'nodeId', nodeId);
       node.setError(error instanceof Error ? error.message : String(error));
@@ -539,11 +333,253 @@ export class AgentGraph {
         status: 'error',
         error: error instanceof Error ? error.message : String(error),
         isStep: node.isStep,
+        chunkType: "text",
       });
       console.log('node-error', node.name, 'nodeKey', nodeKey, 'nodeId', nodeId);
       throw error;
     }
   }
+
+  public async generateText({
+    nodeId,
+    nodeKey,
+    node,
+    userMessage,
+    history,
+  }: {
+    nodeId: string;
+    nodeKey: string;
+    node: GraphNode;
+    userMessage: string;
+    history?: LLMMessageType[];
+  }): Promise<string> {
+    try {
+      const startTime = Date.now();
+      this.events.emit('event', {
+        nodeId,
+        nodeKey,
+        nodeStatus: 'pending',
+        status: 'pending',
+        chunkType: "text",
+        isStep: node.isStep
+      });
+
+      const systemPrompt = this.getSystemPrompt(node);
+
+      const model = getLanguageModel(node.model);
+      const tools = this.getTools(node);
+
+      let citations: string[] = [];
+      let fullResponse = '';
+      let tokenUsage = 0;
+
+      const completeMessages = [
+        { role: 'system' as const, content: systemPrompt },
+        ...(history ?? []),
+        { role: 'user' as const, content: userMessage },
+      ];
+
+      const toolCallsMap = new Map<string, ToolCallType>();
+      const toolResultsMap = new Map<string, ToolCallResultType>();
+      const errors: unknown[] = [];
+      let delta = '';
+
+
+      const { fullStream, usage, toolCalls } = streamText({
+        model,
+        messages: completeMessages,
+        tools,
+        toolCallStreaming: true,
+        maxSteps: node.toolSteps,
+        maxTokens: node.maxTokens,
+      });
+
+      for await (const chunk of fullStream) {
+        switch (chunk.type) {
+          case 'text-delta':
+            delta = chunk.textDelta;
+            fullResponse += chunk.textDelta;
+            citations = this.extractCitations(fullResponse);
+            break;
+          case 'tool-call':
+            toolCallsMap.set(chunk.toolCallId, chunk);
+            break;
+          case 'tool-result' as any:
+            const toolResult = chunk as any;
+            toolResultsMap.set(toolResult.toolCallId, toolResult);
+            break;
+          case 'error':
+
+            if (InvalidToolArgumentsError.isInstance(chunk)) {
+              console.log('invalid tool arguments error', chunk);
+            }
+
+
+            console.log('error', chunk);
+            errors.push(chunk);
+            break;
+        }
+
+        fullResponse = this.sanitizeResponse(fullResponse);
+
+        this.saveNodeState(nodeId, {
+          ...node.getState(),
+          
+          key: nodeKey,
+          output: fullResponse,
+          history: completeMessages,
+          toolCalls: Array.from(toolCallsMap.values()),
+          toolCallResults: Array.from(toolResultsMap.values()),
+          status: errors?.length > 0 ? 'error' : 'pending',
+          sources: citations,
+          error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',
+          isStep: node.isStep,
+          skipRendering: node.skipRendering,
+        });
+
+        this.events.emit('event', {
+          nodeId,
+          nodeKey,
+          status: 'pending',
+          chunk: delta,
+          nodeModel: model.modelId,
+          chunkType: node.outputAsReasoning ? "reasoning" : "text",
+          toolCalls: Array.from(toolCallsMap.values()),
+          toolCallResults: Array.from(toolResultsMap.values()).map(processToolCallResult),
+          nodeStatus: errors?.length > 0 ? 'error' : 'pending',
+          sources: citations,
+          error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',
+          isStep: node.isStep,
+        });
+
+        delta = '';
+      }
+      const endTime = Date.now();
+
+
+      this.saveNodeState(nodeId, {
+        ...node.getState(),
+        key: nodeKey,
+        output: fullResponse,
+        endTime,
+        duration: endTime - startTime,
+        tokenUsage,
+        status: errors.length > 0 ? 'error' : 'completed',
+        history: completeMessages,
+        sources: citations,
+        isStep: node.isStep,
+        skipRendering: node.skipRendering,
+        error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',
+      });
+
+      this.events.emit('event', {
+        nodeId,
+        nodeKey,
+        status: errors.length > 0 ? 'error' : 'completed',
+        chunk: "",
+        nodeStatus: 'completed',
+        chunkType: node.outputAsReasoning ? "reasoning" : "text",
+        sources: citations,
+        toolCalls: Array.from(toolCallsMap.values()),
+        toolCallResults: Array.from(toolResultsMap.values()).map(processToolCallResult),
+        isStep: node.isStep,
+        error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',
+      });
+
+      return fullResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async generateObject({
+    nodeId,
+    nodeKey,
+    node,
+    userMessage,
+    history,
+  }: {
+    nodeId: string;
+    nodeKey: string;
+    node: GraphNode;
+    userMessage: string;
+    history?: LLMMessageType[];
+  }): Promise<string> {
+    try {
+      this.events.emit('event', {
+        nodeId,
+        nodeKey,
+        nodeStatus: 'pending',
+        status: 'pending',
+        chunkType: "object",
+        isStep: node.isStep
+      });
+
+      const systemPrompt = this.getSystemPrompt(node);
+
+      const model = getLanguageModel(node.model);
+
+      let citations: string[] = [];
+      let fullResponse = '';
+
+      const completeMessages = [
+        { role: 'system' as const, content: systemPrompt },
+        ...(history ?? []),
+        { role: 'user' as const, content: userMessage },
+      ];
+
+      const errors: unknown[] = [];
+
+      if (!node.outputSchema) {
+        throw new Error('Output schema is required for object mode');
+      }
+
+
+      const { object } = await generateObject({
+        model,
+        schema: node.outputSchema,
+        prompt: userMessage,
+      });
+
+
+
+      fullResponse = JSON.stringify(object);
+
+      this.saveNodeState(nodeId, {
+        ...node.getState(),
+        key: nodeKey,
+        output: fullResponse,
+        outputMode: node.outputMode,
+        outputSchema: node.outputSchema,
+        history: completeMessages,
+        status: errors?.length > 0 ? 'error' : 'completed',
+        sources: citations,
+        error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',
+        isStep: node.isStep,
+        skipRendering: node.skipRendering,
+      });
+
+      this.events.emit('event', {
+        nodeId,
+        nodeKey,
+        status: 'completed',
+        chunk: JSON.stringify(object),
+        nodeModel: model.modelId,
+        chunkType: "object",
+        nodeStatus: errors?.length > 0 ? 'error' : 'completed',
+        sources: citations,
+        error: errors?.map(e => JSON.stringify(e)).join('\n\n\n\n') || '',
+        isStep: node.isStep,
+      });
+
+
+
+      return fullResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
 
   public async processReasoningStep(node: GraphNode, message: string): Promise<string> {
     const prompt = `Before executing node "${node.name}" with input: "${message}", please think about next steps and provide a reasoning plan.`;
@@ -554,8 +590,6 @@ export class AgentGraph {
     });
     return object.reasoning;
   }
-
-  /* ------------------------- Edge Processing Logic ------------------------- */
 
   private async processEdgePattern<T extends GraphEdgePatternType>(
     pattern: T,
@@ -570,13 +604,8 @@ export class AgentGraph {
     return handler.handle(edges, sourceResponse, responses);
   }
 
-  /* ------------------------- Utilities ------------------------- */
-
   protected saveNodeState(nodeId: string, state: NodeState): void {
-    const existing = this.graphState.nodes.get(nodeId) || { ...state, status: 'pending' };
-    const merged = { ...existing, ...state };
-    this.graphState.nodes.set(nodeId, merged);
-    this.graphState.currentExecution.nodeStates.set(nodeId, merged);
+    this.stateManager.saveNodeState(nodeId, state);
   }
 
   protected groupEdgesByPattern<T extends GraphEdgePatternType>(
@@ -591,7 +620,15 @@ export class AgentGraph {
   }
 
   public getInputNodes(nodeId: string): string[] {
-    return this.edges.filter(e => e.to === nodeId).map(e => e.from);
+    return this.edges
+      .filter(e => {
+        if (e.pattern === 'condition') {
+          const conditionEdge = e as GraphEdgeType<'condition'>;
+          return conditionEdge.trueBranch === nodeId || conditionEdge.falseBranch === nodeId;
+        }
+        return e.to === nodeId;
+      })
+      .map(e => e.from);
   }
 
   public async withFallback<T extends GraphEdgePatternType>(
@@ -627,9 +664,7 @@ export class AgentGraph {
     return !!stopCondition({ response: currentResponse, nodes: this.getNodeStates() });
   }
 
-  /* ------------------------- Context and State Getters ------------------------- */
-
-  updateContext(updates: Partial<AgentContextType>): void {
+  updateContext(updates: (prev: AgentContextType) => Partial<AgentContextType>): void {
     this.contextManager.updateContext(updates);
   }
 
@@ -638,21 +673,20 @@ export class AgentGraph {
   }
 
   getNodeStateHistory(nodeId: string): NodeState | undefined {
-    return this.graphState.nodes.get(nodeId);
+    return this.stateManager.getNodeState(nodeId);
   }
 
   getCurrentNodeState(nodeId: string): NodeState | undefined {
-    return this.graphState.currentExecution.nodeStates.get(nodeId);
+    return this.stateManager.getCurrentNodeState(nodeId);
   }
 
-  getExecutionHistory(): typeof this.graphState.executionHistory {
-    return this.graphState.executionHistory;
+  getExecutionHistory() {
+    return this.stateManager.getExecutionHistory();
   }
 
   getCurrentExecutionPath(): string[] {
-    return this.graphState.currentExecution.executionPath;
+    return this.stateManager.getCurrentExecutionPath();
   }
-
 
   sanitizeResponse(response: string): string {
     return response.replace(/<Source>.*?<\/Source>/g, match => {

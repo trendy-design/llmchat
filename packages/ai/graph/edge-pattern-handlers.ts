@@ -3,7 +3,7 @@ import { LoopEdgeHandler } from './patterns/loop';
 import { SequentialEdgeHandler } from './patterns/sequential';
 import type { GraphEdgePatternType, GraphEdgeType } from './types';
 
-type MessageResponse = {
+export type MessageResponse = {
   nodeId: string;
   response: string;
 };

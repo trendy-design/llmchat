@@ -2,7 +2,7 @@ import { mdxComponents } from '@/libs/mdx/mdx-components';
 import { sanitizeMDX } from '@/libs/mdx/mdx-sanitization';
 import { parseSourceTagsFromXML } from '@/libs/mdx/sources';
 import { MdxChunk, useMdxChunker } from '@/libs/mdx/use-mdx-chunks';
-import { ThreadItem as ThreadItemType } from '@/libs/store/chat.store';
+import { ThreadItem as ThreadItemType, useChatStore } from '@/libs/store/chat.store';
 import { cn } from '@repo/ui';
 import { IconBook } from '@tabler/icons-react';
 import { MDXRemote } from 'next-mdx-remote';
@@ -144,7 +144,7 @@ export const AIThreadItem = ({ content }: { content: string }) => {
   );
 };
 
-export const AIThreadItemV2 = ({ content }: { content: string }) => {
+export const AIThreadItemV2 = ({ content, className }: { content: string, className?: string }) => {
   const animatedText = content ?? '';
   const sources = useMemo(() => {
     return parseSourceTagsFromXML(content);
@@ -268,10 +268,8 @@ export const AIThreadItemV2 = ({ content }: { content: string }) => {
   }
 
   return (
-    <div className={cn("animate-fade-in prose prose-prosetheme prose-base prose-p:font-light prose-headings:text-lg prose-headings:font-semibold prose-strong:font-medium prose-li:font-light prose-th:font-m min-w-full","prose-th:font-medium prose-th:text-sm" )}>
+    <div className={cn("animate-fade-in prose prose-sm prose-p:font-light prose-p:tracking-[0.01em] prose-headings:tracking-[0.005em] prose-prosetheme 2xl:prose-base prose-headings:text-lg prose-headings:font-semibold prose-strong:font-medium prose-th:font-m min-w-full", className)}>
       <MDXRemote {...serializedMdx} components={mdxComponents} />
-      {"---------------------------------------------------------"}
-      {JSON.stringify(animatedText, null, 2)}
     </div>
   );
 };
@@ -288,7 +286,7 @@ MemoizedMdxChunk.displayName = 'MemoizedMdxChunk';
 
 export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: ThreadItemType }) => {
   const [stableBlocks, setStableBlocks] = useState(threadItem.content);
-
+  const setCurrentSources = useChatStore(state => state.setCurrentSources);
   useEffect(() => {
     const nonStepBlocks = threadItem.content.filter(block => !block?.isStep);
     // Only update if there are actual changes to avoid unnecessary re-renders
@@ -297,13 +295,17 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
     }
   }, [threadItem.content]);
 
+  useEffect(() => {
+    setCurrentSources(threadItem.metadata?.searchResults?.map((result: any) => result.link) || []);
+  }, [threadItem]);
+
   const steps = threadItem.content.filter(block => !!block.isStep);
 
   return (
     <>
       {threadItem.role === 'user' && (
         <div className="flex w-full flex-row justify-start py-8">
-          <div className="text-secondary-foreground rounded-xl text-2xl font-normal tracking-tight font-sg">
+          <div className="text-foreground rounded-xl text-xl font-normal">
             {threadItem.content[0].content}
           </div>
         </div>
@@ -311,6 +313,7 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
 
       {threadItem.role === 'assistant' && (
         <div className="flex w-full flex-col gap-4">
+
           <Steps steps={steps} />
 
           {stableBlocks?.length > 0 && <div className='flex flex-row items-center gap-1'>

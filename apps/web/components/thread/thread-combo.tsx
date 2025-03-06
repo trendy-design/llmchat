@@ -14,7 +14,7 @@ export function Thread() {
 
   return (
     <div className="relative flex flex-col gap-2" id="thread-container">
-      <div className="min-w-ful h-full  py-4">
+      <div className="min-w-full h-full  py-4">
         {currentMessageGroups.map(messageGroup => (
           <div key={messageGroup.userMessage.id}>
             <div className="flex w-full flex-row justify-end">
