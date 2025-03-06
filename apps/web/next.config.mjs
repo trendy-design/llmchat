@@ -10,6 +10,9 @@ const nextConfig = {
       { hostname: 'zyqdiwxgffuy8ymd.public.blob.vercel-storage.com' },
     ],
   },
+  experimental: {
+    optimizePackageImports: ['shiki'],
+  },
   webpack: (config, options) => {
     if (!options.isServer) {
       config.resolve.fallback = { fs: false, module: false, path: false };
@@ -26,7 +29,6 @@ const nextConfig = {
       ...config.experiments,
       topLevelAwait: true,
       layers: true,
-      optimizePackageImports: ['shiki'],
     };
 
     return config;
