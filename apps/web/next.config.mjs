@@ -26,6 +26,7 @@ const nextConfig = {
       ...config.experiments,
       topLevelAwait: true,
       layers: true,
+      optimizePackageImports: ['shiki'],
     };
 
     return config;

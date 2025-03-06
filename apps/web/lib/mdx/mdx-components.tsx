@@ -1,60 +1,11 @@
 import { CodeBlock } from '@/components/code-block/code-block';
-import React, { ReactElement, useContext } from 'react';
-
-import { Reasoning } from '@/components/reasoning-steps/reasoning';
+import { LinkPreviewPopover } from '@/components/link-preview';
 import { CitationProviderContext } from '@/components/thread/citation-provider';
 import { isValidUrl } from '@repo/shared/utils';
-import { LinkBlock } from '@repo/ui/src/components/link-block';
-import { AnimatePresence } from 'framer-motion';
 import { MDXRemote } from 'next-mdx-remote/rsc';
-import { ComponentProps } from 'react';
-import { useStickToBottom } from 'use-stick-to-bottom';
+import { ComponentProps, ReactElement, useContext } from 'react';
 
 export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
-  Think: ({ children, isTagComplete }) => {
-    const childs = React.Children.toArray(children).filter(Boolean);
-    const { scrollRef, contentRef } = useStickToBottom();
-
-    return (
-      <>
-        {/* <Accordion type="single" collapsible>
-          <AccordionItem value="1" className="border-none">
-            <div className={`sticky top-0 z-10 bg-white pt-4`}>
-              <AccordionTrigger
-                className={`z-6 group rounded-xl rounded-b-none border border-x border-t border-b-transparent bg-white p-3 px-3 !pb-0 pt-3 text-sm font-medium text-stone-900 transition-all duration-[5000ms] ease-in-out [&[data-state=open]]:border-b-stone-200 [&[data-state=open]]:!pb-3`}
-              >
-                Some Thought
-              </AccordionTrigger>
-            </div>
-            <AccordionContent
-              className={cn("overflow-hidden border-x bg-white")}
-            > */}
-        <div ref={scrollRef} className="group-data-[state=open]:rounded-b-xl">
-          <div ref={contentRef} className="flex min-h-full flex-col items-start justify-start">
-            <AnimatePresence mode="wait">
-              {childs.map((child, index) => (
-                <Reasoning
-                  key={index}
-                  isComplete={index !== childs.length - 1}
-                  isLast={index === childs.length - 1}
-                  index={index}
-                  isFirst={index === 0}
-                >
-                  {child}
-                </Reasoning>
-              ))}
-            </AnimatePresence>
-          </div>
-        </div>
-        {/* </AccordionContent>
-            <div className="sticky top-0 z-20 bg-white">
-              <div className="h-[12px] w-full rounded-b-xl border-x border-b" />
-            </div>
-          </AccordionItem>
-        </Accordion> */}
-      </>
-    );
-  },
   Source: ({ children }) => {
     const { citations } = useContext(CitationProviderContext);
     const url = children?.props?.children as string;
@@ -68,11 +19,11 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
       return null;
     }
     return (
-      <LinkBlock url={url}>
+      <LinkPreviewPopover url={url}>
         <div className="bg-brand/20 text-brand group inline-flex size-4 flex-row items-center justify-center gap-1 rounded-sm text-[10px]">
           {citation?.index}
         </div>
-      </LinkBlock>
+      </LinkPreviewPopover>
     );
   },
 

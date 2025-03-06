@@ -83,8 +83,8 @@ module.exports = {
         sm: 'calc(var(--radius) - 4px)',
       },
       fontFamily: {
-        sans: ['var(--font-inter)', ...fontFamily.sans],
         mono: ['var(--font-geist-mono)', ...fontFamily.mono],
+        sans: ['var(--font-inter)', ...fontFamily.sans],
         // sg: ['var(--font-satoshi)', ...fontFamily.sans],
       },
       fontSize: {

@@ -268,7 +268,7 @@ export const AIThreadItemV2 = ({ content, className }: { content: string, classN
   }
 
   return (
-    <div className={cn("animate-fade-in prose prose-sm prose-p:font-light prose-p:tracking-[0.01em] prose-headings:tracking-[0.005em] prose-prosetheme 2xl:prose-base prose-headings:text-lg prose-headings:font-semibold prose-strong:font-medium prose-th:font-m min-w-full", className)}>
+    <div className={cn("animate-fade-in prose prose-sm prose-p:font-light prose-p:tracking-[0.01em] prose-headings:tracking-[0.005em] prose-prosetheme prose-headings:text-lg prose-headings:font-semibold prose-strong:font-medium prose-th:font-m min-w-full", className)}>
       <MDXRemote {...serializedMdx} components={mdxComponents} />
     </div>
   );

@@ -1,49 +1,44 @@
 'use client';
 
+import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui';
 import Image from 'next/image';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
+
+const ogCache = new Map<string, any>();
 
 export type LinkPreviewType = {
   url: string;
   children: React.ReactNode;
 };
 
-export const LinkPreview = ({ url, children }: LinkPreviewType) => {
+export const LinkPreviewPopover = ({ url, children }: LinkPreviewType) => {
   const [isHovered, setIsHovered] = useState(false);
 
   if (!url?.trim()?.length) {
     return null;
   }
 
-  const handleMouseEnter = () => {
-    console.log('mouse enter');
-    setIsHovered(true);
-  }
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
 
-  const handleMouseLeave = () => {
-    console.log('mouse leave');
-    setIsHovered(false);
-  }
-
-  return <Popover open={isHovered} onOpenChange={setIsHovered}>
-    <PopoverTrigger onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={e => {
-        e.preventDefault();
-      }} asChild>
-      {children}
-    </PopoverTrigger>
-    <PopoverContent className='z-[10] bg-background p-0'>
-      <WebsitePreview url={url} />
-    </PopoverContent>
-  </Popover>
+  return (
+    <Popover open={isHovered} onOpenChange={setIsHovered}>
+      <PopoverTrigger 
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onClick={e => e.preventDefault()} 
+        asChild
+      >
+        {children}
+      </PopoverTrigger>
+      <PopoverContent className='z-[10] bg-background p-0'>
+        <LinkPreview url={url} />
+      </PopoverContent>
+    </Popover>
+  );
 };
 
-// Add this cache outside the component
-const ogCache = new Map<string, any>();
-
-export const WebsitePreview = memo(({ url }: { url: string }) => {
+export const LinkPreview = memo(({ url }: { url: string }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [ogResult, setOgResult] = useState<any | null>(null);
 
@@ -89,9 +84,7 @@ export const WebsitePreview = memo(({ url }: { url: string }) => {
     }
   }, [url]);
 
-  if (!parsedUrl) {
-    return null;
-  }
+  if (!parsedUrl) return null;
 
   if (isLoading) {
     return (
@@ -108,21 +101,23 @@ export const WebsitePreview = memo(({ url }: { url: string }) => {
     );
   }
 
-  return <div>
-    {
-      ogResult && ogResult.title && ogResult.url
-        ? <div className="flex flex-col items-start">
+  return (
+    <div>
+      {ogResult && ogResult.title && ogResult.url ? (
+        <div className="flex flex-col items-start">
           <div className="flex w-full flex-col items-start gap-1.5 p-4">
             <div className='flex flex-row items-center gap-1.5'>
               <Image
                 src={ogResult.favicon}
-                alt={ogResult?.title}
+                alt={ogResult.title}
                 width={0}
                 height={0}
                 sizes="100vw"
                 className="h-4 w-4 rounded-full object-cover"
               />
-              <p className="text-muted-foreground text-xs line-clamp-1 w-full">{parsedUrl.hostname}</p>
+              <p className="text-muted-foreground text-xs line-clamp-1 w-full">
+                {parsedUrl.hostname}
+              </p>
             </div>
             <p className="text-foreground w-full overflow-hidden line-clamp-2 text-sm">
               {ogResult.title}
@@ -130,10 +125,10 @@ export const WebsitePreview = memo(({ url }: { url: string }) => {
             <p className="text-muted-foreground text-xs line-clamp-4">
               {ogResult.description}
             </p>
-
           </div>
-
-        </div> : <div className='flex flex-row items-center gap-1.5 p-4'>
+        </div>
+      ) : (
+        <div className='flex flex-row items-center gap-1.5 p-4'>
           <Image
             src={`https://www.google.com/s2/favicons?domain=${parsedUrl.hostname}&sz=128`}
             alt={ogResult?.title}
@@ -142,9 +137,11 @@ export const WebsitePreview = memo(({ url }: { url: string }) => {
             sizes="100vw"
             className="h-4 w-4 rounded-full object-cover"
           />
-            <p className="text-muted-foreground text-xs line-clamp-1 w-full">{parsedUrl.hostname}</p>
+          <p className="text-muted-foreground text-xs line-clamp-1 w-full">
+            {parsedUrl.hostname}
+          </p>
         </div>
-
-    }
-  </div>
-})
+      )}
+    </div>
+  );
+});

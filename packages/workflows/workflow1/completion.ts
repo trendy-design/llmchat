@@ -22,7 +22,7 @@ export async function completion(
                 id: "initiator",
                 name: "Initiator",
                 role: "assistant",
-                outputAsReasoning: true,
+                outputAsReasoning: false,
                 model: model,
                 systemPrompt: "You are a helpful assistant that can answer questions and help with tasks.",
                 isStep: false

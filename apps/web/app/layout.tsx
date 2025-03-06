@@ -6,6 +6,7 @@ import {
   ClerkProvider
 } from '@clerk/nextjs';
 import { TooltipProvider, cn } from '@repo/ui';
+import { GeistMono } from 'geist/font/mono';
 import type { Viewport } from 'next';
 import { Metadata } from 'next';
 import { ThemeProvider } from 'next-themes';
@@ -90,7 +91,7 @@ export default function ParentLayout({
   return (
     <html
       lang="en"
-      className={cn(inter.className)}
+      className={cn(GeistMono.variable,inter.className)}
       suppressHydrationWarning
     >
       <head>

@@ -4,7 +4,7 @@ import { IconCircleCheckFilled, IconCircleDashed, IconCircleDashedX } from '@tab
 export const StepStatus = ({ status }: { status: Block['nodeStatus'] }) => {
   switch (status) {
     case 'pending':
-      return <SpinnerIcon size={16} className="text-tertiary size-4 shrink-0 animate-spin" />;
+      return <SpinnerIcon size={16} className="text-brand size-4 shrink-0 animate-spin" />;
     case 'completed':
       return <IconCircleCheckFilled className="text-brand size-4 shrink-0" />;
     case 'error':
@@ -25,8 +25,8 @@ export const SpinnerIcon = ({ size = 24, ...props }: { size?: number; className?
       {...props}
     >
       <title>Loading...</title>
-      <g fill="none" fillRule="evenodd" strokeWidth="2">
-        <circle cx="22" cy="22" r="2" strokeWidth={2}>
+      <g fill="none" fillRule="evenodd" strokeWidth="3">
+        <circle cx="22" cy="22" r="3" strokeWidth={3}>
           <animate
             attributeName="r"
             begin="0s"
@@ -48,7 +48,7 @@ export const SpinnerIcon = ({ size = 24, ...props }: { size?: number; className?
             repeatCount="indefinite"
           />
         </circle>
-        <circle cx="22" cy="22" r="2" strokeWidth={2}>
+        <circle cx="22" cy="22" r="3" strokeWidth={3}>
           <animate
             attributeName="r"
             begin="-0.9s"

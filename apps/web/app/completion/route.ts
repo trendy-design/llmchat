@@ -84,6 +84,7 @@ async function executeStream(
                         threadId: data.threadId,
                         threadItemId: data.threadItemId,
                         parentThreadItemId: data.parentThreadItemId,
+                        type: 'event',
                         ...event,
                 });
 

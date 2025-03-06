@@ -2,7 +2,7 @@ import { ToolCallResultType, ToolCallType } from '@repo/ai';
 import { Badge, Flex } from '@repo/ui';
 import { IconSearch } from '@tabler/icons-react';
 import { useMemo } from 'react';
-import { SearchResults } from '../tools/search-results';
+import { SearchResultsList } from '../search-results';
 
 export const getSearchToolMeta = (
   input: ToolCallType,
@@ -24,18 +24,17 @@ export const getReaderToolMeta = (
   };
 };
 
-export type SearchAndReadingResultsProps = {
+export type SearchStepType= {
   toolCalls: ToolCallType[];
   toolCallResults: ToolCallResultType[];
 };
 
-export const SearchAndReadingResults = ({
+export const SearchStep = ({
   toolCalls,
   toolCallResults,
-}: SearchAndReadingResultsProps) => {
+}: SearchStepType) => {
   const toolCallsWithResults = useMemo(() => {
     if (!toolCalls?.length) return [];
-
     return toolCalls.map(call => ({
       ...call,
       output: toolCallResults?.find(result => result?.toolCallId === call.toolCallId) ?? null,
@@ -89,7 +88,6 @@ export const SearchAndReadingResults = ({
     <Flex direction="col" gap="md" className="w-full">
       <p className="text-muted-foreground text-xs">Search Queries</p>
       <div className="flex flex-row flex-wrap gap-2">
-        {/* {JSON.stringify(searchToolResults)} */}
         {searchToolResults?.map((result, index) =>
           ((result.args.queries as string[]) ?? []).map((query, index) => (
             <Badge
@@ -107,7 +105,7 @@ export const SearchAndReadingResults = ({
       {searchResults?.length > 0 ? (
         <>
           <p className="text-muted-foreground text-xs">Reading Sources</p>
-          <SearchResults searchResults={searchResults} />
+          <SearchResultsList results={searchResults} />
         </>
       ) : null}
     </Flex>

@@ -85,6 +85,7 @@ async function executeStream(
         events.on('event', event => {
                 console.log('event', event);
                 sendMessage(controller, encoder, {
+                        type: 'event',
                         threadId: data.threadId,
                         threadItemId: data.threadItemId,
                         parentThreadItemId: data.parentThreadItemId,

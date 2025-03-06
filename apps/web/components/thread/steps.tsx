@@ -1,10 +1,10 @@
 import { Block } from '@/libs/store/chat.store';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Button } from '@repo/ui';
-import { IconStack2 } from '@tabler/icons-react';
+import { IconLoader2, IconStack2 } from '@tabler/icons-react';
 import { Fragment, useState } from 'react';
 import { CitationProvider } from './citation-provider';
 import { ThreadBlockMetadata } from './node-meta';
-import { SearchAndReadingResults } from './search-results';
+import { SearchStep } from './search-step';
 import { StepStatus } from './step-status';
 import { AIThreadItemV2 } from './thread-item';
 import { VaulDrawer } from './vaul-drawer';
@@ -15,6 +15,8 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
   if(steps.length === 0) {
     return null;
   }
+
+  const isLoading = steps.some(step => step.nodeStatus === 'pending');
   return (
     <>
     {/* <Button variant="bordered" size="xs" className="p-0" onClick={() => setDebugMode(!debugMode)}>
@@ -24,7 +26,7 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
         <AccordionItem value="workflow" className="rounded-lg overflow-hidden border border-border bg-secondary/50 p-0">
           <AccordionTrigger className="flex flex-row items-center bg-secondary gap-2 py-3 px-4">
             <div className="flex flex-row items-center gap-2">
-              <IconStack2 size={16} className='text-brand' />
+              {isLoading ? <IconLoader2 size={16} className='text-brand animate-spin' /> : <IconStack2 size={16} className='text-brand' />}
               <p className="text-sm font-medium">Workflow</p>
             </div>
           </AccordionTrigger>
@@ -34,7 +36,7 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
                 <div className="flex flex-row items-stretch justify-start gap-2 w-full" key={index}>
                   <div className="flex min-h-full flex-col items-center justify-start px-2">
                     <div className="bg-border/50 h-1.5 shrink-0" />
-                    <div className="z-10">
+                    <div className="z-10 bg-secondary">
                       <StepStatus status={block.nodeStatus} />
                     </div>
                     <div className="bg-border/50 min-h-full w-[1px] flex-1" />
@@ -46,7 +48,7 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
                           <AIThreadItemV2 content={block.nodeReasoning} key={index} className='!prose-sm' />
                         ) : null}
                         {block.object && JSON.stringify(block.object)}
-                        <SearchAndReadingResults
+                        <SearchStep
                           toolCalls={block.toolCalls || []}
                           toolCallResults={block.toolCallResults || []}
                         />
@@ -56,8 +58,7 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
                               renderContent={() => (
                                 <CitationProvider block={block}>
 
-                              <AIThreadItemV2 content={block.content} key={index}
-                               />
+                              <AIThreadItemV2 content={block.content} key={index}/>
                                </CitationProvider>
                               )}
                             >
