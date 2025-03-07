@@ -3,7 +3,6 @@ import { Block, useChatStore } from '@/libs/store/chat.store';
 
 export const useAgentStream = () => {
   const updateThreadItem = useChatStore(state => state.updateThreadItem);
-  const chatMode = useChatStore(state => state.chatMode);
 
   const runAgent = async (body: CompletionRequestType) => {
     const nodes = new Map<string, Block>();

@@ -26,7 +26,7 @@ const completionRequestSchema = z.object({
         mode: z.nativeEnum(CompletionMode),
 });
 
-type CompletionRequestType = z.infer<typeof completionRequestSchema>;
+export type CompletionRequestType = z.infer<typeof completionRequestSchema>;
 
 
 export type AgentEventResponse = {

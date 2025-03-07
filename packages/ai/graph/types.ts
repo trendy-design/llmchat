@@ -128,7 +128,6 @@ export type EdgeExecutionState = {
 };
 
 export type FunctionSchemaType = z.infer<typeof FunctionSchema>;
-export type CompletionRequestType = z.infer<typeof completionRequestSchema>;
 
 export type LLMMessageType = z.infer<typeof LLMMessageSchema>;
 
