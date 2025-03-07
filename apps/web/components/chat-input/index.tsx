@@ -81,6 +81,7 @@ export const ChatInput = () => {
       threadId: currentThreadId || 'default',
       threadItemId: optimisticAiThreadItemId,
       parentThreadItemId: optimisticUserThreadItemId,
+      mode: chatMode as any
     });
   };
 
@@ -97,7 +98,7 @@ export const ChatInput = () => {
 
   const renderChatInput = () => (
     <div className=" w-full">
-      <Flex direction="col" className="bg-background w-full rounded-lg border border-border">
+      <Flex direction="col" className="bg-background w-full rounded-xl border border-border">
         <motion.div
           variants={slideUpVariant}
           initial="initial"

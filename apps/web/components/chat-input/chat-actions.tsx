@@ -1,9 +1,10 @@
-import { useChatStore } from '@/libs/store/chat.store';
+import { ChatMode, useChatStore } from '@/libs/store/chat.store';
 import {
   Button,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Flex,
   Kbd,
@@ -17,7 +18,6 @@ export type TChatActions = {
   handleImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export type ChatMode = 'deep' | 'fast' | 'gpt-4o-mini';
 
 export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) => {
   const isGenerating = useChatStore(state => state.isGenerating);
@@ -32,24 +32,34 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
     {
       label: "Deep Research",
       description: "Advance reserch",
-      value: "deep",
+      value:  ChatMode.Deep,
       icon: <IconSchool size={16} strokeWidth={2} className="text-blue-400" />,
       webSearch: true,
     },
     {
       label: "Fast Research",
       description: "Quick web research",
-      value: "fast",
+      value:   ChatMode.Fast,
       icon: <IconBolt size={16} strokeWidth={2} className="text-emerald-500" />,
       webSearch: true,
-    },
-    {
-      label: "GPT-4o Mini",
-      description: "Open AI's older model",
-      value: "gpt-4o-mini",
-      icon: <IconBolt size={16} strokeWidth={2} className="text-emerald-500" />,
+    }
+    
+  ]
 
+  const modelOptions = [
+    {
+      label: "Gemini Flash 2.0",
+      value: ChatMode.GEMINI_2_FLASH,
+      webSearch: true,
+      icon: undefined
     },
+
+    {
+      label: "GPT 4o Mini",
+      value: ChatMode.GPT_4o_Mini,
+      webSearch: true,
+      icon: undefined
+    }
     
   ]
 
@@ -59,15 +69,15 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="xs" variant="bordered">
-              {chatOptions.find(option => option.value === chatMode)?.icon}
-              {chatOptions.find(option => option.value === chatMode)?.label}
+              {[...chatOptions, ...modelOptions].find(option => option.value === chatMode)?.icon}
+              {[...chatOptions, ...modelOptions].find(option => option.value === chatMode)?.label}
               <IconChevronDown size={12} strokeWidth={2} />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" side="bottom" className='w-[320px]'>
             {chatOptions.map(option => (
               <DropdownMenuItem key={option.label} onSelect={()=>{
-                setChatMode(option.value as ChatMode);
+                setChatMode(option.value);
               }} className='h-auto'>
                 <div className='flex flex-row w-full items-center gap-2.5 py-1.5 px-1.5'>
                 {option.icon}
@@ -82,6 +92,23 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
              
               </DropdownMenuItem>
             ))}
+            <DropdownMenuSeparator/>
+            {modelOptions.map(option => (
+              <DropdownMenuItem key={option.label} onSelect={()=>{
+                setChatMode(option.value);
+              }} className='h-auto'>
+                <div className='flex flex-row w-full items-center gap-2.5 py-1.5 px-1.5'>
+
+                  <div className='flex flex-col gap-0'> 
+                  {<p className='text-sm font-medium'>{option.label}</p>}
+                  </div>
+                  <div className='flex-1' />
+                  {option.webSearch && <IconGlobe size={14} strokeWidth={2} className="text-muted-foreground" />}
+                </div>
+             
+              </DropdownMenuItem>
+            ))}
+
           </DropdownMenuContent>
         </DropdownMenu>
 

@@ -30,7 +30,7 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
               <p className="text-sm font-medium">Workflow</p>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="p-0 bg-secondary/50">
+          <AccordionContent className="p-0 bg-background/50">
             <div className="flex flex-col p-2 py-4 pr-8 w-full overflow-hidden">
               {(steps || []).map((block, index, array) => (
                 <div className="flex flex-row items-stretch justify-start gap-2 w-full" key={index}>
@@ -52,7 +52,7 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
                           toolCalls={block.toolCalls || []}
                           toolCallResults={block.toolCallResults || []}
                         />
-                        {debugMode && (
+                        {(
                           <div className="flex flex-row gap-2">
                             <VaulDrawer
                               renderContent={() => (

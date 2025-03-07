@@ -2,13 +2,32 @@ import {
         AgentContextManager,
         AgentEventPayload,
         AgentGraphEvents,
-        completionRequestSchema,
-        CompletionRequestType,
         GraphStateManager,
+        LLMMessageSchema,
 } from '@repo/ai';
 import { ModelEnum } from '@repo/ai/models';
-import { completion } from '@repo/workflows';
-import type { NextRequest } from 'next/server';
+import { completion, deepResearchWorkflow, fastSearchWorkflow } from '@repo/workflows';
+import { NextRequest } from 'next/server';
+import { z } from 'zod';
+
+enum CompletionMode {
+        Fast = "fast",
+        Deep = "deep",
+        GPT_4o_Mini = "gpt-4o-mini",
+        GEMINI_2_FLASH = "gemini-flash-2.0"
+}
+
+const completionRequestSchema = z.object({
+        threadId: z.string(),
+        threadItemId: z.string(),
+        parentThreadItemId: z.string(),
+        prompt: z.string(),
+        messages: z.array(LLMMessageSchema),
+        mode: z.nativeEnum(CompletionMode),
+});
+
+type CompletionRequestType = z.infer<typeof completionRequestSchema>;
+
 
 export type AgentEventResponse = {
         threadId: string;
@@ -62,24 +81,13 @@ async function executeStream(
         events: AgentGraphEvents,
         data: CompletionRequestType
 ) {
-        const contextManager = new AgentContextManager({
-                initialContext: {
-                        history: data.messages,
-                },
-                onContextUpdate: (context) => {
-                        console.log('context', context);
-                },
-        });
-        const stateManager = new GraphStateManager({
-                onStateUpdate: (state) => {
-                        console.log('state', state);
-                },
-        });
 
-        const graph = await completion(ModelEnum.GPT_4o_Mini, events, contextManager, stateManager);
+
+
+
+        const graph = await getGraph(data.mode, data, events, controller, encoder);
 
         events.on('event', event => {
-                console.log('event', event);
                 sendMessage(controller, encoder, {
                         threadId: data.threadId,
                         threadItemId: data.threadItemId,
@@ -100,8 +108,51 @@ async function executeStream(
 function sendMessage(
         controller: StreamController,
         encoder: TextEncoder,
-        payload: AgentEventResponse
+        payload: any
 ) {
         const message = `event: message\ndata: ${JSON.stringify(payload)}\n\n`;
         controller.enqueue(encoder.encode(message));
+}
+
+async function getGraph(mode: CompletionMode, completionRequest: CompletionRequestType, events: AgentGraphEvents,
+        controller: StreamController,
+        encoder: TextEncoder
+) {
+
+        const contextManager = new AgentContextManager({
+                initialContext: {
+                        history: completionRequest.messages,
+                },
+                onContextUpdate: (context) => {
+                        if (context.webSearchResults) {
+                                sendMessage(controller, encoder, {
+                                        threadId: completionRequest.threadId,
+                                        threadItemId: completionRequest.threadItemId,
+                                        parentThreadItemId: completionRequest.parentThreadItemId,
+                                        type: "context",
+                                        context: {
+                                                searchResults: context.webSearchResults,
+                                        },
+
+                                });
+                        }
+                },
+        });
+        const stateManager = new GraphStateManager({
+                onStateUpdate: (state) => {
+                },
+        });
+
+        switch (mode) {
+                case CompletionMode.Fast:
+                        return fastSearchWorkflow(events, contextManager, stateManager);
+                case CompletionMode.Deep:
+                        return deepResearchWorkflow(events, contextManager, stateManager);
+                case CompletionMode.GPT_4o_Mini:
+                        return completion(ModelEnum.GPT_4o_Mini, events, contextManager, stateManager);
+                case CompletionMode.GEMINI_2_FLASH:
+                        return completion(ModelEnum.GEMINI_2_FLASH, events, contextManager, stateManager);
+                default:
+                        throw new Error(`Unsupported completion mode: ${mode}`);
+        }
 }

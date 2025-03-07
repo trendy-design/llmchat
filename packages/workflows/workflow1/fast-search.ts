@@ -9,7 +9,7 @@ import { z } from "zod";
 
 
 
-export async function workflow3(
+export async function fastSearchWorkflow(
         events: AgentGraphEvents,
         contextManager: AgentContextManager,
         stateManager: GraphStateManager

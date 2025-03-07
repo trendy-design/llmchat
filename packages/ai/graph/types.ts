@@ -89,7 +89,7 @@ export type GraphResponseType = {
   graphPath: string[];
 };
 
-const messageSchema = z.object({
+export const LLMMessageSchema = z.object({
   role: z.enum(['system', 'user', 'assistant']),
   content: z.string(),
 });
@@ -119,13 +119,7 @@ export const GraphNodeSchema = z.object({
 
 export type GraphNodeType = z.infer<typeof GraphNodeSchema>;
 
-export const completionRequestSchema = z.object({
-  threadId: z.string(),
-  threadItemId: z.string(),
-  parentThreadItemId: z.string(),
-  prompt: z.string(),
-  messages: z.array(messageSchema),
-});
+
 
 export type EdgeExecutionState = {
   pending: Set<string>;
@@ -136,7 +130,7 @@ export type EdgeExecutionState = {
 export type FunctionSchemaType = z.infer<typeof FunctionSchema>;
 export type CompletionRequestType = z.infer<typeof completionRequestSchema>;
 
-export type LLMMessageType = z.infer<typeof messageSchema>;
+export type LLMMessageType = z.infer<typeof LLMMessageSchema>;
 
 export type GraphEdgePatternType = 'sequential' | 'loop' | 'condition';
 

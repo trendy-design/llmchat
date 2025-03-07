@@ -112,6 +112,8 @@ Provide exactly 4 sentences:
 3. Your next specific research direction based on verification and investigation (maximum 2 queries)
 4. Direct instruction to the next agent: "Search for: [specific query 1]" and optionally "Then search for: [specific query 2]"
 
+**Important:**
+No need to answer the query, just provide the next research direction.
 **Examples**
 "Initial analysis shows Python and JavaScript dominating web development, with Python leading in AI/ML applications and JavaScript in frontend frameworks. We need to validate the specific adoption rates across different company sizes and industry verticals. I'll focus on developer surveys and GitHub statistics from the past two years to quantify these technology adoption trends. Search for: developer language popularity survey 2023 by company size."
 

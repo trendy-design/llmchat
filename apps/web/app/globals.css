@@ -60,13 +60,13 @@
   }
 
   .dark {
-    --background: 0 0% 9.8%;
+    --background: 0 0% 7.8%;
     --foreground: 60 1% 90%;
 
-    --secondary: 0 0% 13%;
+    --secondary: 0 0% 11%;
     --secondary-foreground: 60 1% 80%;
 
-    --tertiary: 0 0% 16%;
+    --tertiary: 0 0% 15%;
     --tertiary-foreground: 60 1% 90%;
 
     --card: 60 1% 19%;
@@ -75,8 +75,8 @@
     --popover: 60 1% 10%;
     --popover-foreground: 60 1% 90%;
 
-    --brand: 188 60% 59%;
-    --brand-foreground: 186 100% 17%;
+    --brand: 0 0% 100%;
+    --brand-foreground: 0 0% 7.8%;
 
     /* --brand: 287 69% 83%;
     --brand-foreground: 282 41% 23%; */

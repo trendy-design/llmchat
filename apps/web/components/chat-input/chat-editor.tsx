@@ -14,7 +14,7 @@ export const ChatEditor: FC<TChatEditor> = ({ sendMessage, editor }) => {
   if (!editor) return null;
 
   const editorContainerClass =
-    'no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[120px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-base outline-none focus:outline-none [&>*]:leading-6 [&>*]:outline-none';
+    'no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[120px] min-h-6 w-full cursor-text overflow-y-auto p-1 text-base outline-none focus:outline-none [&>*]:leading-6 [&>*]:outline-none';
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (isGenerating) return;

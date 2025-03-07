@@ -7,6 +7,13 @@ import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 
+export enum ChatMode {
+  Fast = "fast",
+  Deep = "deep",
+  GPT_4o_Mini = "gpt-4o-mini",
+  GEMINI_2_FLASH = "gemini-flash-2.0"
+}
+
 export type Thread = {
   id: string;
   title: string;
@@ -92,7 +99,6 @@ const loadInitialData = async () => {
 };
 
 
-type ChatMode = 'fast' | 'deep' | 'gpt-4o-mini';
 
 type State = {
   model: Model;
@@ -120,7 +126,7 @@ type Actions = {
   stopGeneration: () => void;
   setAbortController: (abortController: AbortController) => void;
   createThread: () => void;
-  setChatMode: (chatMode: ChatMode) => void;
+  setChatMode: (chatMode:  ChatMode) => void;
   updateThread: (thread: Pick<Thread, 'id' | 'title'>) => Promise<void>;
   createThreadItem: (threadItem: ThreadItem) => Promise<void>;
   updateThreadItem: (threadItem: Partial<ThreadItem>) => Promise<void>;
@@ -227,7 +233,7 @@ export const useChatStore = create(
     editor: undefined,
     context: '',
     threads: [],
-    chatMode: 'fast',
+    chatMode: ChatMode.Fast,
     threadItems: [],
     currentThreadId: 'default',
     currentThread: null,

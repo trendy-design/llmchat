@@ -5,6 +5,6 @@
     "moduleResolution": "bundler",
     "module": "ESNext"
   },
-  "include": ["*.ts", "workflow1/workflow1.ts"],
+  "include": ["*.ts", "workflow1/deep-reserch.ts"],
   "exclude": ["node_modules"]
 }

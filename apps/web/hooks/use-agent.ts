@@ -1,5 +1,5 @@
+import { CompletionRequestType } from '@/app/completion/route';
 import { Block, useChatStore } from '@/libs/store/chat.store';
-import type { CompletionRequestType } from '@repo/ai';
 
 export const useAgentStream = () => {
   const updateThreadItem = useChatStore(state => state.updateThreadItem);
@@ -9,9 +9,8 @@ export const useAgentStream = () => {
     const nodes = new Map<string, Block>();
     const contentBuffer = new Map<string, string>();
 
-    const modeEndpoint = chatMode === 'deep' ? '/deep' : chatMode === 'gpt-4o-mini' ? '/completion' : '/fast';
     
-    const response = await fetch(`${modeEndpoint}`, {
+    const response = await fetch(`/completion`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

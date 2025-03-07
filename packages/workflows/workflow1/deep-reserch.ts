@@ -19,7 +19,7 @@ import {
 } from "./prompts";
 
 
-export async function workflow1(
+export async function deepResearchWorkflow(
   events: AgentGraphEvents,
   contextManager: AgentContextManager,
   stateManager: GraphStateManager
