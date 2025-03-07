@@ -1,6 +1,14 @@
 import { tool } from 'ai';
+import { initLogger, traced } from 'braintrust';
 import { z } from 'zod';
 import { AgentGraph } from '../main';
+
+initLogger({
+  projectName: 'LLMChat',
+  apiKey: process.env.BRAINTRUST_API_KEY || '',
+});
+
+
 export const getSERPResults = async (queries: string[]) => {
   const myHeaders = new Headers();
   myHeaders.append('X-API-KEY', process.env.SERPER_API_KEY || '');
@@ -73,6 +81,9 @@ export const webbrowsingTool = (graph: AgentGraph) => {
       queries: z.array(z.string()).describe('The queries to search the web for information. max 2 queries allowed'),
     }),
     execute: async ({ queries }) => {
+
+      return traced(async (span)=>{
+      // return span.traced(async (span)=>{
       const webSearchResults = await Promise.all(queries.map(async (query) => {
         const result = await getSERPResults([query]);
         return result.slice(0, 5);
@@ -98,8 +109,20 @@ export const webbrowsingTool = (graph: AgentGraph) => {
         };
       }));
 
+      span.log({
+        input: queries,
+        output: webPageContents,
+        metadata: {
+          webSearchResults: uniqueWebSearchResults
+        }
+      })
+
 
       return webPageContents;
-    },
+    },{
+      name:'web-search',
+      type:"tool"
+    })
+    }
   });
 };

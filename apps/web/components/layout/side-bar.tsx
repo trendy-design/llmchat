@@ -91,21 +91,28 @@ export const Sidebar = () => {
       <Flex className='w-full justify-between items-center px-3 pb-2 pt-4 '>
         <p className={cn('text-sm font-semibold', isSidebarOpen ? 'flex' : 'hidden')}>deep.new</p>
         <Button variant='ghost' size="icon-sm" onClick={() => setIsSidebarOpen(prev => !prev)}>
-          <IconLayoutSidebar size={16} strokeWidth={2} className='text-muted-foreground' />
+          <IconLayoutSidebar size={16} strokeWidth={2} className='opacity-50' />
         </Button>
       </Flex>
       <Flex direction="col" className="no-scrollbar w-full flex-1">
-        <Flex justify="between" items="center" direction="col" className="w-full p-3" gap="sm">
-          <Button
-            size={isSidebarOpen ? 'sm' : 'icon-sm'}
-            variant="brand"
-            className="w-full"
-            onClick={() => {
+        <Flex justify="between" items="center" direction="col" className="w-full px-3" gap="xs">
+        <Button
+            size={isSidebarOpen ? "sm" : "icon-sm"}
+            variant="ghost"
+            className="w-full gap-3 px-2"
+            onClick={() =>   {
               !isChatPage && push('/chat');
               createThread();
             }}
           >
-            <IconPlus size={16} strokeWidth={3} /> {isSidebarOpen ? 'New Chat' : ''}
+            <div className="flex flex-row items-center gap-2 opacity-50">
+              <IconPlus size={16} strokeWidth={2} /> {isSidebarOpen ? 'New' : ''}
+            </div>
+            {isSidebarOpen && <div className="flex-1" />}
+            {isSidebarOpen && <div className="flex flex-row gap-1">
+              <Kbd className='w-5'><IconCommand className='size-3 shrink-0' /></Kbd>
+              <Kbd>N</Kbd>
+            </div>}
           </Button>
           <Button
             size={isSidebarOpen ? "sm" : "icon-sm"}
@@ -113,7 +120,7 @@ export const Sidebar = () => {
             className="w-full gap-3 px-2"
             onClick={() => setIsCommandSearchOpen(true)}
           >
-            <div className="flex flex-row items-center gap-1 opacity-50">
+            <div className="flex flex-row items-center gap-2 opacity-50">
               <IconSearch size={16} strokeWidth={2} /> {isSidebarOpen ? 'Search' : ''}
             </div>
             {isSidebarOpen && <div className="flex-1" />}

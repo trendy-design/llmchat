@@ -1,26 +1,31 @@
-/* Base styles from Prism tomorrow theme will be preserved */
+/* Base styles for light mode */
+pre[class*="language-"],
+code[class*="language-"] {
+  color: #0f172a;
+}
+
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  color: #e5e7eb;
+  color: #64748b;
 }
 
 .token.punctuation {
-  color: #f1f5f9;
+  color: #475569;
 }
 
 .token.property,
 .token.tag,
 .token.constant,
 .token.symbol {
-  color: #fda4af;
+  color: #e11d48;
 }
 
 .token.boolean,
 .token.number,
 .token.variable {
-  color: #d8b4fe;
+  color: #9333ea;
 }
 
 .token.selector,
@@ -28,29 +33,29 @@
 .token.string,
 .token.char,
 .token.builtin {
-  color: #6ee7b7;
+  color: #16a34a;
 }
 
 .token.operator,
 .token.entity,
 .token.url {
-  color: #fde68a;
+  color: #ca8a04;
 }
 
 .token.atrule,
 .token.attr-value,
 .token.function,
 .token.class-name {
-  color: #93c5fd;
+  color: #2563eb;
 }
 
 .token.keyword {
-  color: #c7d2fe;
+  color: #6d28d9;
 }
 
 .token.regex,
 .token.important {
-  color: #fed7aa;
+  color: #ea580c;
 }
 
 .token.important {
@@ -62,5 +67,69 @@
 }
 
 .token.parameter {
+  color: #dc2626;
+}
+
+/* Dark mode styles using .dark class */
+.dark pre[class*="language-"],
+.dark code[class*="language-"] {
+  color: #f8fafc;
+}
+
+.dark .token.comment,
+.dark .token.prolog,
+.dark .token.doctype,
+.dark .token.cdata {
+  color: #94a3b8;
+}
+
+.dark .token.punctuation {
+  color: #cbd5e1;
+}
+
+.dark .token.property,
+.dark .token.tag,
+.dark .token.constant,
+.dark .token.symbol {
+  color: #fb7185;
+}
+
+.dark .token.boolean,
+.dark .token.number,
+.dark .token.variable {
+  color: #c4b5fd;
+}
+
+.dark .token.selector,
+.dark .token.attr-name,
+.dark .token.string,
+.dark .token.char,
+.dark .token.builtin {
+  color: #4ade80;
+}
+
+.dark .token.operator,
+.dark .token.entity,
+.dark .token.url {
+  color: #fcd34d;
+}
+
+.dark .token.atrule,
+.dark .token.attr-value,
+.dark .token.function,
+.dark .token.class-name {
+  color: #60a5fa;
+}
+
+.dark .token.keyword {
+  color: #a5b4fc;
+}
+
+.dark .token.regex,
+.dark .token.important {
+  color: #fdba74;
+}
+
+.dark .token.parameter {
   color: #fca5a5;
 }

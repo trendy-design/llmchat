@@ -8,7 +8,6 @@ export function Thread() {
   const messageGroups = useChatStore(state => state.getMessageGroups(currentThreadId));
   const deleteThreadItem = useChatStore(state => state.deleteThreadItem);
   const isGenerating = useChatStore(state => state.isGenerating);
-  const threadItems = useChatStore(state => state.threadItems);
 
   const currentMessageGroups = messageGroups;
 

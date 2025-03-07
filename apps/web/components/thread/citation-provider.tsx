@@ -47,20 +47,19 @@ export const CitationProviderContext = createContext<CitationProviderContextType
 });
 
 export const CitationProvider = ({ block, children }: PropsWithChildren<{ block: Block }>) => {
-
   const [citations, setCitations] = useState<Record<string, Citation>>({});
 
   useEffect(() => {
-    const allCitations = block.sources || [];
-    const uniqueCitations = Array.from(new Set(allCitations)).filter(Boolean);
-    const MAX_VISIBLE_CITATIONS = 4;
+    const processCitations = () => {
+      const allCitations = block.sources || [];
+      const uniqueCitations = Array.from(new Set(allCitations)).filter(Boolean);
+      const MAX_VISIBLE_CITATIONS = 4;
 
-
-    setCitations(
-      uniqueCitations.reduce((citations, url, index) => {
+      const newCitations = uniqueCitations.reduce((citations, url, index) => {
         const isValid = isValidUrl(url);
-        const favIcon = getFavIcon(url);
         const host = getHost(url);
+        if (!host) return citations;
+        const favIcon = getFavIcon(host);
         if (!isValid) return citations;
 
         if (index < MAX_VISIBLE_CITATIONS) {
@@ -90,10 +89,15 @@ export const CitationProvider = ({ block, children }: PropsWithChildren<{ block:
         }
 
         return citations;
-      }, {})
-    );
-  }, [block]);
+      }, {});
 
+      if (JSON.stringify(newCitations) !== JSON.stringify(citations)) {
+        setCitations(newCitations);
+      }
+    };
+
+    processCitations();
+  }, [block.sources]);
 
   return (
     <CitationProviderContext.Provider value={{ citations }}>

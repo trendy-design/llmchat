@@ -12,7 +12,7 @@ export type EdgeHandlerStrategy<T extends GraphEdgePatternType> = {
   handle(
     edges: GraphEdgeType<T>[],
     sourceResponse: string,
-    responses: MessageResponse[]
+    responses: MessageResponse[],
   ): Promise<string>;
 };
 

@@ -23,11 +23,11 @@ export const Steps = ({ steps }: { steps: Block[] }) => {
       {debugMode ? 'Hide Workflow' : 'Show Workflow'}
     </Button> */}
       <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="workflow" className="rounded-lg overflow-hidden border border-border bg-secondary/50 p-0">
-          <AccordionTrigger className="flex flex-row items-center bg-secondary gap-2 py-3 px-4">
+        <AccordionItem value="workflow" className="rounded-xl overflow-hidden border border-border bg-secondary/50 p-0">
+          <AccordionTrigger className="flex flex-row items-center bg-secondary gap-2 py-2.5 px-4">
             <div className="flex flex-row items-center gap-2">
-              {isLoading ? <IconLoader2 size={16} className='text-brand animate-spin' /> : <IconStack2 size={16} className='text-brand' />}
-              <p className="text-sm font-medium">Workflow</p>
+              {isLoading ? <IconLoader2 size={16} className='text-muted-foreground animate-spin' /> : <IconStack2 size={16} className='text-muted-foreground' />}
+              <p className="text-sm font-medium text-muted-foreground">Workflow</p>
             </div>
           </AccordionTrigger>
           <AccordionContent className="p-0 bg-background/50">

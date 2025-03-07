@@ -1,12 +1,20 @@
-'use client';
+"use client";
 
-import { useClipboard } from '@/hooks/use-clipboard';
-import { Button } from '@repo/ui';
-import { Check, Copy } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { createHighlighter } from 'shiki';
+import Prism from "prismjs";
+import { useEffect, useRef } from "react";
 
-import './code-block.css';
+import { useClipboard } from "@/hooks/use-clipboard";
+import "prismjs/components/prism-bash";
+import "prismjs/components/prism-json";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-markdown";
+import "prismjs/components/prism-python";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-yaml";
+
+import { Button, cn } from "@repo/ui";
+import { IconCheck, IconCopy, IconFileFilled } from "@tabler/icons-react";
+import "./code-block.css";
 
 export type CodeBlockProps = {
   lang?: string;
@@ -14,53 +22,49 @@ export type CodeBlockProps = {
   showHeader?: boolean;
 };
 
-export const CodeBlock = ({ lang = 'plaintext', code, showHeader = true }: CodeBlockProps) => {
-  const codeRef = useRef<HTMLDivElement>(null);
+export const CodeBlock = ({
+  lang = "plaintext",
+  code,
+  showHeader = true,
+}: CodeBlockProps) => {
+  const ref = useRef<HTMLElement>(null);
   const { copy, showCopied } = useClipboard();
-  const [highlightedCode, setHighlightedCode] = useState<string>('');
 
   useEffect(() => {
-    const highlight = async () => {
-      if (!code) return;
-
-      const highlighter = await createHighlighter({
-        themes: ['github-dark', 'github-light'],
-        langs: ['typescript', 'javascript', 'python', 'bash', 'json', 'yaml', 'markdown', 'plaintext'],
-      
-      });
-
-      const html = highlighter.codeToHtml(code, { lang, themes: {
-        light: 'github-light',
-        dark: 'github-dark',
-      }});
-      setHighlightedCode(html);
-    };
-
-    highlight();
+    if (ref?.current && code) {
+      Prism.highlightElement(ref.current);
+    }
   }, [code, lang]);
 
   return (
-    <div className="not-prose bg-background/50 border-border my-4 rounded-lg overflow-hidden border p-0">
+    <div className="not-prose rounded-xl overflow-hidden bg-background border border-border my-4">
       {showHeader && (
-        <div className="text-foreground flex items-center bg-secondary border-b border-border justify-between py-1.5 pl-3 pr-1.5">
-          <p className="text-muted-foreground text-xs tracking-wide">{lang}</p>
+        <div className="flex items-center pl-4 pr-1.5 py-1.5 bg-secondary/50 border-b border-border justify-between text-foreground">
+      
+          <p className="text-muted-foreground text-xs tracking-wide flex flex-row items-center gap-2">
+          <IconFileFilled size={14} className="opacity-50" />
+            {lang}</p>
           <Button
             variant="ghost"
-            size="icon-xs"
+            size="xs"
             className="gap-2"
-            onClick={() => code && copy(code)}
+            onClick={() => {
+              code && copy(code);
+            }}
           >
-            {showCopied ? <Check size={12} strokeWidth="2" /> : <Copy size={12} strokeWidth="2" />}
+            {showCopied ? (
+              <IconCheck size={14} strokeWidth="2" />
+            ) : (
+              <IconCopy size={14} strokeWidth="2" />
+            )}
           </Button>
         </div>
       )}
-      <div className=" text-muted-foreground  text-sm overflow-x-auto font-mono p-4">
-        <div
-          ref={codeRef}
-          className="[&>pre]:!bg-transparent [&>pre]:!font-mono [&>pre]:!github-light dark:[&>pre]:!github-dark"
-          dangerouslySetInnerHTML={{ __html: highlightedCode }}
-        />
-      </div>
+      <pre className="overflow-x-auto px-4 py-3 text-[13px] text-foreground">
+        <code className={cn(`language-${lang}`)} ref={ref}>
+          {code}
+        </code>
+      </pre>
     </div>
   );
 };

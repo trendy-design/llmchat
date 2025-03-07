@@ -25,7 +25,7 @@ const ChatSessionPage = () => {
   return (
     <div className='flex flex-row h-full w-full'>
       <div className='flex flex-col w-full gap-2 overflow-y-auto h-full border border-border rounded-t-md my-2 mr-2 bg-background dark:bg-secondary'>
-      <div className='flex flex-row items-center bg-background/50 justify-between px-1.5 py-1.5 border-b border-soft'>
+      <div className='flex flex-row items-center justify-between px-1.5 py-1.5 border-b border-soft'>
       <Button variant='ghost' size='sm'>
           Share
         </Button>

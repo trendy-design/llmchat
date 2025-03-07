@@ -9,7 +9,7 @@ export class SequentialEdgeHandler implements EdgeHandlerStrategy<'sequential'> 
     edges: GraphEdgeType<'sequential'>[],
     sourceResponse: string,
     responses: MessageResponse[]
-  ): Promise<string> {
+    ): Promise<string> {
     let currentResponse = sourceResponse;
     const sorted = edges.sort((a, b) => (a.config?.priority ?? 0) - (b.config?.priority ?? 0));
 

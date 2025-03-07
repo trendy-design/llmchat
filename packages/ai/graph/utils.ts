@@ -1,6 +1,8 @@
 import { ToolCallResultType } from "./types";
 
         export const processToolCallResult = (toolCallResult: ToolCallResultType) => {
+
+                if("result" in toolCallResult) {
                 return {
                         ...toolCallResult,
                         result: toolCallResult.result.map((r: any) => ({
@@ -9,6 +11,8 @@ import { ToolCallResultType } from "./types";
                                 content: r.content?.length,
                         })),
                 };
+        }
+        return toolCallResult;
         };
 
 

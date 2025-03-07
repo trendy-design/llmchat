@@ -6,8 +6,7 @@
     "./config": "./config/index.ts",
     "./types": "./types/index.ts",
     "./utils": "./utils/index.ts",
-    "./db": "./db/index.ts"
-  },
+    "./db": "./db/index.ts"  },
   "scripts": {
     "lint": "eslint .",
     "check-types": "tsc --noEmit"

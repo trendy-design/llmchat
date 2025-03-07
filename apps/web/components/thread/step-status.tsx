@@ -74,3 +74,72 @@ export const SpinnerIcon = ({ size = 24, ...props }: { size?: number; className?
     </svg>
   );
 };
+
+export const DotSpinner = ({ size = 24, ...props }: { size?: number; className?: string }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      {...props}
+    >
+      <rect x="5" y="11" width="3" height="3" rx="1.5" ry="1.5" fill="currentColor">
+        <animate
+          id="stretch1"
+          begin="0;stretch3.end+0.25s"
+          attributeName="height"
+          dur="0.6s"
+          values="3;8;3"
+          keySplines=".33,.66,.66,1;.33,0,.66,.33"
+          calcMode="spline"
+        />
+        <animate
+          begin="0;stretch3.end+0.25s"
+          attributeName="y"
+          dur="0.6s"
+          values="11;8;11"
+          keySplines=".33,.66,.66,1;.33,0,.66,.33"
+          calcMode="spline"
+        />
+      </rect>
+      <rect x="11" y="11" width="3" height="3" rx="1.5" ry="1.5" fill="currentColor">
+        <animate
+          begin="stretch1.begin+0.1s"
+          attributeName="height"
+          dur="0.6s"
+          values="3;8;3"
+          keySplines=".33,.66,.66,1;.33,0,.66,.33"
+          calcMode="spline"
+        />
+        <animate
+          begin="stretch1.begin+0.1s"
+          attributeName="y"
+          dur="0.6s"
+          values="11;8;11"
+          keySplines=".33,.66,.66,1;.33,0,.66,.33"
+          calcMode="spline"
+        />
+      </rect>
+      <rect x="17" y="11" width="3" height="3" rx="1.5" ry="1.5" fill="currentColor">
+        <animate
+          id="stretch3"
+          begin="stretch1.begin+0.2s"
+          attributeName="height"
+          dur="0.6s"
+          values="3;8;3"
+          keySplines=".33,.66,.66,1;.33,0,.66,.33"
+          calcMode="spline"
+        />
+        <animate
+          begin="stretch1.begin+0.2s"
+          attributeName="y"
+          dur="0.6s"
+          values="11;8;11"
+          keySplines=".33,.66,.66,1;.33,0,.66,.33"
+          calcMode="spline"
+        />
+      </rect>
+    </svg>
+  );
+};

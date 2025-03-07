@@ -3,12 +3,19 @@ import { Block, useChatStore } from '@/libs/store/chat.store';
 
 export const useAgentStream = () => {
   const updateThreadItem = useChatStore(state => state.updateThreadItem);
+  const setIsGenerating = useChatStore(state => state.setIsGenerating);
+  const setAbortController = useChatStore(state => state.setAbortController);
 
   const runAgent = async (body: CompletionRequestType) => {
     const nodes = new Map<string, Block>();
     const contentBuffer = new Map<string, string>();
-
-    
+    const abortController = new AbortController();
+    setAbortController(abortController);
+    if(!abortController) {
+      return
+    }
+    setIsGenerating(true);
+  
     const response = await fetch(`/completion`, {
       method: 'POST',
       headers: {
@@ -17,7 +24,9 @@ export const useAgentStream = () => {
       body: JSON.stringify(body),
       credentials: 'include',
       cache: 'no-store',
+      signal: abortController?.signal,
     });
+
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -49,6 +58,9 @@ export const useAgentStream = () => {
               } else if (data.type === "context") {
                 updateContext(data);
               }
+              else if (data.type === "done") {
+                setIsGenerating(false);
+              }
             } catch (e) {
               console.error('Error parsing SSE data:', e, 'Line:', line);
             }
@@ -57,6 +69,7 @@ export const useAgentStream = () => {
       }
     } finally {
       reader.releaseLock();
+      setIsGenerating(false);
     }
   };
 

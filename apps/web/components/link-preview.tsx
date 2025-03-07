@@ -2,7 +2,7 @@
 
 import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui';
 import Image from 'next/image';
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 
 const ogCache = new Map<string, any>();
 
@@ -28,6 +28,7 @@ export const LinkPreviewPopover = ({ url, children }: LinkPreviewType) => {
         onMouseLeave={handleMouseLeave}
         onClick={e => e.preventDefault()} 
         asChild
+        className='cursor-pointer'
       >
         {children}
       </PopoverTrigger>
@@ -72,9 +73,11 @@ export const LinkPreview = memo(({ url }: { url: string }) => {
     }
   };
 
-  useEffect(() => {
-    fetchOg(url);
-  }, [url]);
+  // useEffect(() => {
+  //   if(!ogResult) {
+  //     fetchOg(url);
+  //   }
+  // }, [url]);
   
   const parsedUrl = useMemo(() => {
     try {

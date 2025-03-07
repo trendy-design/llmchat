@@ -4,6 +4,7 @@ import { EdgeHandlerStrategy, MessageResponse } from '../edge-pattern-handlers';
 import { GraphEdgeType } from '../types';
 
 
+
 export class LoopEdgeHandler implements EdgeHandlerStrategy<'loop'> {
   constructor(private graph: AgentGraph) {}
 
@@ -11,7 +12,7 @@ export class LoopEdgeHandler implements EdgeHandlerStrategy<'loop'> {
     edges: GraphEdgeType<'loop'>[],
     sourceResponse: string,
     responses: MessageResponse[]
-  ): Promise<string> {
+    ): Promise<string> {
     let finalResponse = sourceResponse;
     for (const edge of edges) {
       await this.graph.withFallback(edge, async () => {
