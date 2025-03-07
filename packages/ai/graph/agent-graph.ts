@@ -35,8 +35,9 @@ export class AgentGraph {
   protected defaultProvider: LanguageModelV1;
   public executionState: EdgeExecutionState;
   protected edgeHandlerStrategies: Map<GraphEdgePatternType, EdgeHandlerStrategy<any>>;
+  protected abortController: AbortController;
 
-  constructor(events: AgentGraphEvents, contextManager: AgentContextManager, stateManager: GraphStateManager) {
+  constructor(events: AgentGraphEvents, contextManager: AgentContextManager, stateManager: GraphStateManager, abortController: AbortController) {
     this.events = events;
     this.contextManager = contextManager;
     this.stateManager = stateManager;
@@ -47,6 +48,7 @@ export class AgentGraph {
       results: new Map(),
     };
     this.edgeHandlerStrategies = createEdgeHandlerStrategies(this);
+    this.abortController = abortController;
   }
 
   addNode(nodeConfig: {
@@ -163,6 +165,10 @@ export class AgentGraph {
     history: LLMMessageType[],
     responses: MessageResponse[]
   ): Promise<void> {
+    if (this.abortController.signal.aborted) {
+      throw new Error('Execution aborted');
+    }
+
     if (this.executionState.completed.has(nodeKey)) {
       return;
     }
@@ -275,6 +281,10 @@ export class AgentGraph {
     type: 'text' | 'object';
     history?: LLMMessageType[];
   }): Promise<string> {
+    if (this.abortController.signal.aborted) {
+      throw new Error('Execution aborted');
+    }
+
     const startTime = Date.now();
     this.saveNodeState(nodeId, {
       ...node.getState(),
@@ -354,6 +364,10 @@ export class AgentGraph {
     history?: LLMMessageType[];
   }): Promise<string> {
     try {
+      if (this.abortController.signal.aborted) {
+        throw new Error('Execution aborted');
+      }
+
       const startTime = Date.now();
       this.events.emit('event', {
         nodeId,
@@ -392,6 +406,7 @@ export class AgentGraph {
         toolCallStreaming: true,
         maxSteps: node.toolSteps,
         maxTokens: node.maxTokens,
+        abortSignal: this.abortController.signal,
       });
 
       for await (const chunk of fullStream) {
@@ -506,6 +521,10 @@ export class AgentGraph {
     history?: LLMMessageType[];
   }): Promise<string> {
     try {
+      if (this.abortController.signal.aborted) {
+        throw new Error('Execution aborted');
+      }
+
       this.events.emit('event', {
         nodeId,
         nodeKey,
@@ -539,6 +558,7 @@ export class AgentGraph {
         model,
         schema: node.outputSchema,
         prompt: userMessage,
+        abortSignal: this.abortController.signal,
       });
 
 

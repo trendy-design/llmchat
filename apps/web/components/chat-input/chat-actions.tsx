@@ -9,8 +9,8 @@ import {
   Flex,
   Kbd,
 } from '@repo/ui';
-import { IconBolt, IconChevronDown, IconGlobe, IconPlayerStopFilled, IconSchool } from '@tabler/icons-react';
-import { ArrowUp } from 'lucide-react';
+import { IconArrowBack, IconBolt, IconChevronDown, IconGlobe, IconPlayerStopFilled, IconSchool } from '@tabler/icons-react';
+import { DotSpinner } from '../thread/step-status';
 import { ImageUpload } from './image-upload';
 
 export type TChatActions = {
@@ -64,11 +64,11 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
   ]
 
   return (
-    <Flex className="w-full bg-secondary/50 border-t border-border px-1 pb-1 pt-1.5 md:px-2 md:pb-2" items="center" justify="between">
-      <Flex gap="xs" items="center">
+    <Flex className="w-full bg-secondary/50 border-t border-border p-1.5" items="center" justify="between">
+        {isGenerating ? <GeneratingStatus /> : <Flex gap="xs" items="center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size="xs" variant="bordered">
+            <Button size="xs" variant="ghost">
               {[...chatOptions, ...modelOptions].find(option => option.value === chatMode)?.icon}
               {[...chatOptions, ...modelOptions].find(option => option.value === chatMode)?.label}
               <IconChevronDown size={12} strokeWidth={2} />
@@ -119,7 +119,7 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
           showIcon
           handleImageUpload={handleImageUpload}
         />
-      </Flex>
+      </Flex>}
 
       <Flex gap="md" items="center">
         {editor?.getText() && (
@@ -134,15 +134,14 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
         )}
 
         {isGenerating ? (
-          <Button   size="icon-sm"
+          <Button   size="xs"
           variant="default"
-          rounded="full"onClick={stopGeneration}>
-            <IconPlayerStopFilled size={14} strokeWidth={2} /> 
+         onClick={stopGeneration}>
+            <IconPlayerStopFilled size={14} strokeWidth={2} /> Stop
           </Button>
         ) : (
           <Button
-            size="icon-sm"
-            rounded="full"
+            size="xs"
             variant={hasTextInput ? 'default' : 'secondary'}
             disabled={!hasTextInput || isGenerating}
             onClick={() => {
@@ -151,10 +150,17 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
             }
             }}
           >
-            <ArrowUp size={14} strokeWidth="2" />
+            Send <IconArrowBack size={12} strokeWidth={2} />
           </Button>
         )}
       </Flex>
     </Flex>
   );
 };
+
+
+export const GeneratingStatus = () => {
+  return (
+    <div className='text-xs text-muted-foreground flex flex-row gap-1 items-center px-2'><DotSpinner /> Generating...</div>
+  )
+}

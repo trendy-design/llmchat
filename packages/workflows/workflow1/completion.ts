@@ -13,9 +13,10 @@ export async function completion(
         model: ModelEnum,
         events: AgentGraphEvents,
         contextManager: AgentContextManager,
-        stateManager: GraphStateManager
+        stateManager: GraphStateManager,
+        abortController: AbortController
 ): Promise<AgentGraph> {
-        const graph = new AgentGraph(events, contextManager, stateManager);
+        const graph = new AgentGraph(events, contextManager, stateManager, abortController);
 
 
         graph.addNode({

@@ -243,6 +243,7 @@ export const useChatStore = create(
     isLoadingThreads: false,
     isLoadingThreadItems: false,
     currentSources: [],
+
     
     setChatMode: (chatMode: ChatMode) => {
       localStorage.setItem(CONFIG_KEY, JSON.stringify({ chatMode }));
@@ -274,7 +275,7 @@ export const useChatStore = create(
     }),
     
     stopGeneration: () => set(state => {
-      state.isGenerating = false;
+      state.abortController?.abort();
     }),
     
     setAbortController: abortController => set(state => {

@@ -62,14 +62,31 @@ export async function POST(request: NextRequest) {
         const encoder = new TextEncoder();
         const events = new AgentGraphEvents();
 
+        // Backend AbortController
+        const abortController = new AbortController();
+        const { signal } = abortController;
+
+        // Connect frontend abort signal to backend
+        request.signal.addEventListener('abort', () => {
+                console.log('Aborting request');
+                abortController.abort();
+        });
+
         const stream = new ReadableStream({
                 async start(controller) {
                         try {
-                                await executeStream(controller, encoder, events, data);
+                                await executeStream(controller, encoder, events, data, abortController);
                         } catch (error) {
-                                console.error(error);
+                                if (typeof error === 'object' && error !== null && 'name' in error && error.name === 'AbortError') {
+                                        // Handle cancellation
+                                }
+                                controller.close();
                         }
                 },
+                cancel() {
+                        // Called when the stream is cancelled
+                        abortController.abort();
+                }
         });
 
         return new Response(stream, { headers: SSE_HEADERS });
@@ -79,30 +96,35 @@ async function executeStream(
         controller: StreamController,
         encoder: TextEncoder,
         events: AgentGraphEvents,
-        data: CompletionRequestType
+        data: CompletionRequestType,
+        abortController: AbortController
 ) {
+        try {
+                const graph = await getGraph(data.mode, data, events, controller, encoder, abortController);
 
+                events.on('event', event => {
+                        sendMessage(controller, encoder, {
+                                threadId: data.threadId,
+                                threadItemId: data.threadItemId,
+                                parentThreadItemId: data.parentThreadItemId,
+                                type: 'event',
+                                ...event,
+                        });
 
-
-
-        const graph = await getGraph(data.mode, data, events, controller, encoder);
-
-        events.on('event', event => {
-                sendMessage(controller, encoder, {
-                        threadId: data.threadId,
-                        threadItemId: data.threadItemId,
-                        parentThreadItemId: data.parentThreadItemId,
-                        type: 'event',
-                        ...event,
+                        if (event.status === 'error') {
+                                sendMessage(controller, encoder, { type: 'done', status: 'error' });
+                                controller.close();
+                        }
                 });
 
-                if (event.status === 'error') {
-                        controller.close();
-                }
-        });
-
-        const result = await graph.execute('initiator', data.prompt);
-        controller.close();
+                const result = await graph.execute('initiator', data.prompt);
+                sendMessage(controller, encoder, { type: 'done', status: 'complete' });
+                controller.close();
+        } catch (error) {
+                sendMessage(controller, encoder, { type: 'done', status: 'error', error: String(error) });
+                controller.close();
+                throw error;
+        }
 }
 
 function sendMessage(
@@ -116,7 +138,8 @@ function sendMessage(
 
 async function getGraph(mode: CompletionMode, completionRequest: CompletionRequestType, events: AgentGraphEvents,
         controller: StreamController,
-        encoder: TextEncoder
+        encoder: TextEncoder,
+        abortController: AbortController
 ) {
 
         const contextManager = new AgentContextManager({
@@ -145,13 +168,13 @@ async function getGraph(mode: CompletionMode, completionRequest: CompletionReque
 
         switch (mode) {
                 case CompletionMode.Fast:
-                        return fastSearchWorkflow(events, contextManager, stateManager);
+                        return fastSearchWorkflow(events, contextManager, stateManager, abortController);
                 case CompletionMode.Deep:
-                        return deepResearchWorkflow(events, contextManager, stateManager);
+                        return deepResearchWorkflow(events, contextManager, stateManager, abortController);
                 case CompletionMode.GPT_4o_Mini:
-                        return completion(ModelEnum.GPT_4o_Mini, events, contextManager, stateManager);
+                        return completion(ModelEnum.GPT_4o_Mini, events, contextManager, stateManager, abortController);
                 case CompletionMode.GEMINI_2_FLASH:
-                        return completion(ModelEnum.GEMINI_2_FLASH, events, contextManager, stateManager);
+                        return completion(ModelEnum.GEMINI_2_FLASH, events, contextManager, stateManager, abortController);
                 default:
                         throw new Error(`Unsupported completion mode: ${mode}`);
         }

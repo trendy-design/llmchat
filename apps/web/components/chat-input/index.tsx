@@ -28,6 +28,7 @@ export const ChatInput = () => {
   const chatMode = useChatStore(state => state.chatMode);
   const [responseNodesMap] = useState(() => new Map<string, Map<string, Block>>());
   const setCurrentSources = useChatStore(state => state.setCurrentSources);
+  const abortController = useChatStore(state => state.abortController);
   const handleSubmit = (formData: FormData) => {
     const optimisticUserThreadItemId = nanoid();
     const optimisticAiThreadItemId = nanoid();
@@ -94,7 +95,7 @@ export const ChatInput = () => {
     formData.append('query', editor.getText());
     handleSubmit(formData);
     editor.commands.clearContent();
-  }, [editor, currentThreadId, model, chatMode]);
+  }, [editor, currentThreadId, model, chatMode, abortController]);
 
   const renderChatInput = () => (
     <div className=" w-full">
