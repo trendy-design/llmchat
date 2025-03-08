@@ -152,7 +152,8 @@ initLogger({
         input: message,
         metadata: {
           startNodeId,
-        }
+        },
+        tags: [process.env.NODE_ENV || "development"]
       })
 
       const responses: MessageResponse[] = [];
@@ -165,7 +166,11 @@ initLogger({
       return responses;
       },{
         name:this.name,
-        type:"task"
+        type:"task",
+        spanAttributes:{
+          env:process.env.NODE_ENV || "development"
+        }
+        
       })
     }
 
@@ -348,7 +353,8 @@ initLogger({
           metadata: {
             nodeKey,
             nodeId,
-          }
+          },
+          tags: [process.env.NODE_ENV || "development"]
         })
 
 
@@ -387,6 +393,7 @@ initLogger({
       }
     },{
       name:nodeKey,
+
       type:"llm"
     })
       
