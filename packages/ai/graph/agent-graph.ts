@@ -312,7 +312,7 @@ initLogger({
       type: 'text' | 'object';
       history?: LLMMessageType[];
     }): Promise<string> {
-      return traced(async (span)=>{
+
       if (this.abortController.signal.aborted) {
         throw new Error('Execution aborted');
       }
@@ -347,16 +347,6 @@ initLogger({
           finalResponse = await this.generateObject({ nodeId, nodeKey, node, userMessage: message, history });
         }
 
-        span.log({
-          input: message,
-          output: finalResponse,
-          metadata: {
-            nodeKey,
-            nodeId,
-            history: history,
-            systemPrompt: this.getSystemPrompt(node),
-          }
-                })
 
 
         node.completeExecution(finalResponse);
@@ -392,11 +382,6 @@ initLogger({
         console.log('node-error', node.name, 'nodeKey', nodeKey, 'nodeId', nodeId);
         throw error;
       }
-    },{
-      name:nodeKey,
-
-      type:"llm"
-    })
       
     }
 
@@ -414,6 +399,7 @@ initLogger({
       history?: LLMMessageType[];
     }): Promise<string> {
  
+      return traced(async (span)=>{
       try {
         if (this.abortController.signal.aborted) {
           throw new Error('Execution aborted');
@@ -495,6 +481,16 @@ initLogger({
               break;
           }
 
+
+        span.log({
+          input: userMessage,
+          output: fullResponse,
+          metadata: {
+            nodeKey,
+            nodeId,
+            messages: completeMessages,
+          }
+        }) 
           console.log('fullResponse', toolResultsMap);
           fullResponse = this.sanitizeResponse(fullResponse);
 
@@ -568,6 +564,10 @@ initLogger({
         console.log('error', error);
         throw error;
       }
+      },{
+        name:nodeKey,
+        type:"llm"
+      })
   
     }
 
