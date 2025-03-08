@@ -353,6 +353,8 @@ initLogger({
           metadata: {
             nodeKey,
             nodeId,
+            history: history,
+            systemPrompt: this.getSystemPrompt(node),
           }
                 })
 
