@@ -154,7 +154,7 @@ initLogger({
           startNodeId,
         },
         tags: [process.env.NODE_ENV || "development"]
-      })
+        })
 
       const responses: MessageResponse[] = [];
       await this.executeNode(startNodeId, message, [], responses);
@@ -353,9 +353,8 @@ initLogger({
           metadata: {
             nodeKey,
             nodeId,
-          },
-          tags: [process.env.NODE_ENV || "development"]
-        })
+          }
+                })
 
 
         node.completeExecution(finalResponse);
