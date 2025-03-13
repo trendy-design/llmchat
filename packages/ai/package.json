@@ -24,6 +24,7 @@
     "braintrust": "^0.0.187",
     "dotenv": "^16.4.5",
     "json-schema-to-zod": "^2.6.0",
+    "langfuse": "^3.36.0",
     "openai": "^4.24.1",
     "together-ai": "^0.13.0",
     "uuid": "^11.0.5",
