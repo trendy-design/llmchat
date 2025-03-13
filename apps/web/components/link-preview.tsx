@@ -1,6 +1,5 @@
 'use client';
 
-import { Popover, PopoverContent, PopoverTrigger } from '@repo/ui';
 import Image from 'next/image';
 import React, { memo, useMemo, useState } from 'react';
 
@@ -20,23 +19,24 @@ export const LinkPreviewPopover = ({ url, children }: LinkPreviewType) => {
 
   const handleMouseEnter = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
+  return <>{children}</>
 
-  return (
-    <Popover open={isHovered} onOpenChange={setIsHovered}>
-      <PopoverTrigger 
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        onClick={e => e.preventDefault()} 
-        asChild
-        className='cursor-pointer'
-      >
-        {children}
-      </PopoverTrigger>
-      <PopoverContent className='z-[10] bg-background p-0'>
-        <LinkPreview url={url} />
-      </PopoverContent>
-    </Popover>
-  );
+  // return (
+  //   <Popover open={isHovered} onOpenChange={setIsHovered}>
+  //     <PopoverTrigger 
+  //       onMouseEnter={handleMouseEnter}
+  //       onMouseLeave={handleMouseLeave}
+  //       onClick={e => e.preventDefault()} 
+  //       asChild
+  //       className='cursor-pointer'
+  //     >
+  //       {children}
+  //     </PopoverTrigger>
+  //     <PopoverContent className='z-[10] bg-background p-0'>
+  //       <LinkPreview url={url} />
+  //     </PopoverContent>
+  //   </Popover>
+  // );
 };
 
 export const LinkPreview = memo(({ url }: { url: string }) => {
@@ -103,6 +103,8 @@ export const LinkPreview = memo(({ url }: { url: string }) => {
       </div>
     );
   }
+
+
 
   return (
     <div>

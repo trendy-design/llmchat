@@ -1,6 +1,6 @@
 import { useAgentStream } from '@/hooks/use-agent';
 import { useChatEditor, useImageAttachment } from '@/lib/hooks';
-import { Block, ThreadItem, useChatStore } from '@/libs/store/chat.store';
+import { ThreadItem, useChatStore } from '@/libs/store/chat.store';
 import { cn, slideUpVariant } from '@repo/shared/utils';
 import { Flex } from '@repo/ui';
 import { motion } from 'framer-motion';
@@ -26,7 +26,7 @@ export const ChatInput = () => {
   const updateThread = useChatStore(state => state.updateThread);
   const model = useChatStore(state => state.model);
   const chatMode = useChatStore(state => state.chatMode);
-  const [responseNodesMap] = useState(() => new Map<string, Map<string, Block>>());
+  const [responseNodesMap] = useState(() => new Map<string, Map<string, ThreadItem>>());
   const setCurrentSources = useChatStore(state => state.setCurrentSources);
   const abortController = useChatStore(state => state.abortController);
   const handleSubmit = (formData: FormData) => {
@@ -41,38 +41,20 @@ export const ChatInput = () => {
     }
 
     // Clear previous nodes for this thread item
-    responseNodesMap.set(optimisticAiThreadItemId, new Map<string, Block>());
+    responseNodesMap.set(optimisticAiThreadItemId, new Map<string, ThreadItem>());
 
-    const userThreadItem: ThreadItem = {
-      id: optimisticUserThreadItemId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      role: 'user' as const,
-      content: [
-        {
-          id: optimisticUserThreadItemId,
-          content: formData.get('query') as string,
-          nodeKey: optimisticUserThreadItemId,
-          contentType: 'text',
-        },
-      ],
-      status: 'completed' as const,
-      threadId: currentThreadId || 'default',
-    };
 
     const aiThreadItem: ThreadItem = {
       id: optimisticAiThreadItemId,
       createdAt: new Date(),
       updatedAt: new Date(),
-      role: 'assistant' as const,
-      content: [],
-      status: 'pending' as const,
+      status: 'PENDING' as const,
       threadId: currentThreadId || 'default',
+      query: formData.get('query') as string,
     };
 
-    createThreadItem(userThreadItem);
     createThreadItem(aiThreadItem);
-    setCurrentThreadItem(userThreadItem);
+    setCurrentThreadItem(aiThreadItem);
     setIsGenerating(true);
     setCurrentSources([]);
 

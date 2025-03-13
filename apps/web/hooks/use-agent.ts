@@ -1,5 +1,5 @@
 import { CompletionRequestType } from '@/app/completion/route';
-import { Block, useChatStore } from '@/libs/store/chat.store';
+import { Goal, Step, useChatStore } from '@/libs/store/chat.store';
 
 export const useAgentStream = () => {
   const updateThreadItem = useChatStore(state => state.updateThreadItem);
@@ -7,8 +7,7 @@ export const useAgentStream = () => {
   const setAbortController = useChatStore(state => state.setAbortController);
 
   const runAgent = async (body: CompletionRequestType) => {
-    const nodes = new Map<string, Block>();
-    const contentBuffer = new Map<string, string>();
+
     const abortController = new AbortController();
     setAbortController(abortController);
     if(!abortController) {
@@ -53,13 +52,24 @@ export const useAgentStream = () => {
             try {
               const data = JSON.parse(line.slice(6));
 
-              if (data.type === "event") {
-                updateEvent(data, nodes, contentBuffer);
-              } else if (data.type === "context") {
-                updateContext(data);
-              }
-              else if (data.type === "done") {
-                setIsGenerating(false);
+              if (data.type === "message") {
+
+                console.log("data", data)
+                // Convert goals and steps from objects to arrays for the store
+                const goalsArray = data.goals ? Object.values(data.goals) : [];
+                const stepsArray = data.steps ? Object.values(data.steps) : [];
+                
+                updateThreadItem({
+                  id: data?.threadItemId,
+                  parentId: data?.parentThreadItemId,
+                  threadId: data?.threadId,
+                  goals: goalsArray as Goal[],
+                  steps: stepsArray as Step[],
+                  answer: data?.answer,
+                  final: data?.final,
+                  status: data?.status,
+                  query: data?.query
+                });
               }
             } catch (e) {
               console.error('Error parsing SSE data:', e, 'Line:', line);
@@ -73,52 +83,6 @@ export const useAgentStream = () => {
     }
   };
 
-  const updateEvent = (data: any, nodes: Map<string, Block>, contentBuffer: Map<string, string>) => {
-    if (!!data.nodeId) {
-      const existingNode = nodes.get(data.nodeId);
-      if (!existingNode) {
-        contentBuffer.clear();
-      }
-      
-      const existingContent = contentBuffer.get(data.nodeId) || '';
-      const mergedContent = existingContent + (data.chunk || '');
-      contentBuffer.set(data.nodeId, mergedContent);
-
-      console.log("chunkType",  data.chunkType)
-
-      if (data.chunkType === "text") {
-        nodes.set(data.nodeId, {
-          ...data,
-          content: mergedContent,
-        });
-      } 
-      else if (data.chunkType === "object") {
-        try {
-          const object = JSON.parse(data.chunk);
-          nodes.set(data.nodeId, {
-            ...data,
-            object: object,
-          });
-        } catch (e) {
-          console.error('Error parsing object:', e, 'Content:', mergedContent);
-        }
-      }
-      else if (data.chunkType === "reasoning") {
-        nodes.set(data.nodeId, {
-          ...data,
-          nodeReasoning: mergedContent,
-        });
-      }
-    }
-    updateThreadItem({
-      id: data.threadItemId,
-      parentId: data.parentThreadItemId,
-      threadId: data.threadId,
-      content: Array.from(nodes.values()),
-      status: data.status as 'pending' | 'completed' | 'error',
-      updatedAt: data.updatedAt ? new Date(data.updatedAt) : undefined,
-    });
-  }
 
   const updateContext = (data: any) => {
     console.log("updateContext", data)

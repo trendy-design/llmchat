@@ -1,12 +1,11 @@
 'use client';
 import { getHost, getHostname } from '@/utils/url';
-import { Flex, Popover, PopoverContent, PopoverTrigger, Type } from '@repo/ui';
+import { Flex, Type } from '@repo/ui';
 import { LinkFavicon } from './link-favicon';
 import { LinkPreviewPopover } from './link-preview';
 
 export type SearchResultType = {
   title: string;
-  snippet: string;
   link: string;
 };
 export type SearchResultsType = {
@@ -53,7 +52,7 @@ export const SearchResultsList = ({ results }: SearchResultsType) => {
               </LinkPreviewPopover>
             </Flex>
           ))}
-          {remainingCount > 0 && (
+          {/* {remainingCount > 0 && (
             <Popover>
               <PopoverTrigger>
                 <Flex
@@ -79,7 +78,7 @@ export const SearchResultsList = ({ results }: SearchResultsType) => {
                   ))}
                 </Flex>
               </PopoverContent>
-            </Popover>)}
+            </Popover>)} */}
         </Flex>
       )}
     </Flex>

@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from './popover';
 
 export type LinkPreviewType = {
   url: string;
@@ -26,18 +25,20 @@ export const LinkPreview = ({ url, children }: LinkPreviewType) => {
     setIsHovered(false);
   }
 
-  return <Popover open={isHovered} onOpenChange={setIsHovered}>
-    <PopoverTrigger onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={e => {
-        e.preventDefault();
-      }} asChild>
-      {children}
-    </PopoverTrigger>
-    <PopoverContent className='z-[10] bg-background p-0'>
-      <WebsitePreview url={url} />
-    </PopoverContent>
-  </Popover>
+  return <>{children}</>
+
+  // return <Popover open={isHovered} onOpenChange={setIsHovered}>
+  //   <PopoverTrigger onMouseEnter={handleMouseEnter}
+  //     onMouseLeave={handleMouseLeave}
+  //     onClick={e => {
+  //       e.preventDefault();
+  //     }} asChild>
+  //     {children}
+  //   </PopoverTrigger>
+  //   <PopoverContent className='z-[10] bg-background p-0'>
+  //     <WebsitePreview url={url} />
+  //   </PopoverContent>
+  // </Popover>
 };
 
 // Add this cache outside the component

@@ -71,6 +71,31 @@ export const getWebPageContent = async (url: string) => {
   }
 };
 
+export const executeWebSearch = async (queries: string[]) => {
+  const webSearchResults = await Promise.all(queries.map(async (query) => {
+    const result = await getSERPResults([query]);
+    return result.slice(0, 5);
+  }));
+
+  const uniqueWebSearchResults = webSearchResults.flat().filter((result, index, self) =>
+    index === self.findIndex((t) => t.link === result.link)
+  )
+
+
+  const webPageContents = await Promise.all(uniqueWebSearchResults.map(async (result) => {
+    const content = await getWebPageContent(result.link);
+
+    return {
+      title: result.title,
+      link: result.link,
+
+      content,
+    };
+  }));
+
+  return webPageContents;
+}
+
 
 
 

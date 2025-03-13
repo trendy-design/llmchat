@@ -1,14 +1,11 @@
 import {
-        AgentContextManager,
         AgentEventPayload,
-        AgentGraphEvents,
-        GraphStateManager,
-        LLMMessageSchema,
+        deepResearchWorkflow,
+        LLMMessageSchema
 } from '@repo/ai';
-import { ModelEnum } from '@repo/ai/models';
-import { completion, deepResearchWorkflow, fastSearchWorkflow } from '@repo/workflows';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
+
 
 enum CompletionMode {
         Fast = "fast",
@@ -24,6 +21,7 @@ const completionRequestSchema = z.object({
         prompt: z.string(),
         messages: z.array(LLMMessageSchema),
         mode: z.nativeEnum(CompletionMode),
+        maxIterations: z.number().optional(),
 });
 
 export type CompletionRequestType = z.infer<typeof completionRequestSchema>;
@@ -60,31 +58,29 @@ export async function POST(request: NextRequest) {
 
         const { data } = validatedBody;
         const encoder = new TextEncoder();
-        const events = new AgentGraphEvents();
 
         // Backend AbortController
         const abortController = new AbortController();
-        const { signal } = abortController;
 
         // Connect frontend abort signal to backend
         request.signal.addEventListener('abort', () => {
-                console.log('Aborting request');
                 abortController.abort();
         });
 
         const stream = new ReadableStream({
                 async start(controller) {
                         try {
-                                await executeStream(controller, encoder, events, data, abortController);
+                                await executeStream(controller, encoder, data, abortController);
                         } catch (error) {
                                 if (typeof error === 'object' && error !== null && 'name' in error && error.name === 'AbortError') {
-                                        // Handle cancellation
+                                        sendMessage(controller, encoder, { type: 'done', status: 'aborted' });
+                                } else {
+                                        sendMessage(controller, encoder, { type: 'done', status: 'error', error: String(error) });
                                 }
                                 controller.close();
                         }
                 },
                 cancel() {
-                        // Called when the stream is cancelled
                         abortController.abort();
                 }
         });
@@ -95,33 +91,68 @@ export async function POST(request: NextRequest) {
 async function executeStream(
         controller: StreamController,
         encoder: TextEncoder,
-        events: AgentGraphEvents,
         data: CompletionRequestType,
         abortController: AbortController
 ) {
         try {
-                const graph = await getGraph(data.mode, data, events, controller, encoder, abortController);
-
-                events.on('event', event => {
-                        sendMessage(controller, encoder, {
-                                threadId: data.threadId,
-                                threadItemId: data.threadItemId,
-                                parentThreadItemId: data.parentThreadItemId,
-                                type: 'event',
-                                ...event,
-                        });
-
-                        if (event.status === 'error') {
-                                sendMessage(controller, encoder, { type: 'done', status: 'error' });
-                                controller.close();
+                const { signal } = abortController;
+                const workflow = deepResearchWorkflow({
+                        question: data.prompt,
+                        threadId: data.threadId,
+                        threadItemId: data.threadItemId,
+                        config: {
+                                maxIterations: data.maxIterations || 3
                         }
                 });
 
-                const result = await graph.execute('initiator', data.prompt);
-                sendMessage(controller, encoder, { type: 'done', status: 'complete' });
+                workflow.on('flow', (payload) => {
+                        console.log("event",payload);
+                        
+                        sendMessage(controller, encoder, { 
+                                type: "message", 
+                                threadId: data.threadId,
+                                threadItemId: data.threadItemId,
+                                parentThreadItemId: data.parentThreadItemId,
+                                ...payload 
+                        });
+                });
+
+                // start should be typed
+
+                const result = await workflow.start('initiator', {
+                        question: data.prompt
+                });
+
+                sendMessage(controller, encoder, { 
+                        type: 'done', 
+                        status: 'complete',
+                        threadId: data.threadId,
+                        threadItemId: data.threadItemId,
+                        parentThreadItemId: data.parentThreadItemId,
+                        result 
+                });
+                
                 controller.close();
+                return result;
         } catch (error) {
-                sendMessage(controller, encoder, { type: 'done', status: 'error', error: String(error) });
+                if (abortController.signal.aborted) {
+                        sendMessage(controller, encoder, { 
+                                type: 'done', 
+                                status: 'aborted',
+                                threadId: data.threadId,
+                                threadItemId: data.threadItemId,
+                                parentThreadItemId: data.parentThreadItemId
+                        });
+                } else {
+                        sendMessage(controller, encoder, { 
+                                type: 'done', 
+                                status: 'error', 
+                                error: String(error),
+                                threadId: data.threadId,
+                                threadItemId: data.threadItemId,
+                                parentThreadItemId: data.parentThreadItemId
+                        });
+                }
                 controller.close();
                 throw error;
         }
@@ -136,46 +167,4 @@ function sendMessage(
         controller.enqueue(encoder.encode(message));
 }
 
-async function getGraph(mode: CompletionMode, completionRequest: CompletionRequestType, events: AgentGraphEvents,
-        controller: StreamController,
-        encoder: TextEncoder,
-        abortController: AbortController
-) {
 
-        const contextManager = new AgentContextManager({
-                initialContext: {
-                        history: completionRequest.messages,
-                },
-                onContextUpdate: (context) => {
-                        if (context.webSearchResults) {
-                                sendMessage(controller, encoder, {
-                                        threadId: completionRequest.threadId,
-                                        threadItemId: completionRequest.threadItemId,
-                                        parentThreadItemId: completionRequest.parentThreadItemId,
-                                        type: "context",
-                                        context: {
-                                                searchResults: context.webSearchResults,
-                                        },
-
-                                });
-                        }
-                },
-        });
-        const stateManager = new GraphStateManager({
-                onStateUpdate: (state) => {
-                },
-        });
-
-        switch (mode) {
-                case CompletionMode.Fast:
-                        return fastSearchWorkflow(events, contextManager, stateManager, abortController);
-                case CompletionMode.Deep:
-                        return deepResearchWorkflow(events, contextManager, stateManager, abortController);
-                case CompletionMode.GPT_4o_Mini:
-                        return completion(ModelEnum.GPT_4o_Mini, events, contextManager, stateManager, abortController);
-                case CompletionMode.GEMINI_2_FLASH:
-                        return completion(ModelEnum.GEMINI_2_FLASH, events, contextManager, stateManager, abortController);
-                default:
-                        throw new Error(`Unsupported completion mode: ${mode}`);
-        }
-}

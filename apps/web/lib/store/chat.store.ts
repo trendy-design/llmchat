@@ -1,6 +1,5 @@
 'use client';
 
-import { AgentEventPayload } from '@repo/ai';
 import { Model, models } from '@repo/ai/models';
 import Dexie, { Table } from 'dexie';
 import { nanoid } from 'nanoid';
@@ -21,35 +20,60 @@ export type Thread = {
   updatedAt: Date;
 };
 
-export type Block = {
+export type ItemStatus = 'PENDING' | 'COMPLETED' | 'ERROR';
+
+export type Goal = {
   id: string;
-  nodeKey: string;
-  content: string;
-  contentType: 'text' | 'object';
-  object?: any;
-  toolCalls?: AgentEventPayload['toolCalls'];
-  toolCallResults?: AgentEventPayload['toolCallResults'];
-  nodeStatus?: 'pending' | 'completed' | 'error';
-  tokenUsage?: number;
-  history?: AgentEventPayload['history'];
-  nodeInput?: string;
-  sources?: string[];
-  nodeModel?: string;
-  nodeReasoning?: string;
-  isStep?: boolean;
-  nodeError?: string;
-};
+  text: string;
+  final: boolean;
+  status?: ItemStatus;
+}
+
+export type Source = {
+  title: string;
+  link: string;
+  index: number;
+}
+
+
+
+
+export type Step = {
+  type: 'search' | 'read';
+  queries?: string[];
+  goalId: string;
+  final: boolean;
+  results?: Array<{
+    title: string;
+    link: string;
+  }>;
+}
+
+export type GoalWithSteps = Goal & {
+  steps: Step[];
+}
+
+export type Answer = {
+  text: string;
+  final: boolean;
+  status?: ItemStatus;
+}
 
 export type ThreadItem = {
-  role: 'user' | 'assistant';
-  content: Block[];
+  query: string;
+  goals?: Goal[];
+  steps?: Step[];
+  answer?: Answer;
+  sources?: Source[];
+  final?: boolean;
+  status?: ItemStatus;
   createdAt: Date;
-  status: 'pending' | 'completed' | 'error';
   updatedAt: Date;
   id: string;
   parentId?: string;
   threadId: string;
   metadata?: Record<string, any>;
+
 };
 
 export type MessageGroup = {
@@ -98,8 +122,6 @@ const loadInitialData = async () => {
   };
 };
 
-
-
 type State = {
   model: Model;
   isGenerating: boolean;
@@ -136,7 +158,6 @@ type Actions = {
   getThreadItems: (threadId: string) => ThreadItem[];
   getCurrentThread: () => Thread | null;
   loadThreadItems: (threadId: string) => Promise<void>;
-  getMessageGroups: (threadId: string) => MessageGroup[];
   setCurrentThreadItem: (threadItem: ThreadItem) => void;
   clearAllThreads: () => void;
   setCurrentSources: (sources: string[]) => void;
@@ -417,7 +438,6 @@ export const useChatStore = create(
       return state.threadItems
         .filter(item => item.threadId === threadId)
         .sort((a, b) => {
-          if (a.role !== b.role) return a.role === 'user' ? -1 : 1;
           return a.createdAt.getTime() - b.createdAt.getTime();
         });
     },
@@ -425,19 +445,6 @@ export const useChatStore = create(
     getCurrentThread: () => {
       const state = get();
       return state.threads.find(t => t.id === state.currentThreadId) || null;
-    },
-
-    getMessageGroups: (threadId: string) => {
-      const threadItems = get().getThreadItems(threadId);
-      const assistantMsgs = threadItems.filter(item => item.role === 'assistant');
-      const userMsgs = threadItems.filter(item => item.role === 'user');
-
-      return userMsgs.map(userMessage => ({
-        userMessage,
-        assistantMessages: assistantMsgs.filter(
-          assistantMsg => assistantMsg.parentId === userMessage.id
-        ),
-      }));
     },
   }))
 );

@@ -1,13 +1,13 @@
-import { Block } from '@/libs/store/chat.store';
+import { ItemStatus } from '@/libs/store/chat.store';
 import { IconCircleCheckFilled, IconCircleDashed, IconCircleDashedX } from '@tabler/icons-react';
 
-export const StepStatus = ({ status }: { status: Block['nodeStatus'] }) => {
+export const StepStatus = ({ status }: { status: ItemStatus }) => {
   switch (status) {
-    case 'pending':
+    case 'PENDING':
       return <SpinnerIcon size={16} className="text-brand size-4 shrink-0 animate-spin" />;
-    case 'completed':
+    case 'COMPLETED':
       return <IconCircleCheckFilled className="text-brand size-4 shrink-0" />;
-    case 'error':
+    case 'ERROR':
       return <IconCircleDashedX className="text-tertiary size-4 shrink-0" />;
     default:
       return <IconCircleDashed className="text-tertiary size-4 shrink-0" strokeWidth={1} />;
