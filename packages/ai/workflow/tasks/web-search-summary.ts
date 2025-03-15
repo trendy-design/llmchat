@@ -2,6 +2,7 @@ import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
 import { generateText } from '../utils';
+import {format} from 'date-fns';
 
 export const webSearchSummaryTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'web-search-summary',
@@ -11,13 +12,32 @@ export const webSearchSummaryTask = createTask<WorkflowEventSchema, WorkflowCont
                 const currentGoal = data.goal;
                 const lastStep = data.step;
                 const webResults = data.webSearchResults;
+                const currentDate = new Date();
+                const humanizedDate = format(currentDate, "MMMM dd, yyyy, h:mm a");
+                const question = context?.get('question') || '';
 
                 const prompt = `
-    You are a smart summarizer. Your role is to summarize the web search results.
+                        Role: You are a Content Synthesizer Assistant. Helping to sythesize only relevant content to the user question
 
-    **Web Search Results**
-    ${webResults?.map((result: any) => `- ${result.title}\n- ${result.content}`).join('\n')}
-    `;
+                        The current date and time is: **${humanizedDate}**. Use this to ensure your reasoning and search queries are up to date with the latest information.
+
+                        <user_question>
+                        ${question}
+                        </user_question>
+
+                        **Web Search Results**
+                        ${webResults?.map((result: any) => `- ${result.title}\n- ${result.content}`).join('\n')}
+
+                        <writing_rules>
+                        - Write content in continuous paragraphs using varied sentence lengths for engaging prose; avoid list formatting
+                        - Use prose and paragraphs by default; only employ lists when explicitly requested by users
+                        - All writing must be highly detailed with a minimum length of several thousand words, unless user explicitly specifies length or format requirements
+                        - When writing based on references, actively cite original text with sources and provide a reference list with URLs at the end
+                        - For lengthy documents, first save each section as separate draft files, then append them sequentially to create the final document
+                        - During final compilation, no content should be reduced or summarized; the final length must exceed the sum of all individual draft files
+                        </writing_rules>
+
+                `;
 
                 const summary = await generateText({
                         prompt,
@@ -48,7 +68,7 @@ export const webSearchSummaryTask = createTask<WorkflowEventSchema, WorkflowCont
 
                 trace?.span({
                         name: 'web-search-summary',
-                        input: webResults,
+                        input: prompt,
                         output: summary,
                         metadata: {
                                 webResults,
@@ -63,7 +83,7 @@ export const webSearchSummaryTask = createTask<WorkflowEventSchema, WorkflowCont
         },
         route: ({ executionContext, config }) => {
                 const maxIterations = config?.maxIterations || 3;
-                if (executionContext.getTaskExecutionCount('web-search-summary') >= Math.floor(maxIterations / 2)) {
+                if (executionContext.getTaskExecutionCount('web-search-summary') >= 5) {
                         return 'final-answer';
                 }
                 return 'reflector';

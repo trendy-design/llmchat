@@ -3,32 +3,52 @@ import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
 import { generateObject } from '../utils';
+import {format} from 'date-fns';
 
 export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
   name: 'reflector',
-  execute: async ({ trace, data, events, context }) => {
+  execute: async ({ trace, data, events, context, executionContext, config }) => {
     console.log('reflector');
 
     const currentGoal = data.goal;
     const lastStep = data.lastStep;
     const summary = data.summary;
+
     const question =    context?.get('question') || '';
+    const search_queries = context?.get('search_queries');
+    const summaries = context?.get('summaries');
+    const current_iteration = executionContext.getTaskExecutionCount('reflector');
+    const max_iteration = config?.maxIterations || 5;
+    const currentDate = new Date();
+    const humanizedDate = format(currentDate, "MMMM dd, yyyy, h:mm a");
 
     const prompt = `
-    You are a smart reflector. Your role is to reflect on the last finding and provide reasoning on what you discovered and what area further needs to be explored in order comperehensively answer the query.
+      You are a smart reflector. Your role is to reflect on the last finding and provide reasoning on what you discovered and what area further needs to be explored in order comperehensively answer the query.
 
-    <query>
-    ${question}
-    </query>
+      The current date and time is: **${humanizedDate}**. Use this to ensure your reasoning and search queries are up to date with the latest information.
 
-    <last-finding>
-    ${summary}
-    </last-finding>
 
-    **Output Guidelines**
-    - Ouput JSON with the following fields:
-    - Reasoning: your plan of action in 2-3 sentences like you're talking to user.
-    - Queries: array of queries to perform web search on max 2 queries.
+      <user_question>
+      ${question}
+      </user_question>
+
+      <existing_findings>
+        <already_performed_searches>
+        ${search_queries}
+        </already_performed_searches>
+        <searched_results>
+          ${summaries}
+        </searched_results>
+      </existing_finding>
+
+      **Instructions**
+      - This prompt is used as part of a iterative search (current iteration: ${current_iteration}/${max_iteration}) & reflection step of a deep research ai agent, you will see existing findings under <existing_findings> section.
+      - Your goal should be to act as an investigator on behalf of the user question, reason for what should be investigated in next iteration & curate new unique search queries which has not been searched before.
+      - The new search queries should be your best bet to know more information to answer user questions, so it should be created with a focus by the  user_question + content which has already been searched + remaining iteration. 
+      - The search queries should be short and it should use advanced search techniques.
+      - Reasoning: your plan of action in 2-3 sentences like you're talking to user.
+      - Queries: array of queries to perform web search on max 2 queries.
+
     `;
 
     events?.update('flow', (current) => ({
@@ -73,7 +93,7 @@ export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSche
 
     trace?.span({ 
       name: 'reflector', 
-      input: question, 
+      input: prompt, 
       output: object, 
       metadata: context?.getAll() 
     });
@@ -81,6 +101,10 @@ export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSche
     // Update typed context with new goal and step
     context?.update('goals', (current = []) => [...current, newGoal]);
     context?.update('steps', (current = []) => [...current, newStep]);
+    context?.update('search_queries', (current = []) => [
+      ...current,
+      ...(object.queries || [])
+    ]);
 
     // Update flow event with new goal and step
     events?.update('flow', (current) => {
@@ -104,7 +128,7 @@ export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSche
   },
   route: ({ result, executionContext, config }) => {
     const maxIterations = config?.maxIterations || 3;
-    if (executionContext.getTaskExecutionCount('reflector') >= maxIterations) {
+    if (executionContext.getTaskExecutionCount('reflector') >= 5) {
       return 'final-answer';
     }
     return 'web-search';

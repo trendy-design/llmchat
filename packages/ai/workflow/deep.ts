@@ -46,6 +46,7 @@ export type WorkflowEventSchema = {
 // Define the context schema type
 export type WorkflowContextSchema = {
         question: z.ZodString;
+        search_queries: z.ZodArray<z.ZodString>;
         goals: z.ZodArray<z.ZodObject<{
                 id: z.ZodNumber;
                 text: z.ZodString;
@@ -103,6 +104,7 @@ const workflowEventSchemas = {
 // Define your context schemas
 const workflowContextSchemas = {
         question: z.string(),
+        search_queries: z.array(z.string()),
         goals: z.array(z.object({
                 id: z.number(),
                 text: z.string(),
@@ -149,7 +151,7 @@ export const deepResearchWorkflow = ({
 
         // Set default values for config
         const workflowConfig: WorkflowConfig = {
-                maxIterations: 3,
+                maxIterations: 5,
                 ...config
         };
 
@@ -173,6 +175,7 @@ export const deepResearchWorkflow = ({
         // Create typed context with the proper type
         const context = createContext<WorkflowContextSchema>(workflowContextSchemas, {
                 question,
+                search_queries: [],
                 goals: [],
                 steps: [],
                 summaries: [],

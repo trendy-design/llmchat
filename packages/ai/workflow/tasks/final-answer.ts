@@ -34,7 +34,7 @@ export const finalAnswerTask = createTask<WorkflowEventSchema, WorkflowContextSc
 
     const answer = await generateText({
       prompt,
-      model: ModelEnum.GPT_4o_Mini,
+      model: ModelEnum.GEMINI_2_FLASH,
       onChunk: (chunk) => {
         events?.update('flow', (current) => ({
           ...current,
@@ -55,7 +55,7 @@ export const finalAnswerTask = createTask<WorkflowEventSchema, WorkflowContextSc
 
     trace?.span({ 
       name: 'final-answer', 
-      input: question, 
+      input: prompt, 
       output: answer, 
       metadata: context?.getAll() 
     });
