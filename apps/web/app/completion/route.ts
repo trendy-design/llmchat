@@ -1,7 +1,6 @@
 import {
         AgentEventPayload,
-        deepResearchWorkflow,
-        LLMMessageSchema
+        deepResearchWorkflow
 } from '@repo/ai';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
@@ -19,7 +18,7 @@ const completionRequestSchema = z.object({
         threadItemId: z.string(),
         parentThreadItemId: z.string(),
         prompt: z.string(),
-        messages: z.array(LLMMessageSchema),
+        messages: z.any(),
         mode: z.nativeEnum(CompletionMode),
         maxIterations: z.number().optional(),
 });
@@ -96,10 +95,12 @@ async function executeStream(
 ) {
         try {
                 const { signal } = abortController;
+                console.log("data",data);
                 const workflow = deepResearchWorkflow({
                         question: data.prompt,
                         threadId: data.threadId,
                         threadItemId: data.threadItemId,
+                        messages: data.messages as any,
                         config: {
                                 maxIterations: data.maxIterations || 3
                         }
@@ -107,7 +108,7 @@ async function executeStream(
 
                 workflow.on('flow', (payload) => {
                         console.log("event",payload);
-                        
+
                         sendMessage(controller, encoder, { 
                                 type: "message", 
                                 threadId: data.threadId,
@@ -119,7 +120,7 @@ async function executeStream(
 
                 // start should be typed
 
-                const result = await workflow.start('initiator', {
+                const result = await workflow.start('planner', {
                         question: data.prompt
                 });
 

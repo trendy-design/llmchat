@@ -31,20 +31,20 @@ export const getSERPResults = async (queries: string[]) => {
     const batchResult = await response.json();
 
     // Map each query's organic results, flatten into a single array, then remove duplicates based on the 'link'.
-    const organicResultsLists = batchResult?.map((result: any) => result.organic?.slice(0, 3)) || [];
+    const organicResultsLists = batchResult?.map((result: any) => result.organic?.slice(0, 10)) || [];
     const allOrganicResults = organicResultsLists.flat();
     const uniqueOrganicResults = allOrganicResults.filter(
       (result: any, index: number, self: any[]) =>
         index === self.findIndex((r: any) => r?.link === result?.link)
     );
 
-    return uniqueOrganicResults.slice(0, 8).map((item: any) => ({ title: item.title, link: item.link, snippet: item.snippet }));
+    return uniqueOrganicResults.slice(0, 10).map((item: any) => ({ title: item.title, link: item.link, snippet: item.snippet }));
   } catch (error) {
     console.error(error);
   }
 };
 
-export const getWebPageContent = async (url: string) => {
+export const  getWebPageContent = async (url: string) => {
   try {
 
     const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/reader`, {
@@ -56,7 +56,7 @@ export const getWebPageContent = async (url: string) => {
     });
     const result = await response.json();
     const title = result?.result?.title ? `# ${result.result.title}\n\n` : '';
-    const description = result?.result?.description ? `${result.result.description}\n\n` : '';
+    const description = result?.result?.description ? `${result.result.description}\n\n ${result.result.content}\n\n` : '';
     const sourceUrl = result?.result?.url
       ? `Source: [${result.result.url}](${result.result.url})\n\n`
       : '';
@@ -74,7 +74,7 @@ export const getWebPageContent = async (url: string) => {
 export const executeWebSearch = async (queries: string[]) => {
   const webSearchResults = await Promise.all(queries.map(async (query) => {
     const result = await getSERPResults([query]);
-    return result.slice(0, 5);
+    return result.slice(0, 10);
   }));
 
   const uniqueWebSearchResults = webSearchResults.flat().filter((result, index, self) =>
@@ -93,7 +93,7 @@ export const executeWebSearch = async (queries: string[]) => {
     };
   }));
 
-  return webPageContents;
+  return webPageContents?.filter((item) => !!item.content).slice(0, 5);
 }
 
 

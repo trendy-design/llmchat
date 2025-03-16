@@ -1,12 +1,13 @@
-import { generateObject as generateObjectAi, streamText } from "ai";
+import { CoreMessage, generateObject as generateObjectAi, streamText } from "ai";
 import { ZodSchema } from "zod";
 import { ModelEnum } from "../models";
 import { getLanguageModel } from "../providers";
 
-export const generateText = async ({ prompt, model, onChunk }: { prompt: string, model: ModelEnum, onChunk?: (chunk: string) => void }) => {
+export const generateText = async ({ prompt, model, onChunk, messages }: { prompt: string, model: ModelEnum, onChunk?: (chunk: string) => void, messages?: CoreMessage[] }) => {
         try {
+
                 const selectedModel = getLanguageModel(model);
-                const { fullStream } = streamText({ prompt, model: selectedModel });
+                const { fullStream } = !!messages?.length ? streamText({ system: prompt, model: selectedModel, messages }) : streamText({ prompt, model: selectedModel });
                 let fullText = ""
                 for await (const chunk of fullStream) {
                         if (chunk.type === 'text-delta') {
@@ -21,10 +22,10 @@ export const generateText = async ({ prompt, model, onChunk }: { prompt: string,
         }
 }
 
-export const generateObject = async ({ prompt, model, schema }: { prompt: string, model: ModelEnum, schema: ZodSchema }) => {
+export const generateObject = async ({ prompt, model, schema, messages }: { prompt: string, model: ModelEnum, schema: ZodSchema, messages?: CoreMessage[] }) => {
         try {
                 const selectedModel = getLanguageModel(model);
-                const { object } = await generateObjectAi({ prompt, model: selectedModel, schema });
+                const { object } = !!messages?.length ? await generateObjectAi({ system: prompt, model: selectedModel, schema, messages }) : await generateObjectAi({ prompt, model: selectedModel, schema });
                 return JSON.parse(JSON.stringify(object));
         } catch (error) {
                 console.error(error);

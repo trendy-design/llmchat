@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
@@ -10,31 +11,54 @@ export const finalAnswerTask = createTask<WorkflowEventSchema, WorkflowContextSc
 
     const question = context?.get('question') || '';
     const summaries = context?.get('summaries') || [];
+    const currentDate = new Date();
+    const humanizedDate = format(currentDate, "MMMM dd, yyyy, h:mm a");
     
     const prompt = `
-    You are a smart final answer. Your role is to provide a final answer to the query.
+You are a Comprehensive Research Analyst tasked with providing an extremely detailed and thorough response to a question about "${question}".
 
-    <query>
-    ${question}
-    </query>
+Your goal is to create a comprehensive report based on the research information provided.
 
-    <summaries>
-    ${summaries.join('\n\n')}
-    </summaries>
+First, carefully read and analyze the following research information:
 
-    **Output Guidelines**
-    - Write comprehensive answer to the query based on the summaries.
+<research_findings>
+${summaries.map((summary) => `<finding>${summary}</finding>`).join('\n')}
+</research_findings>
+
+## Report Requirements:
+
+1. Structure and Organization:
+   - Organize information thematically
+   - Use a consistent hierarchy
+   - Begin with a summary of key developments
+   - End with an analytical conclusion that identifies trends and future implications
+
+2. Content and Analysis:
+   - Provide technical details about capabilities, architectures, and performance metrics
+   - Analyze the significance of each development within the broader industry context
+   - Make connections between related developments across different companies
+   - Maintain an objective, analytical tone throughout
+
+3. Citations and References:
+   - Use numbered inline citations [1], [2], etc. when referencing specific information
+   - Include a comprehensive, numbered reference list at the end with full source URLs
+   - Cite multiple sources when information appears in multiple research summaries
+
+4. Formatting:
+   - Use **bold text** for key figures and key information
+   - Maintain consistent paragraph length and structure
+   - use few unnecessary headings, bullet points, or lists, shouldn't be too many subsections
+   - Use bullet points sparingly and only for truly list-worthy content
+   - Use markdown tables where appropriate
+   - Ensure proper spacing between sections for readability
+
+Your report should demonstrate expert knowledge of the AI field while remaining accessible to informed readers. Focus on providing substantive analysis rather than simply summarizing announcements.
+
     `;
-
-    events?.update('flow', (current) => ({
-      ...current,
-      answer: {text: "", final: false, status: 'PENDING' as const},
-      final: false
-    }));
 
     const answer = await generateText({
       prompt,
-      model: ModelEnum.GEMINI_2_FLASH,
+      model: ModelEnum.Claude_3_7_Sonnet,
       onChunk: (chunk) => {
         events?.update('flow', (current) => ({
           ...current,
@@ -44,8 +68,16 @@ export const finalAnswerTask = createTask<WorkflowEventSchema, WorkflowContextSc
       }
     });
 
+    console.log("Answer", answer);
+
     // Update typed context with the answer
     context?.update('answer', (current = []) => [...current, answer]);
+
+    events?.update('flow', (current) => ({
+      ...current,
+      answer: {text: answer, final: true, status: 'COMPLETED' as const},
+      final: true
+    }));
 
     events?.update('flow', (current) => ({
       ...current,

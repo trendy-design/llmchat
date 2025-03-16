@@ -1,6 +1,9 @@
+import { Readability } from '@mozilla/readability';
+import { JSDOM } from 'jsdom';
 import { NextResponse, type NextRequest } from 'next/server';
 import robotsParser from 'robots-parser';
 import sanitizeHtml from 'sanitize-html';
+
 import TurndownService from 'turndown';
 
 const turndownService = new TurndownService();
@@ -25,7 +28,7 @@ export type TReaderResult = {
 };
 
 const MIN_CONTENT_LENGTH = 500;
-const MAX_CONTENT_LENGTH = 2000;
+const MAX_CONTENT_LENGTH = 10000;
 
 function truncateContent(content: string, maxWords: number): string {
   const words = content.split(/\s+/).filter(Boolean);
@@ -100,7 +103,7 @@ async function isScrapingAllowed(url: string): Promise<boolean> {
       headers: {
         'User-Agent': 'Chaindesk-Reader'
       },
-      signal: AbortSignal.timeout(5000) // 5 second timeout
+      signal: AbortSignal.timeout(20000) // 5 second timeout
     });
     
     if (!response.ok) {
@@ -128,7 +131,15 @@ const fetchWithJina = async (url: string): Promise<TReaderResult> => {
       headers: {
         Authorization: `Bearer ${process.env.JINA_API_KEY}`,
         Accept: 'application/json',
+        'X-Engine': 'browser',
+        'X-Md-Link-Style': 'referenced',
+        'X-No-Cache': 'true',
+        'X-Retain-Images': 'none',
+        'X-Return-Format': 'markdown',
+        'X-Robots-Txt': 'JinaReader',
+        'X-With-Links-Summary': 'true'
       },
+      signal: AbortSignal.timeout(50000) // 10 second timeout
     });
     if (!response.ok) {
       throw new Error(`Jina API responded with status: ${response.status}`);
@@ -139,45 +150,48 @@ const fetchWithJina = async (url: string): Promise<TReaderResult> => {
       title: data.data.title,
       description: data.data.description,
       url: data.data.url,
-      markdown: data.data.content,
+      markdown: truncateContent(data.data.content, MAX_CONTENT_LENGTH),
       source: 'jina',
     };
   } catch (error) {
     console.error('Error fetching with Jina:', error);
-    return { success: false };
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error with Jina API'
+    };
   }
 };
 
 const readURL = async (url: string): Promise<TReaderResult> => {
   try {
-    // Check if scraping is allowed
-    const scrapingAllowed = await isScrapingAllowed(url);
-    if (!scrapingAllowed) {
-      return { 
-        success: false, 
-        error: 'Scraping not allowed by robots.txt' 
-      };
-    }
-
-    // const response = await fetch(url);
-    // const html = await response.text();
-    // const cleanedHtml = cleanHtml(html);
-    // const doc = new JSDOM(cleanedHtml);
-    // const article = new Readability(doc.window.document).parse();
-
-    // if (article?.content) {
-    //   let markdown = turndownService.turndown(article.content);
-    //   markdown = truncateContent(markdown, MAX_CONTENT_LENGTH);
-    //   if (markdown.length >= MIN_CONTENT_LENGTH) {
-    //     return {
-    //       success: true,
-    //       title: article.title,
-    //       url,
-    //       markdown,
-    //       source: 'readability',
-    //     };
-    //   }
+    // // Check if scraping is allowed
+    // const scrapingAllowed = await isScrapingAllowed(url);
+    // if (!scrapingAllowed) {
+    //   return { 
+    //     success: false, 
+    //     error: 'Scraping not allowed by robots.txt' 
+    //   };
     // }
+
+    const response = await fetch(url);
+    const html = await response.text();
+    const cleanedHtml = cleanHtml(html);
+    const doc = new JSDOM(cleanedHtml);
+    const article = new Readability(doc.window.document).parse();
+
+    if (article?.content) {
+      let markdown = turndownService.turndown(article.content);
+      markdown = truncateContent(markdown, MAX_CONTENT_LENGTH);
+      if (markdown.length >= MIN_CONTENT_LENGTH) {
+        return {
+          success: true,
+          title: article.title,
+          url,
+          markdown,
+          source: 'readability',
+        };
+      }
+    }
     
     if (process.env.JINA_API_KEY) {
       return await fetchWithJina(url);

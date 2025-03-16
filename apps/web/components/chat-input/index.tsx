@@ -59,7 +59,16 @@ export const ChatInput = () => {
     setCurrentSources([]);
 
     runAgent({
-      messages: [],
+      messages: [...(threadItems?.flatMap(item => [{
+        role:"user" as const,
+        content: item.query || ""
+      },{
+        role:"assistant" as const,
+        content:item.answer?.text || ""
+      }])), {
+        role:"user" as const,
+        content: formData.get('query') as string || ""
+      }],
       prompt: formData.get('query') as string,
       threadId: currentThreadId || 'default',
       threadItemId: optimisticAiThreadItemId,
@@ -77,7 +86,7 @@ export const ChatInput = () => {
     formData.append('query', editor.getText());
     handleSubmit(formData);
     editor.commands.clearContent();
-  }, [editor, currentThreadId, model, chatMode, abortController]);
+  }, [editor, currentThreadId, model, chatMode, abortController, threadItems]);
 
   const renderChatInput = () => (
     <div className=" w-full">

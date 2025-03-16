@@ -1,4 +1,5 @@
 import { createAnthropic } from '@ai-sdk/anthropic';
+import { createFireworks } from '@ai-sdk/fireworks';
 import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import { LanguageModelV1 } from '@ai-sdk/provider';
@@ -11,6 +12,7 @@ export const Providers = {
   ANTHROPIC: 'anthropic',
   TOGETHER: 'together',
   GOOGLE: 'google',
+  FIREWORKS: 'fireworks',
 } as const;
 
 
@@ -34,6 +36,11 @@ export const getProviderInstance = (provider: ProviderEnumType) => {
     case 'google':
       return createGoogleGenerativeAI({
         apiKey: process.env.GEMINI_API_KEY || '',
+        
+      });
+    case 'fireworks':
+      return createFireworks({
+        apiKey: process.env.FIREWORKS_API_KEY || '',
       });
     default:
       return createOpenAI({

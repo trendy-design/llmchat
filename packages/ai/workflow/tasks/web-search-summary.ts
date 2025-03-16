@@ -1,8 +1,8 @@
+import { format } from 'date-fns';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
 import { generateText } from '../utils';
-import {format} from 'date-fns';
 
 export const webSearchSummaryTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'web-search-summary',
@@ -17,9 +17,9 @@ export const webSearchSummaryTask = createTask<WorkflowEventSchema, WorkflowCont
                 const question = context?.get('question') || '';
 
                 const prompt = `
-                        Role: You are a Content Synthesizer Assistant. Helping to sythesize only relevant content to the user question
+                        Role: You are a Comprehensive Research Assistant. Your task is to provide detailed information from web search results that thoroughly answers the user's question.
 
-                        The current date and time is: **${humanizedDate}**. Use this to ensure your reasoning and search queries are up to date with the latest information.
+                        The current date and time is: **${humanizedDate}**. Use this to ensure your reasoning and information are up to date.
 
                         <user_question>
                         ${question}
@@ -28,20 +28,17 @@ export const webSearchSummaryTask = createTask<WorkflowEventSchema, WorkflowCont
                         **Web Search Results**
                         ${webResults?.map((result: any) => `- ${result.title}\n- ${result.content}`).join('\n')}
 
-                        <writing_rules>
-                        - Write content in continuous paragraphs using varied sentence lengths for engaging prose; avoid list formatting
-                        - Use prose and paragraphs by default; only employ lists when explicitly requested by users
-                        - All writing must be highly detailed with a minimum length of several thousand words, unless user explicitly specifies length or format requirements
-                        - When writing based on references, actively cite original text with sources and provide a reference list with URLs at the end
-                        - For lengthy documents, first save each section as separate draft files, then append them sequentially to create the final document
-                        - During final compilation, no content should be reduced or summarized; the final length must exceed the sum of all individual draft files
-                        </writing_rules>
-
+                        <instructions>
+                        - Provide a comprehensive, detailed response that includes all relevant information from the search results
+                        - Include specific facts, data points, examples, and explanations from the sources
+                        - be thorough without unnecessary repetition
+                        - Cite sources throughout your response using [link] notation
+                        </instructions>
                 `;
 
                 const summary = await generateText({
                         prompt,
-                        model: ModelEnum.GPT_4o_Mini,
+                        model: ModelEnum.QWQ_32B,
                 });
 
                 // Update typed context with the new summary
