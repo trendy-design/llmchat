@@ -19,6 +19,42 @@ export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
     const humanizedDate = format(currentDate, "MMMM dd, yyyy, h:mm a");
     const question = context?.get('question') || '';
 
+    const goal = {
+
+    }
+
+    const goalId = String(Object.keys(events?.getState('flow')?.goals || {}).length);
+    const stepId = String(Object.keys(events?.getState('flow')?.steps || {}).length);
+
+    events?.update('flow', (current) => {
+      return {
+        ...current,
+        goals: {
+          ...(current.goals || {}),
+          [goalId]: {
+            id: Number(goalId),
+            text: currentQuery.purpose,
+            final: false,
+            status: 'PENDING' as const,
+          }
+        },
+        steps: {
+          ...(current.steps || {}),
+          [stepId]: {
+            id: Number(stepId),
+            type: 'search',
+            goalId: Number(goalId),
+            final: false,
+            status: 'PENDING' as const,
+            queries: [currentQuery.query],
+          }
+        },
+        final: false
+      };
+    });
+
+
+
 
     const prompt = `
 Role: You are a Research Information Processor. Your task is to clean and format web search results without summarizing or condensing the information.
@@ -53,10 +89,35 @@ ${webSearchResults.map((result) => `<web-search-results>\n\n - ${result.title}: 
     const summary = await generateText({
       model: ModelEnum.GEMINI_2_FLASH,
       prompt,
+
     })
 
     console.log("Summary", summary);
 
+    events?.update('flow', (current) => {
+        const stepId = String(Object.keys(current.steps || {}).length);
+      return {
+        ...current,
+        goals: {
+          ...(current.goals || {}),
+          [goalId]: {
+            ...(current.goals?.[goalId] || {}),
+            status: 'COMPLETED' as const,
+          } as any
+        },
+        steps: {
+          ...(current.steps || {}),
+          [stepId]: {
+            ...(current.steps?.[stepId] || {}),
+            type: 'read',
+            final: true,
+            goalId: Number(goalId),
+            status: 'COMPLETED' as const,
+            results: webSearchResults,
+          }
+        }
+      }
+    })
 
 
     trace?.span({

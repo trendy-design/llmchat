@@ -136,7 +136,22 @@ export const deepResearchWorkflow = ({
         };
 
         // Create typed event emitter with the proper type
-        const events = createTypedEventEmitter<WorkflowEventSchema>(workflowEventInitialState);
+        const events = createTypedEventEmitter<WorkflowEventSchema>({
+                flow: {
+                        query: question,
+                        threadId,
+                        threadItemId,
+                        status: 'PENDING',
+                        goals: {},
+                        steps: {},
+                        answer: {
+                                text: "",
+                                final: false,
+                                status: 'PENDING'
+                        },
+                        final: false,
+                }
+        });
 
         const context = createContext<WorkflowContextSchema>({
                 question,

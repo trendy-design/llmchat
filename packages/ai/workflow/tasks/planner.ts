@@ -8,7 +8,6 @@ import { generateObject } from '../utils';
 export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'planner',
         execute: async ({ trace, events, context, data }) => {
-                console.log('Planner');
 
                 const currentDate = new Date();
                 const humanizedDate = format(currentDate, "MMMM dd, yyyy, h:mm a");
@@ -41,25 +40,13 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
                         **Output Format (JSON)**:
                         - reasoning: A brief explanation of your initial research strategy
                         - components: An array of 2-3 core components to focus on first
-                        - queries: An array of 3-5 search queries, each with a purpose field explaining what information it aims to gather and a query field containing the actual search string
+                        - queries: An array of 3-5 search queries, each with a purpose field explaining what information it aims to gather any why it is important and a query field containing the actual search string
                         - priorityOrder: A suggested order for executing the queries (array of query indices)
                 `;
                 
                 
 
-                // Update flow event with initial goal
-                events?.update('flow', (current) => ({
-                        ...current,
-                        goals: {
-                                ...(current.goals || {}),
-                                ["0"]: {
-                                        text: "",
-                                        final: false,
-                                        status: 'PENDING' as const,
-                                        id: 0,
-                                },
-                        }
-                }));
+           
 
                 const object = await generateObject({
                         prompt,
@@ -75,6 +62,20 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
                         }),
                         messages: messages as any
                 });
+
+                     // Update flow event with initial goal
+                     events?.update('flow', (current) => ({
+                        ...current,
+                        goals: {
+                                ...(current.goals || {}),
+                                ["0"]: {
+                                        text: object.reasoning,
+                                        final: false,
+                                        status: 'COMPLETED' as const,
+                                        id: 0,
+                                },
+                        }
+                }));
 
                 const plan = {
                         reasoning: object.reasoning,
