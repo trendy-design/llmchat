@@ -59,9 +59,16 @@ export type Answer = {
   status?: ItemStatus;
 }
 
+export type Reasoning = {
+  text: string;
+  final: boolean;
+  status?: ItemStatus;
+}
+
 export type ThreadItem = {
   query: string;
   goals?: Goal[];
+  reasoning?: Reasoning;
   steps?: Step[];
   answer?: Answer;
   sources?: Source[];

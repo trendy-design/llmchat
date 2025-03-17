@@ -1,16 +1,20 @@
-import { GoalWithSteps } from '@/libs/store/chat.store';
+import { GoalWithSteps, Reasoning } from '@/libs/store/chat.store';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@repo/ui';
 import { IconLoader2, IconStack2 } from '@tabler/icons-react';
-import { Fragment } from 'react';
+import { Fragment, useMemo } from 'react';
 import { StepRenderer } from './step-renderer';
 import { StepStatus } from './step-status';
 
 
-export const GoalsRenderer = ({ goals }: { goals: GoalWithSteps[] }) => {
+export const GoalsRenderer = ({ goals, reasoning }: { goals: GoalWithSteps[], reasoning?: Reasoning }) => {
 
   if(goals.length === 0) {
     return null;
   }
+
+  const reasoningSteps = useMemo(() => {
+    return reasoning?.text?.split('\n\n').map((line) => line.trim()) ?? [];
+  }, [reasoning]);
 
   const isLoading = goals.some(goal => goal.status === 'PENDING');
   return (
@@ -49,6 +53,20 @@ export const GoalsRenderer = ({ goals }: { goals: GoalWithSteps[] }) => {
                       </Fragment>
                   </div>
                 </div>
+              ))}
+              {reasoningSteps?.map((step, index) => (
+                     <div className="flex flex-row items-stretch justify-start gap-2 w-full" key={index}>
+                     <div className="flex min-h-full flex-col items-center justify-start px-2">
+                       <div className="bg-border/50 h-1.5 shrink-0" />
+                       <div className="z-10 bg-secondary">
+                         <StepStatus status={'COMPLETED'} />
+                       </div>
+                       <div className="bg-border/50 min-h-full w-[1px] flex-1" />
+                     </div>
+                     <div className="flex flex-col pb-4 w-full flex-1 overflow-hidden">
+                       <p>{step}</p>
+                     </div>
+                   </div>
               ))}
             </div>
           </AccordionContent>

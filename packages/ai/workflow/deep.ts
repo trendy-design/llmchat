@@ -4,6 +4,7 @@ import { WorkflowBuilder } from './builder';
 import { createContext } from './context';
 import { createTypedEventEmitter } from './events';
 import {
+        analysisTask,
         finalAnswerTask,
         plannerTask,
         reflectorTask,
@@ -34,6 +35,11 @@ export type WorkflowEventSchema = {
                                 link: string;
                         }[];
                 }>;
+                reasoning?: {
+                        text: string;
+                        final: boolean;
+                        status?: "PENDING" | "COMPLETED" | "FAILED";
+                };
                 answer: {
                         text: string;
                         final: boolean;
@@ -57,19 +63,6 @@ export type WorkflowContextSchema = {
                 final: boolean;
                 status: "PENDING" | "COMPLETED" | "FAILED";
         }[];
-        plan?: {
-                reasoning: string;
-                components: string[];
-                queries: {
-                        purpose: string;
-                        query: string;
-                }[];
-                priorityOrder?: number[];
-        };
-        remainingPlan: {
-                purpose: string;
-                query: string;
-        }[];
         steps: {
                 type: string;
                 final: boolean;
@@ -80,6 +73,7 @@ export type WorkflowContextSchema = {
                         link: string;
                 }[];
         }[];
+        queries: string[];
         summaries: string[];
         answer: string[];
         threadId: string;
@@ -158,7 +152,7 @@ export const deepResearchWorkflow = ({
                 search_queries: [],
                 messages: messages as any,
                 goals: [],
-                remainingPlan: [],
+                queries: [],
                 steps: [],
                 summaries: [],
                 answer: [],
@@ -180,6 +174,7 @@ export const deepResearchWorkflow = ({
                 webSearchTask,
                 webSearchSummaryTask,
                 reflectorTask,
+                analysisTask,
                 finalAnswerTask
         ]);
 

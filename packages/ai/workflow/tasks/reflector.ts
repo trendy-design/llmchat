@@ -2,135 +2,139 @@ import { z } from 'zod';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
-import { generateObject } from '../utils';
-import {format} from 'date-fns';
+import { generateObject, getHumanizedDate } from '../utils';
 
 export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
-  name: 'reflector',
-  execute: async ({ trace, data, events, context, executionContext, config }) => {
-    console.log('reflector');
+        name: 'reflector',
+        execute: async ({ trace, data, events, context, executionContext, config }) => {
 
-    const currentGoal = data.goal;
-    const lastStep = data.lastStep;
-    const summary = data.summary;
+                const question = context?.get('question') || '';
+                const prevQueries = context?.get('queries') || [];
+                const goalId = data?.goalId;
+                const prevSummaries = context?.get('summaries') || [];
 
-    const question =    context?.get('question') || '';
-    const search_queries = context?.get('search_queries');
-    const summaries = context?.get('summaries');
-    const current_iteration = executionContext.getTaskExecutionCount('reflector');
-    const max_iteration = config?.maxIterations || 5;
-    const currentDate = new Date();
-    const humanizedDate = format(currentDate, "MMMM dd, yyyy, h:mm a");
+                const prompt = `
+You are a research progress evaluator analyzing how effectively a research question has been addressed. Your primary responsibility is to identify remaining knowledge gaps and determine if additional targeted queries are necessary.
 
-    const prompt = `
-      You are a smart reflector. Your role is to reflect on the last finding and provide reasoning on what you discovered and what area further needs to be explored in order comperehensively answer the query.
+## Current Research State
 
-      The current date and time is: **${humanizedDate}**. Use this to ensure your reasoning and search queries are up to date with the latest information.
+Research Question: "${question}"
+
+Previous Search Queries:
+${prevQueries?.join('\n')}
+
+Research Findings So Far:
+${prevSummaries?.join('\n---\n')}
+
+Current date: ${getHumanizedDate()}
+
+## Evaluation Framework
+
+1. Comprehensively assess how well the current findings answer the original research question
+2. Identify specific information gaps that prevent fully answering the research question
+3. Determine if these gaps warrant additional queries or if the question has been sufficiently addressed
+
+## Query Generation Rules
+
+- DO NOT suggest queries similar to previous ones - review each previous query carefully
+- DO NOT broaden the scope beyond the original research question
+- DO NOT suggest queries that would likely yield redundant information
+- ONLY suggest queries that address identified information gaps
+- Each query must explore a distinct aspect not covered by previous searches
+- Limit to 1-2 highly targeted queries maximum
+- Format queries as direct search terms, NOT as questions
+- DO NOT start queries with "how", "what", "when", "where", "why", or "who"
+- Use concise keyword phrases instead of full sentences
+- Maximum 8 words per query
+
+## Examples of Good Queries:
+- "tesla model 3 battery lifespan data"
+- "climate change economic impact statistics 2023"
+- "javascript async await performance benchmarks"
+- "remote work productivity research findings"
+
+## Examples of Bad Queries:
+- "How long does a Tesla Model 3 battery last?"
+- "What are the economic impacts of climate change?"
+- "When should I use async await in JavaScript?"
+- "Why is remote work increasing productivity?"
+
+## Output Format
+{
+  "reasoning": "Your analysis of current research progress, specifically identifying what aspects of the question remain unanswered and why additional queries would provide valuable new information (or why the research is complete).",
+  "queries": ["direct search term 1", "direct search term 2"] // Return null if research is sufficient or if no non-redundant queries can be formulated
+}
+
+CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genuinely new angles to explore that would yield different information, return null for queries.
+`
+
+                const object = await generateObject({
+                        prompt,
+                        model: ModelEnum.GPT_4o_Mini,
+                        schema: z.object({
+                                reasoning: z.string(),
+                                queries: z.array(z.string()).optional()
+                        })
+
+                });
+
+                const newGoalId = goalId + 1;
+
+                context?.update('queries', (current) => [...(current ?? []), ...(object?.queries ?? [])]);
 
 
-      <user_question>
-      ${question}
-      </user_question>
 
-      <existing_findings>
-        <already_performed_searches>
-        ${search_queries}
-        </already_performed_searches>
-        <searched_results>
-          ${summaries}
-        </searched_results>
-      </existing_finding>
+                // Update flow event with initial goal
+                events?.update('flow', (current) => {
+                        const stepId = Object.keys(current.steps || {}).length;
+                        return {
+                                ...current,
+                                goals: {
+                                        ...(current.goals || {}),
+                                        [newGoalId]: {
+                                                text: object.reasoning,
+                                                final: false,
+                                                status: 'PENDING' as const,
+                                                id: newGoalId,
+                                        },
+                                },
+                                steps: {
+                                        ...(current.steps || {}),
+                                        [stepId]: {
+                                                type: 'search',
+                                                queries: object.queries,
+                                                status: "COMPLETED" as const,
+                                                goalId: newGoalId,
+                                                final: true,
+                                        },
+                                },
+                        }
+                });
 
-      **Instructions**
-      - This prompt is used as part of a iterative search (current iteration: ${current_iteration}/${max_iteration}) & reflection step of a deep research ai agent, you will see existing findings under <existing_findings> section.
-      - Your goal should be to act as an investigator on behalf of the user question, reason for what should be investigated in next iteration & curate new unique search queries which has not been searched before.
-      - The new search queries should be your best bet to know more information to answer user questions, so it should be created with a focus by the  user_question + content which has already been searched + remaining iteration. 
-      - The search queries should be short and it should use advanced search techniques.
-      - Reasoning: your plan of action in 2-3 sentences like you're talking to user.
-      - Queries: array of queries to perform web search on max 2 queries.
+                context?.update('queries', (current) => [...(current ?? []), ...(object.queries ?? [])]);
 
-    `;
 
-    events?.update('flow', (current) => ({
-      ...current,
-      goals: {
-        ...(current.goals || {}),
-        [currentGoal.id]: {
-          ...(current?.goals?.[currentGoal.id] || {}),
-          status: 'COMPLETED' as const,
+                trace?.span({
+                        name: 'planner',
+                        input: prompt,
+                        output: object,
+                        metadata: {
+                                data
+                        }
+                })
+
+                return {
+                        queries: object?.queries,
+                        goalId: newGoalId
+                };
+
         },
-        [currentGoal.id + 1]: {
-          text: "",
-          final: false,
-          status: 'PENDING' as const,
-          id: currentGoal.id + 1,
+        route: ({ result, executionContext, config, context }) => {
+
+                if (result?.queries?.filter(Boolean)?.length > 0) {
+                        return 'web-search';
+                }
+
+                return 'analysis';
         }
-      }
-    }));
-
-    const object = await generateObject({
-      prompt,
-      model: ModelEnum.GPT_4o_Mini,
-      schema: z.object({
-        reasoning: z.string().optional(),
-        queries: z.array(z.string()).optional()
-      })
-    });
-
-    const newGoal = {
-      text: object.reasoning,
-      id: currentGoal.id + 1,
-      final: true,
-      status: 'PENDING' as const,
-    }
-
-    const newStep = {
-      type: 'search',
-      queries: object.queries,
-      goalId: newGoal.id,
-      final: true,
-    }
-
-    trace?.span({ 
-      name: 'reflector', 
-      input: prompt, 
-      output: object, 
-      metadata: context?.getAll() 
-    });
-
-    // Update typed context with new goal and step
-    context?.update('goals', (current = []) => [...current, newGoal]);
-    context?.update('steps', (current = []) => [...current, newStep]);
-    context?.update('search_queries', (current = []) => [
-      ...current,
-      ...(object.queries || [])
-    ]);
-
-    // Update flow event with new goal and step
-    events?.update('flow', (current) => {
-      const nextStepIndex = Object.keys(current.steps || {}).length;
-      return {
-        ...current,
-        goals: { ...(current.goals || {}), [newGoal.id]: newGoal },
-        steps: { ...(current.steps || {}), [nextStepIndex]: newStep },
-      };
-    });
-
-    return {
-      goal: newGoal,
-      step: {
-        type: 'search',
-        queries: object.queries,
-        goalId: newGoal.id,
-        final: true,
-      },
-    };
-  },
-  route: ({ result, executionContext, config }) => {
-    const maxIterations = config?.maxIterations || 3;
-    if (executionContext.getTaskExecutionCount('reflector') >= 5) {
-      return 'final-answer';
-    }
-    return 'web-search';
-  }
 }); 

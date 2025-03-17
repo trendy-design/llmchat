@@ -1,26 +1,19 @@
-import { format } from 'date-fns';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
-import { generateObject } from '../utils';
+import { generateObject, getHumanizedDate } from '../utils';
 
 export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'planner',
         execute: async ({ trace, events, context, data }) => {
 
-                const currentDate = new Date();
-                const humanizedDate = format(currentDate, "MMMM dd, yyyy, h:mm a");
                 const messages = context?.get('messages') || [];
-
-                // Get question from context
                 const question = context?.get('question') || '';
 
-
                 const prompt = `
-         You're a strategic research planner. Your job is to analyze research questions and develop an initial approach to find accurate information through web searches.
-                        
-                        Current date and time: **${humanizedDate}**
+                        You're a strategic research planner. Your job is to analyze research questions and develop an initial approach to find accurate information through web searches.
+                        Current date and time: **${getHumanizedDate()}**
                         
                         **Research Question**:
                         <question>
@@ -28,140 +21,99 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
                         </question>
                         
                         **Your Task**:
-                        1. Identify the 2-3 most important initial aspects of this question to research first
-                        2. Formulate 2-3 precise search queries that will yield the most relevant initial information
+                        1. Identify the 1-2 most important initial aspects of this question to research first
+                        2. Formulate 1-2 precise search queries that will yield the most relevant initial information
                         3. Focus on establishing a foundation of knowledge before diving into specifics
                         
                         **Search Strategy Guidelines**:
                         - Create targeted queries using search operators when appropriate
                         - Prioritize broad, foundational information for initial searches
                         - Ensure queries cover different high-priority aspects of the research question
+                
+                        ## Query Generation Rules
+
+- DO NOT suggest queries similar to previous ones - review each previous query carefully
+- DO NOT broaden the scope beyond the original research question
+- DO NOT suggest queries that would likely yield redundant information
+- ONLY suggest queries that address identified information gaps
+- Each query must explore a distinct aspect not covered by previous searches
+- Limit to 1-2 highly targeted queries maximum
+- Format queries as direct search terms, NOT as questions
+- DO NOT start queries with "how", "what", "when", "where", "why", or "who"
+- Use concise keyword phrases instead of full sentences
+- Maximum 8 words per query
+
+## Examples of Good Queries:
+- "tesla model 3 battery lifespan data"
+- "climate change economic impact statistics 2023"
+- "javascript async await performance benchmarks"
+- "remote work productivity research findings"
+
+## Examples of Bad Queries:
+- "How long does a Tesla Model 3 battery last?"
+- "What are the economic impacts of climate change?"
+- "When should I use async await in JavaScript?"
+- "Why is remote work increasing productivity?"
                         
                         **Output Format (JSON)**:
-                        - reasoning: A brief explanation of your initial research strategy
-                        - components: An array of 2-3 core components to focus on first
-                        - queries: An array of 3-5 search queries, each with a purpose field explaining what information it aims to gather any why it is important and a query field containing the actual search string
-                        - priorityOrder: A suggested order for executing the queries (array of query indices)
+                        - reasoning: A brief explanation of your first step to research the question
+                        - queries: 2 well-crafted search queries (4-8 words) that targets the most important aspects
                 `;
-                
-                
 
-           
 
                 const object = await generateObject({
                         prompt,
                         model: ModelEnum.GPT_4o_Mini,
                         schema: z.object({
                                 reasoning: z.string(),
-                                components: z.array(z.string()),
-                                queries: z.array(z.object({
-                                        purpose: z.string(),
-                                        query: z.string()
-                                })),
-                                priorityOrder: z.array(z.number()).optional()
+                                queries: z.array(z.string())
                         }),
                         messages: messages as any
                 });
 
-                     // Update flow event with initial goal
-                     events?.update('flow', (current) => ({
-                        ...current,
-                        goals: {
-                                ...(current.goals || {}),
-                                ["0"]: {
-                                        text: object.reasoning,
-                                        final: false,
-                                        status: 'COMPLETED' as const,
-                                        id: 0,
+                const goalId = Object.keys(events?.getState('flow')?.goals || {}).length;
+
+                context?.update('queries', (current) => [...(current ?? []), ...(object?.queries || [])]);
+                // Update flow event with initial goal
+                events?.update('flow', (current) => {
+                        const stepId = Object.keys(current.steps || {}).length;
+                        return {
+                                ...current,
+                                goals: {
+                                        ...(current.goals || {}),
+                                        [goalId]: {
+                                                text: object.reasoning,
+                                                final: false,
+                                                status: 'PENDING' as const,
+                                                id: goalId,
+                                        },
+                                },
+                                steps: {
+                                        ...(current.steps || {}),
+                                        [stepId]: {
+                                                type: 'search',
+                                                queries: object.queries,
+                                                status: "COMPLETED" as const,
+                                                goalId: goalId,
+                                                final: true,
+                                        },
                                 },
                         }
-                }));
+                });
 
-                const plan = {
-                        reasoning: object.reasoning,
-                        components: object.components,
-                        queries: object.queries,
-                        priorityOrder: object.priorityOrder
-                };
-
-                const remainingPlan = object.queries.map((q: any) => ({
-                        purpose: q.purpose,
-                        query: q.query
-                }));
-                
-                
-
-                context?.update("plan", (current) => ({
-                        ...current,
-                        ...plan,
-                                  
-                }));
-
-                context?.update("remainingPlan", (current) => (
-                       remainingPlan
-                ));
 
                 trace?.span({
                         name: 'planner',
-                        input: question,
-                        output: plan,
+                        input: prompt,
+                        output: object,
                         metadata: {
-                            remainingPlan,
+                                data
                         }
                 })
 
-
-
-
-
-
-                // const goal = {
-                //         text: object.reasoning,
-                //         components: object.components,
-                //         final: false,
-                //         id: 0,
-                //         status: 'PENDING' as const,
-                // }
-
-                // const step = {
-                //         type: 'search',
-                //         queries: object.queries.map(q => ({
-                //                 query: q.query,
-                //                 purpose: q.purpose
-                //         })),
-                //         priorityOrder: object.priorityOrder || object.queries.map((_, i) => i),
-                //         goalId: 0,
-                //         final: true,
-                // }
-
-                console.log(object);
-
-                // // Update context with new goal and step
-                // context?.update('goals', (current = []) => [...current, goal]);
-                // context?.update('steps', (current = []) => [...current, step]);
-                // context?.update('search_queries', (current = []) => [
-                //         ...current,
-                //         ...object.queries.map(q => q.query)
-                // ]);
-
-                // // Update flow event with completed goal and step
-                // events?.update('flow', (current) => ({
-                //         ...current,
-                //         goals: { ...(current.goals || {}), ["0"]: goal },
-                //         steps: { ...(current.steps || {}), ["0"]: step },
-                //         answer: { text: "", final: false },
-                //         final: false
-                // }));
-
-                // trace?.span({ name: 'initiator', input: question, output: object, metadata: context?.getAll() });
-
                 return {
-                        plan,
-                        remainingPlan,
-                        
-
-                        // goal,
-                        // step
+                        queries: object.queries,
+                        goalId
                 };
         },
         route: ({ result }) => 'web-search'

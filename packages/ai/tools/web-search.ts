@@ -71,7 +71,7 @@ export const  getWebPageContent = async (url: string) => {
   }
 };
 
-export const executeWebSearch = async (queries: string[]) => {
+export const executeWebSearch = async (queries: string[], ) => {
   const webSearchResults = await Promise.all(queries.map(async (query) => {
     const result = await getSERPResults([query]);
     return result.slice(0, 10);
@@ -93,7 +93,7 @@ export const executeWebSearch = async (queries: string[]) => {
     };
   }));
 
-  return webPageContents?.filter((item) => !!item.content).slice(0, 5);
+  return webPageContents?.filter((item) => !!item.content).slice(0, 10);
 }
 
 

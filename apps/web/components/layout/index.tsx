@@ -18,7 +18,7 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
     'relative flex bg-secondary/50 dark:bg-background flex-1 flex-col h-[100dvh] w-full overflow-hidden shadow-sm';
 
   return (
-    <div className="flex min-h-[98dvh] w-full flex-row overflow-hidden">
+    <div className="flex min-h-[96dvh] w-full flex-row overflow-hidden">
       <Flex className="hidden lg:flex">
         <AnimatePresence>{isSidebarOpen && <Sidebar />}</AnimatePresence>
       </Flex>

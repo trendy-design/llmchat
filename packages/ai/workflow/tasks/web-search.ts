@@ -1,65 +1,23 @@
-import { format } from 'date-fns';
 import { ModelEnum } from '../../models';
 import { executeWebSearch } from '../../tools/web-search';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
-import { generateText } from '../utils';
+import { generateText, getHumanizedDate } from '../utils';
 export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
-  name: 'web-search',
-  execute: async ({ data, trace, events, context }) => {
-    console.log('web-search');
+        name: 'web-search',
+        execute: async ({ data, trace, events, context }) => {
+                console.log('web-search');
 
-    const remainingPlan = context?.get('remainingPlan') || [];
-    const currentQuery = remainingPlan[0];
-    console.log("Query", currentQuery);
-
-    const webSearchResults = await executeWebSearch([currentQuery.query]);
-    const webSearchPurpose = currentQuery.purpose;
-    const currentDate = new Date();
-    const humanizedDate = format(currentDate, "MMMM dd, yyyy, h:mm a");
-    const question = context?.get('question') || '';
-
-    const goal = {
-
-    }
-
-    const goalId = String(Object.keys(events?.getState('flow')?.goals || {}).length);
-    const stepId = String(Object.keys(events?.getState('flow')?.steps || {}).length);
-
-    events?.update('flow', (current) => {
-      return {
-        ...current,
-        goals: {
-          ...(current.goals || {}),
-          [goalId]: {
-            id: Number(goalId),
-            text: currentQuery.purpose,
-            final: false,
-            status: 'PENDING' as const,
-          }
-        },
-        steps: {
-          ...(current.steps || {}),
-          [stepId]: {
-            id: Number(stepId),
-            type: 'search',
-            goalId: Number(goalId),
-            final: false,
-            status: 'PENDING' as const,
-            queries: [currentQuery.query],
-          }
-        },
-        final: false
-      };
-    });
+                const queries = data?.queries;
+                const goalId = data?.goalId;
+                const webSearchResults = await executeWebSearch(queries);
+                const question = context?.get('question') || '';
 
 
-
-
-    const prompt = `
+                const prompt = `
 Role: You are a Research Information Processor. Your task is to clean and format web search results without summarizing or condensing the information.
 
-The current date and time is: **${humanizedDate}**.
+The current date and time is: **${getHumanizedDate()}**.
 
 <user_question>
 ${question}
@@ -82,75 +40,98 @@ ${webSearchResults.map((result) => `<web-search-results>\n\n - ${result.title}: 
 - Use headings or sections only when they help organize complex information
 - Include all source links and properly attribute information using [Source X] notation
 - Focus on preserving comprehensive information rather than summarizing
+
 </output_format>
+
+<citations>
+ Citations and References:
+   - Use inline citations using <Source> tags when referencing specific information
+      For example: <Source>https://www.google.com</Source> <Source>https://www.xyz.com</Source>
+   - Cite multiple sources when information appears in multiple research summaries
+   - Don't Include reference list at the end.
+   </citations>
 
       `
 
-    const summary = await generateText({
-      model: ModelEnum.GEMINI_2_FLASH,
-      prompt,
-
-    })
-
-    console.log("Summary", summary);
-
-    events?.update('flow', (current) => {
+      events?.update('flow', (current) => {
         const stepId = String(Object.keys(current.steps || {}).length);
-      return {
-        ...current,
-        goals: {
-          ...(current.goals || {}),
-          [goalId]: {
-            ...(current.goals?.[goalId] || {}),
-            status: 'COMPLETED' as const,
-          } as any
-        },
-        steps: {
-          ...(current.steps || {}),
-          [stepId]: {
-            ...(current.steps?.[stepId] || {}),
-            type: 'read',
-            final: true,
-            goalId: Number(goalId),
-            status: 'COMPLETED' as const,
-            results: webSearchResults,
-          }
+        return {
+                ...current,
+                steps: {
+                        ...(current.steps || {}),
+                        [stepId]: {
+                                ...(current.steps?.[stepId] || {}),
+                                type: 'read',
+                                final: true,
+                                goalId: Number(goalId),
+                                status: 'PENDING' as const,
+                                results: webSearchResults?.map((result) => ({
+                                        title: result.title,
+                                        link: result.link                                                })),
+                        }
+                }
         }
-      }
-    })
+})
 
 
-    trace?.span({
-      name: 'web-search',
-      input: prompt,
-      output: summary,
-      metadata: {
-        remainingPlan,
-        currentQuery,
-        webSearchResults,
-        webSearchPurpose,
-      }
-    })
+                const summary = await generateText({
+                        model: ModelEnum.GEMINI_2_FLASH,
+                        prompt,
 
-    const updatedRemainingPlan = remainingPlan.slice(1);
-    
-    context?.update('remainingPlan', (current) => updatedRemainingPlan || []);
-
-    context?.update('summaries', (current) => [...(current ?? []), `**${currentQuery.query}**\n[${currentQuery.purpose}] \n\n ${summary}`]);
+                })
 
 
+                events?.update('flow', (current) => {
+                        const stepId = String(Object.keys(current.steps || {}).length);
+                        return {
+                                ...current,
+                                goals: {
+                                        ...(current.goals || {}),
+                                        [goalId]: {
+                                                ...(current.goals?.[goalId] || {}),
+                                                status: 'COMPLETED' as const,
+                                        } as any
+                                },
+                                steps: {
+                                        ...(current.steps || {}),
+                                        [stepId]: {
+                                                ...(current.steps?.[stepId] || {}),
+                                                goalId: Number(goalId),
+                                                status: 'COMPLETED' as const,
+
+                                        } as any
+                                }
+                        }
+                })
 
 
-    
-    return {
-        remainingPlan: updatedRemainingPlan,
-        summary,
-    };
-  },
-  route: ({ result }) => {
-    if (result?.remainingPlan?.length > 0) {
-      return 'web-search';
-    }
-    return 'final-answer';
-  }
+                trace?.span({
+                        name: 'web-search',
+                        input: prompt,
+                        output: summary,
+                        metadata: {
+                                queries,
+                                goalId,
+                                webSearchResults,
+
+                        }
+                })
+
+
+                context?.update('summaries', (current) => [...(current ?? []), `${queries?.map((q: any) => q.query).join(', ')} \n\n ${summary}`]);
+
+                return {
+                        goalId,
+                        queries,
+                        summary,
+                };
+        },
+        route: ({context}) => {
+                const allQueries = context?.get('queries') || [];
+                if(allQueries?.length < 6) {
+                        return 'reflector';
+                }
+
+                return 'analysis';
+        }
 }); 

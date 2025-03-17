@@ -6,8 +6,10 @@ import { generateText } from '../utils';
 
 export const finalAnswerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
   name: 'final-answer',
-  execute: async ({ trace, events, context }) => {
+  execute: async ({ trace, events, context, data }) => {
     console.log('final-answer');
+
+    const analysis = data?.analysis || '';
 
     const question = context?.get('question') || '';
     const summaries = context?.get('summaries') || [];
@@ -15,8 +17,9 @@ export const finalAnswerTask = createTask<WorkflowEventSchema, WorkflowContextSc
     const humanizedDate = format(currentDate, "MMMM dd, yyyy, h:mm a");
     
     const prompt = `
-You are a Comprehensive Research Analyst tasked with providing an extremely detailed and thorough response to a question about "${question}".
 
+    Today is ${humanizedDate}.
+You are a Comprehensive Research Writer tasked with providing an extremely detailed and thorough writing about "${question}".
 Your goal is to create a comprehensive report based on the research information provided.
 
 First, carefully read and analyze the following research information:
@@ -25,35 +28,38 @@ First, carefully read and analyze the following research information:
 ${summaries.map((summary) => `<finding>${summary}</finding>`).join('\n')}
 </research_findings>
 
-## Report Requirements:
+<analysis>
+${analysis}
+</analysis>
 
+## Report Requirements:
 1. Structure and Organization:
-   - Organize information thematically
-   - Use a consistent hierarchy
-   - Begin with a summary of key developments
-   - End with an analytical conclusion that identifies trends and future implications
+   - Begin with a concise executive summary highlighting key developments
+   - Organize content thematically with clear progression between topics, Group related information into coherent categories
+   - Use a consistent hierarchical structure throughout
+   - Conclude with analytical insights identifying patterns, implications, and future directions
 
 2. Content and Analysis:
-   - Provide technical details about capabilities, architectures, and performance metrics
-   - Analyze the significance of each development within the broader industry context
-   - Make connections between related developments across different companies
+   - Provide specific details, data points, and technical information where relevant
+   - Analyze the significance of key findings within the broader context
+   - Make connections between related information across different sources
    - Maintain an objective, analytical tone throughout
 
-3. Citations and References:
-   - Use numbered inline citations [1], [2], etc. when referencing specific information
-   - Include a comprehensive, numbered reference list at the end with full source URLs
-   - Cite multiple sources when information appears in multiple research summaries
+3. Citations Method:
+   - Use inline citations with <Source> tags for each statement where possible.
+   - Example: According to recent findings <Source>https://www.example.com</Source>, progress in this area has accelerated
+   - When information appears in multiple sources, cite all relevant sources
+   - Use multiple citations for each statement if multiple sources stated the same information.
+   - Integrate citations naturally without disrupting reading flow
 
-4. Formatting:
-   - Use **bold text** for key figures and key information
-   - Maintain consistent paragraph length and structure
-   - use few unnecessary headings, bullet points, or lists, shouldn't be too many subsections
-   - Use bullet points sparingly and only for truly list-worthy content
-   - Use markdown tables where appropriate
-   - Ensure proper spacing between sections for readability
+4. Formatting Standards:
+   - Highlight key figures, critical statistics, and significant findings with bold text
+   - Construct balanced continuous paragraphs (4-5 sentences) with logical flow instead of shorter sentences.
+   - Use headings strategically only for major thematic shifts
+   - Implement markdown tables for comparative data where appropriate
+   - Ensure proper spacing between sections for optimal readability
 
-Your report should demonstrate expert knowledge of the AI field while remaining accessible to informed readers. Focus on providing substantive analysis rather than simply summarizing announcements.
-
+Your report should demonstrate subject matter expertise while remaining intellectually accessible to informed professionals. Focus on providing substantive analysis rather than cataloging facts. Emphasize implications and significance rather than merely summarizing information.
     `;
 
     const answer = await generateText({

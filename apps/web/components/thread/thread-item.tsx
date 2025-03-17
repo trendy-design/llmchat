@@ -182,6 +182,16 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
     return threadItem.answer?.text && threadItem.answer?.text.length > 0;
   }, [threadItem.answer]);
 
+  const allSources = useMemo(() => {
+    const sourceMatches = threadItem.answer?.text?.match(/<Source>(.*?)<\/Source>/gs) || [];
+    
+    // Extract only the content between the Source tags
+    return sourceMatches.map(match => {
+      const content = match.replace(/<Source>(.*?)<\/Source>/s, '$1').trim();
+      return content;
+    });
+  }, [threadItem.answer?.text]);
+
   
 
   return (
@@ -196,13 +206,13 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
 
         <div className="flex w-full flex-col gap-4">
 
-          <GoalsRenderer goals={goalsWithSteps || []} />
+          <GoalsRenderer goals={goalsWithSteps || []} reasoning={threadItem?.reasoning} />
 
           {hasAnswer && <div className='flex flex-row items-center gap-1'>
             <IconBook size={16} strokeWidth={2} className="text-brand" />
             <p className='text-sm text-muted-foreground'>Answer</p>
           </div>}
-          {hasAnswer && <CitationProvider sources={threadItem.sources}>
+          {hasAnswer && <CitationProvider sources={allSources}>
 
               <AIThreadItem content={threadItem.answer?.text || ''} key={`answer-${threadItem.id}`} />
             </CitationProvider>

@@ -49,12 +49,14 @@ export const useAgentStream = () => {
         for (const line of lines) {
           if (line.trim() === '') continue;
           if (line.startsWith('data: ')) {
+            console.log("line", line)
+
             try {
               const data = JSON.parse(line.slice(6));
 
               if (data.type === "message") {
 
-                console.log("data", data)
+                console.log("reasoning", data.reasoning)
                 // Convert goals and steps from objects to arrays for the store
                 const goalsArray = data.goals ? Object.values(data.goals) : [];
                 const stepsArray = data.steps ? Object.values(data.steps) : [];
@@ -68,7 +70,8 @@ export const useAgentStream = () => {
                   answer: data?.answer,
                   final: data?.final,
                   status: data?.status,
-                  query: data?.query
+                  query: data?.query,
+                  reasoning: data?.reasoning
                 });
               }
             } catch (e) {
