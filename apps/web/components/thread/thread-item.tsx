@@ -168,10 +168,14 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
 
 
   useEffect(() => {
-    setCurrentSources(threadItem.metadata?.searchResults?.map((result: any) => result.link) || []);
+    const sources = threadItem.steps
+      ?.filter((step) => step.type === 'read')
+      .flatMap((step) => step.results?.map((result) => result.link))
+      .filter((link): link is string => link !== undefined) || [];
+    return setCurrentSources(sources);
   }, [threadItem]);
 
-  const goalsWithSteps:GoalWithSteps[] = useMemo(() => {
+  const goalsWithSteps: GoalWithSteps[] = useMemo(() => {
     return threadItem.goals?.map((goal) => ({
       ...goal,
       steps: threadItem.steps?.filter((step) => step.goalId === goal.id) || []
@@ -183,11 +187,11 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
   }, [threadItem.answer]);
 
   const allSources = useMemo(() => {
-    const sourceMatches = threadItem.answer?.text?.match(/<Source>(.*?)<\/Source>/gs) || [];
+    const sourceMatches = threadItem.answer?.text?.match(/<Source>([^]*?)<\/Source>/g) || [];
     
     // Extract only the content between the Source tags
     return sourceMatches.map(match => {
-      const content = match.replace(/<Source>(.*?)<\/Source>/s, '$1').trim();
+      const content = match.replace(/<Source>([^]*?)<\/Source>/, '$1').trim();
       return content;
     });
   }, [threadItem.answer?.text]);
