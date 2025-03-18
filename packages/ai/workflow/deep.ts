@@ -1,145 +1,123 @@
+import { CoreAssistantMessage, CoreUserMessage } from 'ai';
 import { Langfuse } from 'langfuse';
-import { z } from 'zod';
 import { WorkflowBuilder } from './builder';
 import { createContext } from './context';
 import { createTypedEventEmitter } from './events';
 import {
-        finalAnswerTask,
-        initiatorTask,
+        analysisTask,
+        plannerTask,
+        refineQueryTask,
         reflectorTask,
-        webSearchSummaryTask,
-        webSearchTask
+        webSearchTask,
+        writerTask
 } from './tasks';
 
 // Define the workflow schema type
 export type WorkflowEventSchema = {
-        flow: z.ZodObject<{
-                query: z.ZodString;
-                threadId: z.ZodString;
-                threadItemId: z.ZodString;
-                status: z.ZodEnum<["PENDING", "COMPLETED", "FAILED"]>;
-                goals: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodObject<{
-                        id: z.ZodNumber;
-                        text: z.ZodString;
-                        final: z.ZodBoolean;
-                        status: z.ZodOptional<z.ZodEnum<["PENDING", "COMPLETED", "FAILED"]>>;
-                }>>>;
-                steps: z.ZodOptional<z.ZodRecord<z.ZodString, z.ZodObject<{
-                        type: z.ZodString;
-                        final: z.ZodBoolean;
-                        goalId: z.ZodOptional<z.ZodNumber>;
-                        queries: z.ZodOptional<z.ZodArray<z.ZodString>>;
-                        results: z.ZodOptional<z.ZodArray<z.ZodObject<{
-                                title: z.ZodString;
-                                link: z.ZodString;
-                        }>>>;
-                }>>>;
-                answer: z.ZodObject<{
-                        text: z.ZodString;
-                        final: z.ZodBoolean;
-                        status: z.ZodOptional<z.ZodEnum<["PENDING", "COMPLETED", "FAILED"]>>;
+        flow: {
+                query: string;
+                threadId: string;
+                threadItemId: string;
+                status: "PENDING" | "COMPLETED" | "FAILED";
+                goals?: Record<string, {
+                        id: number;
+                        text: string;
+                        final: boolean;
+                        status?: "PENDING" | "COMPLETED" | "FAILED";
                 }>;
-                final: z.ZodBoolean;
-        }>;
+                steps?: Record<string, {
+                        type: string;
+                        final: boolean;
+                        goalId?: number;
+                        queries?: string[];
+                        results?: {
+                                title: string;
+                                link: string;
+                        }[];
+                }>;
+                reasoning?: {
+                        text: string;
+                        final: boolean;
+                        status?: "PENDING" | "COMPLETED" | "FAILED";
+                };
+                answer: {
+                        text: string;
+                        object?: any;
+                        objectType?: string;
+                        final: boolean;
+                        status?: "PENDING" | "COMPLETED" | "FAILED";
+                };
+                final: boolean;
+        };
 };
 
 // Define the context schema type
 export type WorkflowContextSchema = {
-        question: z.ZodString;
-        goals: z.ZodArray<z.ZodObject<{
-                id: z.ZodNumber;
-                text: z.ZodString;
-                final: z.ZodBoolean;
-                status: z.ZodEnum<["PENDING", "COMPLETED", "FAILED"]>;
-        }>>;
-        steps: z.ZodArray<z.ZodObject<{
-                type: z.ZodString;
-                final: z.ZodBoolean;
-                goalId: z.ZodNumber;
-                queries: z.ZodOptional<z.ZodArray<z.ZodString>>;
-                results: z.ZodOptional<z.ZodArray<z.ZodObject<{
-                        title: z.ZodString;
-                        link: z.ZodString;
-                }>>>;
-        }>>;
-        summaries: z.ZodArray<z.ZodString>;
-        answer: z.ZodArray<z.ZodString>;
-        threadId: z.ZodString;
-        threadItemId: z.ZodString;
+        question: string;
+        search_queries: string[];
+        messages: {
+                role: "user" | "assistant";
+                content: string;
+        }[];
+        goals: {
+                id: number;
+                text: string;
+                final: boolean;
+                status: "PENDING" | "COMPLETED" | "FAILED";
+        }[];
+        steps: {
+                type: string;
+                final: boolean;
+                goalId: number;
+                queries?: string[];
+                results?: {
+                        title: string;
+                        link: string;
+                }[];
+        }[];
+        queries: string[];
+        summaries: string[];
+        answer: string[];
+        threadId: string;
+        threadItemId: string;
 };
 
-// Define your event schemas
-const workflowEventSchemas = {
-        flow: z.object({
-                query: z.string(),
-                threadId: z.string(),
-                threadItemId: z.string(),
-                status: z.enum(['PENDING', 'COMPLETED', 'FAILED']),
-                goals: z.record(z.string(), z.object({
-                        id: z.number(),
-                        text: z.string(),
-                        final: z.boolean(),
-                        status: z.enum(['PENDING', 'COMPLETED', 'FAILED']).optional()
-                })).optional(),
-                steps: z.record(z.string(), z.object({
-                        type: z.string(),
-                        final: z.boolean(),
-                        goalId: z.number().optional(),
-                        queries: z.array(z.string()).optional(),
-                        results: z.array(z.object({
-                                title: z.string(),
-                                link: z.string()
-                        })).optional()
-                })).optional(),
-                answer: z.object({
-                        text: z.string(),
-                        final: z.boolean(),
-                        status: z.enum(['PENDING', 'COMPLETED', 'FAILED']).optional()
-                }),
-                final: z.boolean()
-        })
-} satisfies WorkflowEventSchema;
+// Replace Zod schemas with TypeScript types
+const workflowEventInitialState: Partial<WorkflowEventSchema> = {
+        flow: {
+                query: "",
+                threadId: "",
+                threadItemId: "",
+                status: 'PENDING',
+                goals: {},
+                steps: {},
+                answer: {
+                        text: "",
+                        final: false
+                },
+                final: false
+        }
+};
 
-// Define your context schemas
-const workflowContextSchemas = {
-        question: z.string(),
-        goals: z.array(z.object({
-                id: z.number(),
-                text: z.string(),
-                final: z.boolean(),
-                status: z.enum(['PENDING', 'COMPLETED', 'FAILED'])
-        })),
-        steps: z.array(z.object({
-                type: z.string(),
-                final: z.boolean(),
-                goalId: z.number(),
-                queries: z.array(z.string()).optional(),
-                results: z.array(z.object({
-                        title: z.string(),
-                        link: z.string()
-                })).optional()
-        })),
-        summaries: z.array(z.string()),
-        answer: z.array(z.string()),
-        threadId: z.string(),
-        threadItemId: z.string()
-} satisfies WorkflowContextSchema;
-
-// Add a configuration type
 export type WorkflowConfig = {
         maxIterations?: number;
-        // Add other config parameters here as needed
+        maxRetries?: number;
+        timeoutMs?: number;
+        retryDelayMs?: number;
+        retryDelayMultiplier?: number;
 };
 
 export const deepResearchWorkflow = ({
         question, 
         threadId, 
         threadItemId,
+        messages,
         config = {} // Add config parameter with default empty object
 }: {
         question: string, 
         threadId: string, 
         threadItemId: string,
+        messages: (CoreUserMessage | CoreAssistantMessage)[],
         config?: WorkflowConfig
 }) => {
         const langfuse = new Langfuse();
@@ -149,12 +127,12 @@ export const deepResearchWorkflow = ({
 
         // Set default values for config
         const workflowConfig: WorkflowConfig = {
-                maxIterations: 3,
+                maxIterations: 5,
                 ...config
         };
 
         // Create typed event emitter with the proper type
-        const events = createTypedEventEmitter<WorkflowEventSchema>(workflowEventSchemas, {
+        const events = createTypedEventEmitter<WorkflowEventSchema>({
                 flow: {
                         query: question,
                         threadId,
@@ -164,19 +142,24 @@ export const deepResearchWorkflow = ({
                         steps: {},
                         answer: {
                                 text: "",
-                                final: false
+                                final: false,
+                                status: 'PENDING'
                         },
-                        final: false
+                        final: false,
                 }
         });
 
-        // Create typed context with the proper type
-        const context = createContext<WorkflowContextSchema>(workflowContextSchemas, {
+        const context = createContext<WorkflowContextSchema>({
                 question,
+                search_queries: [],
+                messages: messages as any,
                 goals: [],
+                queries: [],
                 steps: [],
                 summaries: [],
-                answer: []
+                answer: [],
+                threadId,
+                threadItemId
         });
 
         // Use the typed builder
@@ -189,11 +172,12 @@ export const deepResearchWorkflow = ({
         });
         
         builder.addTasks([
-                initiatorTask,
+                plannerTask,
                 webSearchTask,
-                webSearchSummaryTask,
                 reflectorTask,
-                finalAnswerTask
+                analysisTask,
+                writerTask,
+                refineQueryTask
         ]);
 
         return builder.build();

@@ -56,12 +56,22 @@ export type GoalWithSteps = Goal & {
 export type Answer = {
   text: string;
   final: boolean;
+  object?: any;
+  objectType?: string;
   status?: ItemStatus;
 }
+
+export type Reasoning = {
+  text: string;
+  final: boolean;
+  status?: ItemStatus;
+}
+
 
 export type ThreadItem = {
   query: string;
   goals?: Goal[];
+  reasoning?: Reasoning;
   steps?: Step[];
   answer?: Answer;
   sources?: Source[];
@@ -107,13 +117,12 @@ const loadInitialData = async () => {
   const config = configStr
     ? JSON.parse(configStr)
     : {
-        model: models[0].id,
-        currentThreadId: 'default',
-      };
+        model: models[0].id
+            };
 
   const initialThreads = threads.length
     ? threads
-    : [{ id: 'default', title: 'New Thread', createdAt: new Date(), updatedAt: new Date() }];
+    : [];
 
   return {
     threads: initialThreads,
@@ -131,7 +140,7 @@ type State = {
   abortController: AbortController | null;
   threads: Thread[];
   threadItems: ThreadItem[];
-  currentThreadId: string;
+  currentThreadId: string | null;
   currentThread: Thread | null;
   currentThreadItem: ThreadItem | null;
   messageGroups: MessageGroup[];
@@ -147,15 +156,16 @@ type Actions = {
   setIsGenerating: (isGenerating: boolean) => void;
   stopGeneration: () => void;
   setAbortController: (abortController: AbortController) => void;
-  createThread: () => void;
+  createThread: (thread?: Pick<Thread, 'title'>) => Promise<Thread>;
   setChatMode: (chatMode:  ChatMode) => void;
   updateThread: (thread: Pick<Thread, 'id' | 'title'>) => Promise<void>;
+  getThread: (threadId: string) => Promise<Thread | null>;
   createThreadItem: (threadItem: ThreadItem) => Promise<void>;
-  updateThreadItem: (threadItem: Partial<ThreadItem>) => Promise<void>;
+  updateThreadItem: (threadId: string, threadItem: Partial<ThreadItem>) => Promise<void>;
   switchThread: (threadId: string) => void;
   deleteThreadItem: (threadItemId: string) => Promise<void>;
   deleteThread: (threadId: string) => Promise<void>;
-  getThreadItems: (threadId: string) => ThreadItem[];
+  getThreadItems: (threadId?: string) => ThreadItem[];
   getCurrentThread: () => Thread | null;
   loadThreadItems: (threadId: string) => Promise<void>;
   setCurrentThreadItem: (threadItem: ThreadItem) => void;
@@ -256,7 +266,7 @@ export const useChatStore = create(
     threads: [],
     chatMode: ChatMode.Fast,
     threadItems: [],
-    currentThreadId: 'default',
+    currentThreadId: null,
     currentThread: null,
     currentThreadItem: null,
     messageGroups: [],
@@ -319,10 +329,15 @@ export const useChatStore = create(
       });
     },
 
-    createThread: async () => {
+    getThread: async (threadId: string) => {
+      const thread = await db.threads.get(threadId);
+      return thread || null;
+    },
+
+    createThread: async (thread?: Pick<Thread, 'title'>) => {
       const newThread = {
         id: nanoid(),
-        title: 'New Thread',
+        title: thread?.title || 'New Thread',
         updatedAt: new Date(),
         createdAt: new Date(),
       };
@@ -332,6 +347,8 @@ export const useChatStore = create(
         state.currentThreadId = newThread.id;
         state.currentThread = newThread;
       });
+
+      return newThread;
     },
 
     setModel: async (model: Model) => {
@@ -370,18 +387,21 @@ export const useChatStore = create(
 
     createThreadItem: async threadItem => {
       const threadId = get().currentThreadId;
+      if(!threadId) return;
       await db.threadItems.add(threadItem);
       set(state => {
         state.threadItems.push({ ...threadItem, threadId });
       });
     },
 
-    updateThreadItem: async threadItem => {
+    updateThreadItem: async (threadId, threadItem) => {
       if (!threadItem.id) return;
+      if (!threadId) return;
 
       const existingItem = await db.threadItems.get(threadItem.id);
       if (existingItem) {
-        const updatedItem = { ...existingItem, ...threadItem, threadId: get().currentThreadId };
+  
+        const updatedItem = { ...existingItem, ...threadItem, threadId };
 
         // Immediately update status changes in the database
         if(existingItem.status !== threadItem.status) {
@@ -428,7 +448,7 @@ export const useChatStore = create(
       await db.threadItems.where('threadId').equals(threadId).delete();
       set(state => {
         state.threads = state.threads.filter((t: Thread) => t.id !== threadId);
-        state.currentThreadId = state.threads[0]?.id || 'default';
+        state.currentThreadId = state.threads[0]?.id;
         state.currentThread = state.threads[0] || null;
       });
     },

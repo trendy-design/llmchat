@@ -10,8 +10,6 @@ import {
 } from '@clerk/nextjs';
 import { Button, cn, Flex, Kbd, Type } from '@repo/ui';
 import {
-  IconBrandGithub,
-  IconBrandX,
   IconCommand,
   IconLayoutSidebar,
   IconMoon,
@@ -21,25 +19,26 @@ import {
 } from '@tabler/icons-react';
 import moment from 'moment';
 import { useTheme } from 'next-themes';
-import { usePathname, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { FullPageLoader } from '../full-page-loader';
 import { HistoryItem } from '../history/history-item';
 
 export const Sidebar = () => {
+  const { threadId:currentThreadId } = useParams();
   const pathname = usePathname();
   const { setIsCommandSearchOpen } = useRootContext();
   const { theme, setTheme } = useTheme();
   const { push } = useRouter();
   const isChatPage = pathname.startsWith('/chat');
   const threads = useChatStore(state => state.threads);
-  const currentThreadId = useChatStore(state => state.currentThreadId);
-  const createThread = useChatStore(state => state.createThread);
   const sortThreads = (threads: Thread[], sortBy: 'createdAt') => {
     return [...threads].sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
   };
   const clearAllThreads = useChatStore(state => state.clearAllThreads);
   const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
   const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
+
+  console.log("currentThreadId", currentThreadId)
 
   const groupedThreads: Record<string, Thread[]> = {
     today: [],
@@ -102,7 +101,6 @@ export const Sidebar = () => {
             className="w-full gap-3 px-2"
             onClick={() =>   {
               !isChatPage && push('/chat');
-              createThread();
             }}
           >
             <div className="flex flex-row items-center gap-2 opacity-50">
@@ -150,17 +148,10 @@ export const Sidebar = () => {
           </Flex>
         )}
         <div className='flex-1' />
-        <Flex className="w-full" direction="col" gap="sm">
+        <Flex className="w-full p-2.5" direction="col" gap="sm">
 
 
-          <SignedOut>
-            <SignInButton />
-            <SignUpButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-          <Flex className="w-full items-center border-t p-2.5 border-border justify-between opacity-70">
+         
             <Flex gap="xs">
               <Button
                 size="icon-xs"
@@ -170,29 +161,15 @@ export const Sidebar = () => {
                 {theme === 'dark' ? <IconMoon size={16} /> : <IconSun size={16} />}
               </Button>
 
-              <Button
-                size="icon-xs"
-                variant="ghost"
-                onClick={() => {
-                  window.open('https://git.new/llmchat', '_blank');
-                }}
-              >
-                <IconBrandGithub size={14} />
-              </Button>
-              <Button
-                size="icon-xs"
-                variant="ghost"
-                onClick={() => {
-                  window.open('https://x.com/llmchatOS', '_blank');
-                }}
-              >
-                <IconBrandX size={14} />
-              </Button>
             </Flex>
-            <Type size="xs" weight="medium" textColor="secondary" className="px-1">
-              v1
-            </Type>
-          </Flex>
+            <SignedOut>
+            <SignInButton />
+            <SignUpButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+            
         </Flex>
       </Flex>
     </div>

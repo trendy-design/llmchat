@@ -1,4 +1,3 @@
-import { Source } from '@/libs/store/chat.store';
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 
 export type Citation = {
@@ -46,16 +45,17 @@ export const CitationProviderContext = createContext<CitationProviderContextType
   citations: {},
 });
 
-export const CitationProvider = ({ sources, children }: PropsWithChildren<{ sources?: Source[] }>) => {
+export const CitationProvider = ({ sources, children }: PropsWithChildren<{ sources?: string[] }>) => {
   const [citations, setCitations] = useState<Record<string, Citation>>({});
 
   useEffect(() => {
     const processCitations = () => {
       const allCitations = sources || [];
-      const uniqueCitations = Array.from(new Set(allCitations?.map(source => source.link))).filter(Boolean);
+      const uniqueCitations = Array.from(new Set(allCitations)).filter(Boolean);
       const MAX_VISIBLE_CITATIONS = 4;
 
       const newCitations = uniqueCitations.reduce((citations, url, index) => {
+        console.log(url);
         const isValid = isValidUrl(url);
         const host = getHost(url);
         if (!host) return citations;
@@ -98,6 +98,8 @@ export const CitationProvider = ({ sources, children }: PropsWithChildren<{ sour
 
     processCitations();
   }, [sources]);
+
+  console.log("citations", citations, sources);
 
   return (
     <CitationProviderContext.Provider value={{ citations }}>

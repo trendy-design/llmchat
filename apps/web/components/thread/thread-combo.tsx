@@ -1,11 +1,11 @@
 import { useChatStore } from '@/lib/store/chat.store';
+import { useParams } from 'next/navigation';
 import { useShallow } from 'zustand/react/shallow';
 import { ThreadItem } from './thread-item';
 export function Thread() {
-  const currentThreadId = useChatStore(state => state.currentThreadId);
+  const { threadId } = useParams();
+  const currentThreadId =  threadId?.toString() ?? "";
   const threadItems = useChatStore(useShallow(state => state.getThreadItems(currentThreadId)));
-
-
 
   return (
     <div className="relative flex flex-col gap-2" id="thread-container">

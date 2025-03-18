@@ -11,10 +11,11 @@ export const StepRenderer = ({
 
   if (step.type === 'search') {
     return <div className='flex flex-col gap-1 my-1'>
-      <p className='text-sm text-muted-foreground'>Search Queries</p>
-      <div className='flex flex-row gap-1 flex-wrap'>
+      <div className='flex flex-inline flex-row gap-1 flex-wrap'>
+      <p className='text-sm text-muted-foreground'>Searching for...</p>
+
         {step.queries?.map((query, index) => (
-          <Badge key={index} className="gap-1 rounded-md px-1.5 py-1 text-xs font-normal">
+          <Badge key={index} className="gap-1 rounded-md px-2 py-0.5 text-xs font-normal">
             <IconSearch size={12} className="opacity-50" />
             {query}
           </Badge>
@@ -25,7 +26,7 @@ export const StepRenderer = ({
 
   if (step.type === 'read') {
     return <div className='flex flex-col gap-1 my-1'>
-      <p className='text-sm text-muted-foreground'>Reading</p>
+      <p className='text-xs text-muted-foreground'>Reading</p>
       <SearchResultsList results={step.results || []} />
     </div>
   }

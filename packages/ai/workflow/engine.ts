@@ -24,6 +24,12 @@ type TaskRouterParams<
         result: any;
 }
 
+// Add a new type for parallel task routing with custom data
+type ParallelTaskRoute = {
+  task: string;
+  data?: any;
+};
+
 type TaskExecutionFunction<
   TEvent extends EventSchemaDefinition = any,
   TContext extends ContextSchemaDefinition = any
@@ -32,7 +38,7 @@ type TaskExecutionFunction<
 type TaskRouterFunction<
   TEvent extends EventSchemaDefinition = any,
   TContext extends ContextSchemaDefinition = any
-> = (params: TaskRouterParams<TEvent, TContext>) => string | string[] | undefined;
+> = (params: TaskRouterParams<TEvent, TContext>) => string | string[] | ParallelTaskRoute[] | undefined;
 
 export type WorkflowContextData = {
         [key: string]: any;
@@ -43,7 +49,7 @@ export type TaskConfig<
   TContext extends ContextSchemaDefinition = any
 > = {
         execute: (params: TaskParams<TEvent, TContext>) => Promise<any>;
-        route: (params: TaskRouterParams<TEvent, TContext>) => string | string[] | undefined;
+        route: (params: TaskRouterParams<TEvent, TContext>) => string | string[] | ParallelTaskRoute[] | undefined;
         dependencies?: string[];
         retryCount?: number;
         timeoutMs?: number;
@@ -309,9 +315,19 @@ export class WorkflowEngine<
                                 
                                 if (nextTasks) {
                                         if (Array.isArray(nextTasks)) {
-                                                await Promise.all(nextTasks.map(nextTask => this.executeTask(nextTask, result)));
+                                                if (nextTasks.length > 0 && typeof nextTasks[0] === 'object' && 'task' in nextTasks[0]) {
+                                                        // Handle ParallelTaskRoute[] format
+                                                        await Promise.all(
+                                                                (nextTasks as ParallelTaskRoute[]).map(route => 
+                                                                        this.executeTask(route.task, route.data !== undefined ? route.data : result)
+                                                                )
+                                                        );
+                                                } else {
+                                                        // Handle string[] format (all tasks get the same data)
+                                                        await Promise.all((nextTasks as string[]).map(nextTask => this.executeTask(nextTask, result)));
+                                                }
                                         } else {
-                                                await this.executeTask(nextTasks, result);
+                                                await this.executeTask(nextTasks as string, result);
                                         }
                                 }
                                 return result;

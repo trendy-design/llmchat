@@ -4,38 +4,34 @@ import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
 import { generateObject, getHumanizedDate } from '../utils';
 
-export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
-        name: 'reflector',
-        execute: async ({ trace, data, events, context, executionContext, config }) => {
+export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
+        name: 'planner',
+        execute: async ({ trace, events, context, data }) => {
 
+                const messages = context?.get('messages') || [];
                 const question = context?.get('question') || '';
-                const prevQueries = context?.get('queries') || [];
-                const goalId = data?.goalId;
-                const prevSummaries = context?.get('summaries') || [];
+
                 const currentYear = new Date().getFullYear();
 
                 const prompt = `
-You are a research progress evaluator analyzing how effectively a research question has been addressed. Your primary responsibility is to identify remaining knowledge gaps and determine if additional targeted queries are necessary.
-
-## Current Research State
-
-Research Question: "${question}"
-
-Previous Search Queries:
-${prevQueries?.join('\n')}
-
-Research Findings So Far:
-${prevSummaries?.join('\n---\n')}
-
-Current date: ${getHumanizedDate()}
-
-## Evaluation Framework
-
-1. Comprehensively assess how well the current findings answer the original research question
-2. Identify specific information gaps that prevent fully answering the research question
-3. Determine if these gaps warrant additional queries or if the question has been sufficiently addressed
-
-## Query Generation Rules
+                        You're a strategic research planner. Your job is to analyze research questions and develop an initial approach to find accurate information through web searches.
+                        
+                        **Research Question**:
+                        <question>
+                        ${question}
+                        </question>
+                        
+                        **Your Task**:
+                        1. Identify the 1-2 most important initial aspects of this question to research first
+                        2. Formulate 1-2 precise search queries that will yield the most relevant initial information
+                        3. Focus on establishing a foundation of knowledge before diving into specifics
+                        
+                        **Search Strategy Guidelines**:
+                        - Create targeted queries using search operators when appropriate
+                        - Prioritize broad, foundational information for initial searches
+                        - Ensure queries cover different high-priority aspects of the research question
+                
+                        ## Query Generation Rules
 
 - DO NOT suggest queries similar to previous ones - review each previous query carefully
 - DO NOT broaden the scope beyond the original research question
@@ -48,6 +44,7 @@ Current date: ${getHumanizedDate()}
 - Use concise keyword phrases instead of full sentences
 - Maximum 8 words per query
 
+**Current date and time: **${getHumanizedDate()}**
 
 
 ## Examples of Good Queries:
@@ -64,32 +61,26 @@ Current date: ${getHumanizedDate()}
 
 **Important**:
 - Use current date and time for the queries unless speciffically asked for a different time period
+                        
+                        **Output Format (JSON)**:
+                        - reasoning: A brief explanation of your first step to research the question
+                        - queries: 2 well-crafted search queries (4-8 words) that targets the most important aspects
+                `;
 
-## Output Format
-{
-  "reasoning": "Your analysis of current research progress, specifically identifying what aspects of the question remain unanswered and why additional queries would provide valuable new information (or why the research is complete).",
-  "queries": ["direct search term 1", "direct search term 2"] // Return null if research is sufficient or if no non-redundant queries can be formulated
-}
-
-CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genuinely new angles to explore that would yield different information, return null for queries.
-`
 
                 const object = await generateObject({
                         prompt,
                         model: ModelEnum.GPT_4o_Mini,
                         schema: z.object({
                                 reasoning: z.string(),
-                                queries: z.array(z.string()).optional()
-                        })
-
+                                queries: z.array(z.string())
+                        }),
+                        messages: messages as any
                 });
 
-                const newGoalId = goalId + 1;
+                const goalId = Object.keys(events?.getState('flow')?.goals || {}).length;
 
-                context?.update('queries', (current) => [...(current ?? []), ...(object?.queries ?? [])]);
-
-
-
+                context?.update('queries', (current) => [...(current ?? []), ...(object?.queries || [])]);
                 // Update flow event with initial goal
                 events?.update('flow', (current) => {
                         const stepId = Object.keys(current.steps || {}).length;
@@ -97,11 +88,11 @@ CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genui
                                 ...current,
                                 goals: {
                                         ...(current.goals || {}),
-                                        [newGoalId]: {
+                                        [goalId]: {
                                                 text: object.reasoning,
                                                 final: false,
                                                 status: 'PENDING' as const,
-                                                id: newGoalId,
+                                                id: goalId,
                                         },
                                 },
                                 steps: {
@@ -110,7 +101,7 @@ CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genui
                                                 type: 'search',
                                                 queries: object.queries,
                                                 status: "COMPLETED" as const,
-                                                goalId: newGoalId,
+                                                goalId: goalId,
                                                 final: true,
                                         },
                                 },
@@ -118,29 +109,19 @@ CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genui
                 });
 
 
-
                 trace?.span({
-                        name: 'reflector',
+                        name: 'planner',
                         input: prompt,
                         output: object,
                         metadata: {
-
                                 data
                         }
                 })
 
                 return {
-                        queries: object?.queries,
-                        goalId: newGoalId
+                        queries: object.queries,
+                        goalId
                 };
-
         },
-        route: ({ result, executionContext, config, context }) => {
-
-                if (result?.queries?.filter(Boolean)?.length > 0) {
-                        return 'web-search';
-                }
-
-                return 'analysis';
-        }
+        route: ({ result }) => 'web-search'
 }); 

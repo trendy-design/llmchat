@@ -10,6 +10,7 @@ import {
   Kbd,
 } from '@repo/ui';
 import { IconArrowBack, IconBolt, IconChevronDown, IconGlobe, IconPlayerStopFilled, IconSchool } from '@tabler/icons-react';
+import { usePathname } from 'next/navigation';
 import { DotSpinner } from '../thread/step-status';
 import { ImageUpload } from './image-upload';
 
@@ -20,6 +21,7 @@ export type TChatActions = {
 
 
 export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) => {
+  const pathname = usePathname();
   const isGenerating = useChatStore(state => state.isGenerating);
   const editor = useChatStore(state => state.editor);
   const chatMode = useChatStore(state => state.chatMode);
@@ -63,9 +65,13 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
     
   ]
 
+  const isChatPage = pathname.startsWith('/chat');
+
+  console.log("isChatPage", isChatPage)
+
   return (
     <Flex className="w-full bg-secondary/50 border-t border-border p-1.5" items="center" justify="between">
-        {isGenerating ? <GeneratingStatus /> : <Flex gap="xs" items="center">
+        {(isGenerating && !isChatPage) ? <GeneratingStatus /> : <Flex gap="xs" items="center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="xs" variant="ghost">
@@ -133,7 +139,7 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
           </p>
         )}
 
-        {isGenerating ? (
+        {(isGenerating && !isChatPage) ? (
           <Button   size="xs"
           variant="default"
          onClick={stopGeneration}>

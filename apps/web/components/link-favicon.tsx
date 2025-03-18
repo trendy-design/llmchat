@@ -11,9 +11,9 @@ export type LinkFaviconType = {
 
 const FallbackIcon = ({ size, className }: { size: 'sm' | 'md'; className?: string }) => (
   <Globe
-    size={size === 'sm' ? 14 : 16}
+    size={size === 'sm' ? 12 : 16}
     strokeWidth={2}
-    className={cn('text-gray-500', className)}
+    className={cn('text-gray-500 shrink-0', className)}
   />
 );
 
@@ -31,7 +31,7 @@ export const LinkFavicon: FC<LinkFaviconType> = ({ link, className, size = 'sm' 
       onError={() => setError(true)}
       width={0}
       height={0}
-      className={cn('rounded-sm object-cover', className, size === 'sm' ? 'h-4 w-4' : 'h-5 w-5')}
+      className={cn('rounded-sm object-cover shrink-0', className, size === 'sm' ? 'h-3 w-3' : 'h-4 w-4')}
       sizes="70vw"
       unoptimized={false}
       priority={false}

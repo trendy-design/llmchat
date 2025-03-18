@@ -1,9 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import robotsParser from 'robots-parser';
 import sanitizeHtml from 'sanitize-html';
-import TurndownService from 'turndown';
-
-const turndownService = new TurndownService();
 
 export type TReaderResponse = {
   success: boolean;
@@ -25,7 +21,7 @@ export type TReaderResult = {
 };
 
 const MIN_CONTENT_LENGTH = 500;
-const MAX_CONTENT_LENGTH = 2000;
+const MAX_CONTENT_LENGTH = 10000;
 
 function truncateContent(content: string, maxWords: number): string {
   const words = content.split(/\s+/).filter(Boolean);
@@ -91,35 +87,6 @@ function cleanHtml(html: string): string {
   });
 }
 
-async function isScrapingAllowed(url: string): Promise<boolean> {
-  try {
-    const parsedUrl = new URL(url);
-    const robotsUrl = `${parsedUrl.protocol}//${parsedUrl.hostname}/robots.txt`;
-    
-    const response = await fetch(robotsUrl, {
-      headers: {
-        'User-Agent': 'Chaindesk-Reader'
-      },
-      signal: AbortSignal.timeout(5000) // 5 second timeout
-    });
-    
-    if (!response.ok) {
-      console.log(`No robots.txt found at ${robotsUrl} or status: ${response.status}`);
-      return true; // If robots.txt doesn't exist or can't be fetched, assume scraping is allowed
-    }
-    
-    const robotsTxt = await response.text();
-    const robots = robotsParser(robotsUrl, robotsTxt);
-    
-    const isAllowed = robots.isAllowed(url, 'Chaindesk-Reader');
-    console.log(`Scraping ${url} allowed: ${isAllowed !== false}`);
-    
-    return isAllowed !== false; // Explicitly handle undefined case (which means allowed)
-  } catch (error) {
-    console.error('Error checking robots.txt:', error);
-    return true; // In case of error, proceed with caution
-  }
-}
 
 const fetchWithJina = async (url: string): Promise<TReaderResult> => {
   try {
@@ -128,56 +95,69 @@ const fetchWithJina = async (url: string): Promise<TReaderResult> => {
       headers: {
         Authorization: `Bearer ${process.env.JINA_API_KEY}`,
         Accept: 'application/json',
+        'X-Engine': 'browser',
+        'X-Md-Link-Style': 'referenced',
+        'X-No-Cache': 'true',
+        'X-Retain-Images': 'none',
+        'X-Return-Format': 'markdown',
+        'X-Robots-Txt': 'JinaReader',
+        'X-With-Links-Summary': 'true'
       },
+      signal: AbortSignal.timeout(20000) // 20 second timeout
     });
+    
     if (!response.ok) {
       throw new Error(`Jina API responded with status: ${response.status}`);
     }
-    const data = await response.json();
-    return {
-      success: true,
-      title: data.data.title,
-      description: data.data.description,
-      url: data.data.url,
-      markdown: data.data.content,
-      source: 'jina',
-    };
+    
+    // First try to get the response as text to check for binary content
+    const responseText = await response.text();
+    
+    // Check if the response is actually JSON
+    try {
+      const data = JSON.parse(responseText);
+      
+      // Check if content exists and sanitize it
+      if (data.data && data.data.content) {
+        // Truncate if needed
+        const truncatedContent = truncateContent(data.data.content, MAX_CONTENT_LENGTH);
+        
+        return {
+          success: true,
+          title: data.data.title,
+          description: data.data.description,
+          url: data.data.url,
+          markdown: truncatedContent,
+          source: 'jina',
+        };
+      } else {
+        return {
+          success: false,
+          error: 'No content found in Jina response'
+        };
+      }
+    } catch (jsonError) {
+      // If it's not valid JSON, it might be binary data
+      console.error('Error parsing Jina response as JSON:', jsonError);
+      
+  
+      
+      return {
+        success: false,
+        error: 'Invalid response format from Jina API'
+      };
+    }
   } catch (error) {
     console.error('Error fetching with Jina:', error);
-    return { success: false };
+    return { 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error with Jina API'
+    };
   }
 };
 
 const readURL = async (url: string): Promise<TReaderResult> => {
   try {
-    // Check if scraping is allowed
-    const scrapingAllowed = await isScrapingAllowed(url);
-    if (!scrapingAllowed) {
-      return { 
-        success: false, 
-        error: 'Scraping not allowed by robots.txt' 
-      };
-    }
-
-    // const response = await fetch(url);
-    // const html = await response.text();
-    // const cleanedHtml = cleanHtml(html);
-    // const doc = new JSDOM(cleanedHtml);
-    // const article = new Readability(doc.window.document).parse();
-
-    // if (article?.content) {
-    //   let markdown = turndownService.turndown(article.content);
-    //   markdown = truncateContent(markdown, MAX_CONTENT_LENGTH);
-    //   if (markdown.length >= MIN_CONTENT_LENGTH) {
-    //     return {
-    //       success: true,
-    //       title: article.title,
-    //       url,
-    //       markdown,
-    //       source: 'readability',
-    //     };
-    //   }
-    // }
     
     if (process.env.JINA_API_KEY) {
       return await fetchWithJina(url);
@@ -200,11 +180,17 @@ export async function POST(req: NextRequest) {
     }
     
     const result = await readURL(url);
-    return NextResponse.json({ result });
+    
+    // Use safe stringify to handle any issues
+    return new Response(JSON.stringify({ result }), {
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (error) {
-    return NextResponse.json({ 
+    return new Response(JSON.stringify({ 
       success: false, 
       error: error instanceof Error ? error.message : 'Unknown error processing request' 
+    }), {
+      headers: { 'Content-Type': 'application/json' }
     });
   }
 }

@@ -1,7 +1,5 @@
 import {
-        AgentEventPayload,
-        deepResearchWorkflow,
-        LLMMessageSchema
+        deepResearchWorkflow
 } from '@repo/ai';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
@@ -19,7 +17,7 @@ const completionRequestSchema = z.object({
         threadItemId: z.string(),
         parentThreadItemId: z.string(),
         prompt: z.string(),
-        messages: z.array(LLMMessageSchema),
+        messages: z.any(),
         mode: z.nativeEnum(CompletionMode),
         maxIterations: z.number().optional(),
 });
@@ -31,7 +29,7 @@ export type AgentEventResponse = {
         threadId: string;
         threadItemId: string;
         parentThreadItemId: string;
-} & AgentEventPayload;
+};
 
 type StreamController = ReadableStreamDefaultController<Uint8Array>;
 
@@ -100,14 +98,14 @@ async function executeStream(
                         question: data.prompt,
                         threadId: data.threadId,
                         threadItemId: data.threadItemId,
+                        messages: data.messages as any,
                         config: {
                                 maxIterations: data.maxIterations || 3
                         }
                 });
 
                 workflow.on('flow', (payload) => {
-                        console.log("event",payload);
-                        
+
                         sendMessage(controller, encoder, { 
                                 type: "message", 
                                 threadId: data.threadId,
@@ -119,9 +117,10 @@ async function executeStream(
 
                 // start should be typed
 
-                const result = await workflow.start('initiator', {
+                const result = await workflow.start('refine-query', {
                         question: data.prompt
                 });
+
 
                 sendMessage(controller, encoder, { 
                         type: 'done', 
@@ -163,8 +162,61 @@ function sendMessage(
         encoder: TextEncoder,
         payload: any
 ) {
-        const message = `event: message\ndata: ${JSON.stringify(payload)}\n\n`;
-        controller.enqueue(encoder.encode(message));
+        try {
+                // Sanitize payload to ensure it can be safely serialized
+                const sanitizedPayload = sanitizePayloadForJSON(payload);
+                const message = `event: message\ndata: ${JSON.stringify(sanitizedPayload)}\n\n`;
+                controller.enqueue(encoder.encode(message));
+        } catch (error) {
+                console.error('Error serializing message payload:', error);
+                // Send a simplified error message that will parse correctly
+                const errorMessage = `event: message\ndata: ${JSON.stringify({
+                        type: payload.type,
+                        status: 'error',
+                        error: 'Failed to serialize payload',
+                        threadId: payload.threadId,
+                        threadItemId: payload.threadItemId,
+                        parentThreadItemId: payload.parentThreadItemId
+                })}\n\n`;
+                controller.enqueue(encoder.encode(errorMessage));
+        }
+}
+
+// Helper function to sanitize payload before JSON serialization
+function sanitizePayloadForJSON(payload: any): any {
+        try {
+                if (payload === null || payload === undefined) {
+                        return payload;
+                }
+        
+        if (typeof payload === 'string') {
+                // Ensure strings are valid for JSON
+                return payload;
+        }
+        
+        if (typeof payload !== 'object') {
+                return payload;
+        }
+        
+        // Handle arrays
+        if (Array.isArray(payload)) {
+                return payload.map(item => sanitizePayloadForJSON(item));
+        }
+        
+        // Handle objects
+        const sanitized: Record<string, any> = {};
+        for (const [key, value] of Object.entries(payload)) {
+                // Skip functions and other non-serializable types
+                if (typeof value !== 'function' && typeof value !== 'symbol') {
+                        sanitized[key] = sanitizePayloadForJSON(value);
+                }
+        }
+        
+                return sanitized;
+        } catch (error) {
+                console.error('Error sanitizing payload:', error);
+                return {};
+        }
 }
 
 
