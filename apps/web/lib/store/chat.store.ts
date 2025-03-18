@@ -56,6 +56,14 @@ export type GoalWithSteps = Goal & {
 export type Answer = {
   text: string;
   final: boolean;
+  object?: any;
+  objectType?: string;
+  status?: ItemStatus;
+}
+
+export type Reasoning = {
+  text: string;
+  final: boolean;
   status?: ItemStatus;
 }
 
@@ -63,7 +71,7 @@ export type Answer = {
 export type ThreadItem = {
   query: string;
   goals?: Goal[];
-  reasoning?: string;
+  reasoning?: Reasoning;
   steps?: Step[];
   answer?: Answer;
   sources?: Source[];
@@ -157,7 +165,7 @@ type Actions = {
   switchThread: (threadId: string) => void;
   deleteThreadItem: (threadItemId: string) => Promise<void>;
   deleteThread: (threadId: string) => Promise<void>;
-  getThreadItems: (threadId: string) => ThreadItem[];
+  getThreadItems: (threadId?: string) => ThreadItem[];
   getCurrentThread: () => Thread | null;
   loadThreadItems: (threadId: string) => Promise<void>;
   setCurrentThreadItem: (threadItem: ThreadItem) => void;
