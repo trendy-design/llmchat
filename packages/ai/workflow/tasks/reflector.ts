@@ -12,6 +12,7 @@ export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSche
                 const prevQueries = context?.get('queries') || [];
                 const goalId = data?.goalId;
                 const prevSummaries = context?.get('summaries') || [];
+                const currentYear = new Date().getFullYear();
 
                 const prompt = `
 You are a research progress evaluator analyzing how effectively a research question has been addressed. Your primary responsibility is to identify remaining knowledge gaps and determine if additional targeted queries are necessary.
@@ -47,9 +48,11 @@ Current date: ${getHumanizedDate()}
 - Use concise keyword phrases instead of full sentences
 - Maximum 8 words per query
 
+
+
 ## Examples of Good Queries:
-- "tesla model 3 battery lifespan data"
-- "climate change economic impact statistics 2023"
+- "tesla model 3 battery lifespan data ${currentYear}"
+- "climate change economic impact statistic ${currentYear}"
 - "javascript async await performance benchmarks"
 - "remote work productivity research findings"
 
@@ -58,6 +61,9 @@ Current date: ${getHumanizedDate()}
 - "What are the economic impacts of climate change?"
 - "When should I use async await in JavaScript?"
 - "Why is remote work increasing productivity?"
+
+**Important**:
+- Use current date and time for the queries unless speciffically asked for a different time period
 
 ## Output Format
 {
@@ -111,14 +117,14 @@ CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genui
                         }
                 });
 
-                context?.update('queries', (current) => [...(current ?? []), ...(object.queries ?? [])]);
 
 
                 trace?.span({
-                        name: 'planner',
+                        name: 'reflector',
                         input: prompt,
                         output: object,
                         metadata: {
+
                                 data
                         }
                 })

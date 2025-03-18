@@ -74,7 +74,6 @@ ${s}
                         prompt,
                         model: ModelEnum.Deepseek_R1,
                         onReasoning: (reasoning) => {
-                                console.log("Reasoning", reasoning);
                                 events?.update('flow', (current) => ({
                                         ...current,
                                         reasoning: {
@@ -115,7 +114,7 @@ ${s}
                         analysis: text,
                 };
         },
-        route: ({ result }) => 'final-answer'
+        route: ({ result }) => 'writer'
 });
 
 

@@ -11,7 +11,7 @@ import {
   Type,
 } from '@repo/ui';
 import { MoreHorizontal } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 export const HistoryItem = ({
   thread,
@@ -22,14 +22,13 @@ export const HistoryItem = ({
   dismiss: () => void;
   isActive?: boolean;
 }) => {
-  const pathname = usePathname();
+  const { threadId: currentThreadId } = useParams();
   const updateThread = useChatStore(state => state.updateThread);
   const { push } = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState(thread.title);
   const deleteThread = useChatStore(state => state.deleteThread);
   const historyInputRef = useRef<HTMLInputElement>(null);
-  const isChatPage = pathname.startsWith('/chat');
   const switchThread = useChatStore(state => state.switchThread);
   const [openOptions, setOpenOptions] = useState(false);
 
@@ -63,7 +62,7 @@ export const HistoryItem = ({
 
   const handleOnClick = () => {
     if (!isEditing) {
-      push('/chat');
+      push(`/c/${thread.id}`);
       switchThread(thread.id);
       dismiss();
     }
@@ -71,7 +70,7 @@ export const HistoryItem = ({
 
   const containerClasses = cn(
     'gap-2 w-full group w-full cursor-pointer flex flex-row items-center h-8 py-0.5 pl-2 pr-1 rounded-md hover:bg-foreground/5',
-    (isActive && isChatPage) || isEditing ? 'bg-muted' : ''
+    (isActive) || isEditing ? 'bg-muted' : ''
   );
 
   const handleEditClick = () => {
@@ -83,6 +82,9 @@ export const HistoryItem = ({
 
   const handleDeleteConfirm = () => {
     deleteThread(thread.id);
+    if(currentThreadId === thread.id) {
+      push('/chat');
+    }
   };
 
   return (
@@ -101,7 +103,7 @@ export const HistoryItem = ({
         <>
           <Flex direction="col" items="start" className="w-full" gap="none">
             <Type className="w-full line-clamp-1" size="sm" textColor="primary">
-              {thread.title}
+              {thread.title} 
             </Type>
           </Flex>
         </>

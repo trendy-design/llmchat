@@ -1,9 +1,10 @@
+import { useAgentStream } from '@/hooks/use-agent';
 import { mdxComponents } from '@/libs/mdx/mdx-components';
 import { parseSourceTagsFromXML } from '@/libs/mdx/sources';
 import { useMdxChunker } from '@/libs/mdx/use-mdx-chunks';
 import { GoalWithSteps, ThreadItem as ThreadItemType, useChatStore } from '@/libs/store/chat.store';
-import { cn } from '@repo/ui';
-import { IconBook } from '@tabler/icons-react';
+import { Button, cn, RadioGroup, RadioGroupItem, Textarea } from '@repo/ui';
+import { IconBook, IconCheck, IconQuestionMark, IconSquare } from '@tabler/icons-react';
 import { MDXRemote } from 'next-mdx-remote';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote/rsc';
 import { serialize } from 'next-mdx-remote/serialize';
@@ -186,9 +187,13 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
     return threadItem.answer?.text && threadItem.answer?.text.length > 0;
   }, [threadItem.answer]);
 
+  const hasClarifyingQuestions = useMemo(() => {
+    return threadItem.answer?.object?.clarifyingQuestion && threadItem.answer?.objectType === 'clarifyingQuestions';
+  }, [threadItem.answer]);
+
   const allSources = useMemo(() => {
     const sourceMatches = threadItem.answer?.text?.match(/<Source>([^]*?)<\/Source>/g) || [];
-    
+
     // Extract only the content between the Source tags
     return sourceMatches.map(match => {
       const content = match.replace(/<Source>([^]*?)<\/Source>/, '$1').trim();
@@ -196,7 +201,7 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
     });
   }, [threadItem.answer?.text]);
 
-  
+
 
   return (
     <>
@@ -208,20 +213,114 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
         </div>
       )}
 
-        <div className="flex w-full flex-col gap-4">
+      <div className="flex w-full flex-col gap-4">
 
-          <GoalsRenderer goals={goalsWithSteps || []} reasoning={threadItem?.reasoning} />
+        <GoalsRenderer goals={goalsWithSteps || []} reasoning={threadItem?.reasoning} />
 
-          {hasAnswer && <div className='flex flex-row items-center gap-1'>
-            <IconBook size={16} strokeWidth={2} className="text-brand" />
-            <p className='text-sm text-muted-foreground'>Answer</p>
-          </div>}
-          {hasAnswer && <CitationProvider sources={allSources}>
+        {hasAnswer && !hasClarifyingQuestions && <div className='flex flex-row items-center gap-1'>
+          <IconBook size={16} strokeWidth={2} className="text-brand" />
+          <p className='text-sm text-muted-foreground'>Answer</p>
+        </div>}
+        {hasAnswer && <CitationProvider sources={allSources}>
 
-              <AIThreadItem content={threadItem.answer?.text || ''} key={`answer-${threadItem.id}`} />
-            </CitationProvider>
-          }
-        </div>
+          {threadItem.answer?.text && <AIThreadItem content={threadItem.answer?.text || ''} key={`answer-${threadItem.id}`} />}
+        
+        </CitationProvider>
+        }
+        {hasClarifyingQuestions && <ClarifyingQuestions options={threadItem.answer?.object?.clarifyingQuestion?.options || []} question={threadItem.answer?.object?.clarifyingQuestion?.question || ''} type={threadItem.answer?.object?.clarifyingQuestion?.type || 'single'} />}
+      </div>
     </>
+  );
+};
+
+export const ClarifyingQuestions = ({ options, question, type }: { options: string[], question: string, type: 'single' | 'multiple' }) => {
+  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
+  const [customOption, setCustomOption] = useState<string>("");
+  const [isCustomSelected, setIsCustomSelected] = useState<boolean>(false);
+  const { handleSubmit } = useAgentStream();
+
+
+  const handleOptionChange = (value: string) => {
+    setSelectedOption(value);
+    setIsCustomSelected(value === "custom");
+  };
+
+  const renderRadioGroup = () => {
+    return <RadioGroup
+      value={selectedOption || ""}
+      onValueChange={handleOptionChange}
+      className="flex flex-col gap-2"
+    >
+      {options.map((option, index) => (
+        <div key={index} className="flex items-center space-x-2">
+          <RadioGroupItem value={option} id={`option-${index}`} />
+          <p className='text-sm'>{option}</p>
+        </div>
+      ))}
+
+      <div className="flex items-center space-x-2">
+        <RadioGroupItem value="custom" id="option-custom" />
+        <p className='text-sm'>Custom option</p>
+      </div>
+    </RadioGroup>
+  }
+
+  const renderCheckboxGroup = () => {
+    return <div className='flex flex-row flex-wrap gap-2'>
+      {options.map((option, index) => (
+        <div key={index} className="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-border" onClick={() => {
+          if (selectedOptions.includes(option)) {
+            setSelectedOptions(selectedOptions.filter((o) => o !== option));
+          } else {
+            setSelectedOptions([...selectedOptions, option]);
+          }
+        }}>
+          
+          {selectedOptions.includes(option) ? <IconCheck size={16} strokeWidth={2} className="text-brand" /> : <IconSquare size={16} strokeWidth={2} className="text-muted-foreground/20" />}
+          <p className='text-sm'>{option}</p>
+        </div>
+      ))}
+    </div>
+  }
+
+  return (
+    <div className="flex flex-col items-start gap-4 mt-2 border border-border rounded-2xl p-8 w-full">
+      <div className='flex flex-row items-center gap-1'>
+        <IconQuestionMark size={16} strokeWidth={2} className="text-brand" />
+        <p className='text-sm text-muted-foreground'>Follow up Question</p>
+      </div>
+
+      <p className='text-base'>{question}</p>
+
+      {type === 'single' ? renderRadioGroup() : renderCheckboxGroup()}
+
+      <div className="w-full mt-2">
+        <Textarea
+          value={customOption}
+          onChange={(e) => setCustomOption(e.target.value)}
+          placeholder="Enter your custom response..."
+          className="w-full px-3 py-2 h-[100px] border rounded-lg"
+        />
+      </div>
+
+
+      <Button
+        disabled={!selectedOption && !selectedOptions.length && !customOption}
+        onClick={() => {
+          let query = '';
+          if (type === 'single') {
+            query = `${selectedOption} \n\n ${customOption}`
+          } else {
+            query = `${selectedOptions.join(', ')} \n\n ${customOption}`
+          }
+          const formData = new FormData();
+          formData.append('query', query);
+          handleSubmit(formData);
+        }}
+      >
+        Submit
+      </Button>
+    </div>
   );
 };

@@ -5,11 +5,11 @@ import { createContext } from './context';
 import { createTypedEventEmitter } from './events';
 import {
         analysisTask,
-        finalAnswerTask,
         plannerTask,
+        refineQueryTask,
         reflectorTask,
-        webSearchSummaryTask,
-        webSearchTask
+        webSearchTask,
+        writerTask
 } from './tasks';
 
 // Define the workflow schema type
@@ -42,6 +42,8 @@ export type WorkflowEventSchema = {
                 };
                 answer: {
                         text: string;
+                        object?: any;
+                        objectType?: string;
                         final: boolean;
                         status?: "PENDING" | "COMPLETED" | "FAILED";
                 };
@@ -172,10 +174,10 @@ export const deepResearchWorkflow = ({
         builder.addTasks([
                 plannerTask,
                 webSearchTask,
-                webSearchSummaryTask,
                 reflectorTask,
                 analysisTask,
-                finalAnswerTask
+                writerTask,
+                refineQueryTask
         ]);
 
         return builder.build();

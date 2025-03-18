@@ -1,8 +1,9 @@
 import { ModelEnum } from '../../models';
-import { executeWebSearch } from '../../tools/web-search';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
-import { generateText, getHumanizedDate } from '../utils';
+import { executeWebSearch, generateText, getHumanizedDate } from '../utils';
+
+
 export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'web-search',
         execute: async ({ data, trace, events, context }) => {
@@ -40,7 +41,6 @@ ${webSearchResults.map((result) => `<web-search-results>\n\n - ${result.title}: 
 - Use headings or sections only when they help organize complex information
 - Include all source links and properly attribute information using [Source X] notation
 - Focus on preserving comprehensive information rather than summarizing
-
 </output_format>
 
 <citations>
@@ -53,25 +53,26 @@ ${webSearchResults.map((result) => `<web-search-results>\n\n - ${result.title}: 
 
       `
 
-      events?.update('flow', (current) => {
-        const stepId = String(Object.keys(current.steps || {}).length);
-        return {
-                ...current,
-                steps: {
-                        ...(current.steps || {}),
-                        [stepId]: {
-                                ...(current.steps?.[stepId] || {}),
-                                type: 'read',
-                                final: true,
-                                goalId: Number(goalId),
-                                status: 'PENDING' as const,
-                                results: webSearchResults?.map((result) => ({
-                                        title: result.title,
-                                        link: result.link                                                })),
+                events?.update('flow', (current) => {
+                        const stepId = String(Object.keys(current.steps || {}).length);
+                        return {
+                                ...current,
+                                steps: {
+                                        ...(current.steps || {}),
+                                        [stepId]: {
+                                                ...(current.steps?.[stepId] || {}),
+                                                type: 'read',
+                                                final: true,
+                                                goalId: Number(goalId),
+                                                status: 'PENDING' as const,
+                                                results: webSearchResults?.map((result) => ({
+                                                        title: result.title,
+                                                        link: result.link
+                                                })),
+                                        }
+                                }
                         }
-                }
-        }
-})
+                })
 
 
                 const summary = await generateText({
@@ -126,9 +127,10 @@ ${webSearchResults.map((result) => `<web-search-results>\n\n - ${result.title}: 
                         summary,
                 };
         },
-        route: ({context}) => {
+        route: ({ context }) => {
                 const allQueries = context?.get('queries') || [];
-                if(allQueries?.length < 6) {
+                console.log('allQueries', allQueries);
+                if (allQueries?.length < 6) {
                         return 'reflector';
                 }
 

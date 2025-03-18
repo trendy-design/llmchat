@@ -1,5 +1,4 @@
 import {
-        AgentEventPayload,
         deepResearchWorkflow
 } from '@repo/ai';
 import { NextRequest } from 'next/server';
@@ -30,7 +29,7 @@ export type AgentEventResponse = {
         threadId: string;
         threadItemId: string;
         parentThreadItemId: string;
-} & AgentEventPayload;
+};
 
 type StreamController = ReadableStreamDefaultController<Uint8Array>;
 
@@ -95,7 +94,6 @@ async function executeStream(
 ) {
         try {
                 const { signal } = abortController;
-                console.log("data",data);
                 const workflow = deepResearchWorkflow({
                         question: data.prompt,
                         threadId: data.threadId,
@@ -107,7 +105,6 @@ async function executeStream(
                 });
 
                 workflow.on('flow', (payload) => {
-                        console.log("event",payload);
 
                         sendMessage(controller, encoder, { 
                                 type: "message", 
@@ -120,11 +117,10 @@ async function executeStream(
 
                 // start should be typed
 
-                const result = await workflow.start('planner', {
+                const result = await workflow.start('refine-query', {
                         question: data.prompt
                 });
 
-                console.log("result",result);
 
                 sendMessage(controller, encoder, { 
                         type: 'done', 

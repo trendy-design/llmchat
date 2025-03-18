@@ -4,10 +4,10 @@ import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
 import { generateText } from '../utils';
 
-export const finalAnswerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
-  name: 'final-answer',
+export const writerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
+  name: 'writer',
   execute: async ({ trace, events, context, data }) => {
-    console.log('final-answer');
+    console.log('writer');
 
     const analysis = data?.analysis || '';
 
@@ -64,7 +64,7 @@ Your report should demonstrate subject matter expertise while remaining intellec
 
     const answer = await generateText({
       prompt,
-      model: ModelEnum.Claude_3_7_Sonnet,
+      model: ModelEnum.GEMINI_2_FLASH,
       onChunk: (chunk) => {
         events?.update('flow', (current) => ({
           ...current,
@@ -92,7 +92,7 @@ Your report should demonstrate subject matter expertise while remaining intellec
     }));
 
     trace?.span({ 
-      name: 'final-answer', 
+      name: 'writer', 
       input: prompt, 
       output: answer, 
       metadata: context?.getAll() 

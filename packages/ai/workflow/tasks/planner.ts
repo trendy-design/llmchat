@@ -11,9 +11,10 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
                 const messages = context?.get('messages') || [];
                 const question = context?.get('question') || '';
 
+                const currentYear = new Date().getFullYear();
+
                 const prompt = `
                         You're a strategic research planner. Your job is to analyze research questions and develop an initial approach to find accurate information through web searches.
-                        Current date and time: **${getHumanizedDate()}**
                         
                         **Research Question**:
                         <question>
@@ -43,9 +44,12 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
 - Use concise keyword phrases instead of full sentences
 - Maximum 8 words per query
 
+**Current date and time: **${getHumanizedDate()}**
+
+
 ## Examples of Good Queries:
-- "tesla model 3 battery lifespan data"
-- "climate change economic impact statistics 2023"
+- "tesla model 3 battery lifespan data ${currentYear}"
+- "climate change economic impact statistic ${currentYear}"
 - "javascript async await performance benchmarks"
 - "remote work productivity research findings"
 
@@ -54,6 +58,9 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
 - "What are the economic impacts of climate change?"
 - "When should I use async await in JavaScript?"
 - "Why is remote work increasing productivity?"
+
+**Important**:
+- Use current date and time for the queries unless speciffically asked for a different time period
                         
                         **Output Format (JSON)**:
                         - reasoning: A brief explanation of your first step to research the question
