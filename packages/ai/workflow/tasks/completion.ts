@@ -62,9 +62,13 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                         mcpServers: mcpConfig
                 }
 
-                const tools = await buildAllTools(config);
+                let tools: Awaited<ReturnType<typeof buildAllTools>> | undefined = undefined;
+                let toolsInstance: Awaited<ReturnType<typeof buildAllTools>> | undefined = undefined;
 
-
+                if(Object.values(mcpConfig)?.length !== 0) {
+                        toolsInstance = await buildAllTools(config);
+                        tools = toolsInstance;
+                }
 
                 const response = await generateText({
                         model,
@@ -118,7 +122,7 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                         }
                 }));
 
-                tools?.onClose();
+                toolsInstance?.onClose();
 
 
         }
