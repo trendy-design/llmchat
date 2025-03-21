@@ -1,3 +1,4 @@
+import { ToolsMenu } from '@/components/tools-menu';
 import { ChatMode, useChatStore } from '@/libs/store/chat.store';
 import {
   Button,
@@ -7,12 +8,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Flex,
-  Kbd,
+  Kbd
 } from '@repo/ui';
-import { IconArrowBack, IconBolt, IconChevronDown, IconGlobe, IconPlayerStopFilled, IconSchool } from '@tabler/icons-react';
+import { IconArrowBack, IconCheck, IconChevronDown, IconCodeDots, IconGlobe, IconPlayerStopFilled, IconTools, IconWorld } from '@tabler/icons-react';
 import { usePathname } from 'next/navigation';
+import { memo } from 'react';
 import { DotSpinner } from '../thread/step-status';
-import { ImageUpload } from './image-upload';
 
 export type TChatActions = {
   sendMessage: (message: string) => void;
@@ -20,13 +21,15 @@ export type TChatActions = {
 };
 
 
-export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) => {
+export const ChatActions = memo(({ sendMessage }: TChatActions) => {
   const pathname = usePathname();
   const isGenerating = useChatStore(state => state.isGenerating);
   const editor = useChatStore(state => state.editor);
   const chatMode = useChatStore(state => state.chatMode);
   const setChatMode = useChatStore(state => state.setChatMode);
   const stopGeneration = useChatStore(state => state.stopGeneration);
+
+
 
   const hasTextInput = !!editor?.getText();
 
@@ -35,16 +38,9 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
       label: "Deep Research",
       description: "Advance reserch",
       value:  ChatMode.Deep,
-      icon: <IconSchool size={16} strokeWidth={2} className="text-blue-400" />,
+      icon: <IconWorld size={16} strokeWidth={2} className="text-blue-400" />,
       webSearch: true,
     },
-    {
-      label: "Fast Research",
-      description: "Quick web research",
-      value:   ChatMode.Fast,
-      icon: <IconBolt size={16} strokeWidth={2} className="text-emerald-500" />,
-      webSearch: true,
-    }
     
   ]
 
@@ -52,17 +48,45 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
     {
       label: "Gemini Flash 2.0",
       value: ChatMode.GEMINI_2_FLASH,
-      webSearch: true,
+      // webSearch: true,
       icon: undefined
     },
 
     {
       label: "GPT 4o Mini",
       value: ChatMode.GPT_4o_Mini,
-      webSearch: true,
+      // webSearch: true,
+      icon: undefined
+    },
+
+    {
+      label: "O3 Mini",
+      value: ChatMode.O3_Mini,
+      // webSearch: true,
+      icon: undefined
+    },
+
+    {
+      label: "Claude 3.5 Sonnet",
+      value: ChatMode.CLAUDE_3_5_SONNET,
+      // webSearch: true,
+      icon: undefined
+    },
+
+    {
+      label: "Deepseek R1",
+      value: ChatMode.DEEPSEEK_R1,
+      // webSearch: true,
+      icon: undefined
+    },
+
+    {
+      label: "Claude 3.7 Sonnet",
+      value: ChatMode.CLAUDE_3_7_SONNET,
+      // webSearch: true,
       icon: undefined
     }
-    
+  
   ]
 
   const isChatPage = pathname.startsWith('/chat');
@@ -70,7 +94,7 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
   console.log("isChatPage", isChatPage)
 
   return (
-    <Flex className="w-full bg-secondary/50 border-t border-border p-1.5" items="center" justify="between">
+    <Flex className="w-full p-2 border-border bg-secondary/50 border-t" items="center" justify="between">
         {(isGenerating && !isChatPage) ? <GeneratingStatus /> : <Flex gap="xs" items="center">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -109,7 +133,7 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
                   {<p className='text-sm font-medium'>{option.label}</p>}
                   </div>
                   <div className='flex-1' />
-                  {option.webSearch && <IconGlobe size={14} strokeWidth={2} className="text-muted-foreground" />}
+                  {chatMode === option.value && <IconCheck size={14} strokeWidth={2} className="text-brand" />}
                 </div>
              
               </DropdownMenuItem>
@@ -117,14 +141,22 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
 
           </DropdownMenuContent>
         </DropdownMenu>
+        <Button size="xs" variant="ghost" className='pl-1 pr-2 gap-2'>
+          <div className='bg-blue-500/20 border-blue-500/30 border rounded-md p-0.5 size-5 flex items-center justify-center'>
+          <IconWorld size={20} strokeWidth={2} className="text-blue-500" /> 
+          </div>
+          Web Search
+        </Button>
+        <ToolsMenu />
 
+{/* 
         <ImageUpload
           id="image-upload"
           label="Upload Image"
           tooltip="Upload Image"
           showIcon
           handleImageUpload={handleImageUpload}
-        />
+        /> */}
       </Flex>}
 
       <Flex gap="md" items="center">
@@ -162,11 +194,27 @@ export const ChatActions = ({ sendMessage, handleImageUpload }: TChatActions) =>
       </Flex>
     </Flex>
   );
-};
+});
 
 
 export const GeneratingStatus = () => {
   return (
     <div className='text-xs text-muted-foreground flex flex-row gap-1 items-center px-2'><DotSpinner /> Generating...</div>
+  )
+}
+
+export const ToolIcon = ({className}: {className?: string}) => {
+  return (
+    <div className={`bg-yellow-500/20 border-yellow-500/30 border rounded-md p-0.5 size-5 flex items-center justify-center ${className}`}>
+    <IconTools size={20} strokeWidth={2} className="text-yellow-600" /> 
+    </div>
+  )
+}
+
+export const ToolResultIcon = () => {
+  return (
+    <div className='bg-emerald-500/20 border-emerald-500/30 border rounded-md p-0.5 size-5 flex items-center justify-center'>
+    <IconCodeDots size={20} strokeWidth={2} className="text-emerald-600" /> 
+    </div>
   )
 }

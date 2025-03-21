@@ -1,6 +1,6 @@
 import { LangfuseTraceClient } from 'langfuse';
 import { Context, ContextSchemaDefinition } from './context';
-import { ExecutionContext } from './engine';
+import { ExecutionContext, ParallelTaskRoute } from './engine';
 import { EventSchemaDefinition, TypedEventEmitter } from './events';
 
 // Define a WorkflowConfig type
@@ -20,6 +20,7 @@ export type TaskParams<
   events?: TypedEventEmitter<TEvent>;
   context?: Context<TContext>;
   config?: WorkflowConfig;
+  redirectTo: (nextTask: string | string[] | ParallelTaskRoute[]) => void;
 };
 
 export type TaskRouterParams<

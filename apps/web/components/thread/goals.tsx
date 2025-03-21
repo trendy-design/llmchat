@@ -8,7 +8,7 @@ import { StepStatus } from './step-status';
 
 export const GoalsRenderer = ({ goals, reasoning }: { goals: GoalWithSteps[], reasoning?: Reasoning }) => {
 
-  if(goals.length === 0) {
+  if(goals.length === 0 && !reasoning?.text) {
     return null;
   }
 

@@ -9,8 +9,12 @@ import { immer } from 'zustand/middleware/immer';
 export enum ChatMode {
   Fast = "fast",
   Deep = "deep",
+  O3_Mini = "o3-mini",
   GPT_4o_Mini = "gpt-4o-mini",
-  GEMINI_2_FLASH = "gemini-flash-2.0"
+  GEMINI_2_FLASH = "gemini-flash-2.0",
+  DEEPSEEK_R1 = "deepseek-r1",
+  CLAUDE_3_5_SONNET = "claude-3-5-sonnet",
+  CLAUDE_3_7_SONNET = "claude-3-7-sonnet",  
 }
 
 export type Thread = {
@@ -34,9 +38,6 @@ export type Source = {
   link: string;
   index: number;
 }
-
-
-
 
 export type Step = {
   type: 'search' | 'read';
@@ -67,11 +68,27 @@ export type Reasoning = {
   status?: ItemStatus;
 }
 
+export type ToolCall = {
+  type: 'tool-call';
+  toolCallId: string;
+  toolName: string;
+  args: any;
+}
+
+export type ToolResult = {
+  type: 'tool-result';
+  toolCallId: string;
+  toolName: string;
+  args: any;
+  result: any;
+}
 
 export type ThreadItem = {
   query: string;
   goals?: Goal[];
   reasoning?: Reasoning;
+  toolCalls?: Record<string, ToolCall>; 
+  toolResults?: Record<string, ToolResult>;
   steps?: Step[];
   answer?: Answer;
   sources?: Source[];
@@ -83,7 +100,6 @@ export type ThreadItem = {
   parentId?: string;
   threadId: string;
   metadata?: Record<string, any>;
-
 };
 
 export type MessageGroup = {
@@ -118,7 +134,8 @@ const loadInitialData = async () => {
     ? JSON.parse(configStr)
     : {
         model: models[0].id
-            };
+      };
+  const chatMode = config.chatMode || ChatMode.GPT_4o_Mini;
 
   const initialThreads = threads.length
     ? threads
@@ -126,8 +143,9 @@ const loadInitialData = async () => {
 
   return {
     threads: initialThreads,
-    model: models.find(m => m.id === config.model) || models[0],
-    currentThreadId: config.currentThreadId || initialThreads[0].id,
+    currentThreadId: config.currentThreadId || initialThreads[0]?.id,
+    config,
+    chatMode
   };
 };
 
@@ -275,7 +293,6 @@ export const useChatStore = create(
     isLoadingThreadItems: false,
     currentSources: [],
 
-    
     setChatMode: (chatMode: ChatMode) => {
       localStorage.setItem(CONFIG_KEY, JSON.stringify({ chatMode }));
       set(state => {
@@ -471,13 +488,12 @@ export const useChatStore = create(
 
 if (typeof window !== 'undefined') {
   // Initialize store with data from IndexedDB
-  loadInitialData().then(({ threads, model, currentThreadId }) => {
+  loadInitialData().then(({ threads, currentThreadId, chatMode }) => {
     useChatStore.setState({
-    threads,
-    model,
-    currentThreadId,
-    currentThread: threads.find(t => t.id === currentThreadId) || threads?.[0],
+      threads,
+      currentThreadId,
+      currentThread: threads.find(t => t.id === currentThreadId) || threads?.[0],
+      chatMode
+    });
   });
-});
-
 }

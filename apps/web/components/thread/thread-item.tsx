@@ -2,14 +2,16 @@ import { useAgentStream } from '@/hooks/use-agent';
 import { mdxComponents } from '@/libs/mdx/mdx-components';
 import { parseSourceTagsFromXML } from '@/libs/mdx/sources';
 import { useMdxChunker } from '@/libs/mdx/use-mdx-chunks';
-import { GoalWithSteps, ThreadItem as ThreadItemType, useChatStore } from '@/libs/store/chat.store';
-import { Button, cn, RadioGroup, RadioGroupItem, Textarea } from '@repo/ui';
+import { GoalWithSteps, ThreadItem as ThreadItemType, ToolCall, ToolResult, useChatStore } from '@/libs/store/chat.store';
+import { Badge, Button, cn, RadioGroup, RadioGroupItem, Textarea } from '@repo/ui';
 import { IconBook, IconCheck, IconQuestionMark, IconSquare } from '@tabler/icons-react';
 import { MDXRemote } from 'next-mdx-remote';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote/rsc';
 import { serialize } from 'next-mdx-remote/serialize';
 import { memo, useEffect, useMemo, useState } from 'react';
 import remarkGfm from 'remark-gfm';
+import { ToolIcon, ToolResultIcon } from '../chat-input/chat-actions';
+import { CodeBlock } from '../code-block/code-block';
 import { CitationProvider } from './citation-provider';
 import { GoalsRenderer } from './goals';
 
@@ -49,6 +51,7 @@ export const AIThreadItem = ({ content, className }: { content: string, classNam
       }
     })();
   }, [animatedText]);
+
 
   // const fixedMdx = useMemo(
   //   () =>
@@ -202,6 +205,17 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
   }, [threadItem.answer?.text]);
 
 
+  const toolCallAndResults = useMemo(() => {
+    return Object.entries(threadItem?.toolCalls || {}).map(([key, toolCall]) => {
+      const toolResult = threadItem?.toolResults?.[key];
+      return {
+        toolCall,
+        toolResult
+      }
+    });
+  }, [threadItem?.toolCalls, threadItem?.toolResults]);
+
+
 
   return (
     <>
@@ -216,6 +230,15 @@ export const ThreadItem = ({ threadItem }: { isAnimated: boolean; threadItem: Th
       <div className="flex w-full flex-col gap-4">
 
         <GoalsRenderer goals={goalsWithSteps || []} reasoning={threadItem?.reasoning} />
+
+       {
+        toolCallAndResults?.map((toolCallAndResult) => (
+          <div className='flex flex-col gap-1'>
+            <ToolCallRenderer toolCall={toolCallAndResult.toolCall} />
+            {toolCallAndResult.toolResult && <ToolResultRenderer toolResult={toolCallAndResult.toolResult} />}
+          </div>
+        ))
+       }
 
         {hasAnswer && !hasClarifyingQuestions && <div className='flex flex-row items-center gap-1'>
           <IconBook size={16} strokeWidth={2} className="text-brand" />
@@ -324,3 +347,76 @@ export const ClarifyingQuestions = ({ options, question, type }: { options: stri
     </div>
   );
 };
+
+
+export const ToolCallRenderer = ({toolCall}: {toolCall: ToolCall}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div className='flex flex-col bg-background items-start px-2.5 pt-2 pb-2 rounded-lg border border-border'>
+      <div 
+        className='flex flex-row items-center gap-2.5 w-full justify-between cursor-pointer' 
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className='flex flex-row items-center gap-2.5'>
+          <ToolIcon />
+          <Badge>Tool Use</Badge>
+          <p className='text-sm text-muted-foreground'>{toolCall.toolName}</p>
+        </div>
+        <div className='pr-2'>
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          >
+            <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      </div>
+      {isOpen && (
+        <div className='flex flex-row items-center gap-2.5 w-full mt-2'>
+          <CodeBlock variant='secondary' showHeader={false} lang='json' code={JSON.stringify(toolCall.args, null, 2)}></CodeBlock>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export const ToolResultRenderer = ({toolResult}: {toolResult: ToolResult}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div className='flex flex-col bg-background items-start px-2.5 pt-2 pb-2 rounded-lg border border-border'>
+      <div 
+        className='flex flex-row items-center gap-2.5 w-full justify-between cursor-pointer'
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className='flex flex-row items-center gap-2.5'>
+          <ToolResultIcon />
+          <Badge>Tool Result</Badge>
+          <p className='text-sm text-muted-foreground'>{toolResult.toolName}</p>
+        </div>
+        <div className='pr-2'>
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 12 12"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
+          >
+            <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </div>
+      </div>
+      {isOpen && (
+        <div className='flex flex-row items-center gap-2.5 w-full mt-2'>
+          <CodeBlock variant='secondary' showHeader={false} lang='json' code={JSON.stringify(toolResult.result, null, 2)}></CodeBlock>
+        </div>
+      )}
+    </div>
+  )
+}

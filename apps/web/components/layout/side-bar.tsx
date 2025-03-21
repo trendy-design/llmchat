@@ -8,9 +8,8 @@ import {
   SignUpButton,
   UserButton,
 } from '@clerk/nextjs';
-import { Button, cn, Flex, Kbd, Type } from '@repo/ui';
+import { Button, cn, Flex, Type } from '@repo/ui';
 import {
-  IconCommand,
   IconLayoutSidebar,
   IconMoon,
   IconPlus,
@@ -38,7 +37,6 @@ export const Sidebar = () => {
   const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
   const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
 
-  console.log("currentThreadId", currentThreadId)
 
   const groupedThreads: Record<string, Thread[]> = {
     today: [],
@@ -68,7 +66,7 @@ export const Sidebar = () => {
     if (threads.length === 0) return null;
     return (
       <Flex gap="xs" direction="col" items="start" className="w-full">
-        <Type size="xs" weight="regular" className="text-muted-foreground px-2 py-1">
+        <Type size="xs" weight="regular" className="text-xs text-emerald-300/50 px-2 py-1">
           {title}
         </Type>
         <Flex className="w-full gap-0.5" gap="none" direction="col">
@@ -107,10 +105,10 @@ export const Sidebar = () => {
               <IconPlus size={16} strokeWidth={2} /> {isSidebarOpen ? 'New' : ''}
             </div>
             {isSidebarOpen && <div className="flex-1" />}
-            {isSidebarOpen && <div className="flex flex-row gap-1">
+            {/* {isSidebarOpen && <div className="flex flex-row gap-1">
               <Kbd className='w-5'><IconCommand className='size-3 shrink-0' /></Kbd>
               <Kbd>N</Kbd>
-            </div>}
+            </div>} */}
           </Button>
           <Button
             size={isSidebarOpen ? "sm" : "icon-sm"}
@@ -122,10 +120,10 @@ export const Sidebar = () => {
               <IconSearch size={16} strokeWidth={2} /> {isSidebarOpen ? 'Search' : ''}
             </div>
             {isSidebarOpen && <div className="flex-1" />}
-            {isSidebarOpen && <div className="flex flex-row gap-1">
+            {/* {isSidebarOpen && <div className="flex flex-row gap-1">
               <Kbd className='w-5'><IconCommand className='size-3 shrink-0' /></Kbd>
               <Kbd>K</Kbd>
-            </div>}
+            </div>} */}
           </Button>
         </Flex>
 

@@ -102,7 +102,7 @@ export const HistoryItem = ({
       ) : (
         <>
           <Flex direction="col" items="start" className="w-full" gap="none">
-            <Type className="w-full line-clamp-1" size="sm" textColor="primary">
+            <Type className="w-full text-xs line-clamp-1 hover:text-foreground" size="xs" textColor="secondary">
               {thread.title} 
             </Type>
           </Flex>
@@ -113,6 +113,7 @@ export const HistoryItem = ({
           <Button
             variant="ghost"
             size="icon-xs"
+            className='group-hover:visible invisible'
             onClick={e => {
               e.stopPropagation();
               setOpenOptions(!openOptions);

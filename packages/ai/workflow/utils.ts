@@ -1,10 +1,10 @@
-import { CoreMessage, extractReasoningMiddleware, generateObject as generateObjectAi, streamText } from "ai";
+import { CoreMessage, extractReasoningMiddleware, generateObject as generateObjectAi, streamText, ToolSet } from "ai";
 import { format } from "date-fns";
 import { ZodSchema } from "zod";
 import { ModelEnum } from "../models";
 import { getLanguageModel } from "../providers";
 
-export const generateText = async ({ prompt, model, onChunk, messages, onReasoning }: { prompt: string, model: ModelEnum, onChunk?: (chunk: string) => void, messages?: CoreMessage[], onReasoning?: (chunk: string) => void },) => {
+export const generateText = async ({ prompt, model, onChunk, messages, onReasoning, tools, onToolCall, onToolResult }: { prompt: string, model: ModelEnum, onChunk?: (chunk: string) => void, messages?: CoreMessage[], onReasoning?: (chunk: string) => void, tools?: ToolSet, onToolCall?: (toolCall: any) => void, onToolResult?: (toolResult: any) => void  }) => {
         try {
 
                 const middleware = extractReasoningMiddleware({
@@ -14,9 +14,11 @@ export const generateText = async ({ prompt, model, onChunk, messages, onReasoni
 
 
                 const selectedModel = getLanguageModel(model, middleware);
-                const { fullStream } = !!messages?.length ? streamText({ system: prompt, model: selectedModel, messages }) : streamText({ prompt, model: selectedModel });
+                const { fullStream } = !!messages?.length ? streamText({ system: prompt, model: selectedModel, messages, tools, maxSteps: 10, toolChoice:"auto" }) : streamText({ prompt, model: selectedModel, tools, maxSteps: 10, toolChoice:"auto" });
                 let fullText = ""
                 let reasoning = ""
+                const toolCallsMap: Record<string, any> = {};
+                const toolResultsMap: Record<string, any> = {};  
                 for await (const chunk of fullStream) {
 
                         if (chunk.type === 'text-delta') {
@@ -27,7 +29,17 @@ export const generateText = async ({ prompt, model, onChunk, messages, onReasoni
                                 reasoning += chunk.textDelta;
                                 onReasoning?.(reasoning);
                         }
-
+                        if (chunk.type === 'tool-call') {
+                                console.log("tool-call", chunk);
+                                toolCallsMap[chunk.toolCallId] = chunk;
+                                onToolCall?.(toolCallsMap);
+                        }
+                        if (chunk.type === 'tool-result' as any) {
+                                console.log("tool-result", chunk);
+                                const toolResult = chunk as any;
+                                toolResultsMap[toolResult.toolCallId] = toolResult;
+                                onToolResult?.(toolResultsMap);
+                        }
 
                         if (chunk.type === "error") {
                                 console.error(chunk.error);
@@ -131,7 +143,7 @@ export const getHumanizedDate = () => {
 
 export const getSERPResults = async (queries: string[]) => {
         const myHeaders = new Headers();
-        myHeaders.append('X-API-KEY', process.env.SERPER_API_KEY || '');
+        myHeaders.append('X-API-KEY', process.env.SERPER_API_KEY || (self as any).SERPER_API_KEY || '');
         myHeaders.append('Content-Type', 'application/json');
 
         const raw = JSON.stringify(
@@ -167,7 +179,7 @@ export const getSERPResults = async (queries: string[]) => {
 export const getWebPageContent = async (url: string) => {
         try {
 
-                const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/reader`, {
+                const response = await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/reader`, {
                         method: 'POST',
                         headers: {
                                 'Content-Type': 'application/json',

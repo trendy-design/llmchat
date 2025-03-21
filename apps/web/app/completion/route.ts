@@ -1,16 +1,10 @@
 import {
+        CompletionMode,
         deepResearchWorkflow
 } from '@repo/ai';
 import { NextRequest } from 'next/server';
 import { z } from 'zod';
 
-
-enum CompletionMode {
-        Fast = "fast",
-        Deep = "deep",
-        GPT_4o_Mini = "gpt-4o-mini",
-        GEMINI_2_FLASH = "gemini-flash-2.0"
-}
 
 const completionRequestSchema = z.object({
         threadId: z.string(),
@@ -20,6 +14,7 @@ const completionRequestSchema = z.object({
         messages: z.any(),
         mode: z.nativeEnum(CompletionMode),
         maxIterations: z.number().optional(),
+        mcpConfig: z.record(z.string(), z.string()).optional(),
 });
 
 export type CompletionRequestType = z.infer<typeof completionRequestSchema>;
@@ -95,13 +90,15 @@ async function executeStream(
         try {
                 const { signal } = abortController;
                 const workflow = deepResearchWorkflow({
+                        mode: data.mode,
                         question: data.prompt,
                         threadId: data.threadId,
                         threadItemId: data.threadItemId,
                         messages: data.messages as any,
                         config: {
                                 maxIterations: data.maxIterations || 3
-                        }
+                        },
+                        mcpConfig: data.mcpConfig || {}
                 });
 
                 workflow.on('flow', (payload) => {
@@ -117,7 +114,7 @@ async function executeStream(
 
                 // start should be typed
 
-                const result = await workflow.start('refine-query', {
+                const result = await workflow.start('router', {
                         question: data.prompt
                 });
 

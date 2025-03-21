@@ -9,7 +9,8 @@
   "exports": {
     ".": "./main.ts",
     "./models": "./models.ts",
-    "./tools": "./tools/index.ts"
+    "./tools": "./tools/index.ts",
+    "./worker": "./workflow/worker-api.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^1.1.8",

@@ -14,7 +14,10 @@ const ChatSessionPage = ({
   params: { threadId: string }
 }) => {
   const router = useRouter();
-  const { scrollRef, contentRef } = useStickToBottom();
+  const { scrollRef, contentRef } = useStickToBottom({
+    stiffness:10,
+    damping:0,
+  });
   const currentSources = useChatStore(state => state.currentSources);
   const threadItems = useChatStore(state => state.threadItems);
   const setIsSourcesOpen = useAppStore(state => state.setIsSourcesOpen);
@@ -57,7 +60,7 @@ const ChatSessionPage = ({
         </Button>
       </div>
       <div className='flex flex-row flex-1 overflow-hidden w-full'>
-        <Flex className="mx-auto h-full flex-1 max-w-2xl items-center overflow-hidden" direction="col">
+        <Flex className="mx-auto h-full flex-1 max-w-3xl px-8 items-center overflow-hidden" direction="col">
           <div className="no-scrollbar flex-1 overflow-y-auto w-full p-4 overflow-x-hidden" ref={scrollRef}>
             <div ref={contentRef}>
               <Thread />

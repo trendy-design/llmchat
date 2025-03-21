@@ -5,12 +5,26 @@ import { createContext } from './context';
 import { createTypedEventEmitter } from './events';
 import {
         analysisTask,
+        completionTask,
+        modeRoutingTask,
         plannerTask,
         refineQueryTask,
         reflectorTask,
         webSearchTask,
         writerTask
 } from './tasks';
+
+
+export enum CompletionMode {
+        Fast = "fast",
+        Deep = "deep",
+        O3_Mini = "o3-mini",
+        GPT_4o_Mini = "gpt-4o-mini",
+        GEMINI_2_FLASH = "gemini-flash-2.0",
+        DEEPSEEK_R1 = "deepseek-r1",
+        CLAUDE_3_5_SONNET = "claude-3-5-sonnet",
+        CLAUDE_3_7_SONNET = "claude-3-7-sonnet",
+}
 
 // Define the workflow schema type
 export type WorkflowEventSchema = {
@@ -35,6 +49,8 @@ export type WorkflowEventSchema = {
                                 link: string;
                         }[];
                 }>;
+                toolCalls?: any[];
+                toolResults?: any[];
                 reasoning?: {
                         text: string;
                         final: boolean;
@@ -53,12 +69,14 @@ export type WorkflowEventSchema = {
 
 // Define the context schema type
 export type WorkflowContextSchema = {
+        mcpConfig: Record<string, string>;
         question: string;
         search_queries: string[];
         messages: {
                 role: "user" | "assistant";
                 content: string;
         }[];
+        mode: CompletionMode;
         goals: {
                 id: number;
                 text: string;
@@ -108,12 +126,16 @@ export type WorkflowConfig = {
 };
 
 export const deepResearchWorkflow = ({
+        mcpConfig = {},
+        mode,
         question, 
         threadId, 
         threadItemId,
         messages,
         config = {} // Add config parameter with default empty object
 }: {
+        mcpConfig: Record<string, string>,
+        mode: CompletionMode,
         question: string, 
         threadId: string, 
         threadItemId: string,
@@ -150,7 +172,9 @@ export const deepResearchWorkflow = ({
         });
 
         const context = createContext<WorkflowContextSchema>({
+                mcpConfig,
                 question,
+                mode,
                 search_queries: [],
                 messages: messages as any,
                 goals: [],
@@ -177,7 +201,9 @@ export const deepResearchWorkflow = ({
                 reflectorTask,
                 analysisTask,
                 writerTask,
-                refineQueryTask
+                refineQueryTask,
+                modeRoutingTask,
+                completionTask
         ]);
 
         return builder.build();

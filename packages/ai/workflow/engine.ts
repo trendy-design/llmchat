@@ -15,6 +15,7 @@ type TaskParams<
         events?: TypedEventEmitter<TEvent>;
         context?: Context<TContext>;
         config?: WorkflowConfig; // Add config parameter
+        redirectTo: (nextTask: string | string[] | ParallelTaskRoute[]) => void;
 }
 
 type TaskRouterParams<
@@ -25,7 +26,7 @@ type TaskRouterParams<
 }
 
 // Add a new type for parallel task routing with custom data
-type ParallelTaskRoute = {
+export type ParallelTaskRoute = {
   task: string;
   data?: any;
 };
@@ -33,7 +34,7 @@ type ParallelTaskRoute = {
 type TaskExecutionFunction<
   TEvent extends EventSchemaDefinition = any,
   TContext extends ContextSchemaDefinition = any
-> = (params: TaskParams<TEvent, TContext>) => Promise<any>;
+> = (params: TaskParams<TEvent, TContext>) => Promise<{ result: any; next?: string | string[] | ParallelTaskRoute[] } | any>;
 
 type TaskRouterFunction<
   TEvent extends EventSchemaDefinition = any,
@@ -220,7 +221,7 @@ export class WorkflowEngine<
                 await this.executeTask(initialTask, initialData);
         }
 
-        async executeTaskWithTimeout(task: TaskExecutionFunction<TEvent, TContext>, data: any, timeoutMs: number) {
+        async executeTaskWithTimeout(task: (params: TaskParams<TEvent, TContext>) => Promise<any>, data: any, timeoutMs: number) {
                 return Promise.race([
                         task({ 
                                 data, 
@@ -229,7 +230,8 @@ export class WorkflowEngine<
                                 trace: this.trace,
                                 events: this.events,
                                 context: this.context,
-                                config: this.config
+                                config: this.config,
+                                redirectTo: () => {} // This will be overridden by the actual function
                         }),
                         new Promise((_, reject) => setTimeout(() => reject(new Error('⏳ Task timeout exceeded')), timeoutMs)),
                 ]);
@@ -267,16 +269,23 @@ export class WorkflowEngine<
                         runningTasks: state.runningTasks.add(taskName),
                 }));
                 console.log(`🚀 Executing task "${taskName}" (Run #${executionCount + 1})`);
-                // if (data !== undefined) {
-                //         console.log(`   with data:`, data);
-                // }
-                // console.log(`   with context:`, this.ctx);
 
                 let attempt = 0;
+                let taskRedirect: string | string[] | ParallelTaskRoute[] | undefined;
+                
                 while (attempt <= (config.retryCount || 0)) {
                         try {
-                                const result = config.timeoutMs
-                                        ? await this.executeTaskWithTimeout(config.execute, data, config.timeoutMs)
+                                // Create a redirect callback function for the task
+                                const redirectTo = (nextTask: string | string[] | ParallelTaskRoute[]) => {
+                                        taskRedirect = nextTask;
+                                };
+                                
+                                const taskResult = config.timeoutMs
+                                        ? await this.executeTaskWithTimeout(
+                                                (params) => config.execute({ ...params, redirectTo }), 
+                                                data, 
+                                                config.timeoutMs
+                                          )
                                         : await config.execute({ 
                                                 data, 
                                                 executionContext: this.executionContext, 
@@ -284,8 +293,18 @@ export class WorkflowEngine<
                                                 trace: this.trace,
                                                 events: this.events,
                                                 context: this.context,
-                                                config: this.config
+                                                config: this.config,
+                                                redirectTo
                                           });
+
+                                // Check if the result is an object with direct routing information
+                                let result = taskResult;
+                                let directNextTasks;
+                                
+                                if (taskResult && typeof taskResult === 'object' && 'result' in taskResult && 'next' in taskResult) {
+                                        result = taskResult.result;
+                                        directNextTasks = taskResult.next;
+                                }
 
                                 this.executionContext.markTaskComplete(taskName, result);
                                 
@@ -298,14 +317,28 @@ export class WorkflowEngine<
                                         return result;
                                 }
 
-                                const nextTasks = config.route({ 
-                                        result, 
-                                        executionContext: this.executionContext, 
-                                        abort: this.executionContext.abortWorkflow.bind(this.executionContext), 
-                                        trace: this.trace,
-                                        events: this.events,
-                                        context: this.context
-                                });
+                                // Check redirection sources in priority order:
+                                // 1. Explicit redirect callback from within the task
+                                // 2. Return value with 'next' property
+                                // 3. Router function
+                                let nextTasks = taskRedirect;
+                                
+                                if (nextTasks === undefined && directNextTasks !== undefined) {
+                                        nextTasks = directNextTasks;
+                                }
+                                
+                                if (nextTasks === undefined) {
+                                        nextTasks = config.route({ 
+                                                result, 
+                                                executionContext: this.executionContext, 
+                                                abort: this.executionContext.abortWorkflow.bind(this.executionContext), 
+                                                trace: this.trace,
+                                                events: this.events,
+                                                context: this.context,
+                                                config: this.config,
+                                                redirectTo
+                                        });
+                                }
                                 
                                 // Check for special "end" route value
                                 if (nextTasks === "end") {
