@@ -27,6 +27,7 @@ export const models: Model[] = [
     provider: 'openai',
     maxTokens: 16384,
     contextWindow: 16384,
+
   },
   {
     id: ModelEnum.GPT_4o,

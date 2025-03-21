@@ -20,12 +20,14 @@ export type CodeBlockProps = {
   lang?: string;
   code?: string;
   showHeader?: boolean;
+  variant?: "default" | "secondary";
 };
 
 export const CodeBlock = ({
   lang = "plaintext",
   code,
   showHeader = true,
+  variant = "default",
 }: CodeBlockProps) => {
   const ref = useRef<HTMLElement>(null);
   const { copy, showCopied } = useClipboard();
@@ -37,9 +39,9 @@ export const CodeBlock = ({
   }, [code, lang]);
 
   return (
-    <div className="not-prose rounded-xl overflow-hidden bg-background border border-border my-4">
+    <div className={cn("not-prose w-full rounded-lg overflow-hidden bg-background border border-border my-4", variant === "secondary" && "bg-secondary")}>
       {showHeader && (
-        <div className="flex items-center pl-4 pr-1.5 py-1.5 bg-secondary/50 border-b border-border justify-between text-foreground">
+        <div className="flex items-center pl-4 pr-1.5 py-1 bg-secondary/50 border-b border-border justify-between text-foreground">
       
           <p className="text-muted-foreground text-xs tracking-wide flex flex-row items-center gap-2">
           <IconFileFilled size={14} className="opacity-50" />

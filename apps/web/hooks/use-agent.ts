@@ -1,7 +1,11 @@
 import { CompletionRequestType } from '@/app/completion/route';
+import { useApiKeysStore } from '@/libs/store/api-keys.store';
 import { Goal, Step, ThreadItem, useChatStore } from '@/libs/store/chat.store';
+import { useMcpToolsStore } from '@/libs/store/mcp-tools.store';
+import { useWorkflowWorker } from '@repo/ai/worker';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
+
 export const useAgentStream = () => {
   const { threadId:currentThreadId } = useParams();
   const updateThreadItem = useChatStore(state => state.updateThreadItem);
@@ -15,7 +19,36 @@ export const useAgentStream = () => {
   const updateThread = useChatStore(state => state.updateThread);
   const createThread = useChatStore(state => state.createThread);
   const chatMode = useChatStore(state => state.chatMode);
+  const getSelectedMCP = useMcpToolsStore(state => state.getSelectedMCP);
+  const apiKeys = useApiKeysStore(state => state.getAllKeys);
+
   const router = useRouter();
+  const { startWorkflow, abortWorkflow } = useWorkflowWorker((data) => {
+    if (data.type === "message" && data?.threadId && data?.threadItemId) {
+      // Convert goals and steps from objects to arrays for the store
+      const goalsArray = data.goals ? Object.values(data.goals) : [];
+      const stepsArray = data.steps ? Object.values(data.steps) : [];
+      
+      updateThreadItem(data?.threadId, {
+        id: data?.threadItemId,
+        parentId: data?.parentThreadItemId,
+        threadId: data?.threadId,
+        goals: goalsArray as Goal[],
+        steps: stepsArray as Step[],
+        answer: data?.answer,
+        final: data?.final,
+        status: data?.status,
+        query: data?.query,
+        reasoning: data?.reasoning,
+        toolCalls: data?.toolCalls,
+        toolResults: data?.toolResults
+      });
+    }
+    if(data.type === "done") {
+      setIsGenerating(false);
+    }
+  });
+
   const runAgent = async (body: CompletionRequestType) => {
 
     const abortController = new AbortController();
@@ -70,6 +103,9 @@ export const useAgentStream = () => {
                 // Convert goals and steps from objects to arrays for the store
                 const goalsArray = data.goals ? Object.values(data.goals) : [];
                 const stepsArray = data.steps ? Object.values(data.steps) : [];
+
+                console.log("toolCalls frontend", data?.toolCalls)
+                console.log("toolResults frontend", data?.toolResults)
                 
                 updateThreadItem(data?.threadId, {
                   id: data?.threadItemId,
@@ -81,7 +117,9 @@ export const useAgentStream = () => {
                   final: data?.final,
                   status: data?.status,
                   query: data?.query,
-                  reasoning: data?.reasoning
+                  reasoning: data?.reasoning,
+                  toolCalls: data?.toolCalls,
+                  toolResults: data?.toolResults
                 });
               }
             } catch (e) {
@@ -128,6 +166,8 @@ export const useAgentStream = () => {
     // Clear previous nodes for this thread item
 
 
+
+
     const aiThreadItem: ThreadItem = {
       id: optimisticAiThreadItemId,
       createdAt: new Date(),
@@ -144,7 +184,10 @@ export const useAgentStream = () => {
 
     console.log("formData", formData)
 
-    runAgent({
+    startWorkflow({
+      mode: chatMode as any,
+      question: formData.get('query') as string,
+      threadId,
       messages: [...(threadItems?.flatMap(item => [{
         role:"user" as const,
         content: item.query || ""
@@ -155,12 +198,30 @@ export const useAgentStream = () => {
         role:"user" as const,
         content: formData.get('query') as string || ""
       }],
-      prompt: formData.get('query') as string,
-      threadId,
+      mcpConfig: getSelectedMCP(),
       threadItemId: optimisticAiThreadItemId,
       parentThreadItemId: optimisticUserThreadItemId,
-      mode: chatMode as any
+      apiKeys: apiKeys()
     });
+
+
+    // runAgent({
+    //   messages: [...(threadItems?.flatMap(item => [{
+    //     role:"user" as const,
+    //     content: item.query || ""
+    //   },{
+    //     role:"assistant" as const,
+    //     content:item.answer?.text || ""
+    //   }])), {
+    //     role:"user" as const,
+    //     content: formData.get('query') as string || ""
+    //   }],
+    //   prompt: formData.get('query') as string,
+    //   threadId,
+    //   threadItemId: optimisticAiThreadItemId,
+    //   parentThreadItemId: optimisticUserThreadItemId,
+    //   mode: chatMode as any
+    // });
   };
 
 

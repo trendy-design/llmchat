@@ -87,13 +87,13 @@ export const ChatInput = ({showGreeting = true}: {showGreeting?: boolean}) => {
       >
         {showGreeting && (
           <div className='flex flex-col gap-2'>
-                    <h1 className="text-3xl font-medium font-sg tracking-tight opacity-30">Good Morning,</h1>
-
+          <h1 className="text-3xl font-medium font-sg tracking-tight opacity-30">Good Morning,</h1>
           <h1 className="text-3xl font-medium font-sg tracking-tight">How can i help you?</h1>
           </div>
         )}
 
         {renderChatBottom()}
+        
         <ChatFooter />
       </Flex>
     </div>
