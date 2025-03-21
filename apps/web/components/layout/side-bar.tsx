@@ -14,6 +14,7 @@ import {
   IconMoon,
   IconPlus,
   IconSearch,
+  IconSettings2,
   IconSun
 } from '@tabler/icons-react';
 import moment from 'moment';
@@ -148,7 +149,18 @@ export const Sidebar = () => {
         <div className='flex-1' />
         <Flex className="w-full p-2.5" direction="col" gap="sm">
 
+        <Flex gap="xs">
+              <Button
+                size="icon-xs"
+                variant="ghost"
+                onClick={() => {
+                  push('/settings');
+                }}
+              >
+               <IconSettings2 size={16} />
+              </Button>
 
+            </Flex>
          
             <Flex gap="xs">
               <Button
