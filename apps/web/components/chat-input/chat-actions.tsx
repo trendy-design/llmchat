@@ -91,7 +91,6 @@ export const ChatActions = memo(({ sendMessage }: TChatActions) => {
 
   const isChatPage = pathname.startsWith('/chat');
 
-  console.log("isChatPage", isChatPage)
 
   return (
     <Flex className="w-full p-2 border-border bg-secondary/50 border-t" items="center" justify="between">

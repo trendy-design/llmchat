@@ -1,4 +1,4 @@
-import { useAgentStream } from '@/hooks/use-agent';
+import { useAgentStream } from '@/hooks/agent-provider';
 import { mdxComponents } from '@/libs/mdx/mdx-components';
 import { parseSourceTagsFromXML } from '@/libs/mdx/sources';
 import { useMdxChunker } from '@/libs/mdx/use-mdx-chunks';
@@ -39,7 +39,6 @@ export const AIThreadItem = ({ content, className }: { content: string, classNam
   );
   const { chunkMdx } = useMdxChunker();
 
-  console.log('sourcessss', sources);
 
   useEffect(() => {
     (async () => {

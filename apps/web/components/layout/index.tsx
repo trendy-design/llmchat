@@ -1,4 +1,5 @@
 'use client';
+import { AgentProvider } from '@/hooks/agent-provider';
 import { useRootContext } from '@/libs/context/root';
 import { Flex, Toaster } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -42,7 +43,9 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
       {/* Main Content */}
       <Flex className="w-full">
         <motion.div className="flex flex-1 gap-0 overflow-hidden p-0">
+          <AgentProvider>
           <div className={containerClass}>{children}</div>
+          </AgentProvider>
         </motion.div>
         <CommandSearch />
       </Flex>

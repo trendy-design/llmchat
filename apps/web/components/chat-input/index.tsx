@@ -1,10 +1,10 @@
-import { useAgentStream } from '@/hooks/use-agent';
+import { useAgentStream } from '@/hooks/agent-provider';
 import { useChatEditor, useImageAttachment } from '@/lib/hooks';
 import { useChatStore } from '@/libs/store/chat.store';
 import { cn, slideUpVariant } from '@repo/shared/utils';
 import { Flex } from '@repo/ui';
 import { motion } from 'framer-motion';
-import { useCallback } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { ChatActions } from './chat-actions';
 import { ChatEditor } from './chat-editor';
 import { ChatFooter } from './chat-footer';
@@ -13,6 +13,7 @@ import { ImageDropzoneRoot } from './image-dropzone-root';
 import { SelectedContext } from './selected-context';
 
 export const ChatInput = ({showGreeting = true}: {showGreeting?: boolean}) => {
+  const { threadId: currentThreadId } = useParams();
   const { editor } = useChatEditor();
   const { attachment, clearAttachment, handleImageUpload, dropzonProps } = useImageAttachment();
   const threadItems = useChatStore(state => state.threadItems);
@@ -20,18 +21,32 @@ export const ChatInput = ({showGreeting = true}: {showGreeting?: boolean}) => {
   const model = useChatStore(state => state.model);
   const chatMode = useChatStore(state => state.chatMode);
   const abortController = useChatStore(state => state.abortController);
-  const currentThreadId = useChatStore(state => state.currentThreadId);
-
-  const onSubmit = useCallback(() => {
-    if (!editor) {
+  const createThread = useChatStore(state => state.createThread);
+  
+  const router = useRouter();
+  const sendMessage = async () => {
+    if(!editor?.getText()) {
       return;
     }
 
+    let threadId = currentThreadId?.toString();
+
+    if(!threadId) {
+      const newThread = await createThread({
+        title: editor?.getText()
+      });
+      threadId = newThread.id;
+    }
+  
+    // First submit the message
     const formData = new FormData();
     formData.append('query', editor.getText());
-    handleSubmit(formData);
+    handleSubmit(formData, threadId);
     editor.commands.clearContent();
-  }, [editor, currentThreadId, model, chatMode, abortController, threadItems]);
+    if(currentThreadId !== threadId) { 
+      router.push(`/c/${threadId}`);
+    }
+  };
 
   const renderChatInput = () => (
     <div className=" w-full">
@@ -46,12 +61,10 @@ export const ChatInput = ({showGreeting = true}: {showGreeting?: boolean}) => {
             <Flex direction="col" className="w-full">
               <ImageAttachment attachment={attachment} clearAttachment={clearAttachment} />
               <Flex className="flex w-full flex-row items-end gap-0 p-3 md:pl-3">
-                <ChatEditor sendMessage={() => {}} editor={editor} />
+                <ChatEditor sendMessage={sendMessage} editor={editor} />
               </Flex>
               <ChatActions
-                sendMessage={() => {
-                  onSubmit();
-                }}
+                sendMessage={sendMessage}
                 handleImageUpload={handleImageUpload}
               />
             </Flex>

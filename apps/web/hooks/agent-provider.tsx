@@ -5,9 +5,18 @@ import { useMcpToolsStore } from '@/libs/store/mcp-tools.store';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
+import { createContext, ReactNode, useContext, useMemo } from 'react';
 
-export const useAgentStream = () => {
-  const { threadId:currentThreadId } = useParams();
+type AgentContextType = {
+  runAgent: (body: CompletionRequestType) => Promise<void>;
+  handleSubmit: (formData: FormData, newThreadId?: string) => Promise<void>;
+  updateContext: (threadId: string, data: any) => void;
+};
+
+const AgentContext = createContext<AgentContextType | undefined>(undefined);
+
+export const AgentProvider = ({ children }: { children: ReactNode }) => {
+  const { threadId: currentThreadId } = useParams();
   const updateThreadItem = useChatStore(state => state.updateThreadItem);
   const setIsGenerating = useChatStore(state => state.setIsGenerating);
   const setAbortController = useChatStore(state => state.setAbortController);
@@ -22,10 +31,10 @@ export const useAgentStream = () => {
   const getSelectedMCP = useMcpToolsStore(state => state.getSelectedMCP);
   const apiKeys = useApiKeysStore(state => state.getAllKeys);
 
+
   const router = useRouter();
   const { startWorkflow, abortWorkflow } = useWorkflowWorker((data) => {
     if (data.type === "message" && data?.threadId && data?.threadItemId) {
-      // Convert goals and steps from objects to arrays for the store
       const goalsArray = data.goals ? Object.values(data.goals) : [];
       const stepsArray = data.steps ? Object.values(data.steps) : [];
       
@@ -50,7 +59,6 @@ export const useAgentStream = () => {
   });
 
   const runAgent = async (body: CompletionRequestType) => {
-
     const abortController = new AbortController();
     setAbortController(abortController);
     if(!abortController) {
@@ -68,7 +76,6 @@ export const useAgentStream = () => {
       cache: 'no-store',
       signal: abortController?.signal,
     });
-
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -98,9 +105,7 @@ export const useAgentStream = () => {
               const data = JSON.parse(line.slice(6));
 
               if (data.type === "message" && data?.threadId && data?.threadItemId) {
-
                 console.log("reasoning", data.reasoning)
-                // Convert goals and steps from objects to arrays for the store
                 const goalsArray = data.goals ? Object.values(data.goals) : [];
                 const stepsArray = data.steps ? Object.values(data.steps) : [];
 
@@ -134,24 +139,15 @@ export const useAgentStream = () => {
     }
   };
 
-  const handleSubmit = async (formData: FormData) => {
-    let threadId = currentThreadId?.toString();
-    const query = formData.get('query') as string;
-
+  const handleSubmit = async (formData: FormData, newThreadId?: string) => {
+    let threadId = currentThreadId?.toString() || newThreadId;
 
     if(threadId) {
+      console.log("updating thread")
       updateThread({
         id: threadId,
         title: formData.get('query') as string,
       });
-    }
-
-    if(!threadId) {
-        const newThread = await createThread({
-          title: query
-        });
-        router.push(`/c/${newThread.id}`);
-        threadId = newThread.id;
     }
 
     if(!threadId) {
@@ -162,11 +158,6 @@ export const useAgentStream = () => {
 
     const optimisticUserThreadItemId = nanoid();
     const optimisticAiThreadItemId = nanoid();
-
-    // Clear previous nodes for this thread item
-
-
-
 
     const aiThreadItem: ThreadItem = {
       id: optimisticAiThreadItemId,
@@ -204,27 +195,7 @@ export const useAgentStream = () => {
       apiKeys: apiKeys()
     });
 
-
-    // runAgent({
-    //   messages: [...(threadItems?.flatMap(item => [{
-    //     role:"user" as const,
-    //     content: item.query || ""
-    //   },{
-    //     role:"assistant" as const,
-    //     content:item.answer?.text || ""
-    //   }])), {
-    //     role:"user" as const,
-    //     content: formData.get('query') as string || ""
-    //   }],
-    //   prompt: formData.get('query') as string,
-    //   threadId,
-    //   threadItemId: optimisticAiThreadItemId,
-    //   parentThreadItemId: optimisticUserThreadItemId,
-    //   mode: chatMode as any
-    // });
   };
-
-
 
   const updateContext = (threadId: string, data: any) => {
     console.log("updateContext", data)
@@ -236,5 +207,23 @@ export const useAgentStream = () => {
     });
   }
 
-  return { runAgent, handleSubmit, updateContext };
+  const value = useMemo(() => ({
+    runAgent,
+    handleSubmit,
+    updateContext
+  }), [currentThreadId, threadItems]);
+
+  return (
+    <AgentContext.Provider value={value}>
+      {children}
+    </AgentContext.Provider>
+  );
+};
+
+export const useAgentStream = (): AgentContextType => {
+  const context = useContext(AgentContext);
+  if (context === undefined) {
+    throw new Error('useAgentStream must be used within an AgentProvider');
+  }
+  return context;
 };

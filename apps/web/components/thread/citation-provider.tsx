@@ -99,7 +99,6 @@ export const CitationProvider = ({ sources, children }: PropsWithChildren<{ sour
     processCitations();
   }, [sources]);
 
-  console.log("citations", citations, sources);
 
   return (
     <CitationProviderContext.Provider value={{ citations }}>
