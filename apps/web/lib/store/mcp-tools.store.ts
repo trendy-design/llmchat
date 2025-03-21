@@ -64,14 +64,7 @@ export const useMcpToolsStore = create<McpState & McpActions>()(
     })),
     {
       name: 'mcp-tools-storage',
-      skipHydration: true,
-      storage: typeof window !== 'undefined' 
-        ? createJSONStorage(() => localStorage)
-        : createJSONStorage(() => ({
-            getItem: () => null,
-            setItem: () => {},
-            removeItem: () => {},
-          })),
+      storage: createJSONStorage(() => localStorage),
     }
   )
 );

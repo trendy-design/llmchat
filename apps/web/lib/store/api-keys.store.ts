@@ -37,20 +37,6 @@ export const useApiKeysStore = create<ApiKeysState>()(
     }),
     {
       name: 'api-keys-storage',
-      skipHydration: true,
-      // Only use storage in browser context
-      storage: typeof window !== 'undefined' 
-        ? {
-            getItem: (name) => {
-              const str = localStorage.getItem(name);
-              return str ? JSON.parse(str) : null;
-            },
-            setItem: (name, value) => {
-              localStorage.setItem(name, JSON.stringify(value));
-            },
-            removeItem: (name) => localStorage.removeItem(name),
-          }
-        : undefined,
     }
   )
 );
