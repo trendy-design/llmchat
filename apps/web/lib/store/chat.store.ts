@@ -100,6 +100,7 @@ export type ThreadItem = {
   parentId?: string;
   threadId: string;
   metadata?: Record<string, any>;
+  mode: ChatMode;
 };
 
 export type MessageGroup = {
@@ -421,12 +422,10 @@ export const useChatStore = create(
         const updatedItem = { ...existingItem, ...threadItem, threadId };
 
         // Immediately update status changes in the database
-        if(existingItem.status !== threadItem.status) {
-          await db.threadItems.put(updatedItem);
-        } else {
+     
           // For other changes, use throttled batch updates
           throttledThreadItemUpdate(updatedItem);
-        }
+        
 
         set(state => {
           const index = state.threadItems.findIndex((t: ThreadItem) => t.id === threadItem.id);

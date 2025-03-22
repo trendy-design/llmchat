@@ -2,17 +2,16 @@ import { useAgentStream } from '@/hooks/agent-provider';
 import { useChatEditor, useImageAttachment } from '@/lib/hooks';
 import { useChatStore } from '@/libs/store/chat.store';
 import { cn, slideUpVariant } from '@repo/shared/utils';
-import { Flex } from '@repo/ui';
+import { Button, Flex } from '@repo/ui';
+import { IconPlus } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import { ChatActions } from './chat-actions';
 import { ChatEditor } from './chat-editor';
-import { ChatFooter } from './chat-footer';
 import { ImageAttachment } from './image-attachment';
 import { ImageDropzoneRoot } from './image-dropzone-root';
-import { SelectedContext } from './selected-context';
 
-export const ChatInput = ({showGreeting = true}: {showGreeting?: boolean}) => {
+export const ChatInput = ({showGreeting = true, showBottomBar = true}: {showGreeting?: boolean, showBottomBar?: boolean}) => {
   const { threadId: currentThreadId } = useParams();
   const { editor } = useChatEditor();
   const { attachment, clearAttachment, handleImageUpload, dropzonProps } = useImageAttachment();
@@ -41,7 +40,10 @@ export const ChatInput = ({showGreeting = true}: {showGreeting?: boolean}) => {
     // First submit the message
     const formData = new FormData();
     formData.append('query', editor.getText());
-    handleSubmit(formData, threadId);
+    handleSubmit({
+      formData,
+      newThreadId: threadId,
+    });
     editor.commands.clearContent();
     if(currentThreadId !== threadId) { 
       router.push(`/c/${threadId}`);
@@ -50,12 +52,12 @@ export const ChatInput = ({showGreeting = true}: {showGreeting?: boolean}) => {
 
   const renderChatInput = () => (
     <div className=" w-full">
-      <Flex direction="col" className="bg-background w-full rounded-xl border border-border">
+      <Flex direction="col" className="bg-background z-10 shadow-sm relative w-full rounded-2xl border border-hard">
         <motion.div
           variants={slideUpVariant}
           initial="initial"
           animate={editor?.isEditable ? 'animate' : 'initial'}
-          className="flex w-full flex-shrink-0 overflow-hidden rounded-xl"
+          className="flex w-full  flex-shrink-0 overflow-hidden rounded-xl"
         >
           <ImageDropzoneRoot dropzoneProps={dropzonProps}>
             <Flex direction="col" className="w-full">
@@ -71,15 +73,23 @@ export const ChatInput = ({showGreeting = true}: {showGreeting?: boolean}) => {
           </ImageDropzoneRoot>
         </motion.div>
       </Flex>
+      {showBottomBar && <div className="flex flex-row mx-2 items-center h-12 px-2 pt-2 -mt-2 rounded-b-2xl border-x bg-indigo-900/5  border-b border-indigo-900/20 gap-2">
+<span className="text-xs font-light px-2">
+    <span className="text-indigo-900/70">powered by</span> <span className="font-bold text-indigo-900/90">Trendy Design</span>
+</span>
+<div className="flex-1"/>
+<Button variant="bordered" size="xs" rounded="full" tooltip="Bring your own API key" className='px-2'>
+  <IconPlus size={16} strokeWidth={2} />
+  Add API key</Button>
+      </div>}
     </div>
   );
 
   const renderChatBottom = () => (
     <>
-      <Flex items="center" justify="center" gap="sm" className="mb-2">
+      <Flex items="center" justify="center" gap="sm">
         {/* <ScrollToBottomButton /> */}
       </Flex>
-      <SelectedContext />
       {renderChatInput()}
     </>
   );
@@ -88,26 +98,27 @@ export const ChatInput = ({showGreeting = true}: {showGreeting?: boolean}) => {
     <div
       className={cn(
         'flex w-full flex-col items-start',
-        !threadItems?.length && 'h-[calc(100vh-12rem)] justify-start'
+        !threadItems?.length && 'h-[calc(100vh-16rem)] justify-start'
       )}
     >
       <Flex
         items="start"
         justify="start"
         direction="col"
-        gap="sm"
-        className={cn('w-full', threadItems?.length > 0 ? 'mb-2' : 'h-full')}
+        className={cn('w-full pb-4', threadItems?.length > 0 ? 'mb-0' : 'h-full')}
       >
         {showGreeting && (
-          <div className='flex flex-col gap-2'>
-          <h1 className="text-3xl font-medium font-sg tracking-tight opacity-30">Good Morning,</h1>
+          <div className='flex flex-col w-full items-center gap-1 mb-8'>
+          <h1 className="text-3xl font-medium font-sg tracking-tight opacity-50">Good morning,</h1>
           <h1 className="text-3xl font-medium font-sg tracking-tight">How can i help you?</h1>
           </div>
         )}
 
         {renderChatBottom()}
+
+
         
-        <ChatFooter />
+        {/* <ChatFooter /> */}
       </Flex>
     </div>
   );

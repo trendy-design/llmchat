@@ -14,13 +14,13 @@ import {
 import { Moon, Plus, Sun } from 'lucide-react';
 import moment from 'moment';
 import { useTheme } from 'next-themes';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-
 export const CommandSearch = () => {
   const { isCommandSearchOpen, setIsCommandSearchOpen } = useRootContext();
   const threads = useChatStore(state => state.threads);
   const switchThread = useChatStore(state => state.switchThread);
-
+  const router = useRouter();
   const { theme, setTheme } = useTheme();
 
   useEffect(() => {
@@ -63,9 +63,9 @@ export const CommandSearch = () => {
   return (
     <CommandDialog open={isCommandSearchOpen} onOpenChange={setIsCommandSearchOpen}>
       <CommandInput placeholder="Search..." />
-      <CommandSeparator />
+      <CommandSeparator className='opacity-50' />
 
-      <CommandList className="pt-1.5">
+      <CommandList className="pt-1">
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
           {actions.map(action => (
@@ -91,6 +91,7 @@ export const CommandSearch = () => {
                 className={cn('w-full gap-2')}
                 onSelect={value => {
                   switchThread(thread.id);
+                  router.push(`/c/${thread.id}`);
                   onClose();
                 }}
               >

@@ -30,10 +30,10 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
     <Dialog {...props}>
       <DialogOverlay className="!bg-transparent backdrop-blur-0" />
       <DialogContent
-        className="overflow-hidden border border-transparent p-0 md:w-[600px]"
+        className="overflow-hidden border border-transparent p-0 md:w-[560px]"
         ariaTitle="Command Search"
       >
-        <Command className="[&_[cmdk-group-heading]]:text-muted-foreground bg-background pb-2 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
+        <Command className="[&_[cmdk-group-heading]]:text-muted-foreground bg-background pb-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-1 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
           {children}
         </Command>
       </DialogContent>
@@ -46,11 +46,11 @@ const CommandInput = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
   <div className="flex items-center px-3" cmdk-input-wrapper="">
-    <Search size={24} strokeWidth="2" className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+    <Search size={24} strokeWidth="2" className="mr-2 h-3 w-3 shrink-0 opacity-50" />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
-        'placeholder:text-muted-foreground flex h-9 w-full rounded-md bg-transparent py-2.5 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50',
+        'placeholder:text-muted-foreground flex h-8 w-full rounded-md bg-transparent py-2 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50',
         className
       )}
       {...props}
@@ -117,7 +117,7 @@ const CommandItem = React.forwardRef<
   <CommandPrimitive.Item
     ref={ref}
     className={cn(
-      'text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground relative flex min-h-11 cursor-pointer items-center gap-2 rounded-lg !px-3 !py-2 text-xs font-medium outline-none aria-disabled:pointer-events-none aria-disabled:opacity-50 md:text-sm',
+      'text-foreground aria-selected:bg-accent aria-selected:text-accent-foreground relative flex min-h-8 cursor-pointer items-center gap-2 rounded-lg !px-3 !py-2 text-xs font-medium outline-none aria-disabled:pointer-events-none aria-disabled:opacity-50 md:text-sm',
       className
     )}
     {...props}
@@ -148,5 +148,6 @@ export {
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut,
+  CommandShortcut
 };
+

@@ -16,10 +16,10 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
   const { isSidebarOpen, isMobileSidebarOpen, setIsMobileSidebarOpen } = useRootContext();
 
   const containerClass =
-    'relative flex bg-secondary/50 dark:bg-background flex-1 flex-col h-[100dvh] w-full overflow-hidden shadow-sm';
+    'relative flex flex-1 flex-col h-[100dvh] bg-secondary w-full overflow-hidden shadow-sm';
 
   return (
-    <div className="flex min-h-[96dvh] w-full flex-row overflow-hidden">
+    <div className="flex min-h-[96dvh] bg-secondary w-full flex-row overflow-hidden">
       <Flex className="hidden lg:flex">
         <AnimatePresence>{isSidebarOpen && <Sidebar />}</AnimatePresence>
       </Flex>
@@ -44,7 +44,13 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
       <Flex className="w-full">
         <motion.div className="flex flex-1 gap-0 overflow-hidden p-0">
           <AgentProvider>
-          <div className={containerClass}>{children}</div>
+          <div className={containerClass}>
+          <div className='flex flex-row h-full w-full'>
+          <div className='flex flex-col w-full gap-2 overflow-y-auto'>
+            {children}
+            </div>
+            </div>
+            </div>
           </AgentProvider>
         </motion.div>
         <CommandSearch />

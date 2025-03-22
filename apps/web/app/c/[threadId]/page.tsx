@@ -4,6 +4,7 @@ import { Thread } from '@/components/thread/thread-combo';
 import { useAppStore } from '@/libs/store/app.store';
 import { useChatStore } from '@/libs/store/chat.store';
 import { Button, Flex, WebsitePreview } from '@repo/ui';
+import { IconSettings2 } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useStickToBottom } from 'use-stick-to-bottom';
@@ -44,30 +45,35 @@ const ChatSessionPage = ({
 
   return (
     <div className='flex flex-row h-full w-full'>
-      <div className='flex flex-col w-full gap-2 overflow-y-auto h-[98dvh] border border-border rounded-md my-2 mr-2 bg-background dark:bg-secondary'>
-      <div className='flex flex-row items-center justify-between px-1.5 py-1.5 border-b border-soft'>
-      <Button variant='ghost' size='sm'>
-          Share
-        </Button>
-        <h1 className='text-sm max-w-[300px] truncate text-muted-foreground'>{thread?.title ?? 'Untitled'}
-
+      <div className='flex flex-col w-full gap-2 overflow-y-auto relative'>
+      
+      <div className='flex flex-col relative flex-1 overflow-hidden w-full'>
+      <div className='flex flex-row items-center justify-between bg-gradient-to-b from-secondary via-secondary/55 to-transparent z-[999] absolute w-full top-0 px-3 pt-2 pb-4'>
+   
+        <h1 className='text-sm max-w-[300px] truncate font-medium'>{thread?.title ?? 'Untitled'}
+{/* 
           <span className='text-xs text-muted-foreground'>{thread?.id}</span>
-          <span className='text-xs text-muted-foreground'>{threadItems.length} Items</span>
+          <span className='text-xs text-muted-foreground'>{threadItems.length} Items</span> */}
         </h1>
        
-        <Button variant='ghost' size='sm' onClick={() => setIsSourcesOpen(prev => !prev)}>
+       <div className='flex flex-row gap-2'>
+        <Button variant="secondary" size='sm' rounded="full" onClick={() => setIsSourcesOpen(prev => !prev)}>
           Sources
         </Button>
+        <Button variant="secondary" size='icon-sm' rounded="full" onClick={() => router.push('/settings')}>
+          <IconSettings2 size={16} strokeWidth={2} />
+        </Button>
+        </div>
       </div>
-      <div className='flex flex-row flex-1 overflow-hidden w-full'>
-        <Flex className="mx-auto h-full flex-1 max-w-3xl px-8 items-center overflow-hidden" direction="col">
-          <div className="no-scrollbar flex-1 overflow-y-auto w-full p-4 overflow-x-hidden" ref={scrollRef}>
+        <Flex className="mx-auto h-full flex-1  w-full px-8 items-center overflow-hidden" direction="col">
+          <div className="no-scrollbar flex-1 max-w-3xl overflow-y-auto w-full p-4 overflow-x-hidden" ref={scrollRef}>
             <div ref={contentRef}>
               <Thread />
             </div>
           </div>
-          <ChatInput showGreeting={false}/>
-
+          <div className='flex flex-col w-full mx-auto max-w-3xl'>
+          <ChatInput showGreeting={false} showBottomBar={false}/>
+          </div>
         </Flex>
        
       </div>

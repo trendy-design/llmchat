@@ -17,7 +17,7 @@ const config = {
       typography: ({}) => ({
         prosetheme: {
           css: {
-            '--tw-prose-body': 'hsl(var(--muted-foreground))',
+            '--tw-prose-body': 'hsl(var(--foreground) / 0.8)',
             '--tw-prose-headings': 'hsl(var(--foreground))',
             '--tw-prose-lead': 'hsl(var(--muted-foreground))',
             '--tw-prose-links': 'hsl(var(--brand))',

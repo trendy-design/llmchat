@@ -1,14 +1,14 @@
 /* Base styles for light mode */
 pre[class*="language-"],
 code[class*="language-"] {
-  color: #0f172a;
+  color: #212121;
 }
 
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
-  color: #64748b;
+  color: #797979;
 }
 
 .token.punctuation {
@@ -19,13 +19,13 @@ code[class*="language-"] {
 .token.tag,
 .token.constant,
 .token.symbol {
-  color: #e11d48;
+  color: #c63e5c;
 }
 
 .token.boolean,
 .token.number,
 .token.variable {
-  color: #9333ea;
+  color: #9f42f5;
 }
 
 .token.selector,
@@ -46,16 +46,16 @@ code[class*="language-"] {
 .token.attr-value,
 .token.function,
 .token.class-name {
-  color: #2563eb;
+  color: #215ddf;
 }
 
 .token.keyword {
-  color: #f2a5fc;
+  color: #c267ce;
 }
 
 .token.regex,
 .token.important {
-  color: #ea580c;
+  color: #e57437;
 }
 
 .token.important {
@@ -67,7 +67,7 @@ code[class*="language-"] {
 }
 
 .token.parameter {
-  color: #dc2626;
+  color: #da4e52;
 }
 
 /* Dark mode styles using .dark class */

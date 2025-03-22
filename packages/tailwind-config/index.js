@@ -15,7 +15,8 @@ module.exports = {
       colors: {
         border: {
           DEFAULT: 'hsl(var(--border))',
-          soft: 'hsl(var(--border-soft))',
+          soft: 'hsl(var(--soft))',
+          hard: 'hsl(var(--hard))',
         },
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
@@ -76,6 +77,9 @@ module.exports = {
           soft: 'hsl(var(--border-soft))',
           hard: 'hsl(var(--border-hard))',
         },
+      },
+      borderWidth:{
+        DEFAULT:"0.8px"
       },
       borderRadius: {
         lg: 'var(--radius)',

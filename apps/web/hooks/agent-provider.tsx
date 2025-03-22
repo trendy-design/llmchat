@@ -9,7 +9,7 @@ import { createContext, ReactNode, useContext, useMemo } from 'react';
 
 type AgentContextType = {
   runAgent: (body: CompletionRequestType) => Promise<void>;
-  handleSubmit: (formData: FormData, newThreadId?: string) => Promise<void>;
+  handleSubmit: ({ formData, newThreadId, existingThreadItemId, newChatMode }: { formData: FormData, newThreadId?: string, existingThreadItemId?: string, newChatMode?: string }) => Promise<void>;
   updateContext: (threadId: string, data: any) => void;
 };
 
@@ -26,7 +26,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
   const setCurrentThreadItem = useChatStore(state => state.setCurrentThreadItem);
   const setCurrentSources = useChatStore(state => state.setCurrentSources);
   const updateThread = useChatStore(state => state.updateThread);
-  const createThread = useChatStore(state => state.createThread);
   const chatMode = useChatStore(state => state.chatMode);
   const getSelectedMCP = useMcpToolsStore(state => state.getSelectedMCP);
   const apiKeys = useApiKeysStore(state => state.getAllKeys);
@@ -37,7 +36,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     if (data.type === "message" && data?.threadId && data?.threadItemId) {
       const goalsArray = data.goals ? Object.values(data.goals) : [];
       const stepsArray = data.steps ? Object.values(data.steps) : [];
-      
+
       updateThreadItem(data?.threadId, {
         id: data?.threadItemId,
         parentId: data?.parentThreadItemId,
@@ -53,7 +52,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         toolResults: data?.toolResults
       });
     }
-    if(data.type === "done") {
+    if (data.type === "done") {
       setIsGenerating(false);
     }
   });
@@ -61,11 +60,11 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
   const runAgent = async (body: CompletionRequestType) => {
     const abortController = new AbortController();
     setAbortController(abortController);
-    if(!abortController) {
+    if (!abortController) {
       return
     }
     setIsGenerating(true);
-  
+
     const response = await fetch(`/completion`, {
       method: 'POST',
       headers: {
@@ -111,7 +110,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
 
                 console.log("toolCalls frontend", data?.toolCalls)
                 console.log("toolResults frontend", data?.toolResults)
-                
+
                 updateThreadItem(data?.threadId, {
                   id: data?.threadItemId,
                   parentId: data?.parentThreadItemId,
@@ -139,10 +138,10 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const handleSubmit = async (formData: FormData, newThreadId?: string) => {
+  const handleSubmit = async ({ formData, newThreadId, existingThreadItemId, newChatMode }: { formData: FormData, newThreadId?: string, existingThreadItemId?: string, newChatMode?: string }) => {
     let threadId = currentThreadId?.toString() || newThreadId;
 
-    if(threadId) {
+    if (threadId) {
       console.log("updating thread")
       updateThread({
         id: threadId,
@@ -150,14 +149,13 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
       });
     }
 
-    if(!threadId) {
+    if (!threadId) {
       return;
     }
 
     console.log("threadId", threadId)
 
-    const optimisticUserThreadItemId = nanoid();
-    const optimisticAiThreadItemId = nanoid();
+    const optimisticAiThreadItemId = existingThreadItemId ?? nanoid();
 
     const aiThreadItem: ThreadItem = {
       id: optimisticAiThreadItemId,
@@ -166,6 +164,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
       status: 'PENDING' as const,
       threadId,
       query: formData.get('query') as string,
+      mode: newChatMode ?? chatMode as any,
     };
 
     createThreadItem(aiThreadItem);
@@ -176,22 +175,22 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     console.log("formData", formData)
 
     startWorkflow({
-      mode: chatMode as any,
+      mode: newChatMode ?? chatMode as any,
       question: formData.get('query') as string,
       threadId,
       messages: [...(threadItems?.flatMap(item => [{
-        role:"user" as const,
+        role: "user" as const,
         content: item.query || ""
-      },{
-        role:"assistant" as const,
-        content:item.answer?.text || ""
+      }, {
+        role: "assistant" as const,
+        content: item.answer?.text || ""
       }])), {
-        role:"user" as const,
+        role: "user" as const,
         content: formData.get('query') as string || ""
       }],
       mcpConfig: getSelectedMCP(),
       threadItemId: optimisticAiThreadItemId,
-      parentThreadItemId: optimisticUserThreadItemId,
+      parentThreadItemId: "",
       apiKeys: apiKeys()
     });
 

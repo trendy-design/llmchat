@@ -9,7 +9,6 @@ import { TooltipProvider, cn } from '@repo/ui';
 import { GeistMono } from 'geist/font/mono';
 import type { Viewport } from 'next';
 import { Metadata } from 'next';
-import { ThemeProvider } from 'next-themes';
 import localFont from 'next/font/local';
 
 import './globals.css';
@@ -101,16 +100,21 @@ export default function ParentLayout({
           data-domain="llmchat.co"
           src="https://plausible.io/js/script.tagged-events.js"
         />
+
+<script
+  crossOrigin="anonymous"
+  src="//unpkg.com/react-scan/dist/auto.global.js"
+></script>
       </head>
       <body>
         <ClerkProvider>
         <RootProvider>
-          <ThemeProvider
+          {/* <ThemeProvider
             attribute="class"
             defaultTheme="light"
             enableSystem
             disableTransitionOnChange
-          >
+          > */}
             <TooltipProvider>
               <ReactQueryProvider>
                 <AuthProvider>
@@ -118,7 +122,7 @@ export default function ParentLayout({
                 </AuthProvider>
               </ReactQueryProvider>
             </TooltipProvider>
-          </ThemeProvider>
+          {/* </ThemeProvider> */}
         </RootProvider>
         </ClerkProvider>
       </body>

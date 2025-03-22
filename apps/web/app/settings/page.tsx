@@ -58,10 +58,7 @@ export default function SettingsPage() {
                 }
         ]
 
-        return <div className='flex flex-row h-full w-full'>
-                        <div className='flex flex-col w-full gap-2 overflow-y-auto h-[98dvh] border border-border rounded-md my-2 mr-2 bg-background dark:bg-secondary'>
-        
-        <div className="max-w-xl w-full mx-auto pt-8">
+        return <div className="max-w-xl w-full mx-auto pt-8">
                 <h1 className="text-2xl font-bold mb-4 w-full">Settings</h1>
                 <div className="flex flex-col divide-y w-full divide-border">
                         {apiKeyList.map((apiKey) => (
@@ -81,6 +78,5 @@ export default function SettingsPage() {
                         ))}
                 </div>
                         </div>
-                </div>
-        </div>
+      
 }

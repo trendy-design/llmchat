@@ -69,8 +69,8 @@ export const HistoryItem = ({
   };
 
   const containerClasses = cn(
-    'gap-2 w-full group w-full cursor-pointer flex flex-row items-center h-8 py-0.5 pl-2 pr-1 rounded-md hover:bg-foreground/5',
-    (isActive) || isEditing ? 'bg-muted' : ''
+    'gap-2 w-full group w-full cursor-pointer flex flex-row items-center h-7 py-0.5 pl-2 pr-1 rounded-md hover:bg-tertiary',
+    (isActive) || isEditing ? 'bg-tertiary' : ''
   );
 
   const handleEditClick = () => {
@@ -92,7 +92,7 @@ export const HistoryItem = ({
       {isEditing ? (
         <Input
           variant="ghost"
-          className="h-6 pl-0 text-sm"
+          className="h-5 pl-0 text-xs"
           ref={historyInputRef}
           value={title || 'Untitled'}
           onChange={handleInputChange}
@@ -101,8 +101,8 @@ export const HistoryItem = ({
         />
       ) : (
         <>
-          <Flex direction="col" items="start" className="w-full" gap="none">
-            <Type className="w-full text-xs line-clamp-1 hover:text-foreground" size="xs" textColor="secondary">
+          <Flex direction="col" items="start" className="flex-1 overflow-hidden" gap="none">
+            <Type className="w-full text-xs line-clamp-1 hover:text-foreground" size="xs">
               {thread.title} 
             </Type>
           </Flex>
@@ -113,7 +113,7 @@ export const HistoryItem = ({
           <Button
             variant="ghost"
             size="icon-xs"
-            className='group-hover:visible invisible'
+            className='shrink-0 group-hover:visible invisible'
             onClick={e => {
               e.stopPropagation();
               setOpenOptions(!openOptions);

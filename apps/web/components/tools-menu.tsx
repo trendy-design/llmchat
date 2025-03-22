@@ -11,6 +11,7 @@ import { ToolIcon } from "./chat-input/chat-actions";
 
 
 export const ToolsMenu = () => {
+        const [isOpen, setIsOpen] = useState(false);
         const [openAddToolDialog, setOpenAddToolDialog] = useState(false);
         const [mcpToolName, setMcpToolName] = useState("");
         const [mcpToolUrl, setMcpToolUrl] = useState("");
@@ -19,13 +20,10 @@ export const ToolsMenu = () => {
 
         return (
                 <>
-                        <DropdownMenu>
+                        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                                 <DropdownMenuTrigger asChild>
-                                        <Button size="xs" variant="ghost" className='pl-1 gap-2'>
-                                                <div className='bg-yellow-500/20 border-yellow-500/30 border rounded-md p-0.5 size-5 flex items-center justify-center'>
-                                                        <IconTools size={20} strokeWidth={2} className="text-yellow-600" />
-                                                </div>
-                                                Tools
+                                        <Button size="icon" tooltip="Tools" variant={isOpen ? "secondary" : "ghost"} className='gap-2' rounded="full">
+                                                        <IconTools size={18} strokeWidth={2} className="text-muted-foreground" />
                                                 {selectedMCP.length > 0 && (
                                                         <Badge variant="outline" className="ml-1 px-1">
                                                                 {selectedMCP.length}
@@ -54,9 +52,9 @@ export const ToolsMenu = () => {
                                         {
                                                 mcpConfig && Object.keys(mcpConfig).length === 0 && (
                                                         <div className='flex flex-col justify-center items-center gap-2 h-[150px]'>
-                                                                <IconTools size={16} strokeWidth={2} className="text-muted-foreground/50" />
-                                                                <p className='text-xs text-muted-foreground'>No tools found</p>
-                                                                <Button size="xs" variant="bordered" className='text-xs text-muted-foreground' onClick={() => {
+                                                                <IconTools size={16} strokeWidth={2} className="text-muted-foreground" />
+                                                                <p className='text-sm text-muted-foreground'>No tools found</p>
+                                                                <Button rounded="full" variant="bordered" className='text-xs text-muted-foreground' onClick={() => {
                                                                         setOpenAddToolDialog(true);
                                                                 }}>
                                                                         <IconPlus size={14} strokeWidth={2} className="text-muted-foreground" />
@@ -112,7 +110,7 @@ export const ToolsMenu = () => {
 
                                                 )
                                         }
-                                        <div className='flex flex-row gap-1 items-center divide-x-2 divide-border border-border border rounded-md p-0.5 px-2.5 w-full'>
+                                        <div className='flex flex-row gap-1 items-center divide-x-2 divide-border border-border border rounded-full w-full'>
                                                 <ToolIcon className="opacity-50" />
                                                 <Input
                                                         placeholder="Tool Name"
