@@ -7,7 +7,7 @@ import { Badge, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, 
 
 import { IconCheck, IconTools } from "@tabler/icons-react";
 import { useState } from "react";
-import { ToolIcon } from "./chat-input/chat-actions";
+import { ToolIcon } from "./icons";
 
 
 export const ToolsMenu = () => {
@@ -22,10 +22,10 @@ export const ToolsMenu = () => {
                 <>
                         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                                 <DropdownMenuTrigger asChild>
-                                        <Button size={selectedMCP.length > 0 ? "sm" : "icon"} tooltip="Tools" variant={(isOpen || selectedMCP.length > 0) ? "secondary" : "ghost"} className='gap-2' rounded="full">
+                                        <Button size={selectedMCP.length > 0 ? "sm" : "icon"} tooltip="Tools" variant={(isOpen) ? "secondary" : "ghost"} className='gap-2' rounded="full">
                                                         <IconTools size={18} strokeWidth={2} className="text-muted-foreground" />
                                                 {selectedMCP.length > 0 && (
-                                                        <Badge variant="outline"  className="h-5 rounded-full px-2.5 bg-foreground text-background">
+                                                        <Badge variant="secondary"  className="h-5 min-w-5 flex bor items-center justify-center text-xs rounded-full px-1.5">
                                                                 {selectedMCP.length}
                                                         </Badge>
                                                 )}

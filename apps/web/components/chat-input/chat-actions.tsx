@@ -5,14 +5,72 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
   Flex,
   Kbd
 } from '@repo/ui';
-import { IconArrowUp, IconCheck, IconChevronDown, IconCodeDots, IconPaperclip, IconPlayerStopFilled, IconTools, IconWorld } from '@tabler/icons-react';
+import { IconArrowUp, IconCheck, IconChevronDown, IconPaperclip, IconPlayerStopFilled, IconWorld } from '@tabler/icons-react';
 import { usePathname } from 'next/navigation';
 import { memo, useState } from 'react';
+import { DeepResearchIcon } from '../icons';
 import { DotSpinner } from '../thread/step-status';
+
+
+export const chatOptions = [
+  {
+    label: "Deep Research",
+    description: "In depth research on complex topic",
+    value: ChatMode.Deep,
+    icon: <DeepResearchIcon />,
+  },
+
+]
+
+export const modelOptions = [
+  {
+    label: "Gemini Flash 2.0",
+    value: ChatMode.GEMINI_2_FLASH,
+    // webSearch: true,
+    icon: undefined
+  },
+
+  {
+    label: "GPT 4o Mini",
+    value: ChatMode.GPT_4o_Mini,
+    // webSearch: true,
+    icon: undefined
+  },
+
+  {
+    label: "O3 Mini",
+    value: ChatMode.O3_Mini,
+    // webSearch: true,
+    icon: undefined
+  },
+
+  {
+    label: "Claude 3.5 Sonnet",
+    value: ChatMode.CLAUDE_3_5_SONNET,
+    // webSearch: true,
+    icon: undefined
+  },
+
+  {
+    label: "Deepseek R1",
+    value: ChatMode.DEEPSEEK_R1,
+    // webSearch: true,
+    icon: undefined
+  },
+
+  {
+    label: "Claude 3.7 Sonnet",
+    value: ChatMode.CLAUDE_3_7_SONNET,
+    // webSearch: true,
+    icon: undefined
+  }
+
+]
 
 export type TChatActions = {
   sendMessage: (message: string) => void;
@@ -32,61 +90,6 @@ export const ChatActions = memo(({ sendMessage }: TChatActions) => {
 
 
   const hasTextInput = !!editor?.getText();
-
-  const chatOptions = [
-    {
-      label: "Deep Research",
-      description: "Advance reserch",
-      value: ChatMode.Deep,
-      icon: <IconWorld size={16} strokeWidth={2} className="text-blue-400" />,
-    },
-
-  ]
-
-  const modelOptions = [
-    {
-      label: "Gemini Flash 2.0",
-      value: ChatMode.GEMINI_2_FLASH,
-      // webSearch: true,
-      icon: undefined
-    },
-
-    {
-      label: "GPT 4o Mini",
-      value: ChatMode.GPT_4o_Mini,
-      // webSearch: true,
-      icon: undefined
-    },
-
-    {
-      label: "O3 Mini",
-      value: ChatMode.O3_Mini,
-      // webSearch: true,
-      icon: undefined
-    },
-
-    {
-      label: "Claude 3.5 Sonnet",
-      value: ChatMode.CLAUDE_3_5_SONNET,
-      // webSearch: true,
-      icon: undefined
-    },
-
-    {
-      label: "Deepseek R1",
-      value: ChatMode.DEEPSEEK_R1,
-      // webSearch: true,
-      icon: undefined
-    },
-
-    {
-      label: "Claude 3.7 Sonnet",
-      value: ChatMode.CLAUDE_3_7_SONNET,
-      // webSearch: true,
-      icon: undefined
-    }
-
-  ]
 
   const isChatPage = pathname.startsWith('/chat');
 
@@ -168,21 +171,6 @@ export const GeneratingStatus = () => {
   )
 }
 
-export const ToolIcon = ({ className }: { className?: string }) => {
-  return (
-    <div className={`bg-yellow-800 border-yellow-900 border rounded-md p-0.5 size-5 flex items-center justify-center ${className}`}>
-      <IconTools size={20} strokeWidth={2} className="text-yellow-400" />
-    </div>
-  )
-}
-
-export const ToolResultIcon = () => {
-  return (
-    <div className='bg-emerald-800 border-emerald-500/30 border rounded-md p-0.5 size-5 flex items-center justify-center'>
-      <IconCodeDots size={20} strokeWidth={2} className="text-emerald-400" />
-    </div>
-  )
-}
 
 export const ChatModeOptions = ({
   chatMode,
@@ -194,60 +182,6 @@ export const ChatModeOptions = ({
 }) => {
 
 
-  const chatOptions = [
-    {
-      label: "Deep Research",
-      description: "Advance reserch",
-      value: ChatMode.Deep,
-      icon: <IconWorld size={16} strokeWidth={2} className="text-blue-400" />,
-    },
-
-  ]
-
-  const modelOptions = [
-    {
-      label: "Gemini Flash 2.0",
-      value: ChatMode.GEMINI_2_FLASH,
-      // webSearch: true,
-      icon: undefined
-    },
-
-    {
-      label: "GPT 4o Mini",
-      value: ChatMode.GPT_4o_Mini,
-      // webSearch: true,
-      icon: undefined
-    },
-
-    {
-      label: "O3 Mini",
-      value: ChatMode.O3_Mini,
-      // webSearch: true,
-      icon: undefined
-    },
-
-    {
-      label: "Claude 3.5 Sonnet",
-      value: ChatMode.CLAUDE_3_5_SONNET,
-      // webSearch: true,
-      icon: undefined
-    },
-
-    {
-      label: "Deepseek R1",
-      value: ChatMode.DEEPSEEK_R1,
-      // webSearch: true,
-      icon: undefined
-    },
-
-    {
-      label: "Claude 3.7 Sonnet",
-      value: ChatMode.CLAUDE_3_7_SONNET,
-      // webSearch: true,
-      icon: undefined
-    }
-
-  ]
 
   return (
 
@@ -256,17 +190,20 @@ export const ChatModeOptions = ({
           <DropdownMenuItem key={option.label} onSelect={() => {
             setChatMode(option.value);
           }} className='h-auto'>
-            <div className='flex flex-row w-full items-center gap-2.5 py-1.5 px-1.5'>
+            <div className='flex flex-row w-full items-start gap-1.5 py-1.5 px-1.5'>
+              <div className='flex flex-col pt-1 gap-0'>
               {option.icon}
+              </div>
 
               <div className='flex flex-col gap-0'>
-                {<p className='text-sm font-medium'>{option.label}</p>}
-                {option.description && <p className='text-xs text-muted-foreground'>{option.description}</p>}
+                {<p className='text-sm font-medium m-0'>{option.label}</p>}
+                {option.description && <p className='text-xs font-light text-muted-foreground'>{option.description}</p>}
               </div>
             </div>
 
           </DropdownMenuItem>
         ))}
+        <DropdownMenuSeparator />
         {modelOptions.map(option => (
           <DropdownMenuItem key={option.label} onSelect={() => {
             setChatMode(option.value);

@@ -7,6 +7,7 @@ import { IconPlus } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import { useShallow } from 'zustand/react/shallow';
+import { SettingsModal } from '../settings-modal';
 import { ChatActions } from './chat-actions';
 import { ChatEditor } from './chat-editor';
 import { ImageAttachment } from './image-attachment';
@@ -79,9 +80,11 @@ export const ChatInput = ({ showGreeting = true, showBottomBar = true }: { showG
           <span className="text-yellow-700/90">powered by</span> <span className="font-bold text-yellow-900/90">Trendy Design</span>
         </span>
         <div className="flex-1" />
+        <SettingsModal>
         <Button variant="bordered" size="xs" rounded="full" tooltip="Bring your own API key" className='px-2'>
           <IconPlus size={16} strokeWidth={2} />
           Add API key</Button>
+          </SettingsModal>
       </div>}
     </div>
   );

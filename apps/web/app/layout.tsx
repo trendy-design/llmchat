@@ -95,11 +95,11 @@ export default function ParentLayout({
     >
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        {process.env.NODE_ENV === 'production' && <script
+        {/* {process.env.NODE_ENV === 'production' && <script
           defer
           data-domain="llmchat.co"
           src="https://plausible.io/js/script.tagged-events.js"
-        />}
+        />} */}
 
 <script
   crossOrigin="anonymous"

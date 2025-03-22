@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 
 import { Button, cn } from "@repo/ui";
-import { IconCheck, IconCopy, IconFileFilled } from "@tabler/icons-react";
+import { IconBrandPython, IconBrandReact, IconBrandTypescript, IconCheck, IconCopy, IconFileFilled, IconJson, IconMarkdown, IconTerminal } from "@tabler/icons-react";
 import "./code-block.css";
 
 export type CodeBlockProps = {
@@ -47,6 +47,29 @@ export const CodeBlock = ({
       setShowExpandButton(preRef.current.scrollHeight > maxHeight);
     }
   }, [code, maxHeight]);
+
+  const getLangIcon = () => {
+    switch (lang) {
+      case "bash":
+        return <IconTerminal size={14} />;
+      case "json":
+        return <IconJson size={14} />;
+      case "yaml":
+        return <IconJson size={14} />;
+      case "python":
+        return <IconBrandPython size={14} />;
+      case "typescript":
+        return <IconBrandTypescript size={14} />;
+      case "jsx":
+        return <IconBrandReact size={14} />;
+      case "markdown":
+        return <IconMarkdown size={14} />;
+      case "plaintext":
+        return <IconFileFilled size={14} />;
+      default:
+        return <IconFileFilled size={14} />;
+    }
+  }
 
   return (
     <div className={cn("not-prose w-full rounded-xl overflow-hidden bg-background border border-border my-4", variant === "secondary" && "bg-secondary")}>
