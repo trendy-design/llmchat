@@ -54,7 +54,7 @@ export const ChatInput = ({ showGreeting = true, showBottomBar = true }: { showG
 
   const renderChatInput = () => (
     <div className=" w-full">
-      <Flex direction="col" className="bg-background z-10 shadow-sm relative w-full rounded-2xl border border-hard">
+      <Flex direction="col" className="bg-background z-10 relative w-full rounded-2xl border border-hard">
         <motion.div
           variants={slideUpVariant}
           initial="initial"
@@ -75,7 +75,7 @@ export const ChatInput = ({ showGreeting = true, showBottomBar = true }: { showG
           </ImageDropzoneRoot>
         </motion.div>
       </Flex>
-      {showBottomBar && <div className="flex flex-row mx-2 items-center h-12 px-2 pt-2 -mt-2 rounded-b-2xl border-x bg-yellow-700/10  border-b border-yellow-900/20 gap-2">
+      {showBottomBar && <div className="flex flex-row mx-2 items-center h-12 px-2 pt-2 -mt-2 rounded-b-2xl border-x bg-yellow-700/5  border-b border-yellow-900/20 gap-2">
         <span className="text-xs font-light px-2">
           <span className="text-yellow-700/90">powered by</span> <span className="font-bold text-yellow-900/90">Trendy Design</span>
         </span>

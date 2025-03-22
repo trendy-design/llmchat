@@ -83,8 +83,8 @@ export const Sidebar = () => {
     //   }
     // }}
     className={cn(
-      "relative flex h-[100dvh] flex-shrink-0 flex-col transition-all border-r border-border/0 duration-200",
-      isSidebarOpen ? 'w-[220px] h-[99dvh] my-1 top-0 bg-background rounded-r-xl border-r border-y border-border/70' : 'w-[50px]'
+      "relative flex h-[100dvh] flex-shrink-0 flex-col transition-all border-r border-dashed border-border/0 duration-200",
+      isSidebarOpen ? 'w-[240px] h-full top-0 bg-background border-r border-border/70' : 'w-[50px]'
     )}>
       <Flex className="w-full justify-between items-center px-2 py-2">
         {isSidebarOpen && <Type size="sm" weight="medium">deep.new</Type>}
@@ -98,7 +98,7 @@ export const Sidebar = () => {
         </Button>
       </Flex>
 
-      <Flex direction="col" className="no-scrollbar w-full flex-1">
+      <Flex direction="col" className="w-full flex-1 overflow-hidden">
         <Flex direction="col" className="w-full px-2" gap="sm">
         <Button
             size={isSidebarOpen ? "sm" : "icon"}
@@ -129,7 +129,7 @@ export const Sidebar = () => {
             direction="col"
             gap="md"
             className={cn(
-              "no-scrollbar w-full flex-1 border-t border-border/70 border-dashed mt-3 overflow-y-auto p-3",
+              "w-full flex-1 border-t border-border/70 border-dashed mt-3 overflow-y-auto p-3",
               isSidebarOpen ? "flex" : "hidden"
             )}
           >
@@ -142,9 +142,7 @@ export const Sidebar = () => {
           </Flex>
         )}
 
-        <div className="flex-1" />
-        
-        <Flex className="w-full p-2" gap="xs" direction={"col"} justify={isSidebarOpen ? "between" : "center"}>
+        <Flex className="w-full p-2 mt-auto" gap="xs" direction={"col"} justify={isSidebarOpen ? "between" : "center"}>
         
         
 
