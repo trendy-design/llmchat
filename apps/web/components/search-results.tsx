@@ -27,7 +27,7 @@ export const SearchResultsList = ({ results }: SearchResultsType) => {
         <Flex gap="xs" className="mb-4 w-full flex-wrap overflow-x-hidden" items="stretch">
           {results.map(result => (
             <Flex
-              className="bg-tertiary max-w-[300px] shrink-0 cursor-pointer rounded-md p-0.5 pl-1.5 pr-2.5 hover:opacity-80"
+              className="bg-tertiary max-w-[300px] shrink-0 font-mono cursor-pointer rounded-full p-0.5 pl-1.5 pr-2.5 hover:opacity-80"
               direction="col"
               key={result.link}
               justify="between"

@@ -5,11 +5,11 @@ import { useMcpToolsStore } from '@/libs/store/mcp-tools.store';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
-import { createContext, ReactNode, useContext, useMemo } from 'react';
+import { createContext, ReactNode, useContext } from 'react';
 
 type AgentContextType = {
   runAgent: (body: CompletionRequestType) => Promise<void>;
-  handleSubmit: ({ formData, newThreadId, existingThreadItemId, newChatMode }: { formData: FormData, newThreadId?: string, existingThreadItemId?: string, newChatMode?: string }) => Promise<void>;
+  handleSubmit: ({ formData, newThreadId, existingThreadItemId, newChatMode, messages }: { formData: FormData, newThreadId?: string, existingThreadItemId?: string, newChatMode?: string, messages?: ThreadItem[] }) => Promise<void>;
   updateContext: (threadId: string, data: any) => void;
 };
 
@@ -20,8 +20,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
   const updateThreadItem = useChatStore(state => state.updateThreadItem);
   const setIsGenerating = useChatStore(state => state.setIsGenerating);
   const setAbortController = useChatStore(state => state.setAbortController);
-  const thread = useChatStore(state => state.currentThread);
-  const threadItems = useChatStore(state => state.threadItems);
   const createThreadItem = useChatStore(state => state.createThreadItem);
   const setCurrentThreadItem = useChatStore(state => state.setCurrentThreadItem);
   const setCurrentSources = useChatStore(state => state.setCurrentSources);
@@ -138,7 +136,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const handleSubmit = async ({ formData, newThreadId, existingThreadItemId, newChatMode }: { formData: FormData, newThreadId?: string, existingThreadItemId?: string, newChatMode?: string }) => {
+  const handleSubmit = async ({ formData, newThreadId, existingThreadItemId, newChatMode, messages }: { formData: FormData, newThreadId?: string, existingThreadItemId?: string, newChatMode?: string, messages?: ThreadItem[] }) => {
     let threadId = currentThreadId?.toString() || newThreadId;
 
     if (threadId) {
@@ -178,16 +176,19 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
       mode: newChatMode ?? chatMode as any,
       question: formData.get('query') as string,
       threadId,
-      messages: [...(threadItems?.flatMap(item => [{
-        role: "user" as const,
-        content: item.query || ""
-      }, {
-        role: "assistant" as const,
-        content: item.answer?.text || ""
-      }])), {
-        role: "user" as const,
-        content: formData.get('query') as string || ""
-      }],
+      messages: [
+        ...(messages?.flatMap(item => [{
+          role: "user" as const,
+          content: item.query || ""
+        }, {
+          role: "assistant" as const,
+          content: item.answer?.text || ""
+        }]) || []),
+        {
+          role: "user" as const,
+          content: formData.get('query') as string || ""
+        }
+      ],
       mcpConfig: getSelectedMCP(),
       threadItemId: optimisticAiThreadItemId,
       parentThreadItemId: "",
@@ -206,11 +207,12 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     });
   }
 
-  const value = useMemo(() => ({
+  const value = {
     runAgent,
     handleSubmit,
     updateContext
-  }), [currentThreadId, threadItems]);
+  }
+
 
   return (
     <AgentContext.Provider value={value}>

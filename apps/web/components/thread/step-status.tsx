@@ -1,16 +1,39 @@
 import { ItemStatus } from '@/libs/store/chat.store';
-import { IconCircleDashed, IconCircleDashedX } from '@tabler/icons-react';
 
 export const StepStatus = ({ status }: { status: ItemStatus }) => {
   switch (status) {
     case 'PENDING':
-      return <SpinnerIcon size={16} className="text-brand size-4 shrink-0 animate-spin" />;
+      return (
+        <span className="relative flex size-3 items-center justify-center">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-blue-500/50 opacity-75"></span>
+          <span className="relative inline-flex size-2 rounded-full bg-blue-500/50"></span>
+        </span>
+      );
     case 'COMPLETED':
-      return <></>;
+      return (
+        <span className="relative flex size-3 items-center justify-center">
+
+        <span className="relative flex size-2">
+          <span className="relative inline-flex size-2 rounded-full bg-blue-500/50"></span>
+        </span>
+        </span>
+      );
     case 'ERROR':
-      return <IconCircleDashedX className="text-tertiary size-4 shrink-0" />;
+      return (
+        <span className="relative flex size-3 items-center justify-center">
+        <span className="relative flex size-2">
+          <span className="relative inline-flex size-2 rounded-full bg-rose-400"></span>
+        </span>
+        </span>
+      );
     default:
-      return <IconCircleDashed className="text-tertiary size-4 shrink-0" strokeWidth={1} />;
+      return (
+        <span className="relative flex size-3 items-center justify-center">
+        <span className="relative flex size-2">
+          <span className="relative inline-flex size-2 rounded-full bg-tertiary"></span>
+        </span>
+        </span>
+      );
   }
 };
 

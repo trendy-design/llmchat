@@ -3,7 +3,7 @@ import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { useMcpToolsStore } from "@/libs/store/mcp-tools.store";
 import { Button } from "@repo/ui/src/components/button";
 
-import { Badge, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Input } from "@repo/ui";
+import { Badge, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger, Input } from "@repo/ui";
 
 import { IconCheck, IconTools } from "@tabler/icons-react";
 import { useState } from "react";
@@ -88,9 +88,6 @@ export const ToolsMenu = () => {
                                 <DialogContent ariaTitle="Add Tool" className='!w-[600px] p-0'>
                                         <DialogHeader className="p-6 gap-0">
                                                 <DialogTitle>Add Tool</DialogTitle>
-                                                <DialogDescription className="text-xs text-muted-foreground">
-                                                        Add a new tool to the chat. You can get MCP servers from:
-                                                </DialogDescription>
                                         </DialogHeader>
 
                                         <div className="px-6 pb-4 w-full overflow-x-hidden flex flex-col gap-2">

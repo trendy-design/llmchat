@@ -29,7 +29,7 @@ export async function GET(request: Request) {
       title: result.ogTitle || result.twitterTitle || '',
       description: result.ogDescription || result.twitterDescription || '',
       image: result.ogImage?.[0]?.url || result.twitterImage?.[0]?.url || '',
-      favicon: `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`,
+      favicon: `https://www.google.com/s2/favicons?domain=${hostname}&sz=256`,
       url: result.ogUrl || url
     }
 

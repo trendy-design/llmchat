@@ -1,9 +1,8 @@
 'use client';
 import { ChatInput } from '@/components/chat-input';
 import { Thread } from '@/components/thread/thread-combo';
-import { useAppStore } from '@/libs/store/app.store';
 import { useChatStore } from '@/libs/store/chat.store';
-import { Button, Flex, WebsitePreview } from '@repo/ui';
+import { Button, Flex } from '@repo/ui';
 import { IconSettings2 } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -19,10 +18,6 @@ const ChatSessionPage = ({
     stiffness:10,
     damping:0,
   });
-  const currentSources = useChatStore(state => state.currentSources);
-  const threadItems = useChatStore(state => state.threadItems);
-  const setIsSourcesOpen = useAppStore(state => state.setIsSourcesOpen);
-  const isSourcesOpen = useAppStore(state => state.isSourcesOpen);
   const switchThread = useChatStore(state => state.switchThread);
   const thread = useChatStore(state => state.currentThread);
   const getThread = useChatStore(state => state.getThread);
@@ -57,9 +52,7 @@ const ChatSessionPage = ({
         </h1>
        
        <div className='flex flex-row gap-2'>
-        <Button variant="secondary" size='sm' rounded="full" onClick={() => setIsSourcesOpen(prev => !prev)}>
-          Sources
-        </Button>
+    
         <Button variant="secondary" size='icon-sm' rounded="full" onClick={() => router.push('/settings')}>
           <IconSettings2 size={16} strokeWidth={2} />
         </Button>
@@ -78,15 +71,7 @@ const ChatSessionPage = ({
        
       </div>
       </div>
-      {isSourcesOpen && <div className='flex flex-col shrink-0 gap-2 w-[280px] overflow-y-auto h-full '>
-      { currentSources?.length > 0 && <div className='flex flex-col shrink-0 gap-2 w-full overflow-y-auto p-2 h-full border-border'>
-          {
-            currentSources.map(source => (
-              <WebsitePreview key={source} url={source} />
-            ))
-          }
-        </div>}
-        </div>}
+   
     </div>
   );
 };

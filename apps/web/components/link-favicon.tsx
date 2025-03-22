@@ -25,18 +25,20 @@ export const LinkFavicon: FC<LinkFaviconType> = ({ link, className, size = 'sm' 
   }
 
   return (
+    <div className={cn('flex items-center justify-center shrink-0 bg-tertiary rounded-full', size === 'sm' ? 'h-3 w-3' : 'h-4 w-4')}>
     <Image
       src={`https://www.google.com/s2/favicons?domain=${link}&sz=${256}`}
       alt="favicon"
       onError={() => setError(true)}
       width={0}
       height={0}
-      className={cn('rounded-sm object-cover shrink-0', className, size === 'sm' ? 'h-3 w-3' : 'h-4 w-4')}
+      className={cn('rounded-sm object-cover  w-full h-full', className, )}
       sizes="70vw"
       unoptimized={false}
       priority={false}
       placeholder="blur"
       blurDataURL="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMiIgZmlsbD0iI2U1ZTdlYiIvPjwvc3ZnPg=="
     />
+    </div>
   );
 };

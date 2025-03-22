@@ -1,4 +1,5 @@
 import { CodeBlock } from '@/components/code-block/code-block';
+import { LinkPreviewPopover } from '@/components/link-preview';
 import { CitationProviderContext } from '@/components/thread/citation-provider';
 import { isValidUrl } from '@repo/shared/utils';
 import { MDXRemote } from 'next-mdx-remote/rsc';
@@ -21,11 +22,11 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
       return null;
     }
     return (
-      // <LinkPreviewPopover url={url}>
-        <div className="bg-brand/20 text-brand group inline-flex size-4 flex-row items-center justify-center gap-1 rounded-sm text-[10px]">
+      <LinkPreviewPopover url={url}>
+        <div className="border-yellow-700/20 text-yellow-900 !bg-yellow-700/20 group inline-flex size-4 flex-row items-center justify-center gap-1 rounded-sm text-[10px]">
           {citation?.index}
         </div>
-      // </LinkPreviewPopover>
+      </LinkPreviewPopover>
     );
   },
 

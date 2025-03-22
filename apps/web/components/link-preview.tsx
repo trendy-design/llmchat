@@ -1,7 +1,10 @@
 'use client';
 
+import { getHost } from '@/utils/url';
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@repo/ui';
 import Image from 'next/image';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import { LinkFavicon } from './link-favicon';
 
 const ogCache = new Map<string, any>();
 
@@ -10,34 +13,22 @@ export type LinkPreviewType = {
   children: React.ReactNode;
 };
 
-export const LinkPreviewPopover = ({ url, children }: LinkPreviewType) => {
-  const [isHovered, setIsHovered] = useState(false);
-
+export const LinkPreviewPopover = memo(({ url, children }: LinkPreviewType) => {
   if (!url?.trim()?.length) {
     return null;
   }
 
-  const handleMouseEnter = () => setIsHovered(true);
-  const handleMouseLeave = () => setIsHovered(false);
-  return <>{children}</>
-
-  // return (
-  //   <Popover open={isHovered} onOpenChange={setIsHovered}>
-  //     <PopoverTrigger 
-  //       onMouseEnter={handleMouseEnter}
-  //       onMouseLeave={handleMouseLeave}
-  //       onClick={e => e.preventDefault()} 
-  //       asChild
-  //       className='cursor-pointer'
-  //     >
-  //       {children}
-  //     </PopoverTrigger>
-  //     <PopoverContent className='z-[10] bg-background p-0'>
-  //       <LinkPreview url={url} />
-  //     </PopoverContent>
-  //   </Popover>
-  // );
-};
+  return (
+    <HoverCard openDelay={200}>
+      <HoverCardTrigger asChild className='cursor-pointer'>
+        {children}
+      </HoverCardTrigger>
+      <HoverCardContent className='z-[10] bg-background p-0'>
+        <LinkPreview url={url} />
+      </HoverCardContent>
+    </HoverCard>
+  );
+})  ;
 
 export const LinkPreview = memo(({ url }: { url: string }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -73,11 +64,11 @@ export const LinkPreview = memo(({ url }: { url: string }) => {
     }
   };
 
-  // useEffect(() => {
-  //   if(!ogResult) {
-  //     fetchOg(url);
-  //   }
-  // }, [url]);
+  useEffect(() => {
+    if(!ogResult) {
+      fetchOg(url);
+    }
+  }, [url]);
   
   const parsedUrl = useMemo(() => {
     try {
@@ -112,14 +103,8 @@ export const LinkPreview = memo(({ url }: { url: string }) => {
         <div className="flex flex-col items-start">
           <div className="flex w-full flex-col items-start gap-1.5 p-4">
             <div className='flex flex-row items-center gap-1.5'>
-              <Image
-                src={ogResult.favicon}
-                alt={ogResult.title}
-                width={0}
-                height={0}
-                sizes="100vw"
-                className="h-4 w-4 rounded-full object-cover"
-              />
+            <LinkFavicon link={getHost(url)} />
+
               <p className="text-muted-foreground text-xs line-clamp-1 w-full">
                 {parsedUrl.hostname}
               </p>

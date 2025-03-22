@@ -184,8 +184,10 @@ type Actions = {
   switchThread: (threadId: string) => void;
   deleteThreadItem: (threadItemId: string) => Promise<void>;
   deleteThread: (threadId: string) => Promise<void>;
-  getThreadItems: (threadId?: string) => ThreadItem[];
+  getPreviousThreadItems: (threadId?: string) => ThreadItem[];
+  getCurrentThreadItem: (threadId?: string) => ThreadItem | null;
   getCurrentThread: () => Thread | null;
+  getThreadItems: (threadId: string) => Promise<ThreadItem[]>;
   loadThreadItems: (threadId: string) => Promise<void>;
   setCurrentThreadItem: (threadItem: ThreadItem) => void;
   clearAllThreads: () => void;
@@ -299,6 +301,11 @@ export const useChatStore = create(
       set(state => {
         state.chatMode = chatMode;
       });
+    },
+
+    getThreadItems: async (threadId: string) => {
+      const threadItems = await db.threadItems.where('threadId').equals(threadId).toArray();
+      return threadItems;
     },
     
     setCurrentSources: (sources: string[]) => {
@@ -469,13 +476,31 @@ export const useChatStore = create(
       });
     },
 
-    getThreadItems: threadId => {
+    getPreviousThreadItems: threadId => {
       const state = get();
-      return state.threadItems
+
+      const allThreadItems = state.threadItems
         .filter(item => item.threadId === threadId)
         .sort((a, b) => {
           return a.createdAt.getTime() - b.createdAt.getTime();
-        });
+        })
+
+      if(allThreadItems.length > 1) {
+        return allThreadItems.slice(0, -1);
+      }
+
+      return [];
+    },
+
+    getCurrentThreadItem: () => {
+      const state = get();
+
+      const allThreadItems = state.threadItems
+        .filter(item => item.threadId === state.currentThreadId)
+        .sort((a, b) => {
+          return a.createdAt.getTime() - b.createdAt.getTime();
+        })
+      return allThreadItems[allThreadItems.length - 1] || null;
     },
 
     getCurrentThread: () => {

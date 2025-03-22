@@ -1,9 +1,51 @@
 import { GoalWithSteps, Reasoning } from '@/libs/store/chat.store';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@repo/ui';
-import { Fragment, useMemo } from 'react';
+import { Fragment, memo, useMemo } from 'react';
 import { StepRenderer } from './step-renderer';
 import { StepStatus } from './step-status';
 
+type GoalStepProps = {
+  goal: GoalWithSteps
+}
+
+const GoalStep = memo(({ goal }: GoalStepProps) => (
+  <div className="flex flex-row items-stretch justify-start gap-2 w-full">
+    <div className="flex min-h-full flex-col items-center justify-start shrink-0 px-2">
+      <div className="bg-border/50 h-1.5 shrink-0" />
+      <div className="z-10 bg-secondary">
+        <StepStatus status={goal.status || 'PENDING'} />
+      </div>
+      <div className="bg-border/50 min-h-full w-[1px] flex-1" />
+    </div>
+    <div className="flex flex-col pb-4 w-full flex-1 overflow-hidden">
+      <Fragment>
+        {goal.text && <p>{goal.text}</p>}
+        {goal.steps?.map((step, index) => (
+          <StepRenderer key={index} step={step} />
+        ))}
+      </Fragment>
+    </div>
+  </div>
+))
+
+type ReasoningStepProps = {
+  step: string
+}
+
+const ReasoningStep = memo(({ step }: ReasoningStepProps) => (
+  <div className="flex flex-row items-stretch justify-start gap-2 w-full">
+    <div className="flex min-h-full flex-col items-center justify-start px-2">
+      <div className="bg-border/50 h-1.5 shrink-0" />
+      <div className="z-10 bg-secondary">
+        <StepStatus status="COMPLETED" />
+      </div>
+      <div className="bg-border/50 min-h-full w-[1px] flex-1" />
+    </div>
+    <div className="flex flex-col pb-4 w-full flex-1 overflow-hidden">
+      <p>{step}</p>
+    </div>
+  </div>
+))
 
 export const GoalsRenderer = ({ goals, reasoning }: { goals: GoalWithSteps[], reasoning?: Reasoning }) => {
 
@@ -29,42 +71,12 @@ export const GoalsRenderer = ({ goals, reasoning }: { goals: GoalWithSteps[], re
             </div>
           </AccordionTrigger>
           <AccordionContent className="p-0 bg-background">
-            <div className="flex flex-col p-2 py-4 pr-8 w-full overflow-hidden">
-              {(goals || []).map((goal, index, array) => (
-                <div className="flex flex-row items-stretch justify-start gap-2 w-full" key={index}>
-                  <div className="flex min-h-full flex-col items-center justify-start shrink-0 px-4">
-                    <div className="bg-border/50 h-1.5 shrink-0" />
-                    <div className="z-10 bg-secondary">
-                      <StepStatus status={goal.status || 'PENDING'} />
-                    </div>
-                    <div className="bg-border/50 min-h-full w-[1px] flex-1" />
-                  </div>
-                  <div className="flex flex-col pb-4 w-full flex-1 overflow-hidden">
-                 
-                      <Fragment>
-                        {goal.text ? (
-                          <p>{goal.text}</p>
-                        ) : null}
-                        {goal.steps?.map((step, index) => (
-                          <StepRenderer key={index} step={step} />
-                        ))}
-                      </Fragment>
-                  </div>
-                </div>
+            <div className="flex flex-col py-4 px-4 w-full overflow-hidden">
+              {goals.map((goal, index) => (
+                <GoalStep key={index} goal={goal} />
               ))}
-              {reasoningSteps?.map((step, index) => (
-                     <div className="flex flex-row items-stretch justify-start gap-2 w-full" key={index}>
-                     <div className="flex min-h-full flex-col items-center justify-start px-3">
-                       <div className="bg-border/50 h-1.5 shrink-0" />
-                       <div className="z-10 bg-secondary">
-                         <StepStatus status={'COMPLETED'} />
-                       </div>
-                       <div className="bg-border/50 min-h-full w-[1px] flex-1" />
-                     </div>
-                     <div className="flex flex-col pb-4 w-full flex-1 overflow-hidden">
-                       <p>{step}</p>
-                     </div>
-                   </div>
+              {reasoningSteps.map((step, index) => (
+                <ReasoningStep key={index} step={step} />
               ))}
             </div>
           </AccordionContent>
