@@ -5,7 +5,7 @@ import { parseSourceTagsFromXML } from '@/libs/mdx/sources';
 import { useMdxChunker } from '@/libs/mdx/use-mdx-chunks';
 import { ChatMode, GoalWithSteps, ThreadItem as ThreadItemType, ToolCall, ToolResult, useChatStore } from '@/libs/store/chat.store';
 import { Badge, Button, cn, DropdownMenu, DropdownMenuTrigger, RadioGroup, RadioGroupItem, Textarea } from '@repo/ui';
-import { IconCheck, IconCopy, IconPencil, IconQuestionMark, IconRefresh, IconSquare, IconTrash } from '@tabler/icons-react';
+import { IconCaretDownFilled, IconCheck, IconCopy, IconPencil, IconQuestionMark, IconRefresh, IconSquare, IconTrash } from '@tabler/icons-react';
 import { MDXRemote } from 'next-mdx-remote';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote/rsc';
 import { serialize } from 'next-mdx-remote/serialize';
@@ -375,7 +375,7 @@ export const ToolCallRenderer = ({toolCall}: {toolCall: ToolCall}) => {
   const [isOpen, setIsOpen] = useState(false);
   
   return (
-    <div className='flex flex-col bg-background items-start px-2.5 pt-2 pb-2 rounded-lg border border-border'>
+    <div className='flex flex-col bg-background items-start px-2.5 pt-3 pb-3 rounded-xl border border-border'>
       <div 
         className='flex flex-row items-center gap-2.5 w-full justify-between cursor-pointer' 
         onClick={() => setIsOpen(!isOpen)}
@@ -383,19 +383,10 @@ export const ToolCallRenderer = ({toolCall}: {toolCall: ToolCall}) => {
         <div className='flex flex-row items-center gap-2.5'>
           <ToolIcon />
           <Badge>Tool Use</Badge>
-          <p className='text-sm text-muted-foreground'>{toolCall.toolName}</p>
+          <p className='text-xs font-medium text-foreground'>{toolCall.toolName}</p>
         </div>
         <div className='pr-2'>
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 12 12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          >
-            <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <IconCaretDownFilled size={14} strokeWidth={2} className={`text-muted-foreground transform transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </div>
       </div>
       {isOpen && (
@@ -411,7 +402,7 @@ export const ToolResultRenderer = ({toolResult}: {toolResult: ToolResult}) => {
   const [isOpen, setIsOpen] = useState(false);
   
   return (
-    <div className='flex flex-col bg-background items-start px-2.5 pt-2 pb-2 rounded-lg border border-border'>
+    <div className='flex flex-col bg-background items-start px-2.5 pt-3 pb-3 rounded-xl border border-border'>
       <div 
         className='flex flex-row items-center gap-2.5 w-full justify-between cursor-pointer'
         onClick={() => setIsOpen(!isOpen)}
@@ -419,19 +410,10 @@ export const ToolResultRenderer = ({toolResult}: {toolResult: ToolResult}) => {
         <div className='flex flex-row items-center gap-2.5'>
           <ToolResultIcon />
           <Badge>Tool Result</Badge>
-          <p className='text-sm text-muted-foreground'>{toolResult.toolName}</p>
+          <p className='text-xs font-medium text-foreground'>{toolResult.toolName}</p>
         </div>
         <div className='pr-2'>
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 12 12"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          >
-            <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          <IconCaretDownFilled size={14} strokeWidth={2} className={`text-muted-foreground transform transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </div>
       </div>
       {isOpen && (

@@ -1,4 +1,4 @@
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
 
 import { useMcpToolsStore } from "@/libs/store/mcp-tools.store";
 import { Button } from "@repo/ui/src/components/button";
@@ -22,10 +22,10 @@ export const ToolsMenu = () => {
                 <>
                         <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                                 <DropdownMenuTrigger asChild>
-                                        <Button size="icon" tooltip="Tools" variant={isOpen ? "secondary" : "ghost"} className='gap-2' rounded="full">
+                                        <Button size={selectedMCP.length > 0 ? "sm" : "icon"} tooltip="Tools" variant={(isOpen || selectedMCP.length > 0) ? "secondary" : "ghost"} className='gap-2' rounded="full">
                                                         <IconTools size={18} strokeWidth={2} className="text-muted-foreground" />
                                                 {selectedMCP.length > 0 && (
-                                                        <Badge variant="outline" className="ml-1 px-1">
+                                                        <Badge variant="outline"  className="h-5 rounded-full px-2.5 bg-foreground text-background">
                                                                 {selectedMCP.length}
                                                         </Badge>
                                                 )}
@@ -40,10 +40,12 @@ export const ToolsMenu = () => {
                                                                 }
                                                                 return [...prev, key];
                                                         })}>
-                                                                <div className="flex w-full items-center justify-between">
+                                                                <div className="flex w-full items-center gap-2 justify-between">
+                                                                        <ToolIcon/>
                                                                         <span>{key}</span>
+                                                                        <div className="flex-1" />
                                                                         {selectedMCP.includes(key) && (
-                                                                                <IconCheck size={16} className="text-green-500" />
+                                                                                <IconCheck size={16} className="text-foreground" />
                                                                         )}
                                                                 </div>
                                                         </DropdownMenuItem>
@@ -83,26 +85,31 @@ export const ToolsMenu = () => {
 
 
                         <Dialog open={openAddToolDialog} onOpenChange={setOpenAddToolDialog}>
-                                <DialogContent ariaTitle="Add Tool" className='max-w-[300px]'>
-                                        <DialogHeader>
-                                                <DialogTitle>Add MCP Tool</DialogTitle>
+                                <DialogContent ariaTitle="Add Tool" className='!w-[600px] p-0'>
+                                        <DialogHeader className="p-6 gap-0">
+                                                <DialogTitle>Add Tool</DialogTitle>
+                                                <DialogDescription className="text-xs text-muted-foreground">
+                                                        Add a new tool to the chat. You can get MCP servers from:
+                                                </DialogDescription>
                                         </DialogHeader>
-                                        <DialogDescription>
-                                                Add a new tool to the chat.
-                                        </DialogDescription>
+
+                                        <div className="px-6 pb-4 w-full overflow-x-hidden flex flex-col gap-2">
+                                                <p className="text-xs text-muted-foreground font-medium">Connected Tools <Badge variant="secondary" className="inline-flex bg-transparent text-emerald-600 rounded-full items-center gap-1"><span className="size-2 inline-block bg-emerald-600 rounded-full"></span>{mcpConfig && Object.keys(mcpConfig).length} Connected</Badge></p>
                                         {
                                                 mcpConfig && Object.keys(mcpConfig).length > 0 && (
 
                                                         Object.keys(mcpConfig).map(key => (
-                                                                <div className='flex flex-row items-center gap-2 divide-x-2 divide-border border-border border rounded-md py-1.5 px-2.5 w-full'>
+                                                                <div className='flex flex-row items-center gap-2 divide-x-2 bg-secondary h-12 divide-border border-border border rounded-lg py-2 px-2.5 flex-1 w-full'>
 
                                                                         <div key={key} className='flex flex-row items-center gap-2 w-full'>
                                                                                 <ToolIcon /> <Badge>{key}</Badge>
-                                                                                <p className='text-xs text-muted-foreground line-clamp-1 flex-1'>{mcpConfig[key]}</p>
+                                                                                <p className='text-sm text-muted-foreground line-clamp-1 flex-1'>{mcpConfig[key]}</p>
 
-                                                                                <Button size="xs" variant="ghost" onClick={() => {
+                                                                                <Button size="xs" variant="ghost" tooltip="Delete Tool" onClick={() => {
                                                                                         removeMcpConfig(key);
-                                                                                }}>Delete</Button>
+                                                                                }}>
+                                                                                        <IconTrash size={14} strokeWidth={2} className="text-muted-foreground" />
+                                                                                        </Button>
                                                                         </div>
                                                                 </div>
 
@@ -110,25 +117,29 @@ export const ToolsMenu = () => {
 
                                                 )
                                         }
-                                        <div className='flex flex-row gap-1 items-center divide-x-2 divide-border border-border border rounded-full w-full'>
-                                                <ToolIcon className="opacity-50" />
+
+<p className="text-xs text-muted-foreground font-medium">Add New Tool </p>
+
+                                        <div className='flex flex-row p-0 items-center border divide-x border-border bg-background rounded-lg h-12 w-full'>
+                                                <div className="h-full flex items-center">
                                                 <Input
                                                         placeholder="Tool Name"
                                                         className='w-[100px]'
-                                                        variant="default"
+                                                        variant="ghost"
                                                         size="sm"
                                                         value={mcpToolName}
                                                         onChange={(e) => {
-
                                                                 const key = e.target.value?.trim().toLowerCase().replace(/ /g, "-");
-                                                                if (key) {
+                                                               
                                                                         setMcpToolName(key);
-                                                                }
+                                                                
                                                         }}
                                                 />
+                                                </div>
+                                                <div className="h-full flex items-center flex-1">
                                                 <Input
-                                                        placeholder="MCP Server URL"
-                                                        variant="default"
+                                                        placeholder="https://your-mcp-server.com"
+                                                        variant="ghost"
                                                         className='flex-1'
                                                         size="sm"
                                                         value={mcpToolUrl}
@@ -136,9 +147,40 @@ export const ToolsMenu = () => {
                                                                 setMcpToolUrl(e.target.value);
                                                         }}
                                                 />
+                                                </div>
                                         </div>
-                                        <DialogFooter>
-                                                <Button size="xs" variant="default" onClick={() => {
+                                        <div className="mt-2 text-sm text-muted-foreground">
+                                                <p>Format: <span className="font-mono bg-muted px-1 rounded">name</span> will be automatically converted to lowercase with hyphens</p>
+                                                <p>Example URL: <span className="font-mono bg-muted px-1 rounded">https://your-mcp-server.com</span></p>
+                                        </div>
+                                        
+                                        <div className="mt-6 pt-4 border-t border-border border-dashed">
+                                                <p className="text-xs text-muted-foreground">Learn more about MCP:</p>
+                                                <div className="mt-2 flex flex-col gap-2 text-sm">
+                                                        <a 
+                                                                href="https://mcp.composio.dev" 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="text-primary hover:underline inline-flex items-center"
+                                                        >
+                                                                Browse Composio MCP Directory →
+                                                        </a>
+                                                        <a 
+                                                                href="https://www.anthropic.com/news/model-context-protocol" 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="text-primary hover:underline inline-flex items-center"
+                                                        >
+                                                                Read MCP Documentation →
+                                                        </a>
+                                                </div>
+                                        </div>
+                                        </div>
+                                        <DialogFooter className="px-6 py-4 border-t border-border" >
+                                        <Button variant="ghost" size="sm" onClick={() => {
+                                                        setOpenAddToolDialog(false);
+                                                }}>Cancel</Button>
+                                                <Button variant="default" size="sm" onClick={() => {
                                                         addMcpConfig({ [mcpToolName]: mcpToolUrl });
                                                         setOpenAddToolDialog(false);
                                                 }}>Save</Button>

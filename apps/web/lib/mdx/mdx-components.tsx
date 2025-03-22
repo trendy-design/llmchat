@@ -43,7 +43,7 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
   code: ({ children, className }) => {
     if (!className) {
       return (
-        <code className="border-border bg-secondary text-foreground rounded border px-1.5 py-0.5 font-mono text-sm">
+        <code className="border-yellow-700/20 text-yellow-700 !bg-yellow-700/10 rounded-md border  px-1.5 py-0.5 font-mono text-sm">
           {children}
         </code>
       );

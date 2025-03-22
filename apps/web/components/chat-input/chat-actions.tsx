@@ -9,7 +9,7 @@ import {
   Flex,
   Kbd
 } from '@repo/ui';
-import { IconArrowUp, IconCheck, IconChevronDown, IconCodeDots, IconPlayerStopFilled, IconTools, IconWorld } from '@tabler/icons-react';
+import { IconArrowUp, IconCheck, IconChevronDown, IconCodeDots, IconPaperclip, IconPlayerStopFilled, IconTools, IconWorld } from '@tabler/icons-react';
 import { usePathname } from 'next/navigation';
 import { memo, useState } from 'react';
 import { DotSpinner } from '../thread/step-status';
@@ -104,6 +104,9 @@ export const ChatActions = memo(({ sendMessage }: TChatActions) => {
       </DropdownMenuTrigger>
       <ChatModeOptions chatMode={chatMode} setChatMode={setChatMode} />
         </DropdownMenu>
+        <Button size="icon" tooltip="Attachment (coming soon)" variant="ghost" className='gap-2' rounded="full" disabled>
+          <IconPaperclip size={18} strokeWidth={2} className="text-muted-foreground"/>
+        </Button>
         <Button size="icon" tooltip="Web Search" variant="ghost" className='gap-2' rounded="full">
           <IconWorld size={18} strokeWidth={2} className="text-muted-foreground" />
         </Button>
@@ -132,10 +135,11 @@ export const ChatActions = memo(({ sendMessage }: TChatActions) => {
         )}
 
         {(isGenerating && !isChatPage) ? (
-          <Button size="xs"
+          <Button size="icon"
+            rounded="full"
             variant="default"
             onClick={stopGeneration}>
-            <IconPlayerStopFilled size={14} strokeWidth={2} /> Stop
+            <IconPlayerStopFilled size={14} strokeWidth={2} />
           </Button>
         ) : (
           <Button
@@ -166,16 +170,16 @@ export const GeneratingStatus = () => {
 
 export const ToolIcon = ({ className }: { className?: string }) => {
   return (
-    <div className={`bg-yellow-500/20 border-yellow-500/30 border rounded-md p-0.5 size-5 flex items-center justify-center ${className}`}>
-      <IconTools size={20} strokeWidth={2} className="text-yellow-600" />
+    <div className={`bg-yellow-800 border-yellow-900 border rounded-md p-0.5 size-5 flex items-center justify-center ${className}`}>
+      <IconTools size={20} strokeWidth={2} className="text-yellow-400" />
     </div>
   )
 }
 
 export const ToolResultIcon = () => {
   return (
-    <div className='bg-emerald-500/20 border-emerald-500/30 border rounded-md p-0.5 size-5 flex items-center justify-center'>
-      <IconCodeDots size={20} strokeWidth={2} className="text-emerald-600" />
+    <div className='bg-emerald-800 border-emerald-500/30 border rounded-md p-0.5 size-5 flex items-center justify-center'>
+      <IconCodeDots size={20} strokeWidth={2} className="text-emerald-400" />
     </div>
   )
 }

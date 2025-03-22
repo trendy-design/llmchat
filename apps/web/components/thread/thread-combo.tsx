@@ -8,8 +8,8 @@ export function Thread() {
   const threadItems = useChatStore(useShallow(state => state.getThreadItems(currentThreadId)));
 
   return (
-    <div className="relative flex flex-col gap-2" id="thread-container">
-      <div className="min-w-full h-full  py-4">
+    <div className="relative" id="thread-container">
+      <div className="min-w-full h-full flex flex-col gap-8  py-4">
         {threadItems.map(threadItem => (
           <div key={threadItem.id}>
                 <ThreadItem

@@ -73,9 +73,9 @@ export const ChatInput = ({showGreeting = true, showBottomBar = true}: {showGree
           </ImageDropzoneRoot>
         </motion.div>
       </Flex>
-      {showBottomBar && <div className="flex flex-row mx-2 items-center h-12 px-2 pt-2 -mt-2 rounded-b-2xl border-x bg-indigo-900/5  border-b border-indigo-900/20 gap-2">
+      {showBottomBar && <div className="flex flex-row mx-2 items-center h-12 px-2 pt-2 -mt-2 rounded-b-2xl border-x bg-yellow-700/10  border-b border-yellow-900/20 gap-2">
 <span className="text-xs font-light px-2">
-    <span className="text-indigo-900/70">powered by</span> <span className="font-bold text-indigo-900/90">Trendy Design</span>
+    <span className="text-yellow-700/90">powered by</span> <span className="font-bold text-yellow-900/90">Trendy Design</span>
 </span>
 <div className="flex-1"/>
 <Button variant="bordered" size="xs" rounded="full" tooltip="Bring your own API key" className='px-2'>

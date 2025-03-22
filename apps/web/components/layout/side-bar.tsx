@@ -64,7 +64,9 @@ export const Sidebar = () => {
             <HistoryItem
               thread={thread}
               key={thread.id}
-              dismiss={() => { }}
+              dismiss={() => {
+                setIsSidebarOpen(prev => false);
+               }}
               isActive={thread.id === currentThreadId}
             />
           ))}
