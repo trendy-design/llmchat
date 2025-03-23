@@ -3,10 +3,11 @@ import { useChatEditor, useImageAttachment } from '@/lib/hooks';
 import { useChatStore } from '@/libs/store/chat.store';
 import { cn, slideUpVariant } from '@repo/shared/utils';
 import { Button, Flex } from '@repo/ui';
-import { IconPlus } from '@tabler/icons-react';
+import { IconArrowRight } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import { useShallow } from 'zustand/react/shallow';
+import { MessagesRemainingBadge } from '../messages-remaining-badge';
 import { SettingsModal } from '../settings-modal';
 import { ChatActions } from './chat-actions';
 import { ChatEditor } from './chat-editor';
@@ -75,15 +76,17 @@ export const ChatInput = ({ showGreeting = true, showBottomBar = true }: { showG
           </ImageDropzoneRoot>
         </motion.div>
       </Flex>
-      {showBottomBar && <div className="flex flex-row mx-2 items-center h-12 px-2 pt-2 -mt-2 rounded-b-2xl border-x bg-yellow-700/5  border-b border-yellow-900/20 gap-2">
+      {showBottomBar && <div className="flex flex-row mx-1.5 items-center h-12 px-2 pt-2 -mt-2 rounded-b-2xl border-x bg-yellow-700/5  border-b border-yellow-900/20 gap-2">
         <span className="text-xs font-light px-2">
-          <span className="text-yellow-700/90">powered by</span> <span className="font-bold text-yellow-900/90">Trendy Design</span>
+        <MessagesRemainingBadge />
+
         </span>
         <div className="flex-1" />
         <SettingsModal>
         <Button variant="bordered" size="xs" rounded="full" tooltip="Bring your own API key" className='px-2'>
-          <IconPlus size={16} strokeWidth={2} />
-          Add API key</Button>
+          Use your own API key
+          <IconArrowRight size={16} strokeWidth={2} />
+          </Button>
           </SettingsModal>
       </div>}
     </div>

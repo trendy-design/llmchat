@@ -1,6 +1,6 @@
 import { CompletionRequestType } from '@/app/completion/route';
-import { useApiKeysStore } from '@/libs/store/api-keys.store';
-import { Goal, Step, ThreadItem, useChatStore } from '@/libs/store/chat.store';
+import { ApiKeys, useApiKeysStore } from '@/libs/store/api-keys.store';
+import { ChatMode, Goal, Step, ThreadItem, useChatStore } from '@/libs/store/chat.store';
 import { useMcpToolsStore } from '@/libs/store/mcp-tools.store';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { nanoid } from 'nanoid';
@@ -27,7 +27,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
   const chatMode = useChatStore(state => state.chatMode);
   const getSelectedMCP = useMcpToolsStore(state => state.getSelectedMCP);
   const apiKeys = useApiKeysStore(state => state.getAllKeys);
-
+  const fetchRemainingMessages = useChatStore(state => state.fetchRemainingMessages);
 
   const router = useRouter();
   const { startWorkflow, abortWorkflow } = useWorkflowWorker((data) => {
@@ -170,30 +170,48 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     setIsGenerating(true);
     setCurrentSources([]);
 
-    console.log("formData", formData)
 
-    startWorkflow({
-      mode: newChatMode ?? chatMode as any,
-      question: formData.get('query') as string,
-      threadId,
-      messages: [
-        ...(messages?.flatMap(item => [{
-          role: "user" as const,
-          content: item.query || ""
-        }, {
-          role: "assistant" as const,
-          content: item.answer?.text || ""
-        }]) || []),
-        {
-          role: "user" as const,
-          content: formData.get('query') as string || ""
-        }
-      ],
-      mcpConfig: getSelectedMCP(),
-      threadItemId: optimisticAiThreadItemId,
-      parentThreadItemId: "",
-      apiKeys: apiKeys()
-    });
+    const localApiKeys = apiKeys();
+
+    const coreMessages =  [
+      ...(messages?.flatMap(item => [{
+        role: "user" as const,
+        content: item.query || ""
+      }, {
+        role: "assistant" as const,
+        content: item.answer?.text || ""
+      }]) || []),
+      {
+        role: "user" as const,
+        content: formData.get('query') as string || ""
+      }
+    ]
+
+    if (hasApiKey(localApiKeys, newChatMode ?? chatMode as any)) {
+      startWorkflow({
+        mode: newChatMode ?? chatMode as any,
+        question: formData.get('query') as string,
+        threadId,
+        messages: coreMessages,
+        mcpConfig: getSelectedMCP(),
+        threadItemId: optimisticAiThreadItemId,
+        parentThreadItemId: "",
+        apiKeys: localApiKeys
+      });
+    } else {
+      runAgent({
+        mode: newChatMode ?? chatMode as any,
+        prompt: formData.get('query') as string,
+        threadId,
+        messages: coreMessages,
+        mcpConfig: getSelectedMCP(),
+        threadItemId: optimisticAiThreadItemId,
+        parentThreadItemId: "",
+      });
+    }
+
+    fetchRemainingMessages();
+
 
   };
 
@@ -228,3 +246,21 @@ export const useAgentStream = (): AgentContextType => {
   }
   return context;
 };
+
+
+const hasApiKey = (apiKeys: ApiKeys, chatMode: ChatMode) => {
+  switch (chatMode) {
+    case ChatMode.O3_Mini:
+    case ChatMode.GPT_4o_Mini:
+      return !!apiKeys['OPENAI_API_KEY']
+    case ChatMode.GEMINI_2_FLASH:
+      return !!apiKeys['GEMINI_API_KEY']
+    case ChatMode.CLAUDE_3_5_SONNET:
+    case ChatMode.CLAUDE_3_7_SONNET:
+      return !!apiKeys['ANTHROPIC_API_KEY']
+    case ChatMode.DEEPSEEK_R1:
+      return !!apiKeys['FIREWORKS_API_KEY']
+    default:
+      return false;
+  }
+}

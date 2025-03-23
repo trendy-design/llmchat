@@ -166,12 +166,18 @@ type State = {
   isLoadingThreads: boolean;
   isLoadingThreadItems: boolean;
   currentSources: string[];
+  messageLimit: {
+    remaining: number;
+    maxLimit: number;
+    reset?: string;
+  };
 };
 
 type Actions = {
   setModel: (model: Model) => void;
   setEditor: (editor: any) => void;
   setContext: (context: string) => void;
+  fetchRemainingMessages: () => Promise<void>;
   setIsGenerating: (isGenerating: boolean) => void;
   stopGeneration: () => void;
   setAbortController: (abortController: AbortController) => void;
@@ -295,11 +301,27 @@ export const useChatStore = create(
     isLoadingThreads: false,
     isLoadingThreadItems: false,
     currentSources: [],
+    messageLimit: {
+      remaining: 0,
+      maxLimit: 0,
+      reset: undefined,
+    },
 
     setChatMode: (chatMode: ChatMode) => {
       localStorage.setItem(CONFIG_KEY, JSON.stringify({ chatMode }));
       set(state => {
         state.chatMode = chatMode;
+      });
+    },
+
+    fetchRemainingMessages: async () => {
+      const res = await fetch('/api/messages/remaining');
+      if (!res.ok) throw new Error('Failed to fetch remaining messages');
+      const data = await res.json();
+      set(state => {
+        state.messageLimit.remaining = data.remaining;
+        state.messageLimit.maxLimit = data.maxLimit;
+        state.messageLimit.reset = data.reset;
       });
     },
 
@@ -513,6 +535,7 @@ export const useChatStore = create(
 if (typeof window !== 'undefined') {
   // Initialize store with data from IndexedDB
   loadInitialData().then(({ threads, currentThreadId, chatMode }) => {
+    useChatStore.getState().fetchRemainingMessages();
     useChatStore.setState({
       threads,
       currentThreadId,
