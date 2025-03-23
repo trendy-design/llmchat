@@ -14,8 +14,9 @@ type TaskParams<
         trace?: LangfuseTraceClient;
         events?: TypedEventEmitter<TEvent>;
         context?: Context<TContext>;
-        config?: WorkflowConfig; // Add config parameter
+        config?: WorkflowConfig;
         redirectTo: (nextTask: string | string[] | ParallelTaskRoute[]) => void;
+        signal?: AbortSignal;
 }
 
 type TaskRouterParams<
@@ -34,7 +35,7 @@ export type ParallelTaskRoute = {
 type TaskExecutionFunction<
   TEvent extends EventSchemaDefinition = any,
   TContext extends ContextSchemaDefinition = any
-> = (params: TaskParams<TEvent, TContext>) => Promise<{ result: any; next?: string | string[] | ParallelTaskRoute[] } | any>;
+> = (params: Omit<TaskParams<TEvent, TContext>, 'signal'> & { signal?: AbortSignal }) => Promise<{ result: any; next?: string | string[] | ParallelTaskRoute[] } | any>;
 
 type TaskRouterFunction<
   TEvent extends EventSchemaDefinition = any,
@@ -49,8 +50,8 @@ export type TaskConfig<
   TEvent extends EventSchemaDefinition = any,
   TContext extends ContextSchemaDefinition = any
 > = {
-        execute: (params: TaskParams<TEvent, TContext>) => Promise<any>;
-        route: (params: TaskRouterParams<TEvent, TContext>) => string | string[] | ParallelTaskRoute[] | undefined;
+        execute: TaskExecutionFunction<TEvent, TContext>;
+        route: TaskRouterFunction<TEvent, TContext>;
         dependencies?: string[];
         retryCount?: number;
         timeoutMs?: number;
@@ -69,6 +70,7 @@ export type TaskOptions = {
         dependencies?: string[];
         retryCount?: number;
         timeoutMs?: number;
+        signal?: AbortSignal;
 };
 
 export type EventPayload = Record<string, any>;
@@ -176,20 +178,23 @@ export class WorkflowEngine<
         private trace?: LangfuseTraceClient;
         private events?: TypedEventEmitter<TEvent>;
         private context?: Context<TContext>;
-        private config?: WorkflowConfig; // Add config field
+        private config?: WorkflowConfig;
+        private signal?: AbortSignal;
 
         constructor({
                 trace,
                 initialEventState,
                 events,
                 context,
-                config
+                config,
+                signal
         }: {
                 trace?: LangfuseTraceClient, 
                 initialEventState?: EventPayload,
                 events?: TypedEventEmitter<TEvent>,
                 context?: Context<TContext>,
-                config?: WorkflowConfig // Add config parameter
+                config?: WorkflowConfig,
+                signal?: AbortSignal
         }) {
                 this.tasks = new Map();
                 this.eventEmitter = new EventEmitter();
@@ -198,6 +203,7 @@ export class WorkflowEngine<
                 this.events = events;
                 this.context = context;
                 this.config = config;
+                this.signal = signal;
         }
 
 
@@ -231,6 +237,7 @@ export class WorkflowEngine<
                                 events: this.events,
                                 context: this.context,
                                 config: this.config,
+                                signal: this.signal,
                                 redirectTo: () => {} // This will be overridden by the actual function
                         }),
                         new Promise((_, reject) => setTimeout(() => reject(new Error('⏳ Task timeout exceeded')), timeoutMs)),
@@ -294,6 +301,7 @@ export class WorkflowEngine<
                                                 events: this.events,
                                                 context: this.context,
                                                 config: this.config,
+                                                signal: this.signal,
                                                 redirectTo
                                           });
 

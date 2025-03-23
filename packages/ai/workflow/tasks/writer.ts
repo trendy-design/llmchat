@@ -6,7 +6,7 @@ import { generateText } from '../utils';
 
 export const writerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
   name: 'writer',
-  execute: async ({ trace, events, context, data }) => {
+  execute: async ({ trace, events, context, data, signal }) => {
     console.log('writer');
 
     const analysis = data?.analysis || '';
@@ -62,9 +62,12 @@ ${analysis}
 Your report should demonstrate subject matter expertise while remaining intellectually accessible to informed professionals. Focus on providing substantive analysis rather than cataloging facts. Emphasize implications and significance rather than merely summarizing information.
     `;
 
+    const messages = context?.get('messages') || [];
     const answer = await generateText({
       prompt,
       model: ModelEnum.GEMINI_2_FLASH,
+      messages: messages as any,
+      signal,
       onChunk: (chunk) => {
         events?.update('flow', (current) => ({
           ...current,
@@ -78,12 +81,6 @@ Your report should demonstrate subject matter expertise while remaining intellec
 
     // Update typed context with the answer
     context?.update('answer', (current = []) => [...current, answer]);
-
-    events?.update('flow', (current) => ({
-      ...current,
-      answer: {text: answer, final: true, status: 'COMPLETED' as const},
-      final: true
-    }));
 
     events?.update('flow', (current) => ({
       ...current,

@@ -9,7 +9,7 @@ import { generateText, getHumanizedDate } from '../utils';
 
 export const analysisTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'analysis',
-        execute: async ({ trace, events, context, data }) => {
+        execute: async ({ trace, events, context, signal }) => {
 
                 const messages = context?.get('messages') || [];
                 const question = context?.get('question') || '';
@@ -73,6 +73,8 @@ ${s}
                 const text = await generateText({
                         prompt,
                         model: ModelEnum.Deepseek_R1,
+                        messages: messages as any,
+                        signal,
                         onReasoning: (reasoning) => {
                                 events?.update('flow', (current) => ({
                                         ...current,
@@ -84,16 +86,7 @@ ${s}
                                         }
                                 }))
                         }
-                })
-
-                events?.update('flow', (current) => ({
-                        ...current,
-                        reasoning: {
-                                ...(current.reasoning || {}),
-                                final: true,
-                                status: 'COMPLETED' as const,
-                        } as any
-                }))
+                });
 
                 console.log("Analysis", text);
 

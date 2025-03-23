@@ -140,7 +140,7 @@ export const ThreadItem = memo(({ threadItem }: { isAnimated: boolean; threadIte
             }
           </div>
           {hasClarifyingQuestions && <ClarifyingQuestions options={threadItem.answer?.object?.clarifyingQuestion?.options || []} question={threadItem.answer?.object?.clarifyingQuestion?.question || ''} type={threadItem.answer?.object?.clarifyingQuestion?.type || 'single'} threadId={threadItem.threadId} />}
-          {threadItem.answer?.final && <div className='flex flex-row items-center gap-2'>
+          {(threadItem.answer?.final || threadItem.status === "ABORTED") && <div className='flex flex-row items-center gap-2'>
 
             <Button variant='secondary' size='icon-sm' rounded='full' onClick={() => {
               if (messageRef.current) {

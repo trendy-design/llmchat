@@ -4,22 +4,30 @@ import { ZodSchema } from "zod";
 import { ModelEnum } from "../models";
 import { getLanguageModel } from "../providers";
 
-export const generateText = async ({ prompt, model, onChunk, messages, onReasoning, tools, onToolCall, onToolResult }: { prompt: string, model: ModelEnum, onChunk?: (chunk: string) => void, messages?: CoreMessage[], onReasoning?: (chunk: string) => void, tools?: ToolSet, onToolCall?: (toolCall: any) => void, onToolResult?: (toolResult: any) => void  }) => {
+
+export const generateText = async ({ prompt, model, onChunk, messages, onReasoning, tools, onToolCall, onToolResult, signal }: { prompt: string, model: ModelEnum, onChunk?: (chunk: string) => void, messages?: CoreMessage[], onReasoning?: (chunk: string) => void, tools?: ToolSet, onToolCall?: (toolCall: any) => void, onToolResult?: (toolResult: any) => void, signal?: AbortSignal }) => {
         try {
+                if (signal?.aborted) {
+                        throw new Error('Operation aborted');
+                }
 
                 const middleware = extractReasoningMiddleware({
                         tagName: 'think',
                         separator: '\n',
                 });
 
-
                 const selectedModel = getLanguageModel(model, middleware);
-                const { fullStream } = !!messages?.length ? streamText({ system: prompt, model: selectedModel, messages, tools, maxSteps: 10, toolChoice:"auto" }) : streamText({ prompt, model: selectedModel, tools, maxSteps: 10, toolChoice:"auto" });
+                const { fullStream } = !!messages?.length 
+                        ? streamText({ system: prompt, model: selectedModel, messages, tools, maxSteps: 10, toolChoice:"auto", abortSignal: signal }) 
+                        : streamText({ prompt, model: selectedModel, tools, maxSteps: 10, toolChoice:"auto", abortSignal: signal });
                 let fullText = ""
                 let reasoning = ""
                 const toolCallsMap: Record<string, any> = {};
                 const toolResultsMap: Record<string, any> = {};  
                 for await (const chunk of fullStream) {
+                        if (signal?.aborted) {
+                                throw new Error('Operation aborted');
+                        }
 
                         if (chunk.type === 'text-delta') {
                                 fullText += chunk.textDelta;
@@ -53,11 +61,17 @@ export const generateText = async ({ prompt, model, onChunk, messages, onReasoni
         }
 }
 
-export const generateObject = async ({ prompt, model, schema, messages }: { prompt: string, model: ModelEnum, schema: ZodSchema, messages?: CoreMessage[] }) => {
+export const generateObject = async ({ prompt, model, schema, messages, signal }: { prompt: string, model: ModelEnum, schema: ZodSchema, messages?: CoreMessage[], signal?: AbortSignal }) => {
         try {
+                if (signal?.aborted) {
+                        throw new Error('Operation aborted');
+                }
+
                 const selectedModel = getLanguageModel(model);
-                const { object } = !!messages?.length ? await generateObjectAi({ system: prompt, model: selectedModel, schema, messages }) : await generateObjectAi({ prompt, model: selectedModel, schema });
-                console.log("object",object);
+                const { object } = !!messages?.length 
+                        ? await generateObjectAi({ system: prompt, model: selectedModel, schema, messages, abortSignal: signal }) 
+                        : await generateObjectAi({ prompt, model: selectedModel, schema, abortSignal: signal });
+
                 return JSON.parse(JSON.stringify(object));
         } catch (error) {
                 console.error(error);
@@ -203,8 +217,15 @@ export const getWebPageContent = async (url: string) => {
         }
 };
 
-export const executeWebSearch = async (queries: string[],) => {
+export const executeWebSearch = async (queries: string[], signal?: AbortSignal) => {
+        if (signal?.aborted) {
+                throw new Error('Operation aborted');
+        }
+
         const webSearchResults = await Promise.all(queries.map(async (query) => {
+                if (signal?.aborted) {
+                        throw new Error('Operation aborted');
+                }
                 const result = await getSERPResults([query]);
                 return result.slice(0, 10);
         }));
@@ -213,14 +234,15 @@ export const executeWebSearch = async (queries: string[],) => {
                 index === self.findIndex((t) => t.link === result.link)
         )
 
-
         const webPageContents = await Promise.all(uniqueWebSearchResults.map(async (result) => {
+                if (signal?.aborted) {
+                        throw new Error('Operation aborted');
+                }
                 const content = await getWebPageContent(result.link);
 
                 return {
                         title: result.title,
                         link: result.link,
-
                         content,
                 };
         }));

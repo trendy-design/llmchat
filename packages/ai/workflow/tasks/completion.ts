@@ -22,7 +22,7 @@ const webSearchTool = tool({
 
 export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'completion',
-        execute: async ({ trace, events, context, data }) => {
+        execute: async ({ events, context, signal }) => {
 
                 const messages = context?.get('messages')?.filter((message) => (message.role === 'user' || message.role === 'assistant') && !!message.content) || [];
                 const mode = context?.get('mode')
@@ -72,8 +72,9 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
 
                 const response = await generateText({
                         model,
-                        messages: messages,
+                        messages,
                         prompt,
+                        signal,
                         tools: tools?.allTools,
                         onReasoning: (reasoning) => {
                                 console.log("reasoning", reasoning);

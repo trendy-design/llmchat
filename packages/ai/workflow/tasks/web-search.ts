@@ -6,12 +6,12 @@ import { executeWebSearch, generateText, getHumanizedDate } from '../utils';
 
 export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'web-search',
-        execute: async ({ data, trace, events, context }) => {
+        execute: async ({ data, trace, events, context, signal }) => {
                 console.log('web-search');
 
                 const queries = data?.queries;
                 const goalId = data?.goalId;
-                const webSearchResults = await executeWebSearch(queries);
+                const results = await executeWebSearch(queries, signal);
                 const question = context?.get('question') || '';
 
 
@@ -25,7 +25,7 @@ ${question}
 </user_question>
 
 **Web Search Results**
-${webSearchResults.map((result) => `<web-search-results>\n\n - ${result.title}: ${result.link} \n\n ${result.content} \n\n</web-search-results>`).join('\n')}
+${results.map((result) => `<web-search-results>\n\n - ${result.title}: ${result.link} \n\n ${result.content} \n\n</web-search-results>`).join('\n')}
 
 <processing_guidelines>
 - Do NOT summarize or condense the information
@@ -65,7 +65,7 @@ ${webSearchResults.map((result) => `<web-search-results>\n\n - ${result.title}: 
                                                 final: true,
                                                 goalId: Number(goalId),
                                                 status: 'PENDING' as const,
-                                                results: webSearchResults?.map((result) => ({
+                                                results: results?.map((result) => ({
                                                         title: result.title,
                                                         link: result.link
                                                 })),
@@ -113,7 +113,7 @@ ${webSearchResults.map((result) => `<web-search-results>\n\n - ${result.title}: 
                         metadata: {
                                 queries,
                                 goalId,
-                                webSearchResults,
+                                results,
 
                         }
                 })

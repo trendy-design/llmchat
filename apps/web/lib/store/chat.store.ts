@@ -24,7 +24,7 @@ export type Thread = {
   updatedAt: Date;
 };
 
-export type ItemStatus = 'PENDING' | 'COMPLETED' | 'ERROR';
+export type ItemStatus = 'PENDING' | 'COMPLETED' | 'ERROR' | 'ABORTED';
 
 export type Goal = {
   id: string;
@@ -101,6 +101,7 @@ export type ThreadItem = {
   threadId: string;
   metadata?: Record<string, any>;
   mode: ChatMode;
+  error?: string;
 };
 
 export type MessageGroup = {

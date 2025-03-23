@@ -6,7 +6,7 @@ import { generateObject, getHumanizedDate } from '../utils';
 
 export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'planner',
-        execute: async ({ trace, events, context, data }) => {
+        execute: async ({ trace, events, context, data, signal }) => {
 
                 const messages = context?.get('messages') || [];
                 const question = context?.get('question') || '';
@@ -75,7 +75,8 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
                                 reasoning: z.string(),
                                 queries: z.array(z.string())
                         }),
-                        messages: messages as any
+                        messages: messages as any,
+                        signal
                 });
 
                 const goalId = Object.keys(events?.getState('flow')?.goals || {}).length;

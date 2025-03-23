@@ -123,6 +123,7 @@ export type WorkflowConfig = {
         timeoutMs?: number;
         retryDelayMs?: number;
         retryDelayMultiplier?: number;
+        signal?: AbortSignal;
 };
 
 export const deepResearchWorkflow = ({
@@ -132,7 +133,8 @@ export const deepResearchWorkflow = ({
         threadId, 
         threadItemId,
         messages,
-        config = {} // Add config parameter with default empty object
+        config = {},
+        signal
 }: {
         mcpConfig: Record<string, string>,
         mode: CompletionMode,
@@ -140,7 +142,8 @@ export const deepResearchWorkflow = ({
         threadId: string, 
         threadItemId: string,
         messages: (CoreUserMessage | CoreAssistantMessage)[],
-        config?: WorkflowConfig
+        config?: WorkflowConfig,
+        signal?: AbortSignal
 }) => {
         const langfuse = new Langfuse();
         const trace = langfuse.trace({
@@ -192,7 +195,8 @@ export const deepResearchWorkflow = ({
                 initialEventState: events.getAllState().flow,
                 events,
                 context,
-                config: workflowConfig // Pass the config to the builder
+                config: workflowConfig,
+                signal
         });
         
         builder.addTasks([

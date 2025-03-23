@@ -14,6 +14,7 @@ export type WorkflowBuilderOptions<
   events?: TypedEventEmitter<TEvent>;
   context?: Context<TContext>;
   config?: WorkflowConfig;
+  signal?: AbortSignal;
 };
 
 export class WorkflowBuilder<
@@ -43,7 +44,8 @@ export class WorkflowBuilder<
       initialEventState: this.options.initialEventState,
       events: this.options.events,
       context: this.options.context,
-      config: this.options.config
+      config: this.options.config,
+      signal: this.options.signal
     });
 
     for (const taskDef of this.tasks) {
@@ -53,7 +55,8 @@ export class WorkflowBuilder<
         route: taskDef.route,
         dependencies: taskDef.dependencies,
         retryCount: taskDef.retryCount,
-        timeoutMs: taskDef.timeoutMs
+        timeoutMs: taskDef.timeoutMs,
+        signal: this.options.signal
       });
     }
 

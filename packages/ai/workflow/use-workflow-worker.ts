@@ -20,6 +20,7 @@ export type WorkflowConfig = {
         timeoutMs?: number;
         retryDelayMs?: number;
         retryDelayMultiplier?: number;
+        signal?: AbortSignal;
 };
 
 
@@ -67,7 +68,7 @@ export type WorkflowEventSchema = {
 
 export type WorkflowWorkerStatus = 'idle' | 'running' | 'completed' | 'error' | 'aborted';
 
-export function useWorkflowWorker(onMessage?: (data: any) => void) {
+export function useWorkflowWorker(onMessage?: (data: any) => void, onAbort?: () => void) {
   const [status, setStatus] = useState<WorkflowWorkerStatus>('idle');
   const [error, setError] = useState<Error | null>(null);
   const [flowState, setFlowState] = useState<WorkflowEventSchema['flow'] | null>(null);

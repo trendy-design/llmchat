@@ -6,9 +6,10 @@ import { generateObject, getHumanizedDate } from '../utils';
 
 export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'reflector',
-        execute: async ({ trace, data, events, context, executionContext, config }) => {
+        execute: async ({ trace, data, events, context, signal }) => {
 
                 const question = context?.get('question') || '';
+                const messages = context?.get('messages') || [];
                 const prevQueries = context?.get('queries') || [];
                 const goalId = data?.goalId;
                 const prevSummaries = context?.get('summaries') || [];
@@ -80,8 +81,9 @@ CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genui
                         schema: z.object({
                                 reasoning: z.string(),
                                 queries: z.array(z.string()).optional()
-                        })
-
+                        }),
+                        messages: messages as any,
+                        signal
                 });
 
                 const newGoalId = goalId + 1;

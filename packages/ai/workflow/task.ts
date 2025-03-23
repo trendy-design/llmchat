@@ -21,6 +21,7 @@ export type TaskParams<
   context?: Context<TContext>;
   config?: WorkflowConfig;
   redirectTo: (nextTask: string | string[] | ParallelTaskRoute[]) => void;
+  signal?: AbortSignal;
 };
 
 export type TaskRouterParams<

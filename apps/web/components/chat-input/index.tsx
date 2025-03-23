@@ -2,13 +2,11 @@ import { useAgentStream } from '@/hooks/agent-provider';
 import { useChatEditor, useImageAttachment } from '@/lib/hooks';
 import { useChatStore } from '@/libs/store/chat.store';
 import { cn, slideUpVariant } from '@repo/shared/utils';
-import { Button, Flex } from '@repo/ui';
-import { IconArrowRight } from '@tabler/icons-react';
+import { Flex } from '@repo/ui';
 import { motion } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import { useShallow } from 'zustand/react/shallow';
 import { MessagesRemainingBadge } from '../messages-remaining-badge';
-import { SettingsModal } from '../settings-modal';
 import { ChatActions } from './chat-actions';
 import { ChatEditor } from './chat-editor';
 import { ImageAttachment } from './image-attachment';
@@ -76,18 +74,12 @@ export const ChatInput = ({ showGreeting = true, showBottomBar = true }: { showG
           </ImageDropzoneRoot>
         </motion.div>
       </Flex>
-      {showBottomBar && <div className="flex flex-row mx-1.5 items-center h-12 px-2 pt-2 -mt-2 rounded-b-2xl border-x bg-yellow-700/5  border-b border-yellow-900/20 gap-2">
+      {showBottomBar && <div className="flex flex-row mx-1.5 items-center h-10 px-2 pt-2 -mt-2 rounded-b-2xl border-x bg-yellow-700/5  border-b border-yellow-900/20 gap-2">
         <span className="text-xs font-light px-2">
         <MessagesRemainingBadge />
 
         </span>
-        <div className="flex-1" />
-        <SettingsModal>
-        <Button variant="bordered" size="xs" rounded="full" tooltip="Bring your own API key" className='px-2'>
-          Use your own API key
-          <IconArrowRight size={16} strokeWidth={2} />
-          </Button>
-          </SettingsModal>
+       
       </div>}
     </div>
   );
@@ -105,7 +97,7 @@ export const ChatInput = ({ showGreeting = true, showBottomBar = true }: { showG
     <div
       className={cn(
         'flex w-full flex-col items-start',
-        !threadItemsLength && 'h-[calc(100vh-16rem)] justify-start'
+        !threadItemsLength && 'justify-start'
       )}
     >
       <Flex
@@ -116,8 +108,8 @@ export const ChatInput = ({ showGreeting = true, showBottomBar = true }: { showG
       >
         {showGreeting && (
           <div className='flex flex-col w-full items-center gap-1 mb-8'>
-            <h1 className="text-3xl font-medium font-sg tracking-tight opacity-50">Good morning,</h1>
-            <h1 className="text-3xl font-medium font-sg tracking-tight">How can i help you?</h1>
+            <h1 className="text-3xl font-medium font-sg tracking-tight text-foreground/50">Good morning,</h1>
+            <h1 className="text-3xl font-medium font-sg tracking-tight text-foreground">How can i help you?</h1>
           </div>
         )}
 

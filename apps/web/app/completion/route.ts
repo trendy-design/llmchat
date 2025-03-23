@@ -96,7 +96,8 @@ async function executeStream(
                         threadItemId: data.threadItemId,
                         messages: data.messages as any,
                         config: {
-                                maxIterations: data.maxIterations || 3
+                                maxIterations: data.maxIterations || 3,
+                                signal
                         },
                         mcpConfig: data.mcpConfig || {}
                 });

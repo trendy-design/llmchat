@@ -11,7 +11,7 @@ import {
   CommandList,
   CommandSeparator,
 } from '@repo/ui';
-import { Moon, Plus, Sun } from 'lucide-react';
+import { IconMessageCircleFilled, IconPlus } from '@tabler/icons-react';
 import moment from 'moment';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
@@ -22,6 +22,10 @@ export const CommandSearch = () => {
   const switchThread = useChatStore(state => state.switchThread);
   const router = useRouter();
   const { theme, setTheme } = useTheme();
+
+  useEffect(() => {
+    router.prefetch('/chat');
+  }, [isCommandSearchOpen, threads, router]);
 
   useEffect(() => {
     if (isCommandSearchOpen) {
@@ -43,21 +47,13 @@ export const CommandSearch = () => {
 
   const actions = [
     {
-      name: 'New session',
-      icon: Plus,
+      name: 'New Thread',
+      icon: IconPlus,
       action: () => {
-        // createSession();
+        router.push('/chat');
         onClose();
       },
-    },
-    {
-      name: `Switch to ${theme === 'light' ? 'dark' : 'light'} mode`,
-      icon: theme === 'light' ? Moon : Sun,
-      action: () => {
-        setTheme(theme === 'light' ? 'dark' : 'light');
-        onClose();
-      },
-    },
+    }
   ];
 
   return (
@@ -65,7 +61,7 @@ export const CommandSearch = () => {
       <CommandInput placeholder="Search..." />
       <CommandSeparator className='opacity-50' />
 
-      <CommandList className="pt-1">
+      <CommandList className="pt-1 max-h-[60dvh] overflow-y-auto">
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
           {actions.map(action => (
@@ -75,9 +71,7 @@ export const CommandSearch = () => {
               value={action.name}
               onSelect={action.action}
             >
-              <div className="flex h-6 w-6 items-center justify-center">
-                <action.icon size={16} strokeWidth="2" className="flex-shrink-0" />
-              </div>
+                <action.icon size={14} strokeWidth="2" className="flex-shrink-0 text-muted-foreground" />
               {action.name}
             </CommandItem>
           ))}
@@ -88,15 +82,16 @@ export const CommandSearch = () => {
               <CommandItem
                 key={thread.id}
                 value={`${thread.id}/${thread.title}`}
-                className={cn('w-full gap-2')}
+                className={cn('w-full gap-3')}
                 onSelect={value => {
                   switchThread(thread.id);
                   router.push(`/c/${thread.id}`);
                   onClose();
                 }}
               >
+                <IconMessageCircleFilled size={16} strokeWidth={2} className='text-muted-foreground/50' />
                 <span className="w-full truncate">{thread.title}</span>
-                <span className="text-muted-foreground flex-shrink-0 pl-4 text-xs">
+                <span className="text-muted-foreground !font-normal flex-shrink-0 pl-4 text-xs">
                   {moment(thread.createdAt).fromNow(true)}
                 </span>
               </CommandItem>

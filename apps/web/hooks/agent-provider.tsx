@@ -63,6 +63,14 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     }
     setIsGenerating(true);
 
+    abortController.signal.addEventListener('abort', () => {
+      console.log("abortController aborted")
+      updateThreadItem(body.threadId, {
+        id: body.threadItemId,
+        status: 'ABORTED'
+      });
+    });
+
     const response = await fetch(`/completion`, {
       method: 'POST',
       headers: {
@@ -188,6 +196,22 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     ]
 
     if (hasApiKey(localApiKeys, newChatMode ?? chatMode as any)) {
+
+      const abortController = new AbortController();
+      setAbortController(abortController);
+      if (!abortController) {
+        return
+      }
+      setIsGenerating(true);
+  
+      abortController.signal.addEventListener('abort', () => {
+        console.log("abortController aborted")
+        updateThreadItem(threadId, {
+          id: optimisticAiThreadItemId,
+          status: 'ABORTED'
+        });
+      });
+
       startWorkflow({
         mode: newChatMode ?? chatMode as any,
         question: formData.get('query') as string,
@@ -196,7 +220,10 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         mcpConfig: getSelectedMCP(),
         threadItemId: optimisticAiThreadItemId,
         parentThreadItemId: "",
-        apiKeys: localApiKeys
+        apiKeys: localApiKeys,
+        config:{
+          signal: abortController?.signal
+        }
       });
     } else {
       runAgent({

@@ -19,7 +19,7 @@ const ClarificationResponseSchema = z.object({
 
 export const refineQueryTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'refine-query',
-        execute: async ({ trace, events, context, data }) => {
+        execute: async ({ trace, events, context, data, signal }) => {
 
                 const messages = context?.get('messages') || [];
                 const question = context?.get('question') || '';
@@ -56,6 +56,7 @@ export const refineQueryTask = createTask<WorkflowEventSchema, WorkflowContextSc
                         model: ModelEnum.GPT_4o_Mini,
                         schema: ClarificationResponseSchema,
                         messages: messages as any,
+                        signal
                 });
 
                 console.log("object",object);

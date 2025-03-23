@@ -4,7 +4,7 @@ import { createTask } from '../task';
 
 export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
         name: 'router',
-        execute: async ({ trace, events, context, data, redirectTo }) => {
+        execute: async ({context, redirectTo }) => {
 
                 const mode = context?.get('mode') || CompletionMode.Fast;
                
