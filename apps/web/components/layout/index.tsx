@@ -3,10 +3,12 @@ import { AgentProvider } from '@/hooks/agent-provider';
 import { useRootContext } from '@/libs/context/root';
 import { SignInButton, useAuth, UserButton } from "@clerk/nextjs";
 import { Button, Flex, Toaster } from '@repo/ui';
+import { IconSettingsFilled } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FC } from 'react';
 import { Drawer } from 'vaul';
 import { CommandSearch } from '../command-search';
+import { SettingsModal } from '../settings-modal';
 import { Sidebar } from './side-bar';
 
 export type TRootLayout = {
@@ -50,7 +52,12 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
               <div className="flex flex-row h-full w-full">
                 <div className="flex flex-col w-full gap-2 overflow-y-auto">
                   {/* Auth Button Header */}
-                  <div className="fixed top-3 right-3 z-50 flex items-center gap-4">
+                  <div className="fixed top-3 right-3 z-50 flex items-center gap-1">
+                    <SettingsModal>
+                    <Button variant="ghost" size="sm" rounded="full">
+                          <IconSettingsFilled size={16} strokeWidth={2} />
+                          </Button> 
+                    </SettingsModal>
                     {isSignedIn ? (
                       <UserButton 
                         appearance={{
@@ -62,7 +69,7 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
                     ) : (
                       <SignInButton mode="modal">
                         <Button variant="default" size="sm" rounded="full">
-                          Sign in
+                          Log in
                           </Button>           
                                      </SignInButton>
                     )}

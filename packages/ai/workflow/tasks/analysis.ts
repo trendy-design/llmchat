@@ -3,21 +3,15 @@ import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
 import { generateText, getHumanizedDate } from '../utils';
 
-
-
-
-
 export const analysisTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
-        name: 'analysis',
-        execute: async ({ trace, events, context, signal }) => {
+    name: 'analysis',
+    execute: async ({ trace, events, context, signal }) => {
+        const messages = context?.get('messages') || [];
+        const question = context?.get('question') || '';
+        const prevSummaries = context?.get('summaries') || [];
+        const nextGoalId = Object.keys(events?.getState('flow')?.goals || {}).length;
 
-                const messages = context?.get('messages') || [];
-                const question = context?.get('question') || '';
-                const prevSummaries = context?.get('summaries') || [];
-                const nextGoalId = Object.keys(events?.getState('flow')?.goals || {}).length;
-
-
-                const prompt = `
+        const prompt = `
           
 
                 # Research Analysis Framework
@@ -32,13 +26,17 @@ You gonna perform pre-writing analysis of the research findings.
 ## Research Materials
 
 <research_findings>
-${prevSummaries?.map((s, index) => `
+${prevSummaries
+    ?.map(
+        (s, index) => `
 
 ## Finding ${index + 1}
 
 ${s}
 
-`).join('\n\n\n')}
+`
+    )
+    .join('\n\n\n')}
 </research_findings>
 
 
@@ -55,60 +53,55 @@ ${s}
    - Don't Include reference list at the end.
    </citations>
 
-                `
+                `;
 
-                events?.update('flow', (current) => ({
-                        ...current,
-                        goals: {
-                                ...current.goals,
-                                [nextGoalId]: {
-                                        text: "Analyzing the findings and the gaps in the research",
-                                        final: true,
-                                        status: 'COMPLETED' as const,
-                                        id: nextGoalId,
-                                }
-                        }
+        events?.update('flow', current => ({
+            ...current,
+            goals: {
+                ...current.goals,
+                [nextGoalId]: {
+                    text: 'Analyzing the findings and the gaps in the research',
+                    final: true,
+                    status: 'COMPLETED' as const,
+                    id: nextGoalId,
+                },
+            },
+        }));
+
+        const text = await generateText({
+            prompt,
+            model: ModelEnum.Deepseek_R1,
+            messages: messages as any,
+            signal,
+            onReasoning: reasoning => {
+                events?.update('flow', current => ({
+                    ...current,
+                    reasoning: {
+                        ...(current.reasoning || {}),
+                        text: reasoning,
+                        final: false,
+                        status: 'PENDING' as const,
+                    },
                 }));
+            },
+        });
 
-                const text = await generateText({
-                        prompt,
-                        model: ModelEnum.Deepseek_R1,
-                        messages: messages as any,
-                        signal,
-                        onReasoning: (reasoning) => {
-                                events?.update('flow', (current) => ({
-                                        ...current,
-                                        reasoning: {
-                                                ...(current.reasoning || {}),
-                                                text: reasoning,
-                                                final: false,
-                                                status: 'PENDING' as const,
-                                        }
-                                }))
-                        }
-                });
+        console.log('Analysis', text);
 
-                console.log("Analysis", text);
+        trace?.span({
+            name: 'analysis',
+            input: prompt,
+            output: text,
+            metadata: {
+                question,
+                prevSummaries,
+            },
+        });
 
-                trace?.span({
-                        name: 'analysis',
-                        input: prompt,
-                        output: text,
-                        metadata: {
-                                question,
-                                prevSummaries,
-                        }
-                })
-
-
-
-                return {
-                        queries: [],
-                        analysis: text,
-                };
-        },
-        route: ({ result }) => 'writer'
+        return {
+            queries: [],
+            analysis: text,
+        };
+    },
+    route: ({ result }) => 'writer',
 });
-
-
-

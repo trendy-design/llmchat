@@ -86,12 +86,10 @@ export const ChatActions = memo(({ sendMessage }: TChatActions) => {
   const setChatMode = useChatStore(state => state.setChatMode);
   const stopGeneration = useChatStore(state => state.stopGeneration);
   const [isChatModeOpen, setIsChatModeOpen] = useState(false);
-
-
-
   const hasTextInput = !!editor?.getText();
-
   const isChatPage = pathname.startsWith('/chat');
+  const useWebSearch = useChatStore(state => state.useWebSearch);
+  const setUseWebSearch = useChatStore(state => state.setUseWebSearch);
 
 
   return (
@@ -110,19 +108,11 @@ export const ChatActions = memo(({ sendMessage }: TChatActions) => {
         <Button size="icon" tooltip="Attachment (coming soon)" variant="ghost" className='gap-2' rounded="full" disabled>
           <IconPaperclip size={18} strokeWidth={2} className="text-muted-foreground"/>
         </Button>
-        <Button size="icon" tooltip="Web Search" variant="ghost" className='gap-2' rounded="full">
+        <Button size="icon" tooltip="Web Search" variant={useWebSearch ? "secondary" : "ghost"} className='gap-2' rounded="full" onClick={() => setUseWebSearch(!useWebSearch)}>
           <IconWorld size={18} strokeWidth={2} className="text-muted-foreground" />
         </Button>
         <ToolsMenu />
 
-        {/* 
-        <ImageUpload
-          id="image-upload"
-          label="Upload Image"
-          tooltip="Upload Image"
-          showIcon
-          handleImageUpload={handleImageUpload}
-        /> */}
       </Flex>}
 
       <Flex gap="md" items="center">

@@ -20,7 +20,8 @@ export const ChatInput = ({ showGreeting = true, showBottomBar = true }: { showG
   const threadItemsLength = useChatStore(useShallow(state => state.threadItems.length));
   const { handleSubmit } = useAgentStream();
   const createThread = useChatStore(state => state.createThread);
-
+  const useWebSearch = useChatStore(state => state.useWebSearch);
+  
   const router = useRouter();
   const sendMessage = async () => {
     if (!editor?.getText()) {
@@ -43,7 +44,8 @@ export const ChatInput = ({ showGreeting = true, showBottomBar = true }: { showG
     handleSubmit({
       formData,
       newThreadId: threadId,
-      messages: threadItems
+      messages: threadItems,
+      useWebSearch
     });
     editor.commands.clearContent();
     if (currentThreadId !== threadId) {

@@ -5,7 +5,7 @@ import { SettingsModal } from "./settings-modal";
 export function MessagesRemainingBadge() {
   const messageLimit = useChatStore(state => state.messageLimit);
 
-  if (messageLimit.remaining > 5) {
+  if (messageLimit.remaining > 5 || !messageLimit.isFetched) {
     return (
       <div className="text-xs flex-row text-yellow-900/80 flex items-center gap-2">
         Local-first app - Your data stays on your device

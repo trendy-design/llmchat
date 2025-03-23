@@ -12,6 +12,7 @@ const buttonVariants = cva(
       variant: {
         default: 'bg-foreground text-background [&>svg]:text-background font-semibold hover:opacity-90',
         brand: 'bg-brand text-brand-foreground font-semibold hover:opacity-90',
+        'brand-secondary': 'bg-brand-secondary text-brand-secondary-foreground font-semibold hover:opacity-90',
         accent: 'text-teal-600 bg-teal-600/10 hover:bg-teal-600/20',
         outlined: 'bg-background text-foreground outline outline-border hover:bg-secondary',
         destructive: 'bg-destructive text-destructive-foreground hover:opacity-90',
@@ -23,7 +24,7 @@ const buttonVariants = cva(
       },
       size: {
         default: 'h-9 px-3 text-xs md:text-sm',
-        sm: 'h-8 px-3 text-xs md:text-sm rounded-xl',
+        sm: 'h-8 px-3 text-xs md:text-xs rounded-xl',
         xs: 'h-7 px-2 text-xs md:text-xs',
         md: 'h-9 px-4 text-xs md:text-sm font-semibold',
         lg: 'h-12 md:h-14  px-8 text-xs md:text-base font-semibold',
@@ -56,6 +57,7 @@ export interface ButtonProps
   iconSize?: 'xs' | 'sm' | 'md' | 'lg';
   prefixIcon?: LucideIcon;
   tooltip?: string;
+  tooltipSide?: 'top' | 'bottom' | 'left' | 'right';
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -72,6 +74,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       icon,
       children,
       tooltip,
+      tooltipSide = 'top',
       ...props
     },
     ref
@@ -104,7 +107,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     if (tooltip) {
       return (
-        <ToolTipWrapper content={tooltip}>
+        <ToolTipWrapper content={tooltip} side={tooltipSide}>
           {buttonComp}
         </ToolTipWrapper>
       );

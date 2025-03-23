@@ -93,6 +93,7 @@ export type WorkflowContextSchema = {
                         link: string;
                 }[];
         }[];
+        webSearch: boolean;
         queries: string[];
         summaries: string[];
         answer: string[];
@@ -100,22 +101,6 @@ export type WorkflowContextSchema = {
         threadItemId: string;
 };
 
-// Replace Zod schemas with TypeScript types
-const workflowEventInitialState: Partial<WorkflowEventSchema> = {
-        flow: {
-                query: "",
-                threadId: "",
-                threadItemId: "",
-                status: 'PENDING',
-                goals: {},
-                steps: {},
-                answer: {
-                        text: "",
-                        final: false
-                },
-                final: false
-        }
-};
 
 export type WorkflowConfig = {
         maxIterations?: number;
@@ -134,7 +119,8 @@ export const deepResearchWorkflow = ({
         threadItemId,
         messages,
         config = {},
-        signal
+        signal,
+        webSearch = false
 }: {
         mcpConfig: Record<string, string>,
         mode: CompletionMode,
@@ -143,7 +129,8 @@ export const deepResearchWorkflow = ({
         threadItemId: string,
         messages: (CoreUserMessage | CoreAssistantMessage)[],
         config?: WorkflowConfig,
-        signal?: AbortSignal
+        signal?: AbortSignal,
+        webSearch?: boolean
 }) => {
         const langfuse = new Langfuse();
         const trace = langfuse.trace({
@@ -178,6 +165,7 @@ export const deepResearchWorkflow = ({
                 mcpConfig,
                 question,
                 mode,
+                webSearch,
                 search_queries: [],
                 messages: messages as any,
                 goals: [],

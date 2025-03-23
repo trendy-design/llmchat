@@ -5,15 +5,14 @@ import { createTask } from '../task';
 import { generateObject, getHumanizedDate } from '../utils';
 
 export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
-        name: 'planner',
-        execute: async ({ trace, events, context, data, signal }) => {
+    name: 'planner',
+    execute: async ({ trace, events, context, data, signal }) => {
+        const messages = context?.get('messages') || [];
+        const question = context?.get('question') || '';
 
-                const messages = context?.get('messages') || [];
-                const question = context?.get('question') || '';
+        const currentYear = new Date().getFullYear();
 
-                const currentYear = new Date().getFullYear();
-
-                const prompt = `
+        const prompt = `
                         You're a strategic research planner. Your job is to analyze research questions and develop an initial approach to find accurate information through web searches.
                         
                         **Research Question**:
@@ -67,62 +66,60 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
                         - queries: 2 well-crafted search queries (4-8 words) that targets the most important aspects
                 `;
 
+        const object = await generateObject({
+            prompt,
+            model: ModelEnum.GPT_4o_Mini,
+            schema: z.object({
+                reasoning: z.string(),
+                queries: z.array(z.string()),
+            }),
+            messages: messages as any,
+            signal,
+        });
 
-                const object = await generateObject({
-                        prompt,
-                        model: ModelEnum.GPT_4o_Mini,
-                        schema: z.object({
-                                reasoning: z.string(),
-                                queries: z.array(z.string())
-                        }),
-                        messages: messages as any,
-                        signal
-                });
+        const goalId = Object.keys(events?.getState('flow')?.goals || {}).length;
 
-                const goalId = Object.keys(events?.getState('flow')?.goals || {}).length;
-
-                context?.update('queries', (current) => [...(current ?? []), ...(object?.queries || [])]);
-                // Update flow event with initial goal
-                events?.update('flow', (current) => {
-                        const stepId = Object.keys(current.steps || {}).length;
-                        return {
-                                ...current,
-                                goals: {
-                                        ...(current.goals || {}),
-                                        [goalId]: {
-                                                text: object.reasoning,
-                                                final: false,
-                                                status: 'PENDING' as const,
-                                                id: goalId,
-                                        },
-                                },
-                                steps: {
-                                        ...(current.steps || {}),
-                                        [stepId]: {
-                                                type: 'search',
-                                                queries: object.queries,
-                                                status: "COMPLETED" as const,
-                                                goalId: goalId,
-                                                final: true,
-                                        },
-                                },
-                        }
-                });
-
-
-                trace?.span({
-                        name: 'planner',
-                        input: prompt,
-                        output: object,
-                        metadata: {
-                                data
-                        }
-                })
-
-                return {
+        context?.update('queries', current => [...(current ?? []), ...(object?.queries || [])]);
+        // Update flow event with initial goal
+        events?.update('flow', current => {
+            const stepId = Object.keys(current.steps || {}).length;
+            return {
+                ...current,
+                goals: {
+                    ...(current.goals || {}),
+                    [goalId]: {
+                        text: object.reasoning,
+                        final: false,
+                        status: 'PENDING' as const,
+                        id: goalId,
+                    },
+                },
+                steps: {
+                    ...(current.steps || {}),
+                    [stepId]: {
+                        type: 'search',
                         queries: object.queries,
-                        goalId
-                };
-        },
-        route: ({ result }) => 'web-search'
-}); 
+                        status: 'COMPLETED' as const,
+                        goalId: goalId,
+                        final: true,
+                    },
+                },
+            };
+        });
+
+        trace?.span({
+            name: 'planner',
+            input: prompt,
+            output: object,
+            metadata: {
+                data,
+            },
+        });
+
+        return {
+            queries: object.queries,
+            goalId,
+        };
+    },
+    route: ({ result }) => 'web-search',
+});

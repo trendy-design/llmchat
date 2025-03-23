@@ -147,6 +147,7 @@ const loadInitialData = async () => {
     threads: initialThreads,
     currentThreadId: config.currentThreadId || initialThreads[0]?.id,
     config,
+    useWebSearch: config.useWebSearch || false,
     chatMode
   };
 };
@@ -154,6 +155,7 @@ const loadInitialData = async () => {
 type State = {
   model: Model;
   isGenerating: boolean;
+  useWebSearch: boolean;
   editor: any;
   chatMode: ChatMode;
   context: string;
@@ -171,6 +173,7 @@ type State = {
     remaining: number;
     maxLimit: number;
     reset?: string;
+    isFetched: boolean;
   };
 };
 
@@ -199,6 +202,7 @@ type Actions = {
   setCurrentThreadItem: (threadItem: ThreadItem) => void;
   clearAllThreads: () => void;
   setCurrentSources: (sources: string[]) => void;
+  setUseWebSearch: (useWebSearch: boolean) => void;
 };
 
 // Add these utility functions at the top level
@@ -294,6 +298,7 @@ export const useChatStore = create(
     threads: [],
     chatMode: ChatMode.Fast,
     threadItems: [],
+    useWebSearch: false,
     currentThreadId: null,
     currentThread: null,
     currentThreadItem: null,
@@ -306,6 +311,14 @@ export const useChatStore = create(
       remaining: 0,
       maxLimit: 0,
       reset: undefined,
+      isFetched: false,
+    },
+
+    setUseWebSearch: (useWebSearch: boolean) => {
+      localStorage.setItem(CONFIG_KEY, JSON.stringify({ useWebSearch }));
+      set(state => {
+        state.useWebSearch = useWebSearch;
+      });
     },
 
     setChatMode: (chatMode: ChatMode) => {
@@ -323,6 +336,7 @@ export const useChatStore = create(
         state.messageLimit.remaining = data.remaining;
         state.messageLimit.maxLimit = data.maxLimit;
         state.messageLimit.reset = data.reset;
+        state.messageLimit.isFetched = true;
       });
     },
 
@@ -535,13 +549,14 @@ export const useChatStore = create(
 
 if (typeof window !== 'undefined') {
   // Initialize store with data from IndexedDB
-  loadInitialData().then(({ threads, currentThreadId, chatMode }) => {
+  loadInitialData().then(({ threads, currentThreadId, chatMode, useWebSearch }) => {
     useChatStore.getState().fetchRemainingMessages();
     useChatStore.setState({
       threads,
       currentThreadId,
       currentThread: threads.find(t => t.id === currentThreadId) || threads?.[0],
-      chatMode
+      chatMode,
+      useWebSearch
     });
   });
 }

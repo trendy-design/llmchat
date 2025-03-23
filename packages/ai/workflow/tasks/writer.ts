@@ -5,18 +5,18 @@ import { createTask } from '../task';
 import { generateText } from '../utils';
 
 export const writerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
-  name: 'writer',
-  execute: async ({ trace, events, context, data, signal }) => {
-    console.log('writer');
+    name: 'writer',
+    execute: async ({ trace, events, context, data, signal }) => {
+        console.log('writer');
 
-    const analysis = data?.analysis || '';
+        const analysis = data?.analysis || '';
 
-    const question = context?.get('question') || '';
-    const summaries = context?.get('summaries') || [];
-    const currentDate = new Date();
-    const humanizedDate = format(currentDate, "MMMM dd, yyyy, h:mm a");
-    
-    const prompt = `
+        const question = context?.get('question') || '';
+        const summaries = context?.get('summaries') || [];
+        const currentDate = new Date();
+        const humanizedDate = format(currentDate, 'MMMM dd, yyyy, h:mm a');
+
+        const prompt = `
 
     Today is ${humanizedDate}.
 You are a Comprehensive Research Writer tasked with providing an extremely detailed and thorough writing about "${question}".
@@ -25,7 +25,7 @@ Your goal is to create a comprehensive report based on the research information 
 First, carefully read and analyze the following research information:
 
 <research_findings>
-${summaries.map((summary) => `<finding>${summary}</finding>`).join('\n')}
+${summaries.map(summary => `<finding>${summary}</finding>`).join('\n')}
 </research_findings>
 
 <analysis>
@@ -62,40 +62,40 @@ ${analysis}
 Your report should demonstrate subject matter expertise while remaining intellectually accessible to informed professionals. Focus on providing substantive analysis rather than cataloging facts. Emphasize implications and significance rather than merely summarizing information.
     `;
 
-    const messages = context?.get('messages') || [];
-    const answer = await generateText({
-      prompt,
-      model: ModelEnum.GEMINI_2_FLASH,
-      messages: messages as any,
-      signal,
-      onChunk: (chunk) => {
-        events?.update('flow', (current) => ({
-          ...current,
-          answer: {text: chunk, final: false, status: 'PENDING' as const},
-          final: false
+        const messages = context?.get('messages') || [];
+        const answer = await generateText({
+            prompt,
+            model: ModelEnum.GEMINI_2_FLASH,
+            messages: messages as any,
+            signal,
+            onChunk: chunk => {
+                events?.update('flow', current => ({
+                    ...current,
+                    answer: { text: chunk, final: false, status: 'PENDING' as const },
+                    final: false,
+                }));
+            },
+        });
+
+        console.log('Answer', answer);
+
+        // Update typed context with the answer
+        context?.update('answer', (current = []) => [...current, answer]);
+
+        events?.update('flow', current => ({
+            ...current,
+            answer: { text: answer, final: true, status: 'COMPLETED' as const },
+            final: true,
         }));
-      }
-    });
 
-    console.log("Answer", answer);
+        trace?.span({
+            name: 'writer',
+            input: prompt,
+            output: answer,
+            metadata: context?.getAll(),
+        });
 
-    // Update typed context with the answer
-    context?.update('answer', (current = []) => [...current, answer]);
-
-    events?.update('flow', (current) => ({
-      ...current,
-      answer: {text: answer, final: true, status: 'COMPLETED' as const},
-      final: true
-    }));
-
-    trace?.span({ 
-      name: 'writer', 
-      input: prompt, 
-      output: answer, 
-      metadata: context?.getAll() 
-    });
-
-    return answer;
-  },
-  route: ({ result }) => 'end'
-}); 
+        return answer;
+    },
+    route: ({ result }) => 'end',
+});

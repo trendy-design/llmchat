@@ -15,6 +15,7 @@ const completionRequestSchema = z.object({
         mode: z.nativeEnum(CompletionMode),
         maxIterations: z.number().optional(),
         mcpConfig: z.record(z.string(), z.string()).optional(),
+        webSearch: z.boolean().optional(),
 });
 
 export type CompletionRequestType = z.infer<typeof completionRequestSchema>;
@@ -89,12 +90,14 @@ async function executeStream(
 ) {
         try {
                 const { signal } = abortController;
+                console.log("data", data);
                 const workflow = deepResearchWorkflow({
                         mode: data.mode,
                         question: data.prompt,
                         threadId: data.threadId,
                         threadItemId: data.threadItemId,
                         messages: data.messages as any,
+                        webSearch: data.webSearch || false,
                         config: {
                                 maxIterations: data.maxIterations || 3,
                                 signal

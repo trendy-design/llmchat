@@ -9,7 +9,7 @@ import { createContext, ReactNode, useContext } from 'react';
 
 type AgentContextType = {
   runAgent: (body: CompletionRequestType) => Promise<void>;
-  handleSubmit: ({ formData, newThreadId, existingThreadItemId, newChatMode, messages }: { formData: FormData, newThreadId?: string, existingThreadItemId?: string, newChatMode?: string, messages?: ThreadItem[] }) => Promise<void>;
+  handleSubmit: ({ formData, newThreadId, existingThreadItemId, newChatMode, messages, useWebSearch }: { formData: FormData, newThreadId?: string, existingThreadItemId?: string, newChatMode?: string, messages?: ThreadItem[], useWebSearch?: boolean }) => Promise<void>;
   updateContext: (threadId: string, data: any) => void;
 };
 
@@ -84,11 +84,21 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
 
     if (!response.ok) {
       const errorText = await response.text();
+      setIsGenerating(false);
+
+      let errorMessage = errorText;
+
+      updateThreadItem(body.threadId, {
+        id: body.threadItemId,
+        status: 'ERROR',
+        error: errorMessage
+      });
       console.error('Error response:', errorText);
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     if (!response.body) {
+    
       throw new Error('No response body received');
     }
 
@@ -144,7 +154,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const handleSubmit = async ({ formData, newThreadId, existingThreadItemId, newChatMode, messages }: { formData: FormData, newThreadId?: string, existingThreadItemId?: string, newChatMode?: string, messages?: ThreadItem[] }) => {
+  const handleSubmit = async ({ formData, newThreadId, existingThreadItemId, newChatMode, messages, useWebSearch }: { formData: FormData, newThreadId?: string, existingThreadItemId?: string, newChatMode?: string, messages?: ThreadItem[], useWebSearch?: boolean }) => {
     let threadId = currentThreadId?.toString() || newThreadId;
 
     if (threadId) {
@@ -234,6 +244,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         mcpConfig: getSelectedMCP(),
         threadItemId: optimisticAiThreadItemId,
         parentThreadItemId: "",
+        webSearch: useWebSearch,
       });
     }
 

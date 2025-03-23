@@ -1,7 +1,7 @@
 import { useRootContext } from '@/libs/context/root';
 import { useAppStore } from '@/libs/store/app.store';
 import { Thread, useChatStore } from '@/libs/store/chat.store';
-import { Button, cn, Flex, Type } from '@repo/ui';
+import { Button, cn, Flex } from '@repo/ui';
 import {
   IconArrowBarLeft,
   IconArrowBarRight,
@@ -87,15 +87,15 @@ export const Sidebar = () => {
       isSidebarOpen ? 'w-[240px] h-full top-0 bg-background border-r border-border/70' : 'w-[50px]'
     )}>
       <Flex className="w-full justify-between items-center px-2 py-2">
-        {isSidebarOpen && <Type size="sm" weight="medium">deep.new</Type>}
-        <Button 
+      {isSidebarOpen && <Button 
           variant="ghost" 
           size="icon" 
           onClick={() => setIsSidebarOpen(prev => !prev)}
           className={cn(!isSidebarOpen && "mx-auto")}
+          tooltip="Close Sidebar"
         >
-          {isSidebarOpen ? <IconArrowBarLeft size={16} strokeWidth={2} /> : <IconArrowBarRight size={16} strokeWidth={2} />}
-        </Button>
+          <IconArrowBarLeft size={16} strokeWidth={2} /> 
+      </Button>}
       </Flex>
 
       <Flex direction="col" className="w-full flex-1 overflow-hidden">
@@ -104,6 +104,8 @@ export const Sidebar = () => {
             size={isSidebarOpen ? "sm" : "icon"}
             variant="bordered"
             rounded="full"
+            tooltip={isSidebarOpen ?  undefined: "New Thread"}
+            tooltipSide="right"
             className={cn("w-full shadow-sm relative", "justify-center")}
             onClick={() => !isChatPage && push('/chat')}
           >
@@ -114,6 +116,8 @@ export const Sidebar = () => {
             size={isSidebarOpen ? "sm" : "icon"}
             variant="secondary"
             rounded="full"
+            tooltip={isSidebarOpen ? undefined: "Search"}
+            tooltipSide="right"
             className={cn("w-full relative", "justify-center")}
             onClick={() => setIsCommandSearchOpen(true)}
           >
@@ -144,7 +148,14 @@ export const Sidebar = () => {
 
         <Flex className="w-full p-2 mt-auto" gap="xs" direction={"col"} justify={isSidebarOpen ? "between" : "center"}>
         
-        
+        {!isSidebarOpen &&<Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => setIsSidebarOpen(prev => !prev)}
+          className={cn(!isSidebarOpen && "mx-auto")}
+        >
+          <IconArrowBarRight size={16} strokeWidth={2} /> 
+      </Button>}
 
           {isSidebarOpen &&  <Button
           size="sm"

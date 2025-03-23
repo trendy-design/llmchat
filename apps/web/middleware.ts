@@ -13,13 +13,13 @@ const rateLimit = new Ratelimit({
 
 // Only protect completion routes
 const isProtectedRoute = createRouteMatcher([
-  '/completion(.*)' // Only protect completion routes
+  '/complet(.*)' // Only protect completion routes
 ])
 
 export default clerkMiddleware(async (auth, req) => {
   if (!isProtectedRoute(req)) return;
 
-  if (req.nextUrl.pathname.startsWith('/completion')) {
+  if (req.nextUrl.pathname.startsWith('/complet')) {
     const currentUser = await auth();
     const userId = currentUser?.userId;
     const ip = req.ip ?? req.headers.get('x-forwarded-for') ?? 'anonymous';
@@ -74,7 +74,7 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
-    '/completion/:path*',
+    '/complet/:path*',
     '/(api|trpc)/:path*'
   ]
 }

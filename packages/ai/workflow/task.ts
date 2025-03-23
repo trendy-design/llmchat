@@ -5,47 +5,49 @@ import { EventSchemaDefinition, TypedEventEmitter } from './events';
 
 // Define a WorkflowConfig type
 export type WorkflowConfig = {
-  maxIterations?: number;
-  [key: string]: any;
+    maxIterations?: number;
+    [key: string]: any;
 };
 
 export type TaskParams<
-  TEvent extends EventSchemaDefinition = any,
-  TContext extends ContextSchemaDefinition = any
+    TEvent extends EventSchemaDefinition = any,
+    TContext extends ContextSchemaDefinition = any,
 > = {
-  data?: any;
-  executionContext: ExecutionContext;
-  abort: (graceful: boolean) => void;
-  trace?: LangfuseTraceClient;
-  events?: TypedEventEmitter<TEvent>;
-  context?: Context<TContext>;
-  config?: WorkflowConfig;
-  redirectTo: (nextTask: string | string[] | ParallelTaskRoute[]) => void;
-  signal?: AbortSignal;
+    data?: any;
+    executionContext: ExecutionContext;
+    abort: (graceful: boolean) => void;
+    trace?: LangfuseTraceClient;
+    events?: TypedEventEmitter<TEvent>;
+    context?: Context<TContext>;
+    config?: WorkflowConfig;
+    redirectTo: (nextTask: string | string[] | ParallelTaskRoute[]) => void;
+    signal?: AbortSignal;
 };
 
 export type TaskRouterParams<
-  TEvent extends EventSchemaDefinition = any,
-  TContext extends ContextSchemaDefinition = any
+    TEvent extends EventSchemaDefinition = any,
+    TContext extends ContextSchemaDefinition = any,
 > = TaskParams<TEvent, TContext> & {
-  result: any;
+    result: any;
 };
 
 export type TaskDefinition<
-  TEvent extends EventSchemaDefinition = any,
-  TContext extends ContextSchemaDefinition = any
+    TEvent extends EventSchemaDefinition = any,
+    TContext extends ContextSchemaDefinition = any,
 > = {
-  name: string;
-  execute: (params: TaskParams<TEvent, TContext>) => Promise<any>;
-  route?: (params: TaskRouterParams<TEvent, TContext>) => string | string[] | undefined;
-  dependencies?: string[];
-  retryCount?: number;
-  timeoutMs?: number;
+    name: string;
+    execute: (params: TaskParams<TEvent, TContext>) => Promise<any>;
+    route?: (params: TaskRouterParams<TEvent, TContext>) => string | string[] | undefined;
+    dependencies?: string[];
+    retryCount?: number;
+    timeoutMs?: number;
 };
 
 export const createTask = <
-  TEvent extends EventSchemaDefinition = any,
-  TContext extends ContextSchemaDefinition = any
->(taskDef: TaskDefinition<TEvent, TContext>): TaskDefinition<TEvent, TContext> => {
-  return taskDef;
-}; 
+    TEvent extends EventSchemaDefinition = any,
+    TContext extends ContextSchemaDefinition = any,
+>(
+    taskDef: TaskDefinition<TEvent, TContext>
+): TaskDefinition<TEvent, TContext> => {
+    return taskDef;
+};
