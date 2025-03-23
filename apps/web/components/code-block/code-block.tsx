@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 
 import { Button, cn } from "@repo/ui";
-import { IconBrandPython, IconBrandReact, IconBrandTypescript, IconCheck, IconCopy, IconFileFilled, IconJson, IconMarkdown, IconTerminal } from "@tabler/icons-react";
+import { IconBrandJavascript, IconBrandPython, IconBrandReact, IconBrandTypescript, IconCheck, IconCopy, IconFileFilled, IconJson, IconMarkdown, IconTerminal } from "@tabler/icons-react";
 import "./code-block.css";
 
 export type CodeBlockProps = {
@@ -58,6 +58,8 @@ export const CodeBlock = ({
         return <IconJson size={14} />;
       case "python":
         return <IconBrandPython size={14} />;
+      case "javascript":
+        return <IconBrandJavascript size={14} />;
       case "typescript":
         return <IconBrandTypescript size={14} />;
       case "jsx":
@@ -76,7 +78,7 @@ export const CodeBlock = ({
       {showHeader && (
         <div className="flex items-center pl-4 pr-1.5 py-1 bg-background border-b border-border justify-between text-foreground">
           <p className="text-muted-foreground text-xs tracking-wide flex flex-row items-center gap-2">
-            <IconFileFilled size={14} className="opacity-50" />
+            {getLangIcon()}  
             {lang}
           </p>
           <Button
