@@ -392,7 +392,7 @@ const UserMessage = memo(({ message }: UserMessageProps) => {
     const toggleExpand = useCallback(() => setIsExpanded(prev => !prev), []);
 
     return (
-        <div className="group flex w-full flex-col items-end gap-2 py-4">
+        <div className="group flex w-full flex-col items-end gap-2">
             <div className="text-foreground relative max-w-[90%]">
                 <div
                     ref={messageRef}
