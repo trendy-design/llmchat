@@ -9,7 +9,7 @@ const ChatPage = () => {
         return (
 
                 <div className='flex flex-col flex-1 overflow-hidden w-full'>
-                        <Flex className="mx-auto h-full pt-32 flex-1 max-w-3xl items-center" direction="col">
+                        <Flex className="mx-auto h-full pt-32 flex-1 max-w-3xl w-full items-center" direction="col">
 
                                 <ChatInput showGreeting={true} />
                                 <RecentThreads />
