@@ -18,7 +18,6 @@ const ChatSessionPage = ({
     damping:0,
   });
   const switchThread = useChatStore(state => state.switchThread);
-  const thread = useChatStore(state => state.currentThread);
   const getThread = useChatStore(state => state.getThread);
 
   useEffect(() => {

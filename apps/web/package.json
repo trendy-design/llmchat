@@ -41,7 +41,6 @@
     "@repo/ai": "*",
     "@repo/shared": "*",
     "@repo/ui": "*",
-    "@repo/workflows": "*",
     "@sentry/nextjs": "^8",
     "@supabase/ssr": "^0.4.0",
     "@supabase/supabase-js": "^2.44.4",
