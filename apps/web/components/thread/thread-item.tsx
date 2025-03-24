@@ -28,6 +28,7 @@ import {
 } from '@repo/ui';
 import {
     IconArrowRight,
+    IconBook,
     IconCaretDownFilled,
     IconCheck,
     IconCopy,
@@ -175,15 +176,25 @@ export const ThreadItem = memo(
                                 )}
                             </div>
                         ))}
-                        <Sources goals={goalsWithSteps || []} />
-                        <SourcesDialog />
 
                         <div ref={messageRef} className="w-full">
                             {hasAnswer && threadItem.answer?.text && (
-                                <AIThreadItem
-                                    content={threadItem.answer?.text || ''}
-                                    key={`answer-${threadItem.id}`}
-                                />
+                                <div className="flex flex-col gap-2">
+                                    <div className="text-muted-foreground flex flex-row items-center gap-1.5 py-2 text-xs font-medium">
+                                        <IconBook
+                                            size={16}
+                                            strokeWidth={2}
+                                            className="text-muted-foreground"
+                                        />{' '}
+                                        Answer
+                                    </div>
+                                    <Sources goals={goalsWithSteps || []} />
+
+                                    <AIThreadItem
+                                        content={threadItem.answer?.text || ''}
+                                        key={`answer-${threadItem.id}`}
+                                    />
+                                </div>
                             )}
                         </div>
                         {hasClarifyingQuestions && (
@@ -201,10 +212,10 @@ export const ThreadItem = memo(
                             />
                         )}
                         {(threadItem.answer?.final || threadItem.status === 'ABORTED') && (
-                            <div className="flex flex-row items-center gap-2">
+                            <div className="flex flex-row items-center gap-1">
                                 <Button
                                     variant="secondary"
-                                    size="icon-sm"
+                                    size="xs"
                                     rounded="full"
                                     onClick={() => {
                                         if (messageRef.current) {
@@ -218,16 +229,18 @@ export const ThreadItem = memo(
                                     ) : (
                                         <IconCopy size={16} strokeWidth={2} />
                                     )}
+                                    {status === 'copied' ? 'Copied' : 'Copy'}
                                 </Button>
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button
                                             variant="secondary"
-                                            size="icon-sm"
+                                            size="xs"
                                             rounded="full"
                                             tooltip="Rewrite"
                                         >
                                             <IconRefresh size={16} strokeWidth={2} />
+                                            Rewrite
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <ChatModeOptions
@@ -260,7 +273,9 @@ export const ThreadItem = memo(
                                 >
                                     <IconTrash size={16} strokeWidth={2} />
                                 </Button>
-                                <p className="text-muted-foreground text-xs">{threadItem.mode}</p>
+                                <p className="text-muted-foreground px-2 text-xs">
+                                    {threadItem.mode}
+                                </p>
                             </div>
                         )}
                     </div>
@@ -392,11 +407,11 @@ const UserMessage = memo(({ message }: UserMessageProps) => {
     const toggleExpand = useCallback(() => setIsExpanded(prev => !prev), []);
 
     return (
-        <div className="group flex w-full flex-col items-end gap-2">
+        <div className="group flex w-full flex-col items-end">
             <div className="text-foreground relative max-w-[90%]">
                 <div
                     ref={messageRef}
-                    className="bg-background border-border relative overflow-hidden rounded-xl border px-4 py-3 text-base font-normal"
+                    className="bg-background border-border relative overflow-hidden rounded-3xl border px-3 py-2 text-base font-normal"
                     style={{
                         maxHeight: isExpanded ? 'none' : maxHeight,
                         transition: 'max-height 0.3s ease-in-out',
@@ -420,7 +435,7 @@ const UserMessage = memo(({ message }: UserMessageProps) => {
                     )}
                 </div>
             </div>
-            <div className="flex flex-row gap-2 py-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            <div className="flex flex-row gap-2 pb-2 pt-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                 <Button
                     variant="secondary"
                     size="icon-sm"
@@ -646,9 +661,6 @@ export const Sources = ({ goals }: { goals: GoalWithSteps[] }) => {
                     key={4}
                     className="bg-tertiary border-border flex flex-col items-start gap-1 rounded-lg border p-3"
                 >
-                    <p className="text-muted-foreground flex flex-row items-center gap-1 text-xs">
-                        <IconLink size={14} strokeWidth={2} />+{sources.length - 3} Sources
-                    </p>
                     <div className="flex flex-row gap-1">
                         {sources
                             .slice(3)
@@ -660,6 +672,9 @@ export const Sources = ({ goals }: { goals: GoalWithSteps[] }) => {
                             ))}
                     </div>
                     <div className="flex-1" />
+                    <p className="text-muted-foreground flex flex-row items-center gap-1 text-xs">
+                        <IconLink size={14} strokeWidth={2} />+{sources.length - 3} Sources
+                    </p>
                     <Button variant="bordered" size="xs" rounded="full" tooltip="View all sources">
                         View all <IconArrowRight size={14} strokeWidth={2} />
                     </Button>

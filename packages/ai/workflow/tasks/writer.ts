@@ -79,9 +79,6 @@ Your report should demonstrate subject matter expertise while remaining intellec
 
         console.log('Answer', answer);
 
-        // Update typed context with the answer
-        context?.update('answer', (current = []) => [...current, answer]);
-
         events?.update('flow', current => ({
             ...current,
             answer: { text: answer, final: true, status: 'COMPLETED' as const },
@@ -94,8 +91,14 @@ Your report should demonstrate subject matter expertise while remaining intellec
             output: answer,
             metadata: context?.getAll(),
         });
+        context?.update('answer', _ => answer);
 
         return answer;
     },
-    route: ({ result }) => 'end',
+    route: ({ result, context }) => {
+        if (context?.get('showSuggestions')) {
+            return 'suggestions';
+        }
+        return 'end';
+    },
 });

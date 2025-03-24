@@ -1,6 +1,6 @@
 import { GoalWithSteps, Reasoning } from '@/libs/store/chat.store';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@repo/ui';
-import { Fragment, memo, useMemo } from 'react';
+import { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { StepRenderer } from './step-renderer';
 import { StepStatus } from './step-status';
 
@@ -17,7 +17,7 @@ const GoalStep = memo(({ goal }: GoalStepProps) => (
             </div>
             <div className="bg-border/50 min-h-full w-[1px] flex-1" />
         </div>
-        <div className="flex w-full flex-1 flex-col overflow-hidden pb-4">
+        <div className="flex w-full flex-1 flex-col overflow-hidden pb-2">
             <Fragment>
                 {!!goal.text && <p>{goal.text}</p>}
                 {goal.steps?.map((step, index) => <StepRenderer key={index} step={step} />)}
@@ -52,6 +52,7 @@ export const GoalsRenderer = ({
     goals: GoalWithSteps[];
     reasoning?: Reasoning;
 }) => {
+    const [value, setValue] = useState<string | undefined>(undefined);
     if (goals.length === 0 && !reasoning?.text) {
         return null;
     }
@@ -61,9 +62,23 @@ export const GoalsRenderer = ({
     }, [reasoning]);
 
     const isLoading = goals.some(goal => goal.status === 'PENDING');
+    const allCompleted = goals.every(goal => goal.status === 'COMPLETED');
+
+    useEffect(() => {
+        if (allCompleted) {
+            setValue(undefined);
+        }
+    }, [allCompleted]);
+
     return (
         <>
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion
+                type="single"
+                value={value}
+                collapsible
+                className="w-full"
+                onValueChange={setValue}
+            >
                 <AccordionItem
                     value="workflow"
                     className="border-border overflow-hidden rounded-xl border p-0"

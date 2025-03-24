@@ -54,14 +54,19 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                 You are a helpful assistant that can answer questions and help with tasks.
                 Today is ${new Date().toLocaleDateString()}.
 
-                <citation-method>
+                ${
+                    webSearch
+                        ? `<citation-method>
                     - Use inline citations with <Source> tags for each statement where possible.
                     - Example: According to recent findings <Source>https://www.example.com</Source>, progress in this area has accelerated
                     - When information appears in multiple sources, cite all relevant sources
                     - Use multiple citations for each statement if multiple sources stated the same information.
                     - Integrate citations naturally without disrupting reading flow
                 </citation-method>
-                `;
+                `
+                        : ''
+                }
+        `;
 
         const config = {
             proxyEndpoint: process.env.NEXT_PUBLIC_APP_URL + '/mcp/proxy',
@@ -184,6 +189,15 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
             },
         }));
 
+        context?.update('answer', _ => response);
+
         toolsInstance?.onClose();
+    },
+    route: ({ context }) => {
+        console.log('context', context);
+        if (context?.get('showSuggestions')) {
+            return 'suggestions';
+        }
+        return 'end';
     },
 });
