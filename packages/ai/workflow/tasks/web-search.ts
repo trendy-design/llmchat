@@ -1,21 +1,41 @@
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
-import { executeWebSearch, generateText, getHumanizedDate } from '../utils';
-
+import { executeWebSearch, generateText, getHumanizedDate, processWebPages } from '../utils';
 
 export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
-        name: 'web-search',
-        execute: async ({ data, trace, events, context, signal }) => {
-                console.log('web-search');
+    name: 'web-search',
+    execute: async ({ data, trace, events, context, signal }) => {
+        console.log('web-search');
 
-                const queries = data?.queries;
-                const goalId = data?.goalId;
-                const results = await executeWebSearch(queries, signal);
-                const question = context?.get('question') || '';
+        const queries = data?.queries;
+        const goalId = data?.goalId;
+        const results = await executeWebSearch(queries, signal);
+        events?.update('flow', current => {
+            const stepId = String(Object.keys(current.steps || {}).length);
+            return {
+                ...current,
+                steps: {
+                    ...(current.steps || {}),
+                    [stepId]: {
+                        ...(current.steps?.[stepId] || {}),
+                        type: 'read',
+                        final: true,
+                        goalId: Number(goalId),
+                        status: 'PENDING' as const,
+                        results: results?.map((result: any) => ({
+                            title: result.title,
+                            link: result.link,
+                        })),
+                    },
+                },
+            };
+        });
 
+        const processedResults = await processWebPages(results, signal);
+        const question = context?.get('question') || '';
 
-                const prompt = `
+        const prompt = `
 Role: You are a Research Information Processor. Your task is to clean and format web search results without summarizing or condensing the information.
 
 The current date and time is: **${getHumanizedDate()}**.
@@ -25,7 +45,13 @@ ${question}
 </user_question>
 
 **Web Search Results**
-${results.map((result) => `<web-search-results>\n\n - ${result.title}: ${result.link} \n\n ${result.content} \n\n</web-search-results>`).join('\n')}
+${processedResults
+    .filter(result => !!result?.content && !!result?.link)
+    .map(
+        (result: any) =>
+            `<web-search-results>\n\n - ${result.title}: ${result.link} \n\n ${result.content} \n\n</web-search-results>`
+    )
+    .join('\n')}
 
 <processing_guidelines>
 - Do NOT summarize or condense the information
@@ -51,89 +77,76 @@ ${results.map((result) => `<web-search-results>\n\n - ${result.title}: ${result.
    - Don't Include reference list at the end.
    </citations>
 
-      `
+      `;
 
-                events?.update('flow', (current) => {
-                        const stepId = String(Object.keys(current.steps || {}).length);
-                        return {
-                                ...current,
-                                steps: {
-                                        ...(current.steps || {}),
-                                        [stepId]: {
-                                                ...(current.steps?.[stepId] || {}),
-                                                type: 'read',
-                                                final: true,
-                                                goalId: Number(goalId),
-                                                status: 'PENDING' as const,
-                                                results: results?.map((result) => ({
-                                                        title: result.title,
-                                                        link: result.link
-                                                })),
-                                        }
-                                }
-                        }
-                })
+        const summary = await generateText({
+            model: ModelEnum.GEMINI_2_FLASH,
+            prompt,
+        });
 
+        events?.update('flow', current => {
+            const stepId = String(Object.keys(current.steps || {}).length);
+            return {
+                ...current,
+                goals: {
+                    ...(current.goals || {}),
+                    [goalId]: {
+                        ...(current.goals?.[goalId] || {}),
+                        status: 'COMPLETED' as const,
+                    } as any,
+                },
+                steps: {
+                    ...(current.steps || {}),
+                    [stepId]: {
+                        ...(current.steps?.[stepId] || {}),
+                        goalId: Number(goalId),
+                        status: 'COMPLETED' as const,
+                    } as any,
+                },
+            };
+        });
 
-                const summary = await generateText({
-                        model: ModelEnum.GEMINI_2_FLASH,
-                        prompt,
+        trace?.span({
+            name: 'web-search',
+            input: prompt,
+            output: summary,
+            metadata: {
+                queries,
+                goalId,
+                results,
+            },
+        });
 
-                })
+        context?.update('summaries', current => [
+            ...(current ?? []),
+            `${queries?.map((q: any) => q.query).join(', ')} \n\n ${summary}`,
+        ]);
 
-
-                events?.update('flow', (current) => {
-                        const stepId = String(Object.keys(current.steps || {}).length);
-                        return {
-                                ...current,
-                                goals: {
-                                        ...(current.goals || {}),
-                                        [goalId]: {
-                                                ...(current.goals?.[goalId] || {}),
-                                                status: 'COMPLETED' as const,
-                                        } as any
-                                },
-                                steps: {
-                                        ...(current.steps || {}),
-                                        [stepId]: {
-                                                ...(current.steps?.[stepId] || {}),
-                                                goalId: Number(goalId),
-                                                status: 'COMPLETED' as const,
-
-                                        } as any
-                                }
-                        }
-                })
-
-
-                trace?.span({
-                        name: 'web-search',
-                        input: prompt,
-                        output: summary,
-                        metadata: {
-                                queries,
-                                goalId,
-                                results,
-
-                        }
-                })
-
-
-                context?.update('summaries', (current) => [...(current ?? []), `${queries?.map((q: any) => q.query).join(', ')} \n\n ${summary}`]);
-
-                return {
-                        goalId,
-                        queries,
-                        summary,
-                };
-        },
-        route: ({ context }) => {
-                const allQueries = context?.get('queries') || [];
-                console.log('allQueries', allQueries);
-                if (allQueries?.length < 6) {
-                        return 'reflector';
-                }
-
-                return 'analysis';
+        return {
+            goalId,
+            queries,
+            summary,
+        };
+    },
+    onError: (error, { context, events }) => {
+        console.error('Task failed', error);
+        events?.update('flow', prev => ({
+            ...prev,
+            error: 'Something went wrong while processing your request. Please try again.',
+            status: 'ERROR',
+        }));
+        return Promise.resolve({
+            retry: false,
+            result: 'error',
+        });
+    },
+    route: ({ context }) => {
+        const allQueries = context?.get('queries') || [];
+        console.log('allQueries', allQueries);
+        if (allQueries?.length < 6) {
+            return 'reflector';
         }
-}); 
+
+        return 'analysis';
+    },
+});

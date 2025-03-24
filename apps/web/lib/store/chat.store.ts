@@ -470,7 +470,13 @@ export const useChatStore = create(
             try {
                 await db.threadItems.put(threadItem);
                 set(state => {
-                    state.threadItems.push({ ...threadItem, threadId });
+                    if (state.threadItems.find(t => t.id === threadItem.id)) {
+                        state.threadItems = state.threadItems.map(t =>
+                            t.id === threadItem.id ? threadItem : t
+                        );
+                    } else {
+                        state.threadItems.push({ ...threadItem, threadId });
+                    }
                 });
             } catch (error) {
                 console.error('Failed to create thread item:', error);

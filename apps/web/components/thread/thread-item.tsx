@@ -1,6 +1,6 @@
 import { GoalWithSteps, ThreadItem as ThreadItemType, useChatStore } from '@/libs/store/chat.store';
-import { Alert, AlertDescription, AlertTitle } from '@repo/ui';
-import { IconBook } from '@tabler/icons-react';
+import { Alert, AlertDescription } from '@repo/ui';
+import { IconAlertCircle, IconBook } from '@tabler/icons-react';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { CitationProvider } from './citation-provider';
 import { GoalsRenderer } from './components/goals';
@@ -86,12 +86,6 @@ export const ThreadItem = memo(
                                 </div>
                             )}
                         </div>
-                        {threadItem.error && (
-                            <Alert>
-                                <AlertTitle>Error</AlertTitle>
-                                <AlertDescription>{threadItem.error}</AlertDescription>
-                            </Alert>
-                        )}
                         {hasClarifyingQuestions && (
                             <QuestionPrompt
                                 options={
@@ -106,7 +100,18 @@ export const ThreadItem = memo(
                                 threadId={threadItem.threadId}
                             />
                         )}
-                        {(threadItem.answer?.final || threadItem.status === 'ABORTED') && (
+                        {threadItem.error && (
+                            <Alert variant="destructive">
+                                <AlertDescription>
+                                    <IconAlertCircle className="mt-0.5 size-3.5" />
+                                    Something went wrong while processing your request. Please try
+                                    again.
+                                </AlertDescription>
+                            </Alert>
+                        )}
+                        {(threadItem.answer?.final ||
+                            threadItem.status === 'ABORTED' ||
+                            threadItem.status === 'ERROR') && (
                             <MessageActions threadItem={threadItem} />
                         )}
                     </div>
@@ -117,7 +122,8 @@ export const ThreadItem = memo(
     (prevProps, nextProps) => {
         return (
             prevProps.threadItem.id === nextProps.threadItem.id &&
-            nextProps.threadItem.status === 'COMPLETED'
+            nextProps.threadItem.status === 'COMPLETED' &&
+            nextProps.threadItem.answer === prevProps.threadItem.answer
         );
     }
 );

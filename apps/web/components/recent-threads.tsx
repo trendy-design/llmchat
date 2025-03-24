@@ -21,7 +21,7 @@ export const RecentThreads = () => {
         return null;
     }
     return (
-        <div className="mx-1.5 flex flex-col">
+        <div className="flex w-full flex-col px-1.5">
             <div className="flex flex-row items-center gap-2 px-1 py-2">
                 <p className="text-muted-foreground text-sm font-medium">Recent Messages</p>
                 <div className="flex-1" />

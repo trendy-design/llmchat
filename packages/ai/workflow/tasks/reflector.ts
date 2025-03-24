@@ -5,17 +5,16 @@ import { createTask } from '../task';
 import { generateObject, getHumanizedDate } from '../utils';
 
 export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
-        name: 'reflector',
-        execute: async ({ trace, data, events, context, signal }) => {
+    name: 'reflector',
+    execute: async ({ trace, data, events, context, signal }) => {
+        const question = context?.get('question') || '';
+        const messages = context?.get('messages') || [];
+        const prevQueries = context?.get('queries') || [];
+        const goalId = data?.goalId;
+        const prevSummaries = context?.get('summaries') || [];
+        const currentYear = new Date().getFullYear();
 
-                const question = context?.get('question') || '';
-                const messages = context?.get('messages') || [];
-                const prevQueries = context?.get('queries') || [];
-                const goalId = data?.goalId;
-                const prevSummaries = context?.get('summaries') || [];
-                const currentYear = new Date().getFullYear();
-
-                const prompt = `
+        const prompt = `
 You are a research progress evaluator analyzing how effectively a research question has been addressed. Your primary responsibility is to identify remaining knowledge gaps and determine if additional targeted queries are necessary.
 
 ## Current Research State
@@ -73,76 +72,81 @@ Current date: ${getHumanizedDate()}
 }
 
 CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genuinely new angles to explore that would yield different information, return null for queries.
-`
+`;
 
-                const object = await generateObject({
-                        prompt,
-                        model: ModelEnum.GPT_4o_Mini,
-                        schema: z.object({
-                                reasoning: z.string(),
-                                queries: z.array(z.string()).optional()
-                        }),
-                        messages: messages as any,
-                        signal
-                });
+        const object = await generateObject({
+            prompt,
+            model: ModelEnum.GPT_4o_Mini,
+            schema: z.object({
+                reasoning: z.string(),
+                queries: z.array(z.string()).optional(),
+            }),
+            messages: messages as any,
+            signal,
+        });
 
-                const newGoalId = goalId + 1;
+        const newGoalId = goalId + 1;
 
-                context?.update('queries', (current) => [...(current ?? []), ...(object?.queries ?? [])]);
+        context?.update('queries', current => [...(current ?? []), ...(object?.queries ?? [])]);
 
+        // Update flow event with initial goal
+        events?.update('flow', current => {
+            const stepId = Object.keys(current.steps || {}).length;
+            return {
+                ...current,
+                goals: {
+                    ...(current.goals || {}),
+                    [newGoalId]: {
+                        text: object.reasoning,
+                        final: false,
+                        status: 'PENDING' as const,
+                        id: newGoalId,
+                    },
+                },
+                steps: {
+                    ...(current.steps || {}),
+                    [stepId]: {
+                        type: 'search',
+                        queries: object.queries,
+                        status: 'COMPLETED' as const,
+                        goalId: newGoalId,
+                        final: true,
+                    },
+                },
+            };
+        });
 
+        trace?.span({
+            name: 'reflector',
+            input: prompt,
+            output: object,
+            metadata: {
+                data,
+            },
+        });
 
-                // Update flow event with initial goal
-                events?.update('flow', (current) => {
-                        const stepId = Object.keys(current.steps || {}).length;
-                        return {
-                                ...current,
-                                goals: {
-                                        ...(current.goals || {}),
-                                        [newGoalId]: {
-                                                text: object.reasoning,
-                                                final: false,
-                                                status: 'PENDING' as const,
-                                                id: newGoalId,
-                                        },
-                                },
-                                steps: {
-                                        ...(current.steps || {}),
-                                        [stepId]: {
-                                                type: 'search',
-                                                queries: object.queries,
-                                                status: "COMPLETED" as const,
-                                                goalId: newGoalId,
-                                                final: true,
-                                        },
-                                },
-                        }
-                });
-
-
-
-                trace?.span({
-                        name: 'reflector',
-                        input: prompt,
-                        output: object,
-                        metadata: {
-
-                                data
-                        }
-                })
-
-                return {
-                        queries: object?.queries,
-                        goalId: newGoalId
-                };
-
-        },
-        route: ({ result, executionContext, config, context }) => {
-
-                if (result?.queries?.filter(Boolean)?.length > 0) {
-                        return 'web-search';
-                }
-
-                return 'analysis';
+        return {
+            queries: object?.queries,
+            goalId: newGoalId,
+        };
+    },
+    onError: (error, { context, events }) => {
+        console.error('Task failed', error);
+        events?.update('flow', prev => ({
+            ...prev,
+            error: 'Something went wrong while processing your request. Please try again.',
+            status: 'ERROR',
+        }));
+        return Promise.resolve({
+            retry: false,
+            result: 'error',
+        });
+    },
+    route: ({ result, executionContext, config, context }) => {
+        if (result?.queries?.filter(Boolean)?.length > 0) {
+            return 'web-search';
         }
-}); 
+
+        return 'analysis';
+    },
+});

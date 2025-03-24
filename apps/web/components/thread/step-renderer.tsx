@@ -2,6 +2,7 @@ import { Step } from '@/libs/store/chat.store';
 import { Badge } from '@repo/ui';
 import { IconSearch } from '@tabler/icons-react';
 import { SearchResultsList } from '../search-results';
+import { DotSpinner } from './step-status';
 export type StepRendererType = {
     step: Step;
 };
@@ -9,8 +10,16 @@ export const StepRenderer = ({ step }: StepRendererType) => {
     if (step.type === 'search') {
         return (
             <div className="my-2 flex flex-col gap-1">
-                <div className="flex flex-col gap-1">
-                    <p className="text-muted-foreground text-xs">Searching</p>
+                <div className="flex flex-col gap-2">
+                    <p className="text-muted-foreground text-xs">
+                        {step.final ? (
+                            'Search Complete'
+                        ) : (
+                            <span>
+                                <DotSpinner /> Searching
+                            </span>
+                        )}
+                    </p>
 
                     <div className="flex flex-row flex-wrap gap-1">
                         {step.queries?.map((query, index) => (
@@ -27,8 +36,16 @@ export const StepRenderer = ({ step }: StepRendererType) => {
 
     if (step.type === 'read') {
         return (
-            <div className="my-2 flex flex-col gap-1">
-                <p className="text-muted-foreground text-xs">Reading</p>
+            <div className="my-2 flex flex-col gap-2">
+                <p className="text-muted-foreground text-xs">
+                    {step.final ? (
+                        'Reading Complete'
+                    ) : (
+                        <span>
+                            <DotSpinner /> Reading
+                        </span>
+                    )}
+                </p>
                 <SearchResultsList results={step.results || []} />
             </div>
         );

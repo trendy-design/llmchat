@@ -61,9 +61,11 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 final: data?.final,
                 status: data?.status,
                 query: data?.query,
+                error: data?.error,
                 reasoning: data?.reasoning,
                 toolCalls: data?.toolCalls,
                 toolResults: data?.toolResults,
+                suggestions: data?.suggestions,
             });
         }
         if (data.type === 'done') {
@@ -139,9 +141,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                 const goalsArray = data.goals ? Object.values(data.goals) : [];
                                 const stepsArray = data.steps ? Object.values(data.steps) : [];
 
-                                console.log('toolCalls frontend', data?.toolCalls);
-                                console.log('toolResults frontend', data?.toolResults);
-
+                                console.log('data', data);
                                 updateThreadItem(data?.threadId, {
                                     id: data?.threadItemId,
                                     parentId: data?.parentThreadItemId,
@@ -152,6 +152,9 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                     final: data?.final,
                                     status: data?.status,
                                     query: data?.query,
+                                    error: data?.error,
+                                    updatedAt: new Date(),
+                                    mode: data?.mode,
                                     reasoning: data?.reasoning,
                                     toolCalls: data?.toolCalls,
                                     toolResults: data?.toolResults,
@@ -202,6 +205,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         }
 
         console.log('threadId', threadId);
+
+        console.log('existingThreadItemId', existingThreadItemId);
 
         const optimisticAiThreadItemId = existingThreadItemId ?? nanoid();
 

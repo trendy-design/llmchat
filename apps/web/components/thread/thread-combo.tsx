@@ -24,7 +24,7 @@ export function Thread() {
                 <ThreadItem key={threadItem.id} threadItem={threadItem} isAnimated={false} />
             </div>
         ));
-    }, [previousThreadItems?.length]);
+    }, [previousThreadItems]);
 
     return (
         <div className="relative" id="thread-container">

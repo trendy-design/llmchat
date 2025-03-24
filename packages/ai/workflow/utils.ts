@@ -288,6 +288,37 @@ export const getWebPageContent = async (url: string) => {
         return `No Result Found for ${url}`;
     }
 };
+export const processWebPages = async (
+    results: Array<{ link: string; title: string }>,
+    signal?: AbortSignal
+) => {
+    const batchSize = 4;
+    const processedResults = [];
+
+    for (let i = 0; i < results.length; i += batchSize) {
+        if (signal?.aborted) {
+            throw new Error('Operation aborted');
+        }
+
+        const batch = results.slice(i, i + batchSize);
+        const batchPromises = batch.map(result =>
+            getWebPageContent(result.link)
+                .then(content => ({
+                    title: result.title,
+                    link: result.link,
+                    content,
+                }))
+                .catch(() => null)
+        );
+
+        const batchResults = await Promise.all(batchPromises);
+        processedResults.push(...batchResults.filter(Boolean));
+
+        if (processedResults.length >= 8) break;
+    }
+
+    return processedResults.slice(0, 8);
+};
 
 export const executeWebSearch = async (queries: string[], signal?: AbortSignal) => {
     if (signal?.aborted) {
@@ -301,31 +332,5 @@ export const executeWebSearch = async (queries: string[], signal?: AbortSignal) 
             index === self.findIndex((t: { link: string }) => t.link === result.link)
     );
 
-    // Process in batches of 3 to avoid overwhelming the server
-    const batchSize = 3;
-    const processedResults = [];
-
-    for (let i = 0; i < uniqueResults.length; i += batchSize) {
-        if (signal?.aborted) {
-            throw new Error('Operation aborted');
-        }
-
-        const batch = uniqueResults.slice(i, i + batchSize);
-        const batchPromises = batch.map((result: { link: string; title: string }) =>
-            getWebPageContent(result.link)
-                .then(content => ({
-                    title: result.title,
-                    link: result.link,
-                    content,
-                }))
-                .catch(() => null)
-        );
-
-        const batchResults = await Promise.all(batchPromises);
-        processedResults.push(...batchResults.filter(Boolean));
-
-        if (processedResults.length >= 10) break;
-    }
-
-    return processedResults.slice(0, 10);
+    return uniqueResults;
 };

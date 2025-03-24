@@ -54,6 +54,18 @@ export const suggestionsTask = createTask<WorkflowEventSchema, WorkflowContextSc
             suggestions: object?.questions,
         };
     },
+    onError: (error, { context, events }) => {
+        console.error('Task failed', error);
+        events?.update('flow', prev => ({
+            ...prev,
+            error: 'Something went wrong while processing your request. Please try again.',
+            status: 'ERROR',
+        }));
+        return Promise.resolve({
+            retry: false,
+            result: 'error',
+        });
+    },
     route: ({ result }) => {
         return 'end';
     },

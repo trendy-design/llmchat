@@ -4,7 +4,7 @@ import { ModelEnum } from '../../models';
 import { buildAllTools } from '../../tools/mcp';
 import { CompletionMode, WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
-import { executeWebSearch, generateText } from '../utils';
+import { executeWebSearch, generateText, processWebPages } from '../utils';
 
 const webSearchTool = tool({
     description: 'Search the web for information',
@@ -15,7 +15,8 @@ const webSearchTool = tool({
     }),
     execute: async ({ query }) => {
         const response = await executeWebSearch([query]);
-        return response;
+        const processedResults = await processWebPages(response || []);
+        return processedResults;
     },
 });
 
@@ -137,6 +138,7 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                 }
             },
             onToolResult: toolResult => {
+                console.log('toolResult', toolResult);
                 if (toolResult.toolName !== 'llmchat-web-search') {
                     toolResultsMap[toolResult.toolCallId] = toolResult;
                     events?.update('flow', prev => ({
@@ -194,15 +196,11 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
         toolsInstance?.onClose();
     },
     onError: (error, { context, events }) => {
-        console.error('Errorrrr in completion task', error);
-        context?.update('answer', _ => 'Errorrrr in completion task');
+        console.error('Task failed', error);
         events?.update('flow', prev => ({
             ...prev,
-            answer: {
-                text: 'Errorrrr in completion task',
-                final: true,
-                status: 'COMPLETED',
-            },
+            error: 'Something went wrong while processing your request. Please try again.',
+            status: 'ERROR',
         }));
         return Promise.resolve({
             retry: false,

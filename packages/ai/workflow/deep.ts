@@ -32,14 +32,14 @@ export type WorkflowEventSchema = {
         query: string;
         threadId: string;
         threadItemId: string;
-        status: 'PENDING' | 'COMPLETED' | 'FAILED';
+        status: 'PENDING' | 'COMPLETED' | 'ERROR';
         goals?: Record<
             string,
             {
                 id: number;
                 text: string;
                 final: boolean;
-                status?: 'PENDING' | 'COMPLETED' | 'FAILED';
+                status?: 'PENDING' | 'COMPLETED' | 'ERROR';
             }
         >;
         steps?: Record<
@@ -60,14 +60,14 @@ export type WorkflowEventSchema = {
         reasoning?: {
             text: string;
             final: boolean;
-            status?: 'PENDING' | 'COMPLETED' | 'FAILED';
+            status?: 'PENDING' | 'COMPLETED' | 'ERROR';
         };
         answer: {
             text: string;
             object?: any;
             objectType?: string;
             final: boolean;
-            status?: 'PENDING' | 'COMPLETED' | 'FAILED';
+            status?: 'PENDING' | 'COMPLETED' | 'ERROR';
         };
         final: boolean;
         suggestions?: string[];
@@ -88,7 +88,7 @@ export type WorkflowContextSchema = {
         id: number;
         text: string;
         final: boolean;
-        status: 'PENDING' | 'COMPLETED' | 'FAILED';
+        status: 'PENDING' | 'COMPLETED' | 'ERROR';
     }[];
     steps: {
         type: string;
