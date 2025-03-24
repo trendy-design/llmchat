@@ -225,22 +225,20 @@ export const getSERPResults = async (queries: string[]) => {
     myHeaders.append('Content-Type', 'application/json');
 
     const raw = JSON.stringify(
-        queries.map(query => ({
+        queries.slice(0, 3).map(query => ({
             q: query,
         }))
     );
 
-    const requestOptions = {
-        method: 'POST' as const,
-        headers: myHeaders,
-        body: raw,
-        redirect: 'follow' as const,
-    };
     try {
-        const response = await fetch('https://google.serper.dev/search', requestOptions);
+        const response = await fetch('https://google.serper.dev/search', {
+            method: 'POST',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow',
+        });
         const batchResult = await response.json();
 
-        // Map each query's organic results, flatten into a single array, then remove duplicates based on the 'link'.
         const organicResultsLists =
             batchResult?.map((result: any) => result.organic?.slice(0, 10)) || [];
         const allOrganicResults = organicResultsLists.flat();
@@ -256,6 +254,7 @@ export const getSERPResults = async (queries: string[]) => {
         }));
     } catch (error) {
         console.error(error);
+        return [];
     }
 };
 
@@ -302,15 +301,31 @@ export const executeWebSearch = async (queries: string[], signal?: AbortSignal) 
             index === self.findIndex((t: { link: string }) => t.link === result.link)
     );
 
-    const webPagePromises = uniqueResults.map((result: { title: string; link: string }) =>
-        getWebPageContent(result.link).then(content => ({
-            title: result.title,
-            link: result.link,
-            content,
-        }))
-    );
+    // Process in batches of 3 to avoid overwhelming the server
+    const batchSize = 3;
+    const processedResults = [];
 
-    const webPageContents = await Promise.all(webPagePromises);
+    for (let i = 0; i < uniqueResults.length; i += batchSize) {
+        if (signal?.aborted) {
+            throw new Error('Operation aborted');
+        }
 
-    return webPageContents.filter(item => !!item.content).slice(0, 10);
+        const batch = uniqueResults.slice(i, i + batchSize);
+        const batchPromises = batch.map((result: { link: string; title: string }) =>
+            getWebPageContent(result.link)
+                .then(content => ({
+                    title: result.title,
+                    link: result.link,
+                    content,
+                }))
+                .catch(() => null)
+        );
+
+        const batchResults = await Promise.all(batchPromises);
+        processedResults.push(...batchResults.filter(Boolean));
+
+        if (processedResults.length >= 10) break;
+    }
+
+    return processedResults.slice(0, 10);
 };
