@@ -31,6 +31,18 @@ export type TaskRouterParams<
     result: any;
 };
 
+export type TaskErrorHandler<
+    TEvent extends EventSchemaDefinition = any,
+    TContext extends ContextSchemaDefinition = any,
+> = (
+    error: Error,
+    params: TaskParams<TEvent, TContext>
+) => Promise<{
+    retry?: boolean;
+    result?: any;
+    next?: string | string[] | ParallelTaskRoute[];
+}>;
+
 export type TaskDefinition<
     TEvent extends EventSchemaDefinition = any,
     TContext extends ContextSchemaDefinition = any,
@@ -41,6 +53,7 @@ export type TaskDefinition<
     dependencies?: string[];
     retryCount?: number;
     timeoutMs?: number;
+    onError?: TaskErrorHandler<TEvent, TContext>;
 };
 
 export const createTask = <

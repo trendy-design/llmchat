@@ -4,38 +4,38 @@ import { Editor, EditorContent } from '@tiptap/react';
 import { FC } from 'react';
 
 export type TChatEditor = {
-  sendMessage: (message: string) => void;
-  editor: Editor | null;
+    sendMessage: (message: string) => void;
+    editor: Editor | null;
 };
 
 export const ChatEditor: FC<TChatEditor> = ({ sendMessage, editor }) => {
-  const isGenerating = useChatStore(state => state.isGenerating);
+    const isGenerating = useChatStore(state => state.isGenerating);
 
-  if (!editor) return null;
+    if (!editor) return null;
 
-  const editorContainerClass =
-    'no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[100px] min-h-12 w-full cursor-text overflow-y-auto p-1 text-base outline-none focus:outline-none [&>*]:leading-6 [&>*]:outline-none';
+    const editorContainerClass =
+        'no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[60px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-base outline-none focus:outline-none [&>*]:leading-6 [&>*]:outline-none';
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (isGenerating) return;
-    if (e.key === 'Enter' && !e.shiftKey) {
-      sendMessage(editor.getText());
-    }
-    if (e.key === 'Enter' && e.shiftKey) {
-      e.preventDefault();
-      e.currentTarget.scrollTop = e.currentTarget.scrollHeight;
-    }
-  };
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (isGenerating) return;
+        if (e.key === 'Enter' && !e.shiftKey) {
+            sendMessage(editor.getText());
+        }
+        if (e.key === 'Enter' && e.shiftKey) {
+            e.preventDefault();
+            e.currentTarget.scrollTop = e.currentTarget.scrollHeight;
+        }
+    };
 
-  return (
-    <Flex className="flex-1">
-      <EditorContent
-        editor={editor}
-        autoFocus
-        disabled={isGenerating}
-        onKeyDown={handleKeyDown}
-        className={editorContainerClass}
-      />
-    </Flex>
-  );
+    return (
+        <Flex className="flex-1">
+            <EditorContent
+                editor={editor}
+                autoFocus
+                disabled={isGenerating}
+                onKeyDown={handleKeyDown}
+                className={editorContainerClass}
+            />
+        </Flex>
+    );
 };

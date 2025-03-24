@@ -10,63 +10,63 @@ import { useEffect } from 'react';
 import { useChatStore } from '../store/chat.store';
 
 export const useChatEditor = () => {
-  const setEditor = useChatStore(state => state.setEditor);
-  const editor = useEditor({
-    extensions: [
-      Document,
-      Paragraph,
-      Text,
-      Placeholder.configure({
-        placeholder: 'Ask question...',
-      }),
-      ShiftEnterToLineBreak,
-      Highlight.configure({
-        HTMLAttributes: {
-          class: 'prompt-highlight',
+    const setEditor = useChatStore(state => state.setEditor);
+    const editor = useEditor({
+        extensions: [
+            Document,
+            Paragraph,
+            Text,
+            Placeholder.configure({
+                placeholder: 'Ask anything',
+            }),
+            ShiftEnterToLineBreak,
+            Highlight.configure({
+                HTMLAttributes: {
+                    class: 'prompt-highlight',
+                },
+            }),
+            HardBreak,
+            DisableEnter,
+        ],
+        immediatelyRender: false,
+        content: '',
+        autofocus: true,
+        onTransaction(props) {
+            const { editor } = props;
+            const text = editor.getText();
+            const html = editor.getHTML();
+            if (text === '/') {
+                // setOpenPromptsBotCombo(true);
+            } else {
+                const newHTML = html.replace(/::((?:(?!::).)+)::/g, (_, content) => {
+                    return ` <mark class="prompt-highlight">${content}</mark> `;
+                });
+
+                if (newHTML !== html) {
+                    editor.commands.setContent(newHTML, true, {
+                        preserveWhitespace: true,
+                    });
+                }
+                // setOpenPromptsBotCombo(false);
+            }
         },
-      }),
-      HardBreak,
-      DisableEnter,
-    ],
-    immediatelyRender: false,
-    content: '',
-    autofocus: true,
-    onTransaction(props) {
-      const { editor } = props;
-      const text = editor.getText();
-      const html = editor.getHTML();
-      if (text === '/') {
-        // setOpenPromptsBotCombo(true);
-      } else {
-        const newHTML = html.replace(/::((?:(?!::).)+)::/g, (_, content) => {
-          return ` <mark class="prompt-highlight">${content}</mark> `;
-        });
 
-        if (newHTML !== html) {
-          editor.commands.setContent(newHTML, true, {
-            preserveWhitespace: true,
-          });
+        parseOptions: {
+            preserveWhitespace: 'full',
+        },
+    });
+
+    useEffect(() => {
+        setEditor(editor);
+    }, [editor]);
+
+    useEffect(() => {
+        if (editor) {
+            editor.commands.focus('end');
         }
-        // setOpenPromptsBotCombo(false);
-      }
-    },
+    }, [editor]);
 
-    parseOptions: {
-      preserveWhitespace: 'full',
-    },
-  });
-
-  useEffect(() => {
-    setEditor(editor);
-  }, [editor]);
-
-  useEffect(() => {
-    if (editor) {
-      editor.commands.focus('end');
-    }
-  }, [editor]);
-
-  return {
-    editor,
-  };
+    return {
+        editor,
+    };
 };

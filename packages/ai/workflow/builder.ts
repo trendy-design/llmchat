@@ -6,60 +6,61 @@ import { EventSchemaDefinition, TypedEventEmitter } from './events';
 import { TaskDefinition } from './task';
 
 export type WorkflowBuilderOptions<
-  TEvent extends EventSchemaDefinition = any,
-  TContext extends ContextSchemaDefinition = any
+    TEvent extends EventSchemaDefinition = any,
+    TContext extends ContextSchemaDefinition = any,
 > = {
-  trace?: LangfuseTraceClient;
-  initialEventState?: Record<string, any>;
-  events?: TypedEventEmitter<TEvent>;
-  context?: Context<TContext>;
-  config?: WorkflowConfig;
-  signal?: AbortSignal;
+    trace?: LangfuseTraceClient;
+    initialEventState?: Record<string, any>;
+    events?: TypedEventEmitter<TEvent>;
+    context?: Context<TContext>;
+    config?: WorkflowConfig;
+    signal?: AbortSignal;
 };
 
 export class WorkflowBuilder<
-  TEvent extends EventSchemaDefinition = any,
-  TContext extends ContextSchemaDefinition = any
+    TEvent extends EventSchemaDefinition = any,
+    TContext extends ContextSchemaDefinition = any,
 > {
-  private tasks: TaskDefinition<TEvent, TContext>[] = [];
-  private options: WorkflowBuilderOptions<TEvent, TContext>;
+    private tasks: TaskDefinition<TEvent, TContext>[] = [];
+    private options: WorkflowBuilderOptions<TEvent, TContext>;
 
-  constructor(options: WorkflowBuilderOptions<TEvent, TContext> = {}) {
-    this.options = options;
-  }
-
-  addTask(task: TaskDefinition<TEvent, TContext>): WorkflowBuilder<TEvent, TContext> {
-    this.tasks.push(task);
-    return this;
-  }
-
-  addTasks(tasks: TaskDefinition<TEvent, TContext>[]): WorkflowBuilder<TEvent, TContext> {
-    this.tasks.push(...tasks);
-    return this;
-  }
-
-  build(): WorkflowEngine<TEvent, TContext> {
-    const workflow = new WorkflowEngine<TEvent, TContext>({
-      trace: this.options.trace,
-      initialEventState: this.options.initialEventState,
-      events: this.options.events,
-      context: this.options.context,
-      config: this.options.config,
-      signal: this.options.signal
-    });
-
-    for (const taskDef of this.tasks) {
-      workflow.task({
-        name: taskDef.name,
-        execute: taskDef.execute,
-        route: taskDef.route,
-        dependencies: taskDef.dependencies,
-        retryCount: taskDef.retryCount,
-        timeoutMs: taskDef.timeoutMs,
-        signal: this.options.signal
-      });
+    constructor(options: WorkflowBuilderOptions<TEvent, TContext> = {}) {
+        this.options = options;
     }
 
-    return workflow;
-  }
-} 
+    addTask(task: TaskDefinition<TEvent, TContext>): WorkflowBuilder<TEvent, TContext> {
+        this.tasks.push(task);
+        return this;
+    }
+
+    addTasks(tasks: TaskDefinition<TEvent, TContext>[]): WorkflowBuilder<TEvent, TContext> {
+        this.tasks.push(...tasks);
+        return this;
+    }
+
+    build(): WorkflowEngine<TEvent, TContext> {
+        const workflow = new WorkflowEngine<TEvent, TContext>({
+            trace: this.options.trace,
+            initialEventState: this.options.initialEventState,
+            events: this.options.events,
+            context: this.options.context,
+            config: this.options.config,
+            signal: this.options.signal,
+        });
+
+        for (const taskDef of this.tasks) {
+            workflow.task({
+                name: taskDef.name,
+                execute: taskDef.execute,
+                route: taskDef.route,
+                dependencies: taskDef.dependencies,
+                retryCount: taskDef.retryCount,
+                timeoutMs: taskDef.timeoutMs,
+                onError: taskDef.onError,
+                signal: this.options.signal,
+            });
+        }
+
+        return workflow;
+    }
+}

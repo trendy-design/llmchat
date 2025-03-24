@@ -193,6 +193,22 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
 
         toolsInstance?.onClose();
     },
+    onError: (error, { context, events }) => {
+        console.error('Errorrrr in completion task', error);
+        context?.update('answer', _ => 'Errorrrr in completion task');
+        events?.update('flow', prev => ({
+            ...prev,
+            answer: {
+                text: 'Errorrrr in completion task',
+                final: true,
+                status: 'COMPLETED',
+            },
+        }));
+        return Promise.resolve({
+            retry: false,
+            result: 'error',
+        });
+    },
     route: ({ context }) => {
         console.log('context', context);
         if (context?.get('showSuggestions')) {

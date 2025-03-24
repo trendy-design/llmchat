@@ -467,10 +467,15 @@ export const useChatStore = create(
         createThreadItem: async threadItem => {
             const threadId = get().currentThreadId;
             if (!threadId) return;
-            await db.threadItems.add(threadItem);
-            set(state => {
-                state.threadItems.push({ ...threadItem, threadId });
-            });
+            try {
+                await db.threadItems.put(threadItem);
+                set(state => {
+                    state.threadItems.push({ ...threadItem, threadId });
+                });
+            } catch (error) {
+                console.error('Failed to create thread item:', error);
+                // Handle error appropriately
+            }
         },
 
         updateThreadItem: async (threadId, threadItem) => {

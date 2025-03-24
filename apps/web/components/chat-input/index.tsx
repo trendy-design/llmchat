@@ -4,20 +4,30 @@ import { useChatStore } from '@/libs/store/chat.store';
 import { cn, slideUpVariant } from '@repo/shared/utils';
 import { Flex } from '@repo/ui';
 import { motion } from 'framer-motion';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { useShallow } from 'zustand/react/shallow';
 import { MessagesRemainingBadge } from '../messages-remaining-badge';
-import { ChatActions } from './chat-actions';
+import { ToolsMenu } from '../tools-menu';
+import {
+    AttachmentButton,
+    ChatModeButton,
+    GeneratingStatus,
+    NewLineIndicator,
+    SendStopButton,
+    WebSearchButton,
+} from './chat-actions';
 import { ChatEditor } from './chat-editor';
 import { ImageAttachment } from './image-attachment';
 import { ImageDropzoneRoot } from './image-dropzone-root';
 export const ChatInput = ({
     showGreeting = true,
     showBottomBar = true,
+    isFollowUp = false,
 }: {
     showGreeting?: boolean;
     showBottomBar?: boolean;
+    isFollowUp?: boolean;
 }) => {
     const { threadId: currentThreadId } = useParams();
     const { editor } = useChatEditor();
@@ -27,6 +37,10 @@ export const ChatInput = ({
     const { handleSubmit } = useAgentStream();
     const createThread = useChatStore(state => state.createThread);
     const useWebSearch = useChatStore(state => state.useWebSearch);
+    const isGenerating = useChatStore(state => state.isGenerating);
+    const isChatPage = usePathname().startsWith('/chat');
+    const stopGeneration = useChatStore(state => state.stopGeneration);
+    const hasTextInput = !!editor?.getText();
 
     const router = useRouter();
     const sendMessage = async () => {
@@ -65,7 +79,7 @@ export const ChatInput = ({
         <div className="w-full">
             <Flex
                 direction="col"
-                className="bg-background border-hard relative z-10 w-full rounded-2xl border"
+                className="bg-background border-border hover:border-hard relative z-10 w-full rounded-2xl border"
             >
                 <motion.div
                     variants={slideUpVariant}
@@ -82,10 +96,35 @@ export const ChatInput = ({
                             <Flex className="flex w-full flex-row items-end gap-0 p-3 md:pl-3">
                                 <ChatEditor sendMessage={sendMessage} editor={editor} />
                             </Flex>
-                            <ChatActions
-                                sendMessage={sendMessage}
-                                handleImageUpload={handleImageUpload}
-                            />
+
+                            <Flex
+                                className="w-full gap-0 px-2 py-2"
+                                gap="none"
+                                items="center"
+                                justify="between"
+                            >
+                                {isGenerating && !isChatPage ? (
+                                    <GeneratingStatus />
+                                ) : (
+                                    <Flex gap="xs" items="center">
+                                        <ChatModeButton />
+                                        <AttachmentButton />
+                                        <WebSearchButton />
+                                        <ToolsMenu />
+                                    </Flex>
+                                )}
+
+                                <Flex gap="md" items="center">
+                                    <NewLineIndicator />
+                                    <SendStopButton
+                                        isGenerating={isGenerating}
+                                        isChatPage={isChatPage}
+                                        stopGeneration={stopGeneration}
+                                        hasTextInput={hasTextInput}
+                                        sendMessage={sendMessage}
+                                    />
+                                </Flex>
+                            </Flex>
                         </Flex>
                     </ImageDropzoneRoot>
                 </motion.div>

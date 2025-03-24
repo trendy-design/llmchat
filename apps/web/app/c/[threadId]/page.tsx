@@ -7,41 +7,34 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useStickToBottom } from 'use-stick-to-bottom';
 
-const ChatSessionPage = ({
-  params,
-}: {
-  params: { threadId: string }
-}) => {
-  const router = useRouter();
-  const { scrollRef, contentRef } = useStickToBottom({
-    stiffness:10,
-    damping:0,
-  });
-  const switchThread = useChatStore(state => state.switchThread);
-  const getThread = useChatStore(state => state.getThread);
-
-  useEffect(() => {
-    const { threadId } = params;
-    if(!threadId) {
-      return;
-    }
-    getThread(threadId).then(thread => {
-      if(thread?.id) {
-        switchThread(thread.id);
-      }
-      else {
-        router.push('/chat');
-      }
+const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
+    const router = useRouter();
+    const { scrollRef, contentRef } = useStickToBottom({
+        stiffness: 10,
+        damping: 0,
     });
-  }, [params]);
+    const switchThread = useChatStore(state => state.switchThread);
+    const getThread = useChatStore(state => state.getThread);
 
+    useEffect(() => {
+        const { threadId } = params;
+        if (!threadId) {
+            return;
+        }
+        getThread(threadId).then(thread => {
+            if (thread?.id) {
+                switchThread(thread.id);
+            } else {
+                router.push('/chat');
+            }
+        });
+    }, [params]);
 
-  return (
-    <div className='flex flex-row h-full w-full'>
-      <div className='flex flex-col w-full gap-2 overflow-y-auto relative'>
-      
-      <div className='flex flex-col relative flex-1 overflow-hidden w-full'>
-      {/* <div className='flex flex-row items-center justify-between bg-gradient-to-b from-secondary via-secondary/55 to-transparent z-[999] absolute w-full top-0 px-3 pt-2 pb-4'>
+    return (
+        <div className="flex h-full w-full flex-row">
+            <div className="relative flex w-full flex-col gap-2 overflow-y-auto">
+                <div className="relative flex w-full flex-1 flex-col overflow-hidden">
+                    {/* <div className='flex flex-row items-center justify-between bg-gradient-to-b from-secondary via-secondary/55 to-transparent z-[999] absolute w-full top-0 px-3 pt-2 pb-4'>
    
         <h1 className='text-sm max-w-[300px] truncate font-medium'>{thread?.title ?? 'Untitled'}
 
@@ -54,22 +47,30 @@ const ChatSessionPage = ({
         </Button>
         </div>
       </div> */}
-        <Flex className="mx-auto h-full flex-1  w-full px-8 items-center overflow-hidden" direction="col">
-          <div className="no-scrollbar flex-1 max-w-3xl overflow-y-auto w-full p-4 overflow-x-hidden" ref={scrollRef}>
-            <div ref={contentRef}>
-              <Thread />
+                    <Flex
+                        className="mx-auto h-full w-full flex-1 items-center overflow-hidden px-8"
+                        direction="col"
+                    >
+                        <div
+                            className="no-scrollbar w-full max-w-3xl flex-1 overflow-y-auto overflow-x-hidden px-4"
+                            ref={scrollRef}
+                        >
+                            <div ref={contentRef}>
+                                <Thread />
+                            </div>
+                        </div>
+                        <div className="mx-auto flex w-full max-w-3xl flex-col">
+                            <ChatInput
+                                showGreeting={false}
+                                showBottomBar={false}
+                                isFollowUp={true}
+                            />
+                        </div>
+                    </Flex>
+                </div>
             </div>
-          </div>
-          <div className='flex flex-col w-full mx-auto max-w-3xl'>
-          <ChatInput showGreeting={false} showBottomBar={false}/>
-          </div>
-        </Flex>
-       
-      </div>
-      </div>
-   
-    </div>
-  );
+        </div>
+    );
 };
 
 export default ChatSessionPage;
