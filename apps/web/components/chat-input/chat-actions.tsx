@@ -221,13 +221,20 @@ export const SendStopButton = ({
     sendMessage: () => void;
 }) => {
     return isGenerating && !isChatPage ? (
-        <Button size="icon" rounded="full" variant="default" onClick={stopGeneration}>
+        <Button
+            size="icon"
+            rounded="full"
+            variant="default"
+            onClick={stopGeneration}
+            tooltip="Stop Generation"
+        >
             <IconPlayerStopFilled size={14} strokeWidth={2} />
         </Button>
     ) : (
         <Button
             size="icon"
             rounded="full"
+            tooltip="Send Message"
             variant={hasTextInput ? 'default' : 'secondary'}
             disabled={!hasTextInput || isGenerating}
             onClick={() => {

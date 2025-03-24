@@ -295,34 +295,22 @@ export const executeWebSearch = async (queries: string[], signal?: AbortSignal) 
         throw new Error('Operation aborted');
     }
 
-    const webSearchResults = await Promise.all(
-        queries.map(async query => {
-            if (signal?.aborted) {
-                throw new Error('Operation aborted');
-            }
-            const result = await getSERPResults([query]);
-            return result.slice(0, 10);
-        })
+    const flatQueries = queries.flat();
+    const results = await getSERPResults(flatQueries);
+    const uniqueResults = results.filter(
+        (result: { link: string }, index: number, self: { link: string }[]) =>
+            index === self.findIndex((t: { link: string }) => t.link === result.link)
     );
 
-    const uniqueWebSearchResults = webSearchResults
-        .flat()
-        .filter((result, index, self) => index === self.findIndex(t => t.link === result.link));
-
-    const webPageContents = await Promise.all(
-        uniqueWebSearchResults.map(async result => {
-            if (signal?.aborted) {
-                throw new Error('Operation aborted');
-            }
-            const content = await getWebPageContent(result.link);
-
-            return {
-                title: result.title,
-                link: result.link,
-                content,
-            };
-        })
+    const webPagePromises = uniqueResults.map((result: { title: string; link: string }) =>
+        getWebPageContent(result.link).then(content => ({
+            title: result.title,
+            link: result.link,
+            content,
+        }))
     );
 
-    return webPageContents?.filter(item => !!item.content).slice(0, 10);
+    const webPageContents = await Promise.all(webPagePromises);
+
+    return webPageContents.filter(item => !!item.content).slice(0, 10);
 };
