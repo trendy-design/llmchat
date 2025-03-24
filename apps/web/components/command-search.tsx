@@ -15,12 +15,45 @@ import moment from 'moment';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+
 export const CommandSearch = () => {
     const { isCommandSearchOpen, setIsCommandSearchOpen } = useRootContext();
     const threads = useChatStore(state => state.threads);
     const switchThread = useChatStore(state => state.switchThread);
     const router = useRouter();
     const { theme, setTheme } = useTheme();
+
+    const groupedThreads: Record<string, typeof threads> = {
+        today: [],
+        yesterday: [],
+        last7Days: [],
+        last30Days: [],
+        previousMonths: [],
+    };
+
+    const groupsNames = {
+        today: 'Today',
+        yesterday: 'Yesterday',
+        last7Days: 'Last 7 Days',
+        last30Days: 'Last 30 Days',
+        previousMonths: 'Previous Months',
+    };
+
+    threads.forEach(thread => {
+        const createdAt = moment(thread.createdAt);
+        const now = moment();
+        if (createdAt.isSame(now, 'day')) {
+            groupedThreads.today.push(thread);
+        } else if (createdAt.isSame(now.clone().subtract(1, 'day'), 'day')) {
+            groupedThreads.yesterday.push(thread);
+        } else if (createdAt.isAfter(now.clone().subtract(7, 'days'))) {
+            groupedThreads.last7Days.push(thread);
+        } else if (createdAt.isAfter(now.clone().subtract(30, 'days'))) {
+            groupedThreads.last30Days.push(thread);
+        } else {
+            groupedThreads.previousMonths.push(thread);
+        }
+    });
 
     useEffect(() => {
         router.prefetch('/chat');
@@ -57,11 +90,11 @@ export const CommandSearch = () => {
 
     return (
         <CommandDialog open={isCommandSearchOpen} onOpenChange={setIsCommandSearchOpen}>
-            <div className="border-border w-full border-b border-dashed">
+            <div className="border-border w-full border-b">
                 <CommandInput placeholder="Search..." />
             </div>
 
-            <CommandList className="max-h-[60dvh] overflow-y-auto pt-1">
+            <CommandList className="max-h-[50dvh] overflow-y-auto p-0.5">
                 <CommandEmpty>No results found.</CommandEmpty>
                 <CommandGroup>
                     {actions.map(action => (
@@ -80,32 +113,38 @@ export const CommandSearch = () => {
                         </CommandItem>
                     ))}
                 </CommandGroup>
-                <CommandGroup heading="Recent Conversations">
-                    {threads.map(thread => {
-                        return (
-                            <CommandItem
-                                key={thread.id}
-                                value={`${thread.id}/${thread.title}`}
-                                className={cn('w-full gap-3')}
-                                onSelect={value => {
-                                    switchThread(thread.id);
-                                    router.push(`/c/${thread.id}`);
-                                    onClose();
-                                }}
+                {Object.entries(groupedThreads).map(
+                    ([key, threads]) =>
+                        threads.length > 0 && (
+                            <CommandGroup
+                                key={key}
+                                heading={groupsNames[key as keyof typeof groupsNames]}
                             >
-                                <IconMessageCircleFilled
-                                    size={16}
-                                    strokeWidth={2}
-                                    className="text-muted-foreground/50"
-                                />
-                                <span className="w-full truncate">{thread.title}</span>
-                                <span className="text-muted-foreground flex-shrink-0 pl-4 text-xs !font-normal">
-                                    {moment(thread.createdAt).fromNow(true)}
-                                </span>
-                            </CommandItem>
-                        );
-                    })}
-                </CommandGroup>
+                                {threads.map(thread => (
+                                    <CommandItem
+                                        key={thread.id}
+                                        value={`${thread.id}/${thread.title}`}
+                                        className={cn('w-full gap-3')}
+                                        onSelect={() => {
+                                            switchThread(thread.id);
+                                            router.push(`/c/${thread.id}`);
+                                            onClose();
+                                        }}
+                                    >
+                                        <IconMessageCircleFilled
+                                            size={16}
+                                            strokeWidth={2}
+                                            className="text-muted-foreground/50"
+                                        />
+                                        <span className="w-full truncate">{thread.title}</span>
+                                        {/* <span className="text-muted-foreground flex-shrink-0 pl-4 text-xs !font-normal">
+                                            {moment(thread.createdAt).fromNow(true)}
+                                        </span> */}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        )
+                )}
             </CommandList>
         </CommandDialog>
     );

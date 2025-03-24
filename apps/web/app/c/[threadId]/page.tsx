@@ -38,7 +38,7 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
                 </div>
             </div>
 
-            <div className="bg-secondary fixed bottom-0 z-[9999] mx-auto flex w-full max-w-3xl flex-col">
+            <div className="bg-secondary fixed bottom-0 z-[30] mx-auto flex w-full max-w-3xl flex-col">
                 <ChatInput showGreeting={false} showBottomBar={false} isFollowUp={true} />
             </div>
         </Flex>
