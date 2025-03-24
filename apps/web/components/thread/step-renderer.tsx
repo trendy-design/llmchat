@@ -14,10 +14,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
 
                     <div className="flex flex-row flex-wrap gap-1">
                         {step.queries?.map((query, index) => (
-                            <Badge
-                                key={index}
-                                className="gap-1 rounded-full px-2 py-0.5 text-xs font-light"
-                            >
+                            <Badge key={index}>
                                 <IconSearch size={12} className="opacity-50" />
                                 {query}
                             </Badge>

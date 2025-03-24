@@ -1,6 +1,6 @@
 'use client';
 import { getHost, getHostname } from '@/utils/url';
-import { Flex, Type } from '@repo/ui';
+import { Badge, Flex } from '@repo/ui';
 import { LinkFavicon } from './link-favicon';
 import { LinkPreviewPopover } from './link-preview';
 
@@ -22,25 +22,18 @@ export const SearchResultsList = ({ results }: SearchResultsType) => {
             {Array.isArray(results) && (
                 <Flex gap="xs" className="mb-4 w-full flex-wrap overflow-x-hidden" items="stretch">
                     {results.map(result => (
-                        <Flex
-                            className="bg-tertiary max-w-[300px] shrink-0 cursor-pointer rounded-full p-0.5 pl-1.5 pr-2.5 font-light hover:opacity-80"
-                            direction="col"
-                            key={result.link}
-                            justify="between"
-                            onClick={() => {
-                                window?.open(result?.link, '_blank');
-                            }}
-                            gap="sm"
-                        >
-                            <LinkPreviewPopover url={result.link}>
-                                <Flex direction="row" items="center" gap="sm">
-                                    <LinkFavicon link={getHost(result.link)} />
-                                    <Type size="xs" className="text-foreground w-full font-light">
-                                        {getHostname(result.link)}
-                                    </Type>
-                                </Flex>
-                            </LinkPreviewPopover>
-                        </Flex>
+                        <LinkPreviewPopover url={result.link}>
+                            <Badge
+                                size="md"
+                                variant="default"
+                                onClick={() => {
+                                    window?.open(result?.link, '_blank');
+                                }}
+                            >
+                                <LinkFavicon link={getHost(result.link)} />
+                                {getHostname(result.link)}
+                            </Badge>
+                        </LinkPreviewPopover>
                     ))}
                 </Flex>
             )}

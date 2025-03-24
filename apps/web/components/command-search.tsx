@@ -57,7 +57,7 @@ export const CommandSearch = () => {
 
     return (
         <CommandDialog open={isCommandSearchOpen} onOpenChange={setIsCommandSearchOpen}>
-            <div className="bg-tertiary/50 border-border w-full border-b">
+            <div className="border-border w-full border-b border-dashed">
                 <CommandInput placeholder="Search..." />
             </div>
 

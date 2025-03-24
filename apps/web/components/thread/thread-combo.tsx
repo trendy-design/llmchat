@@ -28,7 +28,7 @@ export function Thread() {
 
     return (
         <div className="relative" id="thread-container">
-            <div className="flex h-full min-w-full flex-col gap-8 py-4">
+            <div className="flex min-w-full flex-col gap-8 py-4">
                 {memoizedPreviousThreadItems}
                 {currentThreadItem && (
                     <div key={currentThreadItem.id}>

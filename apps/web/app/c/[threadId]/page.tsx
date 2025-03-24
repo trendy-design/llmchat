@@ -31,45 +31,17 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
     }, [params]);
 
     return (
-        <div className="flex h-full w-full flex-row">
-            <div className="relative flex w-full flex-col gap-2 overflow-y-auto">
-                <div className="relative flex w-full flex-1 flex-col overflow-hidden">
-                    {/* <div className='flex flex-row items-center justify-between bg-gradient-to-b from-secondary via-secondary/55 to-transparent z-[999] absolute w-full top-0 px-3 pt-2 pb-4'>
-   
-        <h1 className='text-sm max-w-[300px] truncate font-medium'>{thread?.title ?? 'Untitled'}
-
-        </h1>
-       
-       <div className='flex flex-row gap-2'>
-    
-        <Button variant="secondary" size='icon-sm' rounded="full" onClick={() => router.push('/settings')}>
-          <IconSettings2 size={16} strokeWidth={2} />
-        </Button>
-        </div>
-      </div> */}
-                    <Flex
-                        className="mx-auto h-full w-full flex-1 items-center overflow-hidden px-8"
-                        direction="col"
-                    >
-                        <div
-                            className="no-scrollbar w-full max-w-3xl flex-1 overflow-y-auto overflow-x-hidden px-4"
-                            ref={scrollRef}
-                        >
-                            <div ref={contentRef}>
-                                <Thread />
-                            </div>
-                        </div>
-                        <div className="mx-auto flex w-full max-w-3xl flex-col">
-                            <ChatInput
-                                showGreeting={false}
-                                showBottomBar={false}
-                                isFollowUp={true}
-                            />
-                        </div>
-                    </Flex>
+        <Flex className="h-full w-full flex-1 items-center px-8" direction="col">
+            <div className="mx-auto w-full max-w-3xl flex-1 px-4 pb-[200px]" ref={scrollRef}>
+                <div ref={contentRef}>
+                    <Thread />
                 </div>
             </div>
-        </div>
+
+            <div className="bg-secondary fixed bottom-0 z-[9999] mx-auto flex w-full max-w-3xl flex-col">
+                <ChatInput showGreeting={false} showBottomBar={false} isFollowUp={true} />
+            </div>
+        </Flex>
     );
 };
 

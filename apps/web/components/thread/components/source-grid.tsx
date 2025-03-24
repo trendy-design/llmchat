@@ -1,7 +1,5 @@
 import { GoalWithSteps } from '@/libs/store/chat.store';
 import { getHost } from '@/utils/url';
-import { Button } from '@repo/ui';
-import { IconArrowRight, IconLink } from '@tabler/icons-react';
 import { LinkFavicon } from '../../link-favicon';
 
 type SourceGridProps = {
@@ -15,26 +13,33 @@ export const SourceGrid = ({ goals }: SourceGridProps) => {
             .flatMap(step => step.results?.map(result => result))
     );
 
+    if (sources.length === 0) {
+        return null;
+    }
+
     return (
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-2 pb-6 pt-3">
             {sources.slice(0, 3).map((source, index) => (
                 <div
                     key={index}
-                    className="bg-tertiary border-border flex flex-col justify-between gap-1 rounded-lg border p-3"
+                    onClick={() => {
+                        window?.open(source?.link, '_blank');
+                    }}
+                    className="bg-tertiary/80 hover:bg-tertiary flex cursor-pointer flex-col justify-between rounded-lg p-2"
                 >
-                    <p className="line-clamp-2 text-xs font-medium">{source?.title}</p>
                     {source?.link && (
-                        <div className="flex flex-row items-center gap-1">
+                        <div className="flex flex-row items-center gap-1 pb-1">
                             <LinkFavicon link={source?.link} size="sm" />
                             <p className="text-muted-foreground text-xs">{getHost(source?.link)}</p>
                         </div>
                     )}
+                    <p className="line-clamp-2 text-xs font-medium">{source?.title}</p>
                 </div>
             ))}
             {sources.length > 3 && (
                 <div
                     key={4}
-                    className="bg-tertiary border-border flex flex-col items-start gap-1 rounded-lg border p-3"
+                    className="bg-tertiary/80 hover:bg-tertiary flex cursor-pointer flex-col items-start gap-1 rounded-xl p-2"
                 >
                     <div className="flex flex-row gap-1">
                         {sources
@@ -48,11 +53,8 @@ export const SourceGrid = ({ goals }: SourceGridProps) => {
                     </div>
                     <div className="flex-1" />
                     <p className="text-muted-foreground flex flex-row items-center gap-1 text-xs">
-                        <IconLink size={14} strokeWidth={2} />+{sources.length - 3} Sources
+                        +{sources.length - 3} Sources
                     </p>
-                    <Button variant="bordered" size="xs" rounded="full" tooltip="View all sources">
-                        View all <IconArrowRight size={14} strokeWidth={2} />
-                    </Button>
                 </div>
             )}
         </div>
