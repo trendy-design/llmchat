@@ -137,8 +137,12 @@ const loadInitialData = async () => {
         ? JSON.parse(configStr)
         : {
               model: models[0].id,
+              useWebSearch: false,
+              showSuggestions: true,
+              chatMode: ChatMode.GPT_4o_Mini,
           };
     const chatMode = config.chatMode || ChatMode.GPT_4o_Mini;
+    const useWebSearch = typeof config.useWebSearch === 'boolean' ? config.useWebSearch : false;
 
     const initialThreads = threads.length ? threads : [];
 
@@ -146,9 +150,9 @@ const loadInitialData = async () => {
         threads: initialThreads.sort((a, b) => b.createdAt?.getTime() - a.createdAt?.getTime()),
         currentThreadId: config.currentThreadId || initialThreads[0]?.id,
         config,
-        useWebSearch: config.useWebSearch || false,
+        useWebSearch,
         chatMode,
-        showSuggestions: config.showSuggestions || true,
+        showSuggestions: config.showSuggestions ?? true,
     };
 };
 
@@ -325,7 +329,8 @@ export const useChatStore = create(
         },
 
         setUseWebSearch: (useWebSearch: boolean) => {
-            localStorage.setItem(CONFIG_KEY, JSON.stringify({ useWebSearch }));
+            const existingConfig = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
+            localStorage.setItem(CONFIG_KEY, JSON.stringify({ ...existingConfig, useWebSearch }));
             set(state => {
                 state.useWebSearch = useWebSearch;
             });
