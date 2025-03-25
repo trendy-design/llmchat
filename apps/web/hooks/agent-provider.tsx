@@ -252,7 +252,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             id: optimisticAiThreadItemId,
             createdAt: new Date(),
             updatedAt: new Date(),
-            status: 'PENDING' as const,
+            status: 'QUEUED' as const,
             threadId,
             query: formData.get('query') as string,
             mode: newChatMode ?? (chatMode as any),

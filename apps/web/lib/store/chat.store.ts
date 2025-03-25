@@ -24,7 +24,7 @@ export type Thread = {
     updatedAt: Date;
 };
 
-export type ItemStatus = 'PENDING' | 'COMPLETED' | 'ERROR' | 'ABORTED';
+export type ItemStatus = 'QUEUED' | 'PENDING' | 'COMPLETED' | 'ERROR' | 'ABORTED';
 
 export type Goal = {
     id: string;

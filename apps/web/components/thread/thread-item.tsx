@@ -1,5 +1,5 @@
 import { GoalWithSteps, ThreadItem as ThreadItemType, useChatStore } from '@/libs/store/chat.store';
-import { Alert, AlertDescription } from '@repo/ui';
+import { Alert, AlertDescription, Skeleton } from '@repo/ui';
 import { IconAlertCircle, IconBook } from '@tabler/icons-react';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { CitationProvider } from './citation-provider';
@@ -47,6 +47,18 @@ export const ThreadItem = memo(
             });
         }, [threadItem.answer?.text]);
 
+        if (threadItem.status === 'QUEUED') {
+            return (
+                <div className="flex w-full flex-col items-start gap-4 pt-8">
+                    <Skeleton className="h-4 w-full" />
+                    <div className="h-4" />
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-[70%]" />
+                    <Skeleton className="h-4 w-[50%]" />
+                </div>
+            );
+        }
+
         return (
             <CitationProvider sources={allSources}>
                 <>
@@ -92,7 +104,7 @@ export const ThreadItem = memo(
                         {(threadItem.answer?.final ||
                             threadItem.status === 'ABORTED' ||
                             threadItem.status === 'ERROR') && (
-                            <MessageActions threadItem={threadItem} />
+                            <MessageActions threadItem={threadItem} ref={messageRef} />
                         )}
                     </div>
                 </>
