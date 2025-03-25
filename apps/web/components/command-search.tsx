@@ -9,8 +9,9 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
+    Kbd,
 } from '@repo/ui';
-import { IconMessageCircleFilled, IconPlus } from '@tabler/icons-react';
+import { IconCommand, IconMessageCircleFilled, IconPlus } from '@tabler/icons-react';
 import moment from 'moment';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
@@ -90,11 +91,19 @@ export const CommandSearch = () => {
 
     return (
         <CommandDialog open={isCommandSearchOpen} onOpenChange={setIsCommandSearchOpen}>
-            <div className="border-border w-full border-b">
-                <CommandInput placeholder="Search..." />
+            <div className="flex w-full flex-row items-center gap-2 p-1">
+                <CommandInput placeholder="Search..." className="w-full" />
+                <div className="flex shrink-0 items-center gap-1 px-2">
+                    <Kbd className="h-5 w-5">
+                        <IconCommand size={12} strokeWidth={2} className="shrink-0" />
+                    </Kbd>
+                    <Kbd className="h-5 w-5">K</Kbd>
+                </div>
             </div>
-
-            <CommandList className="max-h-[50dvh] overflow-y-auto p-0.5">
+            <div className="w-full px-3">
+                <div className="border-border/50 h-[1px] w-full border-b" />
+            </div>
+            <CommandList className="max-h-[50dvh] overflow-y-auto p-0.5 pt-1.5">
                 <CommandEmpty>No results found.</CommandEmpty>
                 <CommandGroup>
                     {actions.map(action => (
