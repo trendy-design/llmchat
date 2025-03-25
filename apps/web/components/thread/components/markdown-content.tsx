@@ -42,6 +42,20 @@ const markdownStyles = {
     'prose-prosetheme': true,
 };
 
+export const removeIncompleteTags = (content: string) => {
+    // A simpler approach that handles most cases:
+    // 1. If the last < doesn't have a matching >, remove from that point onward
+    const lastLessThan = content.lastIndexOf('<');
+    if (lastLessThan !== -1) {
+        const textAfterLastLessThan = content.substring(lastLessThan);
+        if (!textAfterLastLessThan.includes('>')) {
+            return content.substring(0, lastLessThan);
+        }
+    }
+
+    return content;
+};
+
 export const MarkdownContent = memo(({ content, className }: MarkdownContentProps) => {
     const animatedText = content ?? '';
     const [serializedMdx, setSerializedMdx] = useState<MDXRemoteSerializeResult | null>(null);
@@ -49,7 +63,7 @@ export const MarkdownContent = memo(({ content, className }: MarkdownContentProp
     useEffect(() => {
         (async () => {
             try {
-                const mdx = await serialize(animatedText, {
+                const mdx = await serialize(removeIncompleteTags(animatedText), {
                     mdxOptions: { remarkPlugins: [remarkGfm] },
                 });
                 setSerializedMdx(mdx);

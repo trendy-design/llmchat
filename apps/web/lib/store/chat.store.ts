@@ -1,21 +1,11 @@
 'use client';
 
 import { Model, models } from '@repo/ai/models';
+import { ChatMode } from '@repo/shared/config';
 import Dexie, { Table } from 'dexie';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-
-export enum ChatMode {
-    Fast = 'fast',
-    Deep = 'deep',
-    O3_Mini = 'o3-mini',
-    GPT_4o_Mini = 'gpt-4o-mini',
-    GEMINI_2_FLASH = 'gemini-flash-2.0',
-    DEEPSEEK_R1 = 'deepseek-r1',
-    CLAUDE_3_5_SONNET = 'claude-3-5-sonnet',
-    CLAUDE_3_7_SONNET = 'claude-3-7-sonnet',
-}
 
 export type Thread = {
     id: string;
@@ -175,10 +165,11 @@ type State = {
     isLoadingThreads: boolean;
     isLoadingThreadItems: boolean;
     currentSources: string[];
-    messageLimit: {
+    creditLimit: {
         remaining: number;
         maxLimit: number;
-        reset?: string;
+        reset: string;
+        isAuthenticated: boolean;
         isFetched: boolean;
     };
 };
@@ -187,7 +178,7 @@ type Actions = {
     setModel: (model: Model) => void;
     setEditor: (editor: any) => void;
     setContext: (context: string) => void;
-    fetchRemainingMessages: () => Promise<void>;
+    fetchRemainingCredits: () => Promise<void>;
     setIsGenerating: (isGenerating: boolean) => void;
     stopGeneration: () => void;
     setAbortController: (abortController: AbortController) => void;
@@ -314,10 +305,11 @@ export const useChatStore = create(
         isLoadingThreads: false,
         isLoadingThreadItems: false,
         currentSources: [],
-        messageLimit: {
+        creditLimit: {
             remaining: 0,
             maxLimit: 0,
-            reset: undefined,
+            reset: '',
+            isAuthenticated: false,
             isFetched: false,
         },
         showSuggestions: true,
@@ -343,17 +335,21 @@ export const useChatStore = create(
                 state.chatMode = chatMode;
             });
         },
+        fetchRemainingCredits: async () => {
+            try {
+                const response = await fetch('/api/messages/remaining');
+                if (!response.ok) throw new Error('Failed to fetch credit info');
 
-        fetchRemainingMessages: async () => {
-            const res = await fetch('/api/messages/remaining');
-            if (!res.ok) throw new Error('Failed to fetch remaining messages');
-            const data = await res.json();
-            set(state => {
-                state.messageLimit.remaining = data.remaining;
-                state.messageLimit.maxLimit = data.maxLimit;
-                state.messageLimit.reset = data.reset;
-                state.messageLimit.isFetched = true;
-            });
+                const data = await response.json();
+                set({
+                    creditLimit: {
+                        ...data,
+                        isFetched: true,
+                    },
+                });
+            } catch (error) {
+                console.error('Error fetching remaining credits:', error);
+            }
         },
 
         getThreadItems: async (threadId: string) => {
@@ -588,7 +584,7 @@ if (typeof window !== 'undefined') {
     // Initialize store with data from IndexedDB
     loadInitialData().then(
         ({ threads, currentThreadId, chatMode, useWebSearch, showSuggestions }) => {
-            useChatStore.getState().fetchRemainingMessages();
+            useChatStore.getState().fetchRemainingCredits();
             useChatStore.setState({
                 threads,
                 currentThreadId,

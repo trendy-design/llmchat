@@ -1,6 +1,6 @@
 import { CompletionRequestType } from '@/app/completion/route';
-import { ApiKeys, useApiKeysStore } from '@/libs/store/api-keys.store';
-import { ChatMode, Goal, Step, ThreadItem, useChatStore } from '@/libs/store/chat.store';
+import { useApiKeysStore } from '@/libs/store/api-keys.store';
+import { Goal, Step, ThreadItem, useChatStore } from '@/libs/store/chat.store';
 import { useMcpToolsStore } from '@/libs/store/mcp-tools.store';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { nanoid } from 'nanoid';
@@ -43,7 +43,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const chatMode = useChatStore(state => state.chatMode);
     const getSelectedMCP = useMcpToolsStore(state => state.getSelectedMCP);
     const apiKeys = useApiKeysStore(state => state.getAllKeys);
-    const fetchRemainingMessages = useChatStore(state => state.fetchRemainingMessages);
+    const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
+    const fetchRemainingCredits = useChatStore(state => state.fetchRemainingCredits);
 
     const router = useRouter();
     const { startWorkflow, abortWorkflow } = useWorkflowWorker(data => {
@@ -83,8 +84,9 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
 
         abortController.signal.addEventListener('abort', () => {
             console.log('abortController aborted');
-            updateThreadItem(body.threadId, {
-                id: body.threadItemId,
+            setIsGenerating(false);
+            updateThreadItem(body.threadId as string, {
+                id: body.threadItemId as string,
                 status: 'ABORTED',
             });
         });
@@ -106,8 +108,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
 
             let errorMessage = errorText;
 
-            updateThreadItem(body.threadId, {
-                id: body.threadItemId,
+            updateThreadItem(body.threadId as string, {
+                id: body.threadItemId as string,
                 status: 'ERROR',
                 error: errorMessage,
             });
@@ -181,6 +183,9 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                     }
                                 } else if (currentEvent === 'done' && data.type === 'done') {
                                     setIsGenerating(false);
+                                    setTimeout(() => {
+                                        fetchRemainingCredits();
+                                    }, 1000);
                                     if (data.status === 'error') {
                                         console.error('Stream error:', data.error);
                                     }
@@ -200,8 +205,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             }
         } catch (streamError) {
             console.error('Fatal stream error:', streamError);
-            updateThreadItem(body.threadId, {
-                id: body.threadItemId,
+            updateThreadItem(body.threadId as string, {
+                id: body.threadItemId as string,
                 status: 'ERROR',
                 error: 'Stream connection error: ' + (streamError as Error).message,
             });
@@ -242,10 +247,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             return;
         }
 
-        console.log('threadId', threadId);
-
-        console.log('existingThreadItemId', existingThreadItemId);
-
         const optimisticAiThreadItemId = existingThreadItemId ?? nanoid();
 
         const aiThreadItem: ThreadItem = {
@@ -262,8 +263,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         setCurrentThreadItem(aiThreadItem);
         setIsGenerating(true);
         setCurrentSources([]);
-
-        const localApiKeys = apiKeys();
 
         const coreMessages = [
             ...(messages?.flatMap(item => [
@@ -282,16 +281,19 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             },
         ];
 
-        if (hasApiKey(localApiKeys, newChatMode ?? (chatMode as any))) {
+        if (hasApiKeyForChatMode(newChatMode ?? (chatMode as any))) {
             const abortController = new AbortController();
             setAbortController(abortController);
             if (!abortController) {
                 return;
             }
+            console.log('local-web-agent');
             setIsGenerating(true);
 
             abortController.signal.addEventListener('abort', () => {
                 console.log('abortController aborted');
+                setIsGenerating(false);
+                abortWorkflow();
                 updateThreadItem(threadId, {
                     id: optimisticAiThreadItemId,
                     status: 'ABORTED',
@@ -306,12 +308,10 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 mcpConfig: getSelectedMCP(),
                 threadItemId: optimisticAiThreadItemId,
                 parentThreadItemId: '',
-                apiKeys: localApiKeys,
-                config: {
-                    signal: abortController?.signal,
-                },
+                apiKeys: apiKeys(),
             });
         } else {
+            console.log('remote-web-agent');
             runAgent({
                 mode: newChatMode ?? (chatMode as any),
                 prompt: formData.get('query') as string,
@@ -324,8 +324,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 showSuggestions: true,
             });
         }
-
-        fetchRemainingMessages();
     };
 
     const updateContext = (threadId: string, data: any) => {
@@ -353,21 +351,4 @@ export const useAgentStream = (): AgentContextType => {
         throw new Error('useAgentStream must be used within an AgentProvider');
     }
     return context;
-};
-
-const hasApiKey = (apiKeys: ApiKeys, chatMode: ChatMode) => {
-    switch (chatMode) {
-        case ChatMode.O3_Mini:
-        case ChatMode.GPT_4o_Mini:
-            return !!apiKeys['OPENAI_API_KEY'];
-        case ChatMode.GEMINI_2_FLASH:
-            return !!apiKeys['GEMINI_API_KEY'];
-        case ChatMode.CLAUDE_3_5_SONNET:
-        case ChatMode.CLAUDE_3_7_SONNET:
-            return !!apiKeys['ANTHROPIC_API_KEY'];
-        case ChatMode.DEEPSEEK_R1:
-            return !!apiKeys['FIREWORKS_API_KEY'];
-        default:
-            return false;
-    }
 };

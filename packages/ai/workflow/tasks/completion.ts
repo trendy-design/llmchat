@@ -1,8 +1,9 @@
+import { ChatMode } from '@repo/shared/config';
 import { tool } from 'ai';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
 import { buildAllTools } from '../../tools/mcp';
-import { CompletionMode, WorkflowContextSchema, WorkflowEventSchema } from '../deep';
+import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
 import { executeWebSearch, generateText, processWebPages } from '../utils';
 
@@ -37,15 +38,15 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
 
         let model: ModelEnum;
 
-        if (mode === CompletionMode.GEMINI_2_FLASH) {
+        if (mode === ChatMode.GEMINI_2_FLASH) {
             model = ModelEnum.GEMINI_2_FLASH;
-        } else if (mode === CompletionMode.DEEPSEEK_R1) {
+        } else if (mode === ChatMode.DEEPSEEK_R1) {
             model = ModelEnum.Deepseek_R1;
-        } else if (mode === CompletionMode.CLAUDE_3_5_SONNET) {
+        } else if (mode === ChatMode.CLAUDE_3_5_SONNET) {
             model = ModelEnum.Claude_3_5_Sonnet;
-        } else if (mode === CompletionMode.CLAUDE_3_7_SONNET) {
+        } else if (mode === ChatMode.CLAUDE_3_7_SONNET) {
             model = ModelEnum.Claude_3_7_Sonnet;
-        } else if (mode === CompletionMode.O3_Mini) {
+        } else if (mode === ChatMode.O3_Mini) {
             model = ModelEnum.O3_Mini;
         } else {
             model = ModelEnum.GPT_4o_Mini;

@@ -1,37 +1,24 @@
-import { useChatStore } from "@/libs/store/chat.store";
-import { IconBrandGithub } from "@tabler/icons-react";
-import { SettingsModal } from "./settings-modal";
+import { useChatStore } from '@/libs/store/chat.store';
 
 export function MessagesRemainingBadge() {
-  const messageLimit = useChatStore(state => state.messageLimit);
+    const creditLimit = useChatStore(state => state.creditLimit);
 
-  if (messageLimit.remaining > 5 || !messageLimit.isFetched) {
+    if (!creditLimit.isFetched) {
+        return null;
+    }
+
     return (
-      <div className="text-xs flex-row text-yellow-900/80 flex items-center gap-2">
-        Local-first app - Your data stays on your device
-        <a 
-          href="https://github.com/your-repo" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="text-yellow-900/80 hover:text-yellow-900 underline flex flex-row items-center gap-1"
-        >
-         <IconBrandGithub size={16} strokeWidth={2} /> Check our GitHub
-        </a>
-      </div>
+        <div className="text-xs text-yellow-900/80">
+            You have {creditLimit.remaining} credits left today.{' '}
+            {!creditLimit.isAuthenticated && (
+                <span className="cursor-pointer font-medium text-yellow-900 underline">
+                    Sign in
+                </span>
+            )}{' '}
+            to get more credits or
+            <span className="cursor-pointer pl-1 font-medium text-yellow-900 underline">
+                <span>Upgrade your plan</span>
+            </span>
+        </div>
     );
-  }
-
-  return (
-    <div className="text-xs text-yellow-900/80">
-      You have {messageLimit.remaining} messages left today. <span className="text-yellow-900 font-medium cursor-pointer underline">Sign in</span> to get more messages or 
-      
-      <span className="text-yellow-900 font-medium pl-1 cursor-pointer underline">
-        <SettingsModal>
-                <span>
-        Bring Your Own API Key
-        </span>
-        </SettingsModal>
-        </span>
-    </div>
-  );
-} 
+}

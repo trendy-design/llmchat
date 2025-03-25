@@ -1,12 +1,12 @@
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
+import { type LucideIcon } from 'lucide-react';
 import * as React from 'react';
-import { LucideIcon } from '../../../shared/types/icons';
 import { cn } from '../lib/utils';
 import { Tooltip } from './tooltip';
 
 const buttonVariants = cva(
-    'inline-flex items-center gap-1 justify-center font-medium whitespace-nowrap rounded-xl transition-colors focus-visible:outline-none [&>svg]:text-muted-foreground',
+    'inline-flex items-center gap-1 justify-center font-medium whitespace-nowrap rounded-xl transition-colors focus-visible:outline-none [&>svg]:text-muted-foreground disabled:opacity-50',
     {
         variants: {
             variant: {

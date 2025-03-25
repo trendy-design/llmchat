@@ -1,8 +1,8 @@
 import { ChatModeOptions } from '@/components/chat-input/chat-actions';
 import { useAgentStream } from '@/hooks/agent-provider';
 import { useCopyText } from '@/hooks/use-copy-text';
-import { ChatMode, ThreadItem, useChatStore } from '@/libs/store/chat.store';
-import { getChatModeName } from '@/utils/chat-mode';
+import { ThreadItem, useChatStore } from '@/libs/store/chat.store';
+import { ChatMode, getChatModeName } from '@repo/shared/config';
 import { Button, DropdownMenu, DropdownMenuTrigger } from '@repo/ui';
 import { IconCheck, IconCopy, IconRefresh, IconTrash } from '@tabler/icons-react';
 import { forwardRef, useState } from 'react';

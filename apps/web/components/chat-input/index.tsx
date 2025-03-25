@@ -1,8 +1,7 @@
 import { useAgentStream } from '@/hooks/agent-provider';
-import { useChatEditor, useImageAttachment } from '@/lib/hooks';
+import { useChatEditor } from '@/lib/hooks';
 import { useChatStore } from '@/libs/store/chat.store';
-import { cn } from '@repo/shared/utils';
-import { Flex } from '@repo/ui';
+import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
@@ -18,8 +17,6 @@ import {
     WebSearchButton,
 } from './chat-actions';
 import { ChatEditor } from './chat-editor';
-import { ImageAttachment } from './image-attachment';
-import { ImageDropzoneRoot } from './image-dropzone-root';
 export const ChatInput = ({
     showGreeting = true,
     showBottomBar = true,
@@ -31,7 +28,6 @@ export const ChatInput = ({
 }) => {
     const { threadId: currentThreadId } = useParams();
     const { editor } = useChatEditor();
-    const { attachment, clearAttachment, handleImageUpload, dropzonProps } = useImageAttachment();
     const getThreadItems = useChatStore(state => state.getThreadItems);
     const threadItemsLength = useChatStore(useShallow(state => state.threadItems.length));
     const { handleSubmit } = useAgentStream();
@@ -94,51 +90,45 @@ export const ChatInput = ({
                         className="flex w-full flex-shrink-0 overflow-hidden rounded-xl"
                     >
                         {editor?.isEditable ? (
-                            <ImageDropzoneRoot dropzoneProps={dropzonProps}>
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.15, ease: 'easeOut' }}
-                                    className="w-full"
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.15, ease: 'easeOut' }}
+                                className="w-full"
+                            >
+                                <Flex className="flex w-full flex-row items-end gap-0 p-3 md:pl-3">
+                                    <ChatEditor sendMessage={sendMessage} editor={editor} />
+                                </Flex>
+
+                                <Flex
+                                    className="w-full gap-0 px-2 py-2"
+                                    gap="none"
+                                    items="center"
+                                    justify="between"
                                 >
-                                    <ImageAttachment
-                                        attachment={attachment}
-                                        clearAttachment={clearAttachment}
-                                    />
-                                    <Flex className="flex w-full flex-row items-end gap-0 p-3 md:pl-3">
-                                        <ChatEditor sendMessage={sendMessage} editor={editor} />
-                                    </Flex>
-
-                                    <Flex
-                                        className="w-full gap-0 px-2 py-2"
-                                        gap="none"
-                                        items="center"
-                                        justify="between"
-                                    >
-                                        {isGenerating && !isChatPage ? (
-                                            <GeneratingStatus />
-                                        ) : (
-                                            <Flex gap="xs" items="center">
-                                                <ChatModeButton />
-                                                <AttachmentButton />
-                                                <WebSearchButton />
-                                                <ToolsMenu />
-                                            </Flex>
-                                        )}
-
-                                        <Flex gap="md" items="center">
-                                            <NewLineIndicator />
-                                            <SendStopButton
-                                                isGenerating={isGenerating}
-                                                isChatPage={isChatPage}
-                                                stopGeneration={stopGeneration}
-                                                hasTextInput={hasTextInput}
-                                                sendMessage={sendMessage}
-                                            />
+                                    {isGenerating && !isChatPage ? (
+                                        <GeneratingStatus />
+                                    ) : (
+                                        <Flex gap="xs" items="center">
+                                            <ChatModeButton />
+                                            <AttachmentButton />
+                                            <WebSearchButton />
+                                            <ToolsMenu />
                                         </Flex>
+                                    )}
+
+                                    <Flex gap="md" items="center">
+                                        <NewLineIndicator />
+                                        <SendStopButton
+                                            isGenerating={isGenerating}
+                                            isChatPage={isChatPage}
+                                            stopGeneration={stopGeneration}
+                                            hasTextInput={hasTextInput}
+                                            sendMessage={sendMessage}
+                                        />
                                     </Flex>
-                                </motion.div>
-                            </ImageDropzoneRoot>
+                                </Flex>
+                            </motion.div>
                         ) : (
                             <motion.div
                                 className="flex h-24 w-full items-center justify-center"

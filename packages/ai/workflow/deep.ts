@@ -1,3 +1,4 @@
+import { ChatMode } from '@repo/shared/config';
 import { CoreAssistantMessage, CoreUserMessage } from 'ai';
 import { Langfuse } from 'langfuse';
 import { WorkflowBuilder } from './builder';
@@ -14,17 +15,6 @@ import {
     webSearchTask,
     writerTask,
 } from './tasks';
-
-export enum CompletionMode {
-    Fast = 'fast',
-    Deep = 'deep',
-    O3_Mini = 'o3-mini',
-    GPT_4o_Mini = 'gpt-4o-mini',
-    GEMINI_2_FLASH = 'gemini-flash-2.0',
-    DEEPSEEK_R1 = 'deepseek-r1',
-    CLAUDE_3_5_SONNET = 'claude-3-5-sonnet',
-    CLAUDE_3_7_SONNET = 'claude-3-7-sonnet',
-}
 
 // Define the workflow schema type
 export type WorkflowEventSchema = {
@@ -83,7 +73,7 @@ export type WorkflowContextSchema = {
         role: 'user' | 'assistant';
         content: string;
     }[];
-    mode: CompletionMode;
+    mode: ChatMode;
     goals: {
         id: number;
         text: string;
@@ -118,7 +108,7 @@ export type WorkflowConfig = {
     signal?: AbortSignal;
 };
 
-export const deepResearchWorkflow = ({
+export const runWorkflow = ({
     mcpConfig = {},
     mode,
     question,
@@ -131,7 +121,7 @@ export const deepResearchWorkflow = ({
     showSuggestions = false,
 }: {
     mcpConfig: Record<string, string>;
-    mode: CompletionMode;
+    mode: ChatMode;
     question: string;
     threadId: string;
     threadItemId: string;

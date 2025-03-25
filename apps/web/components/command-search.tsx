@@ -1,8 +1,8 @@
 'use client';
 import { useRootContext } from '@/libs/context/root';
 import { useChatStore } from '@/libs/store/chat.store';
-import { cn } from '@repo/shared/utils';
 import {
+    cn,
     CommandDialog,
     CommandEmpty,
     CommandGroup,

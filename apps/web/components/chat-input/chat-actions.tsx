@@ -1,4 +1,6 @@
-import { ChatMode, useChatStore } from '@/libs/store/chat.store';
+import { useApiKeysStore } from '@/libs/store/api-keys.store';
+import { useChatStore } from '@/libs/store/chat.store';
+import { CHAT_MODE_CREDIT_COSTS, ChatMode } from '@repo/shared/config';
 import {
     Button,
     DropdownMenu,
@@ -10,14 +12,13 @@ import {
 } from '@repo/ui';
 import {
     IconArrowUp,
-    IconCheck,
     IconChevronDown,
     IconPaperclip,
     IconPlayerStopFilled,
     IconWorld,
 } from '@tabler/icons-react';
 import { useState } from 'react';
-import { DeepResearchIcon } from '../icons';
+import { BYOKIcon, CreditIcon, DeepResearchIcon } from '../icons';
 import { DotSpinner } from '../thread/step-status';
 
 export const chatOptions = [
@@ -26,6 +27,7 @@ export const chatOptions = [
         description: 'In depth research on complex topic',
         value: ChatMode.Deep,
         icon: <DeepResearchIcon />,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Deep],
     },
 ];
 
@@ -35,6 +37,7 @@ export const modelOptions = [
         value: ChatMode.GEMINI_2_FLASH,
         // webSearch: true,
         icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.GEMINI_2_FLASH],
     },
 
     {
@@ -42,6 +45,7 @@ export const modelOptions = [
         value: ChatMode.GPT_4o_Mini,
         // webSearch: true,
         icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.GPT_4o_Mini],
     },
 
     {
@@ -49,6 +53,7 @@ export const modelOptions = [
         value: ChatMode.O3_Mini,
         // webSearch: true,
         icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.O3_Mini],
     },
 
     {
@@ -56,6 +61,7 @@ export const modelOptions = [
         value: ChatMode.CLAUDE_3_5_SONNET,
         // webSearch: true,
         icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.CLAUDE_3_5_SONNET],
     },
 
     {
@@ -63,6 +69,7 @@ export const modelOptions = [
         value: ChatMode.DEEPSEEK_R1,
         // webSearch: true,
         icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.DEEPSEEK_R1],
     },
 
     {
@@ -70,6 +77,7 @@ export const modelOptions = [
         value: ChatMode.CLAUDE_3_7_SONNET,
         // webSearch: true,
         icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.CLAUDE_3_7_SONNET],
     },
 ];
 
@@ -92,19 +100,18 @@ export const ChatModeButton = () => {
     const chatMode = useChatStore(state => state.chatMode);
     const setChatMode = useChatStore(state => state.setChatMode);
     const [isChatModeOpen, setIsChatModeOpen] = useState(false);
+    const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
+
+    const selectedOption = [...chatOptions, ...modelOptions].find(
+        option => option.value === chatMode
+    );
 
     return (
         <DropdownMenu open={isChatModeOpen} onOpenChange={setIsChatModeOpen}>
             <DropdownMenuTrigger asChild>
                 <Button variant={isChatModeOpen ? 'secondary' : 'ghost'} size="sm" rounded="full">
-                    {
-                        [...chatOptions, ...modelOptions].find(option => option.value === chatMode)
-                            ?.icon
-                    }
-                    {
-                        [...chatOptions, ...modelOptions].find(option => option.value === chatMode)
-                            ?.label
-                    }
+                    {selectedOption?.icon}
+                    {selectedOption?.label}
                     <IconChevronDown size={16} strokeWidth={2} />
                 </Button>
             </DropdownMenuTrigger>
@@ -159,6 +166,8 @@ export const ChatModeOptions = ({
     chatMode: ChatMode;
     setChatMode: (chatMode: ChatMode) => void;
 }) => {
+    const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
+
     return (
         <DropdownMenuContent align="start" side="bottom" className="w-[320px]">
             {chatOptions.map(option => (
@@ -180,6 +189,9 @@ export const ChatModeOptions = ({
                                 </p>
                             )}
                         </div>
+                        <div className="flex-1" />
+
+                        <CreditIcon credits={option.creditCost ?? 0} variant="muted" />
                     </div>
                 </DropdownMenuItem>
             ))}
@@ -197,8 +209,10 @@ export const ChatModeOptions = ({
                             {<p className="text-sm font-medium">{option.label}</p>}
                         </div>
                         <div className="flex-1" />
-                        {chatMode === option.value && (
-                            <IconCheck size={14} strokeWidth={2} className="text-brand" />
+                        {hasApiKeyForChatMode(option.value) ? (
+                            <BYOKIcon />
+                        ) : (
+                            <CreditIcon credits={option.creditCost ?? 0} variant="muted" />
                         )}
                     </div>
                 </DropdownMenuItem>
@@ -220,9 +234,12 @@ export const SendStopButton = ({
     hasTextInput: boolean;
     sendMessage: () => void;
 }) => {
+    const chatMode = useChatStore(state => state.chatMode);
+    const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
+
     return isGenerating && !isChatPage ? (
         <Button
-            size="icon"
+            size="icon-sm"
             rounded="full"
             variant="default"
             onClick={stopGeneration}
@@ -231,17 +248,24 @@ export const SendStopButton = ({
             <IconPlayerStopFilled size={14} strokeWidth={2} />
         </Button>
     ) : (
-        <Button
-            size="icon"
-            rounded="full"
-            tooltip="Send Message"
-            variant={hasTextInput ? 'default' : 'secondary'}
-            disabled={!hasTextInput || isGenerating}
-            onClick={() => {
-                sendMessage();
-            }}
-        >
-            <IconArrowUp size={20} strokeWidth={2} />
-        </Button>
+        <div className="flex flex-row items-center gap-2">
+            {hasApiKeyForChatMode(chatMode) ? (
+                <BYOKIcon />
+            ) : (
+                <CreditIcon credits={CHAT_MODE_CREDIT_COSTS[chatMode] ?? 0} />
+            )}
+            <Button
+                size="icon-sm"
+                rounded="full"
+                tooltip="Send Message"
+                variant={hasTextInput ? 'default' : 'secondary'}
+                disabled={!hasTextInput || isGenerating}
+                onClick={() => {
+                    sendMessage();
+                }}
+            >
+                <IconArrowUp size={20} strokeWidth={2} />
+            </Button>
+        </div>
     );
 };
