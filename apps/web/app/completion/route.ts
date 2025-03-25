@@ -127,6 +127,9 @@ async function executeStream(
             question: data.prompt,
         });
 
+        const timingSummary = workflow.getTimingSummary();
+        console.log('timingSummary', timingSummary);
+
         sendMessage(controller, encoder, {
             type: 'done',
             status: 'complete',
@@ -166,13 +169,15 @@ function sendMessage(controller: StreamController, encoder: TextEncoder, payload
     try {
         // Sanitize payload to ensure it can be safely serialized
         const sanitizedPayload = sanitizePayloadForJSON(payload);
-        const message = `event: message\ndata: ${JSON.stringify(sanitizedPayload)}\n\n`;
+
+        // Send event type followed by data
+        const message = `event: ${payload.type}\ndata: ${JSON.stringify(sanitizedPayload)}\n\n`;
         controller.enqueue(encoder.encode(message));
     } catch (error) {
         console.error('Error serializing message payload:', error);
-        // Send a simplified error message that will parse correctly
-        const errorMessage = `event: message\ndata: ${JSON.stringify({
-            type: payload.type,
+        // Send error as a 'done' event
+        const errorMessage = `event: done\ndata: ${JSON.stringify({
+            type: 'done',
             status: 'error',
             error: 'Failed to serialize payload',
             threadId: payload.threadId,

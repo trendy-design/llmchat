@@ -37,13 +37,6 @@ export const ThreadItem = memo(
             return threadItem.answer?.text && threadItem.answer?.text.length > 0;
         }, [threadItem.answer]);
 
-        const hasClarifyingQuestions = useMemo(() => {
-            return (
-                threadItem.answer?.object?.clarifyingQuestion &&
-                threadItem.answer?.objectType === 'clarifyingQuestions'
-            );
-        }, [threadItem.answer]);
-
         const allSources = useMemo(() => {
             const sourceMatches =
                 threadItem.answer?.text?.match(/<Source>([^]*?)<\/Source>/g) || [];
@@ -86,20 +79,7 @@ export const ThreadItem = memo(
                                 </div>
                             )}
                         </div>
-                        {hasClarifyingQuestions && (
-                            <QuestionPrompt
-                                options={
-                                    threadItem.answer?.object?.clarifyingQuestion?.options || []
-                                }
-                                question={
-                                    threadItem.answer?.object?.clarifyingQuestion?.question || ''
-                                }
-                                type={
-                                    threadItem.answer?.object?.clarifyingQuestion?.type || 'single'
-                                }
-                                threadId={threadItem.threadId}
-                            />
-                        )}
+                        <QuestionPrompt threadItem={threadItem} />
                         {threadItem.error && (
                             <Alert variant="destructive">
                                 <AlertDescription>

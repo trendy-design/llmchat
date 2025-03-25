@@ -86,8 +86,6 @@ ${s}
             },
         });
 
-        console.log('Analysis', text);
-
         trace?.span({
             name: 'analysis',
             input: prompt,

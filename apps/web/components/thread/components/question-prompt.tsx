@@ -1,28 +1,34 @@
 import { useAgentStream } from '@/hooks/agent-provider';
-import { useChatStore } from '@/libs/store/chat.store';
+import { ThreadItem, useChatStore } from '@/libs/store/chat.store';
 import { Button, RadioGroup, RadioGroupItem, Textarea } from '@repo/ui';
 import { IconCheck, IconQuestionMark, IconSquare } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-type QuestionPromptProps = {
-    options: string[];
-    question: string;
-    type: 'single' | 'multiple';
-    threadId: string;
-};
-
-export const QuestionPrompt = ({ options, question, type, threadId }: QuestionPromptProps) => {
+export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
     const [selectedOption, setSelectedOption] = useState<string | null>(null);
     const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
     const [customOption, setCustomOption] = useState<string>('');
     const [isCustomSelected, setIsCustomSelected] = useState<boolean>(false);
     const { handleSubmit } = useAgentStream();
     const getThreadItems = useChatStore(state => state.getThreadItems);
+    const updateThreadItem = useChatStore(state => state.updateThreadItem);
+
+    const options: string[] = threadItem.answer?.object?.clarifyingQuestion?.options || [];
+    const question = threadItem.answer?.object?.clarifyingQuestion?.question || '';
+    const type = threadItem.answer?.object?.clarifyingQuestion?.type || 'single';
+    const isSubmitted = !!threadItem.answer?.object?.submittedQuery;
 
     const handleOptionChange = (value: string) => {
         setSelectedOption(value);
         setIsCustomSelected(value === 'custom');
     };
+
+    const hasClarifyingQuestions = useMemo(() => {
+        return (
+            threadItem.answer?.object?.clarifyingQuestion &&
+            threadItem.answer?.objectType === 'clarifyingQuestions'
+        );
+    }, [threadItem.answer]);
 
     const renderRadioGroup = () => {
         return (
@@ -77,6 +83,19 @@ export const QuestionPrompt = ({ options, question, type, threadId }: QuestionPr
         );
     };
 
+    if (!hasClarifyingQuestions) {
+        return null;
+    }
+
+    if (isSubmitted) {
+        return (
+            <div className="border-border bg-background mt-2 flex w-full flex-col items-start gap-4 rounded-2xl border p-4">
+                <p className="text-base">{question}</p>
+                <p className="text-base">{threadItem.answer?.object?.submittedQuery}</p>
+            </div>
+        );
+    }
+
     return (
         <div className="border-border bg-background mt-2 flex w-full flex-col items-start gap-4 rounded-2xl border p-4">
             <div className="flex flex-row items-center gap-1">
@@ -110,7 +129,18 @@ export const QuestionPrompt = ({ options, question, type, threadId }: QuestionPr
                     }
                     const formData = new FormData();
                     formData.append('query', query);
-                    const threadItems = await getThreadItems(threadId);
+                    const threadItems = await getThreadItems(threadItem.threadId);
+                    updateThreadItem(threadItem.threadId, {
+                        query,
+                        answer: {
+                            object: {
+                                submittedQuery: query,
+                            },
+                            text: query,
+                            final: true,
+                        },
+                        status: 'COMPLETED',
+                    });
                     handleSubmit({
                         formData,
                         messages: threadItems,

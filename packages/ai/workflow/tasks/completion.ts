@@ -91,6 +91,8 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
             messages,
             prompt,
             signal,
+            toolChoice: 'auto',
+            maxSteps: webSearch ? 2 : 8,
             tools: {
                 ...(tools?.allTools || {}),
                 ...(webSearch ? { 'llmchat-web-search': webSearchTool } : {}),

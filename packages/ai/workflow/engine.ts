@@ -93,12 +93,21 @@ export type TaskOptions = {
 
 export type EventPayload = Record<string, any>;
 
+type TaskTiming = {
+    startTime: number;
+    endTime?: number;
+    duration?: number;
+    status: 'success' | 'failed';
+    error?: Error;
+};
+
 export class ExecutionContext {
     private state: WorkflowState;
     private aborted: boolean;
     private gracefulShutdown: boolean;
     private taskExecutionCounts: Map<string, number>;
     private eventEmitter: EventEmitter;
+    private taskTimings: Map<string, TaskTiming[]>;
 
     constructor(eventEmitter: EventEmitter) {
         this.state = {
@@ -110,6 +119,7 @@ export class ExecutionContext {
         this.gracefulShutdown = false;
         this.taskExecutionCounts = new Map();
         this.eventEmitter = eventEmitter;
+        this.taskTimings = new Map();
     }
 
     setState(func: (state: WorkflowState) => WorkflowState) {
@@ -185,6 +195,67 @@ export class ExecutionContext {
     hasReachedMaxRuns(taskName: string, maxRuns: number): boolean {
         const count = this.getTaskExecutionCount(taskName);
         return count >= maxRuns;
+    }
+
+    startTaskTiming(taskName: string) {
+        const timing: TaskTiming = {
+            startTime: Date.now(),
+            status: 'success',
+        };
+
+        if (!this.taskTimings.has(taskName)) {
+            this.taskTimings.set(taskName, []);
+        }
+        this.taskTimings.get(taskName)!.push(timing);
+    }
+
+    endTaskTiming(taskName: string, error?: Error) {
+        const timings = this.taskTimings.get(taskName);
+        if (timings && timings.length > 0) {
+            const currentTiming = timings[timings.length - 1];
+            currentTiming.endTime = Date.now();
+            currentTiming.duration = currentTiming.endTime - currentTiming.startTime;
+            if (error) {
+                currentTiming.status = 'failed';
+                currentTiming.error = error;
+            }
+        }
+    }
+
+    getTaskTimingSummary(): Record<
+        string,
+        {
+            totalDuration: string;
+            attempts: number;
+            failures: number;
+            averageDuration: string;
+        }
+    > {
+        const summary: Record<string, any> = {};
+
+        const formatDuration = (ms: number): string => {
+            if (ms < 1000) return `${ms}ms`;
+            if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+            return `${(ms / 60000).toFixed(1)}m`;
+        };
+
+        this.taskTimings.forEach((timings, taskName) => {
+            const failures = timings.filter(t => t.status === 'failed').length;
+            const completedTimings = timings.filter(t => t.duration !== undefined);
+            const totalDuration = completedTimings.reduce((sum, t) => sum + (t.duration ?? 0), 0);
+            const validAttempts = completedTimings.length;
+
+            summary[taskName] = {
+                totalDuration: formatDuration(totalDuration),
+                attempts: timings.length,
+                failures,
+                averageDuration: formatDuration(
+                    validAttempts > 0 ? totalDuration / validAttempts : 0
+                ),
+            };
+        });
+
+        return summary;
     }
 }
 
@@ -306,6 +377,8 @@ export class WorkflowEngine<
         }));
         console.log(`🚀 Executing task "${taskName}" (Run #${executionCount + 1})`);
 
+        this.executionContext.startTaskTiming(taskName);
+
         let attempt = 0;
         let taskRedirect: string | string[] | ParallelTaskRoute[] | undefined;
 
@@ -333,6 +406,9 @@ export class WorkflowEngine<
                           signal: this.signal,
                           redirectTo,
                       });
+
+                // Add this line to end timing for successful execution
+                this.executionContext.endTaskTiming(taskName);
 
                 // Check if the result is an object with direct routing information
                 let result = taskResult;
@@ -421,6 +497,7 @@ export class WorkflowEngine<
                 }
                 return result;
             } catch (error) {
+                this.executionContext.endTaskTiming(taskName, error as Error);
                 attempt++;
                 console.error(`❌ Error in task "${taskName}" (Attempt ${attempt}):`, error);
 
@@ -536,5 +613,9 @@ export class WorkflowEngine<
     // Add a method to get the config
     getConfig(): WorkflowConfig | undefined {
         return this.config;
+    }
+
+    getTimingSummary() {
+        return this.executionContext.getTaskTimingSummary();
     }
 }

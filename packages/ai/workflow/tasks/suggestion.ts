@@ -41,21 +41,13 @@ export const suggestionsTask = createTask<WorkflowEventSchema, WorkflowContextSc
             };
         });
 
-        trace?.span({
-            name: 'suggestion',
-            input: prompt,
-            output: object,
-            metadata: {
-                data,
-            },
-        });
+        console.log('suggestions', object?.questions);
 
         return {
             suggestions: object?.questions,
         };
     },
     onError: (error, { context, events }) => {
-        console.error('Task failed', error);
         events?.update('flow', prev => ({
             ...prev,
             error: 'Something went wrong while processing your request. Please try again.',

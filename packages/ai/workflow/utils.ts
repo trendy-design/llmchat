@@ -20,6 +20,8 @@ export const generateText = async ({
     onToolCall,
     onToolResult,
     signal,
+    toolChoice = 'auto',
+    maxSteps = 2,
 }: {
     prompt: string;
     model: ModelEnum;
@@ -30,6 +32,8 @@ export const generateText = async ({
     onToolCall?: (toolCall: any) => void;
     onToolResult?: (toolResult: any) => void;
     signal?: AbortSignal;
+    toolChoice?: 'auto' | 'none' | 'required';
+    maxSteps?: number;
 }) => {
     try {
         if (signal?.aborted) {
@@ -48,16 +52,16 @@ export const generateText = async ({
                   model: selectedModel,
                   messages,
                   tools,
-                  maxSteps: 10,
-                  toolChoice: 'auto',
+                  maxSteps,
+                  toolChoice: toolChoice as any,
                   abortSignal: signal,
               })
             : streamText({
                   prompt,
                   model: selectedModel,
                   tools,
-                  maxSteps: 10,
-                  toolChoice: 'auto',
+                  maxSteps,
+                  toolChoice: toolChoice as any,
                   abortSignal: signal,
               });
         let fullText = '';
@@ -260,25 +264,13 @@ export const getSERPResults = async (queries: string[]) => {
 
 export const getWebPageContent = async (url: string) => {
     try {
-        const response = await fetch(
-            `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}/reader`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ url }),
-            }
-        );
-        const result = await response.json();
-        const title = result?.result?.title ? `# ${result.result.title}\n\n` : '';
-        const description = result?.result?.description
-            ? `${result.result.description}\n\n ${result.result.content}\n\n`
+        const result = await readURL(url);
+        const title = result?.title ? `# ${result.title}\n\n` : '';
+        const description = result?.description
+            ? `${result.description}\n\n ${result.markdown}\n\n`
             : '';
-        const sourceUrl = result?.result?.url
-            ? `Source: [${result.result.url}](${result.result.url})\n\n`
-            : '';
-        const content = result?.result?.markdown || result?.result?.content || '';
+        const sourceUrl = result?.url ? `Source: [${result.url}](${result.url})\n\n` : '';
+        const content = result?.markdown || '';
 
         if (!content) return '';
 
@@ -288,36 +280,123 @@ export const getWebPageContent = async (url: string) => {
         return `No Result Found for ${url}`;
     }
 };
-export const processWebPages = async (
-    results: Array<{ link: string; title: string }>,
-    signal?: AbortSignal
-) => {
-    const batchSize = 4;
-    const processedResults = [];
 
-    for (let i = 0; i < results.length; i += batchSize) {
-        if (signal?.aborted) {
-            throw new Error('Operation aborted');
-        }
+const processContent = (content: string, maxLength: number = 10000): string => {
+    if (!content) return '';
 
-        const batch = results.slice(i, i + batchSize);
-        const batchPromises = batch.map(result =>
-            getWebPageContent(result.link)
-                .then(content => ({
-                    title: result.title,
-                    link: result.link,
-                    content,
-                }))
-                .catch(() => null)
-        );
+    const chunks = content.split('\n\n');
+    let result = '';
 
-        const batchResults = await Promise.all(batchPromises);
-        processedResults.push(...batchResults.filter(Boolean));
-
-        if (processedResults.length >= 8) break;
+    for (const chunk of chunks) {
+        if ((result + chunk).length > maxLength) break;
+        result += chunk + '\n\n';
     }
 
-    return processedResults.slice(0, 8);
+    return result.trim();
+};
+
+const fetchWithJina = async (url: string): Promise<TReaderResult> => {
+    try {
+        const response = await fetch(`https://r.jina.ai/${url}`, {
+            method: 'GET',
+            headers: {
+                Authorization: `Bearer ${process.env.JINA_API_KEY}`,
+                Accept: 'application/json',
+                'X-Engine': 'browser',
+                'X-Md-Link-Style': 'referenced',
+                'X-No-Cache': 'true',
+                'X-Retain-Images': 'none',
+                'X-Return-Format': 'markdown',
+                'X-Robots-Txt': 'JinaReader',
+                'X-With-Links-Summary': 'true',
+            },
+            signal: AbortSignal.timeout(15000),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Jina API responded with status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.data?.content) {
+            return { success: false, error: 'No content found' };
+        }
+
+        return {
+            success: true,
+            title: data.data.title,
+            description: data.data.description,
+            url: data.data.url,
+            markdown: processContent(data.data.content),
+            source: 'jina',
+        };
+    } catch (error) {
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+        };
+    }
+};
+
+export const readURL = async (url: string): Promise<TReaderResult> => {
+    try {
+        if (process.env.JINA_API_KEY) {
+            return await fetchWithJina(url);
+        } else {
+            console.log('No Jina API key found');
+        }
+
+        return { success: false };
+    } catch (error) {
+        console.error('Error in readURL:', error);
+        return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+    }
+};
+
+export const processWebPages = async (
+    results: Array<{ link: string; title: string }>,
+    signal?: AbortSignal,
+    options = { batchSize: 4, maxPages: 8, timeout: 30000 }
+) => {
+    const processedResults: Array<{ title: string; link: string; content: string }> = [];
+    const timeoutSignal = AbortSignal.timeout(options.timeout);
+    const combinedSignal = new AbortController();
+
+    signal?.addEventListener('abort', () => combinedSignal.abort());
+    timeoutSignal.addEventListener('abort', () => combinedSignal.abort());
+
+    try {
+        for (let i = 0; i < results.length; i += options.batchSize) {
+            if (processedResults.length >= options.maxPages) break;
+
+            const batch = results.slice(i, i + options.batchSize);
+            const batchPromises = batch.map(result =>
+                getWebPageContent(result.link)
+                    .then(content => ({
+                        title: result.title,
+                        link: result.link,
+                        content,
+                    }))
+                    .catch(() => null)
+            );
+
+            const batchResults = await Promise.all(batchPromises);
+            const validResults = batchResults.filter((r): r is NonNullable<typeof r> => r !== null);
+            processedResults.push(...validResults);
+
+            if (combinedSignal.signal.aborted) {
+                break;
+            }
+        }
+
+        return processedResults.slice(0, options.maxPages);
+    } catch (error) {
+        if (error instanceof Error && error.name === 'TimeoutError') {
+            return processedResults.slice(0, options.maxPages);
+        }
+        throw error;
+    }
 };
 
 export const executeWebSearch = async (queries: string[], signal?: AbortSignal) => {
@@ -333,4 +412,23 @@ export const executeWebSearch = async (queries: string[], signal?: AbortSignal) 
     );
 
     return uniqueResults;
+};
+
+export type TReaderResponse = {
+    success: boolean;
+    title: string;
+    url: string;
+    markdown: string;
+    error?: string;
+    source?: 'jina' | 'readability';
+};
+
+export type TReaderResult = {
+    success: boolean;
+    title?: string;
+    url?: string;
+    description?: string;
+    markdown?: string;
+    source?: 'jina' | 'readability';
+    error?: string;
 };

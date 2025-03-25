@@ -13,7 +13,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                 <div className="flex flex-col gap-2">
                     <p className="text-muted-foreground text-xs">
                         {step.final ? (
-                            'Search Complete'
+                            'Searched'
                         ) : (
                             <span>
                                 <DotSpinner /> Searching
@@ -39,7 +39,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
             <div className="my-2 flex flex-col gap-2">
                 <p className="text-muted-foreground text-xs">
                     {step.final ? (
-                        'Reading Complete'
+                        'Read'
                     ) : (
                         <span>
                             <DotSpinner /> Reading

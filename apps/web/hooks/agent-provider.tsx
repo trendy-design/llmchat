@@ -123,50 +123,88 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         const decoder = new TextDecoder();
 
         try {
+            let lastDbUpdate = Date.now();
+            const DB_UPDATE_INTERVAL = 1000;
+
             while (true) {
                 const { value, done } = await reader.read();
                 if (done) break;
-                const chunk = decoder.decode(value);
-                const lines = chunk.split('\n');
-                for (const line of lines) {
-                    if (line.trim() === '') continue;
-                    if (line.startsWith('data: ')) {
-                        console.log('line', line);
 
-                        try {
-                            const data = JSON.parse(line.slice(6));
+                try {
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+                    let currentEvent = '';
+                    let jsonData = '';
 
-                            if (data.type === 'message' && data?.threadId && data?.threadItemId) {
-                                console.log('reasoning', data.reasoning);
-                                const goalsArray = data.goals ? Object.values(data.goals) : [];
-                                const stepsArray = data.steps ? Object.values(data.steps) : [];
+                    for (const line of lines) {
+                        if (line.startsWith('event: ')) {
+                            currentEvent = line.slice(7);
+                        } else if (line.startsWith('data: ')) {
+                            jsonData = line.slice(6);
 
-                                console.log('data', data);
-                                updateThreadItem(data?.threadId, {
-                                    id: data?.threadItemId,
-                                    parentId: data?.parentThreadItemId,
-                                    threadId: data?.threadId,
-                                    goals: goalsArray as Goal[],
-                                    steps: stepsArray as Step[],
-                                    answer: data?.answer,
-                                    final: data?.final,
-                                    status: data?.status,
-                                    query: data?.query,
-                                    error: data?.error,
-                                    updatedAt: new Date(),
-                                    mode: data?.mode,
-                                    reasoning: data?.reasoning,
-                                    toolCalls: data?.toolCalls,
-                                    toolResults: data?.toolResults,
-                                    suggestions: data?.suggestions,
-                                });
+                            try {
+                                const data = JSON.parse(jsonData);
+                                console.log('event:', currentEvent, 'data:', data);
+
+                                if (
+                                    currentEvent === 'message' &&
+                                    data.type === 'message' &&
+                                    data?.threadId &&
+                                    data?.threadItemId
+                                ) {
+                                    const goalsArray = data.goals ? Object.values(data.goals) : [];
+                                    const stepsArray = data.steps ? Object.values(data.steps) : [];
+
+                                    updateThreadItem(data?.threadId, {
+                                        id: data?.threadItemId,
+                                        parentId: data?.parentThreadItemId,
+                                        threadId: data?.threadId,
+                                        goals: goalsArray as Goal[],
+                                        steps: stepsArray as Step[],
+                                        answer: data?.answer,
+                                        final: data?.final,
+                                        status: data?.status,
+                                        query: data?.query,
+                                        error: data?.error,
+                                        updatedAt: new Date(),
+                                        mode: data?.mode,
+                                        reasoning: data?.reasoning,
+                                        toolCalls: data?.toolCalls,
+                                        toolResults: data?.toolResults,
+                                        suggestions: data?.suggestions,
+                                        persistToDB:
+                                            Date.now() - lastDbUpdate >= DB_UPDATE_INTERVAL,
+                                    });
+
+                                    if (Date.now() - lastDbUpdate >= DB_UPDATE_INTERVAL) {
+                                        lastDbUpdate = Date.now();
+                                    }
+                                } else if (currentEvent === 'done' && data.type === 'done') {
+                                    setIsGenerating(false);
+                                    if (data.status === 'error') {
+                                        console.error('Stream error:', data.error);
+                                    }
+                                }
+                            } catch (parseError) {
+                                console.warn('Parse error:', parseError);
+                                console.warn('Malformed data:', jsonData);
+                                continue;
                             }
-                        } catch (e) {
-                            console.error('Error parsing SSE data:', e, 'Line:', line);
                         }
                     }
+                } catch (chunkError) {
+                    // Skip problematic chunk and continue with the next one
+                    console.warn('Skipping problematic chunk');
+                    continue;
                 }
             }
+        } catch (streamError) {
+            console.error('Fatal stream error:', streamError);
+            updateThreadItem(body.threadId, {
+                id: body.threadItemId,
+                status: 'ERROR',
+                error: 'Stream connection error: ' + (streamError as Error).message,
+            });
         } finally {
             reader.releaseLock();
             setIsGenerating(false);

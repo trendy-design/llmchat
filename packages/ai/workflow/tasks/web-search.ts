@@ -6,8 +6,6 @@ import { executeWebSearch, generateText, getHumanizedDate, processWebPages } fro
 export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'web-search',
     execute: async ({ data, trace, events, context, signal }) => {
-        console.log('web-search');
-
         const queries = data?.queries;
         const goalId = data?.goalId;
         const results = await executeWebSearch(queries, signal);
@@ -142,7 +140,6 @@ ${processedResults
     },
     route: ({ context }) => {
         const allQueries = context?.get('queries') || [];
-        console.log('allQueries', allQueries);
         if (allQueries?.length < 6) {
             return 'reflector';
         }

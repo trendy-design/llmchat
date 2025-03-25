@@ -19,11 +19,15 @@ export const LinkPreviewPopover = memo(({ url, children }: LinkPreviewType) => {
     }
 
     return (
-        <HoverCard openDelay={200}>
+        <HoverCard openDelay={200} closeDelay={0}>
             <HoverCardTrigger asChild className="cursor-pointer">
                 {children}
             </HoverCardTrigger>
-            <HoverCardContent className="bg-background prose-none isolate z-[100] w-[400px] rounded-xl p-0">
+            <HoverCardContent
+                className="bg-background prose-none isolate z-[100] w-[400px] rounded-xl p-0"
+                side="top"
+                align="start"
+            >
                 <LinkPreview url={url} />
             </HoverCardContent>
         </HoverCard>
@@ -65,9 +69,15 @@ export const LinkPreview = memo(({ url }: { url: string }) => {
     };
 
     useEffect(() => {
-        if (!ogResult) {
+        let mounted = true;
+
+        if (!ogResult && mounted) {
             fetchOg(url);
         }
+
+        return () => {
+            mounted = false;
+        };
     }, [url]);
 
     const parsedUrl = useMemo(() => {

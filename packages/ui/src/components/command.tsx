@@ -30,7 +30,7 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
         <Dialog {...props}>
             <DialogOverlay className="!bg-transparent backdrop-blur-0" />
             <DialogContent
-                className="overflow-hidden border border-transparent p-0 md:w-[560px]"
+                className="overflow-hidden border border-transparent p-0 md:w-[700px]"
                 ariaTitle="Command Search"
             >
                 <Command className="[&_[cmdk-group-heading]]:text-muted-foreground bg-background pb-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-1 [&_[cmdk-input-wrapper]_svg]:h-4 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
@@ -93,7 +93,7 @@ const CommandGroup = React.forwardRef<
     <CommandPrimitive.Group
         ref={ref}
         className={cn(
-            'text-foreground [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden md:text-sm [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
+            'text-foreground [&_[cmdk-group-heading]]:text-muted-foreground overflow-hidden md:text-sm [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:py-2 [&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-normal',
             className
         )}
         {...props}

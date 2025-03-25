@@ -23,6 +23,7 @@ export class WorkflowBuilder<
 > {
     private tasks: TaskDefinition<TEvent, TContext>[] = [];
     private options: WorkflowBuilderOptions<TEvent, TContext>;
+    private workflowInstance?: WorkflowEngine<TEvent, TContext>;
 
     constructor(options: WorkflowBuilderOptions<TEvent, TContext> = {}) {
         this.options = options;
@@ -39,7 +40,7 @@ export class WorkflowBuilder<
     }
 
     build(): WorkflowEngine<TEvent, TContext> {
-        const workflow = new WorkflowEngine<TEvent, TContext>({
+        this.workflowInstance = new WorkflowEngine<TEvent, TContext>({
             trace: this.options.trace,
             initialEventState: this.options.initialEventState,
             events: this.options.events,
@@ -49,7 +50,7 @@ export class WorkflowBuilder<
         });
 
         for (const taskDef of this.tasks) {
-            workflow.task({
+            this.workflowInstance.task({
                 name: taskDef.name,
                 execute: taskDef.execute,
                 route: taskDef.route,
@@ -61,6 +62,21 @@ export class WorkflowBuilder<
             });
         }
 
-        return workflow;
+        return this.workflowInstance;
+    }
+
+    async start(initialTask: string, initialData?: any) {
+        if (!this.workflowInstance) {
+            this.workflowInstance = this.build();
+        }
+        await this.workflowInstance.start(initialTask, initialData);
+        return this;
+    }
+
+    getTimingSummary() {
+        if (!this.workflowInstance) {
+            throw new Error('Workflow has not been built yet. Call build() or start() first.');
+        }
+        return this.workflowInstance.getTimingSummary();
     }
 }

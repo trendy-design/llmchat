@@ -6,6 +6,7 @@ import {
     ToolResult,
 } from '@/libs/store/chat.store';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Badge } from '@repo/ui';
+import { IconChecklist, IconLoader2 } from '@tabler/icons-react';
 import { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { StepRenderer } from '../step-renderer';
 import { StepStatus } from '../step-status';
@@ -20,12 +21,12 @@ const GoalStep = memo(({ goal }: GoalStepProps) => (
     <div className="flex w-full flex-row items-stretch justify-start gap-2">
         <div className="flex min-h-full shrink-0 flex-col items-center justify-start px-2">
             <div className="bg-border/50 h-1.5 shrink-0" />
-            <div className="bg-secondary z-10">
+            <div className="bg-background z-10">
                 <StepStatus status={goal.status || 'PENDING'} />
             </div>
-            <div className="bg-border/50 min-h-full w-[1px] flex-1" />
+            <div className="border-border min-h-full w-[1px] flex-1 border-l border-dashed" />
         </div>
-        <div className="flex w-full flex-1 flex-col overflow-hidden pb-2">
+        <div className="flex w-full flex-1 flex-col overflow-hidden pb-2 pr-2">
             <Fragment>
                 {!!goal.text && <p>{goal.text}</p>}
                 {goal.steps?.map((step, index) => <StepRenderer key={index} step={step} />)}
@@ -42,12 +43,12 @@ const ReasoningStep = memo(({ step }: ReasoningStepProps) => (
     <div className="flex w-full flex-row items-stretch justify-start gap-2">
         <div className="flex min-h-full flex-col items-center justify-start px-2">
             <div className="bg-border/50 h-1.5 shrink-0" />
-            <div className="bg-secondary z-10">
+            <div className="bg-background z-10">
                 <StepStatus status="COMPLETED" />
             </div>
-            <div className="bg-border/50 min-h-full w-[1px] flex-1" />
+            <div className="border-border min-h-full w-[1px] flex-1 border-l border-dashed" />
         </div>
-        <div className="flex w-full flex-1 flex-col overflow-hidden pb-4">
+        <div className="flex w-full flex-1 flex-col overflow-hidden pb-4 pr-2">
             <p>{step}</p>
         </div>
     </div>
@@ -62,12 +63,12 @@ const ToolStep = memo(({ toolCall, toolResult }: ToolStepProps) => (
     <div className="flex w-full flex-row items-stretch justify-start gap-2">
         <div className="flex min-h-full flex-col items-center justify-start px-2">
             <div className="bg-border/50 h-1.5 shrink-0" />
-            <div className="bg-secondary z-10">
+            <div className="bg-background z-10">
                 <StepStatus status="COMPLETED" />
             </div>
             <div className="bg-border/50 min-h-full w-[1px] flex-1" />
         </div>
-        <div className="flex w-full flex-1 flex-col gap-2 overflow-hidden pb-4">
+        <div className="flex w-full flex-1 flex-col gap-2 overflow-hidden pb-2">
             <p className="text-sm">I'll use the following tool</p>
             {toolCall && <ToolCallStep toolCall={toolCall} />}
             {toolResult && <ToolResultStep toolResult={toolResult} />}
@@ -130,6 +131,19 @@ export const GoalsRenderer = ({
                 >
                     <AccordionTrigger className="bg-background flex flex-row items-center gap-2 px-4 py-2.5">
                         <div className="flex flex-row items-center gap-2">
+                            {isLoading ? (
+                                <IconLoader2
+                                    size={16}
+                                    strokeWidth={2}
+                                    className="text-muted-foreground animate-spin"
+                                />
+                            ) : (
+                                <IconChecklist
+                                    size={18}
+                                    strokeWidth={2}
+                                    className="text-muted-foreground"
+                                />
+                            )}
                             <p className="text-sm font-medium">Workflow</p>
                             <Badge>{stepCounts} Steps</Badge>
                         </div>

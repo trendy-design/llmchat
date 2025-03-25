@@ -136,7 +136,9 @@ export const CommandSearch = () => {
                                             strokeWidth={2}
                                             className="text-muted-foreground/50"
                                         />
-                                        <span className="w-full truncate">{thread.title}</span>
+                                        <span className="w-full truncate font-normal">
+                                            {thread.title}
+                                        </span>
                                         {/* <span className="text-muted-foreground flex-shrink-0 pl-4 text-xs !font-normal">
                                             {moment(thread.createdAt).fromNow(true)}
                                         </span> */}

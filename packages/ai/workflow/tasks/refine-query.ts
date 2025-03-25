@@ -28,9 +28,6 @@ export const refineQueryTask = createTask<WorkflowEventSchema, WorkflowContextSc
         const messages = context?.get('messages') || [];
         const question = context?.get('question') || '';
 
-        console.log('question', question);
-        console.log('messages', messages);
-
         const prompt = `You are a professional research assistant tasked with refining user queries for deep research.
 
                 CURRENT DATE: ${getHumanizedDate()}
@@ -59,8 +56,6 @@ export const refineQueryTask = createTask<WorkflowEventSchema, WorkflowContextSc
             messages: messages as any,
             signal,
         });
-
-        console.log('object', object);
 
         if (object?.needsClarification) {
             events?.update('flow', current => {

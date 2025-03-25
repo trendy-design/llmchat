@@ -49,6 +49,11 @@ export function Thread() {
 
 export const FollowupSuggestions = ({ suggestions }: { suggestions: string[] }) => {
     const editor: Editor | undefined = useChatStore(useShallow(state => state.editor));
+
+    if (!suggestions || suggestions.length === 0) {
+        return null;
+    }
+
     return (
         <motion.div
             initial={{ opacity: 0 }}

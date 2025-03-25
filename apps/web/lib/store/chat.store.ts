@@ -103,6 +103,7 @@ export type ThreadItem = {
     mode: ChatMode;
     error?: string;
     suggestions?: string[];
+    persistToDB?: boolean;
 };
 
 export type MessageGroup = {
@@ -497,11 +498,7 @@ export const useChatStore = create(
             if (existingItem) {
                 const updatedItem = { ...existingItem, ...threadItem, threadId };
 
-                // Immediately update status changes in the database
-
-                // For other changes, use throttled batch updates
-                throttledThreadItemUpdate(updatedItem);
-
+                // Update UI state immediately
                 set(state => {
                     const index = state.threadItems.findIndex(
                         (t: ThreadItem) => t.id === threadItem.id
@@ -510,6 +507,11 @@ export const useChatStore = create(
                         state.threadItems[index] = updatedItem;
                     }
                 });
+
+                // Only persist to DB if explicitly requested or if it's the final update
+                if (threadItem.persistToDB || threadItem.final) {
+                    await db.threadItems.put(updatedItem);
+                }
             }
         },
 

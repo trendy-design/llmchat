@@ -7,12 +7,12 @@ import { generateText } from '../utils';
 export const writerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'writer',
     execute: async ({ trace, events, context, data, signal }) => {
-        console.log('writer');
-
         const analysis = data?.analysis || '';
 
         const question = context?.get('question') || '';
         const summaries = context?.get('summaries') || [];
+        const messages = context?.get('messages') || [];
+
         const currentDate = new Date();
         const humanizedDate = format(currentDate, 'MMMM dd, yyyy, h:mm a');
 
@@ -54,19 +54,18 @@ ${analysis}
 
 4. Formatting Standards:
    - Highlight key figures, critical statistics, and significant findings with bold text
-   - Construct balanced continuous paragraphs (4-5 sentences) with logical flow instead of shorter sentences.
-   - Use headings strategically only for major thematic shifts
+   - Construct balanced continuous paragraphs (4-5 sentences per paragraph not more than that) with logical flow instead of shorter sentences.
+   - Use headings strategically only for major thematic shifts depending on the question asked and content
+   - Use lists, tables, links, images when appropriate
    - Implement markdown tables for comparative data where appropriate
    - Ensure proper spacing between sections for optimal readability
 
 Your report should demonstrate subject matter expertise while remaining intellectually accessible to informed professionals. Focus on providing substantive analysis rather than cataloging facts. Emphasize implications and significance rather than merely summarizing information.
     `;
 
-        const messages = context?.get('messages') || [];
         const answer = await generateText({
             prompt,
             model: ModelEnum.GEMINI_2_FLASH,
-            messages: messages as any,
             signal,
             onChunk: chunk => {
                 events?.update('flow', current => ({
@@ -76,8 +75,6 @@ Your report should demonstrate subject matter expertise while remaining intellec
                 }));
             },
         });
-
-        console.log('Answer', answer);
 
         events?.update('flow', current => ({
             ...current,
