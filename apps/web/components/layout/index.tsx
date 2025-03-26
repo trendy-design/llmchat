@@ -4,7 +4,7 @@ import { useRootContext } from '@/libs/context/root';
 import { useAppStore } from '@/libs/store/app.store';
 import { SignIn, SignInButton, useAuth, UserButton } from '@clerk/nextjs';
 import { Button, Flex, Toaster } from '@repo/ui';
-import { IconSettings2 } from '@tabler/icons-react';
+import { IconMoodSadDizzy, IconSettings2 } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FC } from 'react';
 import { Drawer } from 'vaul';
@@ -35,6 +35,15 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
 
     return (
         <div className="bg-secondary flex min-h-[96dvh] w-full flex-row overflow-hidden">
+            <div className="bg-secondary item-center fixed inset-0 z-[99999] flex justify-center md:hidden">
+                <div className="flex flex-col items-center justify-center gap-2">
+                    <IconMoodSadDizzy size={24} strokeWidth={2} className="text-muted-foreground" />
+                    <span className="text-muted-foreground text-center text-sm">
+                        Mobile version is coming soon.
+                        <br /> Please use a desktop browser.
+                    </span>
+                </div>
+            </div>
             <Flex className="hidden lg:flex">
                 <AnimatePresence>{isSidebarOpen && <Sidebar />}</AnimatePresence>
             </Flex>

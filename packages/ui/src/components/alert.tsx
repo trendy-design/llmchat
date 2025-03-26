@@ -11,7 +11,7 @@ const alertVariants = cva(
                 success: 'bg-brand/10 text-brand [&>svg]:text-brand ',
                 warning: 'bg-destructive/10 text-destructive [&>svg]:text-destructive',
                 destructive:
-                    'bg-background border border-border text-rose-600 [&>svg]:text-rose-600',
+                    'bg-background border border-border text-rose-600/70 [&>svg]:text-rose-600/70',
             },
         },
         defaultVariants: {

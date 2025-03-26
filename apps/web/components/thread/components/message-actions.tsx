@@ -21,48 +21,52 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
         const { copyToClipboard, status } = useCopyText();
         return (
             <div className="flex flex-row items-center gap-1 py-2">
-                <Button
-                    variant="secondary"
-                    size="xs"
-                    rounded="full"
-                    onClick={() => {
-                        if (ref && 'current' in ref && ref.current) {
-                            copyToClipboard(ref.current || '');
-                        }
-                    }}
-                    tooltip="Copy"
-                >
-                    {status === 'copied' ? (
-                        <IconCheck size={16} strokeWidth={2} />
-                    ) : (
-                        <IconCopy size={16} strokeWidth={2} />
-                    )}
-                    {status === 'copied' ? 'Copied' : 'Copy'}
-                </Button>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="secondary" size="xs" rounded="full" tooltip="Rewrite">
-                            <IconRefresh size={16} strokeWidth={2} />
-                            Rewrite
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <ChatModeOptions
-                        chatMode={chatMode}
-                        setChatMode={async mode => {
-                            setChatMode(mode);
-                            const formData = new FormData();
-                            formData.append('query', threadItem.query || '');
-                            const threadItems = await getThreadItems(threadItem.threadId);
-                            handleSubmit({
-                                formData,
-                                existingThreadItemId: threadItem.id,
-                                newChatMode: mode as any,
-                                messages: threadItems,
-                                useWebSearch: useWebSearch,
-                            });
+                {threadItem?.answer?.text && (
+                    <Button
+                        variant="secondary"
+                        size="xs"
+                        rounded="full"
+                        onClick={() => {
+                            if (ref && 'current' in ref && ref.current) {
+                                copyToClipboard(ref.current || '');
+                            }
                         }}
-                    />
-                </DropdownMenu>
+                        tooltip="Copy"
+                    >
+                        {status === 'copied' ? (
+                            <IconCheck size={16} strokeWidth={2} />
+                        ) : (
+                            <IconCopy size={16} strokeWidth={2} />
+                        )}
+                        {status === 'copied' ? 'Copied' : 'Copy'}
+                    </Button>
+                )}
+                {threadItem.status !== 'ERROR' && (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="secondary" size="xs" rounded="full" tooltip="Rewrite">
+                                <IconRefresh size={16} strokeWidth={2} />
+                                Rewrite
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <ChatModeOptions
+                            chatMode={chatMode}
+                            setChatMode={async mode => {
+                                setChatMode(mode);
+                                const formData = new FormData();
+                                formData.append('query', threadItem.query || '');
+                                const threadItems = await getThreadItems(threadItem.threadId);
+                                handleSubmit({
+                                    formData,
+                                    existingThreadItemId: threadItem.id,
+                                    newChatMode: mode as any,
+                                    messages: threadItems,
+                                    useWebSearch: useWebSearch,
+                                });
+                            }}
+                        />
+                    </DropdownMenu>
+                )}
                 <Button
                     variant="secondary"
                     size="icon-sm"

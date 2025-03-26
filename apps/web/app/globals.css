@@ -157,7 +157,7 @@ mark.prompt-highlight {
 }
 
 .tiptap .is-editor-empty:first-child::before {
-    color: hsl(var(--muted-foreground));
+    color: hsl(var(--muted-foreground) / 0.4);
     content: attr(data-placeholder);
     float: left;
     height: 0;
