@@ -1,7 +1,7 @@
 import { useRootContext } from '@/libs/context/root';
 import { useChatStore } from '@/libs/store/chat.store';
 import { Button } from '@repo/ui';
-import { IconMessageCircleFilled } from '@tabler/icons-react';
+import { IconArrowRight, IconMessageCircleFilled } from '@tabler/icons-react';
 import moment from 'moment';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -29,9 +29,10 @@ export const RecentThreads = () => {
                     variant="ghost"
                     size="xs"
                     rounded="full"
+                    className="text-muted-foreground"
                     onClick={() => setIsCommandSearchOpen(true)}
                 >
-                    View all
+                    View all <IconArrowRight strokeWidth={1.5} size={14} />
                 </Button>
             </div>
             <div className="grid grid-cols-4 gap-2">
