@@ -135,7 +135,7 @@ export const WebSearchButton = () => {
             onClick={() => setUseWebSearch(!useWebSearch)}
         >
             <IconWorld
-                size={16}
+                size={18}
                 strokeWidth={2}
                 className={cn(useWebSearch ? '!text-emerald-600' : 'text-muted-foreground')}
             />

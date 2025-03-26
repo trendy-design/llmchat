@@ -62,8 +62,13 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
                         <div className={containerClass}>
                             <div className="flex h-full w-full flex-row">
                                 <div className="flex w-full flex-col gap-2 overflow-y-auto">
+                                    <div className="z-1 fixed left-0 right-0 top-0 flex flex-row items-center justify-center gap-1 p-2">
+                                        <p className="font-cabinet font-mono text-sm tracking-tight text-yellow-950/50">
+                                            deep.new
+                                        </p>
+                                    </div>
                                     {/* Auth Button Header */}
-                                    <div className="fixed right-3 top-3 z-50 flex items-center gap-1">
+                                    <div className="fixed right-0 top-0 z-50 flex items-center gap-1 p-2">
                                         <Button
                                             variant="ghost"
                                             size="icon"

@@ -1,7 +1,7 @@
 import { useAgentStream } from '@/hooks/agent-provider';
 import { useChatEditor } from '@/lib/hooks';
 import { useChatStore } from '@/libs/store/chat.store';
-import { useAuth, useClerk } from '@clerk/nextjs';
+import { useAuth, useClerk, useUser } from '@clerk/nextjs';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -28,6 +28,7 @@ export const ChatInput = ({
 }) => {
     const { threadId: currentThreadId } = useParams();
     const { editor } = useChatEditor();
+    const { user } = useUser();
     const { actor, isSignedIn } = useAuth();
     const { openSignIn } = useClerk();
     const getThreadItems = useChatStore(state => state.getThreadItems);
@@ -192,7 +193,7 @@ export const ChatInput = ({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className="mb-6 flex w-full flex-col items-center gap-0"
+                        className="mb-6 flex w-full flex-col items-center gap-1"
                     >
                         <motion.h1
                             initial={{ opacity: 0 }}
@@ -200,7 +201,7 @@ export const ChatInput = ({
                             transition={{ duration: 0.3, delay: 0.1 }}
                             className="font-cabinet text-foreground/70 text-4xl font-medium tracking-tight"
                         >
-                            Good morning ,
+                            {`Good morning ${actor?.firstName ? `, ${actor?.firstName}` : ''},`}
                         </motion.h1>
                         <motion.h1
                             initial={{ opacity: 0 }}
