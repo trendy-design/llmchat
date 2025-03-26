@@ -6,15 +6,16 @@ import { FC } from 'react';
 export type TChatEditor = {
     sendMessage: (message: string) => void;
     editor: Editor | null;
+    maxHeight?: string;
 };
 
-export const ChatEditor: FC<TChatEditor> = ({ sendMessage, editor }) => {
+export const ChatEditor: FC<TChatEditor> = ({ sendMessage, editor, maxHeight = '200px' }) => {
     const isGenerating = useChatStore(state => state.isGenerating);
 
     if (!editor) return null;
 
     const editorContainerClass =
-        'no-scrollbar [&>*]:no-scrollbar wysiwyg max-h-[60px] min-h-8 w-full cursor-text overflow-y-auto p-1 text-base outline-none focus:outline-none [&>*]:leading-6 [&>*]:outline-none';
+        'no-scrollbar [&>*]:no-scrollbar wysiwyg p-4 min-h-[60px] w-full cursor-text overflow-y-auto p-1 text-base outline-none focus:outline-none [&>*]:leading-6 [&>*]:outline-none';
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (isGenerating) return;
@@ -32,6 +33,9 @@ export const ChatEditor: FC<TChatEditor> = ({ sendMessage, editor }) => {
             <EditorContent
                 editor={editor}
                 autoFocus
+                style={{
+                    maxHeight,
+                }}
                 disabled={isGenerating}
                 onKeyDown={handleKeyDown}
                 className={editorContainerClass}

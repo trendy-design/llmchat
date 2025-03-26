@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { useShallow } from 'zustand/react/shallow';
+import { ExamplePrompts } from '../exmaple-prompts';
 import { MessagesRemainingBadge } from '../messages-remaining-badge';
 import { ToolsMenu } from '../tools-menu';
 import {
@@ -96,7 +97,7 @@ export const ChatInput = ({
                                 transition={{ duration: 0.15, ease: 'easeOut' }}
                                 className="w-full"
                             >
-                                <Flex className="flex w-full flex-row items-end gap-0 p-3 md:pl-3">
+                                <Flex className="flex w-full flex-row items-end gap-0">
                                     <ChatEditor sendMessage={sendMessage} editor={editor} />
                                 </Flex>
 
@@ -208,6 +209,7 @@ export const ChatInput = ({
                 )}
 
                 {renderChatBottom()}
+                {showGreeting && <ExamplePrompts />}
 
                 {/* <ChatFooter /> */}
             </Flex>

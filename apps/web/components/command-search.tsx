@@ -1,5 +1,6 @@
 'use client';
 import { useRootContext } from '@/libs/context/root';
+import { useAppStore } from '@/libs/store/app.store';
 import { useChatStore } from '@/libs/store/chat.store';
 import {
     cn,
@@ -11,7 +12,14 @@ import {
     CommandList,
     Kbd,
 } from '@repo/ui';
-import { IconCommand, IconMessageCircleFilled, IconPlus } from '@tabler/icons-react';
+import {
+    IconCommand,
+    IconKey,
+    IconMessageCircleFilled,
+    IconPlus,
+    IconTools,
+    IconTrash,
+} from '@tabler/icons-react';
 import moment from 'moment';
 import { useTheme } from 'next-themes';
 import { useRouter } from 'next/navigation';
@@ -23,7 +31,9 @@ export const CommandSearch = () => {
     const switchThread = useChatStore(state => state.switchThread);
     const router = useRouter();
     const { theme, setTheme } = useTheme();
-
+    const clearThreads = useChatStore(state => state.clearAllThreads);
+    const setIsSettingsOpen = useAppStore(state => state.setIsSettingsOpen);
+    const setSettingTab = useAppStore(state => state.setSettingTab);
     const groupedThreads: Record<string, typeof threads> = {
         today: [],
         yesterday: [],
@@ -83,6 +93,33 @@ export const CommandSearch = () => {
             name: 'New Thread',
             icon: IconPlus,
             action: () => {
+                router.push('/chat');
+                onClose();
+            },
+        },
+        {
+            name: 'Use your own API key',
+            icon: IconKey,
+            action: () => {
+                setIsSettingsOpen(true);
+                setSettingTab('api-keys');
+                onClose();
+            },
+        },
+        {
+            name: 'MCP Tools',
+            icon: IconTools,
+            action: () => {
+                setIsSettingsOpen(true);
+                setSettingTab('mcp-tools');
+                onClose();
+            },
+        },
+        {
+            name: 'Remove All Threads',
+            icon: IconTrash,
+            action: () => {
+                clearThreads();
                 router.push('/chat');
                 onClose();
             },

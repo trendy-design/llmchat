@@ -4,7 +4,6 @@ import { MDXRemote } from 'next-mdx-remote';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote/rsc';
 import { serialize } from 'next-mdx-remote/serialize';
 import { memo, useEffect, useState } from 'react';
-import remarkGfm from 'remark-gfm';
 
 type MarkdownContentProps = {
     content: string;
@@ -63,9 +62,7 @@ export const MarkdownContent = memo(({ content, className }: MarkdownContentProp
     useEffect(() => {
         (async () => {
             try {
-                const mdx = await serialize(removeIncompleteTags(animatedText), {
-                    mdxOptions: { remarkPlugins: [remarkGfm] },
-                });
+                const mdx = await serialize(removeIncompleteTags(animatedText));
                 setSerializedMdx(mdx);
             } catch (error) {
                 console.error('Error serializing MDX:', error);
