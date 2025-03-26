@@ -70,14 +70,9 @@ const inter = localFont({
     variable: '--font-inter',
 });
 
-const jetBrainsMono = localFont({
-    src: './JetBrainsMono-Variable.woff2',
-    variable: '--font-jet-brains-mono',
-});
-
-const satoshi = localFont({
-    src: './Satoshi-Variable.woff2',
-    variable: '--font-satoshi',
+const cabinet = localFont({
+    src: './CabinetGrotesk-Variable.woff2',
+    variable: '--font-cabinet',
 });
 
 export default function ParentLayout({
@@ -86,7 +81,11 @@ export default function ParentLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className={cn(GeistMono.variable, inter.variable)} suppressHydrationWarning>
+        <html
+            lang="en"
+            className={cn(GeistMono.variable, inter.variable, cabinet.variable)}
+            suppressHydrationWarning
+        >
             <head>
                 <link rel="icon" href="/favicon.ico" sizes="any" />
             </head>

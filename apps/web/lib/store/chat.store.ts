@@ -240,50 +240,68 @@ const throttle = <T extends (...args: any[]) => any>(
 };
 
 // Add batch update functionality
+const DB_UPDATE_THROTTLE = 1000; // 1 second between updates for the same item
+const BATCH_PROCESS_INTERVAL = 500; // Process batches every 500ms
+
+// Track the last time each item was updated
+const lastItemUpdateTime: Record<string, number> = {};
+
+// Enhanced batch update queue
 type BatchUpdateQueue = {
-    items: ThreadItem[];
+    items: Map<string, ThreadItem>; // Use Map to ensure uniqueness by ID
     timeoutId: NodeJS.Timeout | null;
 };
 
 const batchUpdateQueue: BatchUpdateQueue = {
-    items: [],
+    items: new Map(),
     timeoutId: null,
 };
 
+// Process all queued updates as a batch
 const processBatchUpdate = async () => {
-    if (batchUpdateQueue.items.length === 0) return;
+    if (batchUpdateQueue.items.size === 0) return;
 
-    const itemsToUpdate = [...batchUpdateQueue.items];
-    batchUpdateQueue.items = [];
+    const itemsToUpdate = Array.from(batchUpdateQueue.items.values());
+    batchUpdateQueue.items.clear();
 
     try {
         await db.threadItems.bulkPut(itemsToUpdate);
+        // Update last update times for all processed items
+        itemsToUpdate.forEach(item => {
+            lastItemUpdateTime[item.id] = Date.now();
+        });
     } catch (error) {
         console.error('Failed to batch update thread items:', error);
+        // If bulk update fails, try individual updates to salvage what we can
+        for (const item of itemsToUpdate) {
+            try {
+                await db.threadItems.put(item);
+                lastItemUpdateTime[item.id] = Date.now();
+            } catch (innerError) {
+                console.error(`Failed to update item ${item.id}:`, innerError);
+            }
+        }
     }
 };
 
-const queueThreadItemForBatchUpdate = (threadItem: ThreadItem) => {
-    const existingIndex = batchUpdateQueue.items.findIndex(item => item.id === threadItem.id);
+// Queue an item for batch update
+const queueThreadItemForUpdate = (threadItem: ThreadItem) => {
+    // Always update the in-memory Map with the latest version
+    batchUpdateQueue.items.set(threadItem.id, threadItem);
 
-    if (existingIndex !== -1) {
-        batchUpdateQueue.items[existingIndex] = threadItem;
-    } else {
-        batchUpdateQueue.items.push(threadItem);
-    }
-
+    // Schedule batch processing if not already scheduled
     if (!batchUpdateQueue.timeoutId) {
         batchUpdateQueue.timeoutId = setTimeout(() => {
             processBatchUpdate();
             batchUpdateQueue.timeoutId = null;
-        }, 100); // Process batch every 2 seconds
+        }, BATCH_PROCESS_INTERVAL);
     }
 };
 
 const debouncedThreadUpdate = debounce((thread: Thread) => db.threads.put(thread), 1000);
 
 const throttledThreadItemUpdate = throttle(
-    (threadItem: ThreadItem) => queueThreadItemForBatchUpdate(threadItem),
+    (threadItem: ThreadItem) => queueThreadItemForUpdate(threadItem),
     500
 );
 
@@ -490,23 +508,85 @@ export const useChatStore = create(
             if (!threadItem.id) return;
             if (!threadId) return;
 
-            const existingItem = await db.threadItems.get(threadItem.id);
-            if (existingItem) {
-                const updatedItem = { ...existingItem, ...threadItem, threadId };
+            try {
+                const now = Date.now();
+                const lastUpdate = lastItemUpdateTime[threadItem.id] || 0;
+                const timeSinceLastUpdate = now - lastUpdate;
+
+                // Fetch the existing item
+                let existingItem: ThreadItem | undefined;
+                try {
+                    existingItem = await db.threadItems.get(threadItem.id);
+                } catch (error) {
+                    console.warn(`Couldn't fetch existing item ${threadItem.id}:`, error);
+                }
+
+                // Create or update the item
+                const updatedItem = existingItem
+                    ? { ...existingItem, ...threadItem, threadId, updatedAt: new Date() }
+                    : ({
+                          id: threadItem.id,
+                          threadId,
+                          createdAt: new Date(),
+                          updatedAt: new Date(),
+                          ...threadItem,
+                      } as ThreadItem);
 
                 // Update UI state immediately
                 set(state => {
-                    const index = state.threadItems.findIndex(
-                        (t: ThreadItem) => t.id === threadItem.id
-                    );
+                    const index = state.threadItems.findIndex(t => t.id === threadItem.id);
                     if (index !== -1) {
                         state.threadItems[index] = updatedItem;
+                    } else {
+                        state.threadItems.push(updatedItem);
                     }
                 });
 
-                // Only persist to DB if explicitly requested or if it's the final update
-                if (threadItem.persistToDB || threadItem.final) {
-                    await db.threadItems.put(updatedItem);
+                // Determine if this is a critical update that should bypass throttling
+                const isCriticalUpdate =
+                    !existingItem || // New items
+                    threadItem.final === true || // Final updates
+                    threadItem.status === 'ERROR' || // Error states
+                    threadItem.status === 'ABORTED' || // Aborted states
+                    threadItem.error !== undefined; // Any error information
+
+                // Determine if we've waited long enough since the last update
+                const shouldThrottleBypass =
+                    isCriticalUpdate || timeSinceLastUpdate > DB_UPDATE_THROTTLE;
+
+                if (threadItem.persistToDB || shouldThrottleBypass) {
+                    // For critical updates or if enough time has passed, queue for immediate update
+                    queueThreadItemForUpdate(updatedItem);
+
+                    // If it's a critical update, also update the timestamp to prevent
+                    // multiple rapid critical updates
+                    if (isCriticalUpdate) {
+                        lastItemUpdateTime[threadItem.id] = now;
+                    }
+                }
+                // Non-critical updates that are too soon after the last update
+                // won't be persisted yet, but will be in the UI state
+            } catch (error) {
+                console.error('Error in updateThreadItem:', error);
+
+                // Safety fallback - try to persist directly in case of errors in the main logic
+                try {
+                    const fallbackItem = {
+                        id: threadItem.id,
+                        threadId,
+                        query: threadItem.query || '',
+                        mode: threadItem.mode || ChatMode.Fast,
+                        createdAt: new Date(),
+                        updatedAt: new Date(),
+                        ...threadItem,
+                        error: threadItem.error || `Something went wrong`,
+                    };
+                    await db.threadItems.put(fallbackItem);
+                } catch (fallbackError) {
+                    console.error(
+                        'Critical: Failed even fallback thread item update:',
+                        fallbackError
+                    );
                 }
             }
         },
@@ -534,6 +614,31 @@ export const useChatStore = create(
                     (t: ThreadItem) => t.id !== threadItemId
                 );
             });
+
+            // Get current thread ID
+            const currentThreadId = get().currentThreadId;
+            if (!currentThreadId) return;
+
+            // Check if there are any thread items left for this thread
+            const remainingItems = await db.threadItems
+                .where('threadId')
+                .equals(currentThreadId)
+                .count();
+
+            // If no items remain, delete the thread and redirect
+            if (remainingItems === 0) {
+                await db.threads.delete(currentThreadId);
+                set(state => {
+                    state.threads = state.threads.filter((t: Thread) => t.id !== currentThreadId);
+                    state.currentThreadId = state.threads[0]?.id;
+                    state.currentThread = state.threads[0] || null;
+                });
+
+                // Redirect to /chat page
+                if (typeof window !== 'undefined') {
+                    window.location.href = '/chat';
+                }
+            }
         },
 
         deleteThread: async threadId => {

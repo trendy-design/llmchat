@@ -3,7 +3,7 @@ import * as React from 'react';
 import { cn } from '../lib/utils';
 
 const alertVariants = cva(
-    'relative w-full rounded-lg px-3 py-3 text-xs font-medium [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-3 [&>svg]:top-3 [&>svg]:text-foreground  [&>svg~*]:pl-6 dark:border-border dark:[&>svg]:text-foreground',
+    'relative w-full rounded-lg px-3 py-2.5 text-xs font-medium [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-3 [&>svg]:top-3 [&>svg]:text-foreground  [&>svg~*]:pl-6 dark:border-border dark:[&>svg]:text-foreground',
     {
         variants: {
             variant: {

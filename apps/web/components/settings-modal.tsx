@@ -1,6 +1,6 @@
 'use client';
 import { DialogFooter } from '@repo/ui';
-import { IconTrash } from '@tabler/icons-react';
+import { IconBoltFilled, IconTrash } from '@tabler/icons-react';
 
 import { useMcpToolsStore } from '@/libs/store/mcp-tools.store';
 import { Button } from '@repo/ui/src/components/button';
@@ -10,6 +10,7 @@ import { Badge, Dialog, DialogContent, Input } from '@repo/ui';
 import { ApiKeys, useApiKeysStore } from '@/libs/store/api-keys.store';
 import { SETTING_TABS, useAppStore } from '@/libs/store/app.store';
 import { useChatStore } from '@/libs/store/chat.store';
+import moment from 'moment';
 import { useState } from 'react';
 import { BYOKIcon, ToolIcon } from './icons';
 
@@ -21,7 +22,7 @@ export const SettingsModal = () => {
 
     const settingMenu = [
         {
-            title: 'UsageCredits',
+            title: 'Usage',
             key: SETTING_TABS.CREDITS,
             component: <CreditsSettings />,
         },
@@ -41,16 +42,17 @@ export const SettingsModal = () => {
         <Dialog open={isSettingOpen} onOpenChange={() => setIsSettingOpen(false)}>
             <DialogContent
                 ariaTitle="Settings"
-                className="h-full max-h-[70dvh] !max-w-[700px] overflow-x-hidden p-0"
+                className="h-full max-h-[60dvh] !max-w-[700px] overflow-x-hidden rounded-xl p-0"
             >
                 <div className="no-scrollbar relative max-w-full overflow-y-auto overflow-x-hidden">
-                    <h3 className="border-border mx-6 border-b py-4 text-lg font-bold">Settings</h3>
-                    <div className="flex flex-row gap-6 p-6">
-                        <div className="flex w-[140px] shrink-0 flex-col gap-1">
+                    <h3 className="border-border mx-4 border-b py-4 text-lg font-bold">Settings</h3>
+                    <div className="flex flex-row gap-6 p-4">
+                        <div className="flex w-[160px] shrink-0 flex-col gap-1">
                             {settingMenu.map(setting => (
                                 <Button
                                     size="sm"
                                     key={setting.key}
+                                    rounded="lg"
                                     className="justify-start"
                                     variant={settingTab === setting.key ? 'secondary' : 'ghost'}
                                     onClick={() => setSettingTab(setting.key)}
@@ -401,14 +403,48 @@ export const CreditsSettings = () => {
     const maxLimit = useChatStore(state => state.creditLimit.maxLimit);
     const resetDate = useChatStore(state => state.creditLimit.reset);
 
+    const info = [
+        {
+            title: 'Plan',
+            value: (
+                <Badge
+                    variant="secondary"
+                    className="rounded-full bg-emerald-600/10 text-emerald-600"
+                >
+                    <span className="text-xs font-medium">FREE</span>
+                </Badge>
+            ),
+        },
+        {
+            title: 'Credits',
+            value: (
+                <div className="flex h-7 flex-row items-center gap-1 rounded-full py-1">
+                    <IconBoltFilled size={14} strokeWidth={2} className="text-yellow-600" />
+                    <span className="text-sm font-medium text-yellow-600">{remainingCredits}</span>
+                    <span className="text-sm text-yellow-800 opacity-50">/</span>
+                    <span className="text-sm text-yellow-800 opacity-50">{maxLimit}</span>
+                </div>
+            ),
+        },
+        {
+            title: 'Next reset',
+            value: moment(resetDate).fromNow(),
+        },
+    ];
+
     return (
         <div className="flex flex-col gap-6">
-            <div className="flex flex-col">
+            <div className="flex flex-col items-start gap-2">
                 <h2 className="flex items-center gap-1 text-base font-medium">Usage Credits</h2>
-                <p className="text-muted-foreground text-xs">
-                    You have {remainingCredits}/{maxLimit} credits remaining.
-                </p>
-                <p className="text-muted-foreground text-xs">Next reset: {resetDate}</p>
+
+                <div className="divide-border flex w-full flex-col gap-1 divide-y">
+                    {info.map(item => (
+                        <div key={item.title} className="flex flex-row justify-between gap-1 py-4">
+                            <span className="text-muted-foreground text-sm">{item.title}</span>
+                            <span className="text-sm font-medium">{item.value}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

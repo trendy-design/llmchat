@@ -1,7 +1,9 @@
-import { CompletionRequestType } from '@/app/completion/route';
+import { CompletionRequestType } from '@/app/completion/types';
 import { useApiKeysStore } from '@/libs/store/api-keys.store';
+import { useAppStore } from '@/libs/store/app.store';
 import { Goal, Step, ThreadItem, useChatStore } from '@/libs/store/chat.store';
 import { useMcpToolsStore } from '@/libs/store/mcp-tools.store';
+import { useAuth } from '@clerk/nextjs';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
@@ -33,6 +35,7 @@ const AgentContext = createContext<AgentContextType | undefined>(undefined);
 
 export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const { threadId: currentThreadId } = useParams();
+    const { isSignedIn } = useAuth();
     const updateThreadItem = useChatStore(state => state.updateThreadItem);
     const setIsGenerating = useChatStore(state => state.setIsGenerating);
     const setAbortController = useChatStore(state => state.setAbortController);
@@ -45,6 +48,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const apiKeys = useApiKeysStore(state => state.getAllKeys);
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
     const fetchRemainingCredits = useChatStore(state => state.fetchRemainingCredits);
+    const setShowSignInModal = useAppStore(state => state.setShowSignInModal);
 
     const router = useRouter();
     const { startWorkflow, abortWorkflow } = useWorkflowWorker(data => {
@@ -233,6 +237,9 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         useWebSearch?: boolean;
         showSuggestions?: boolean;
     }) => {
+        if (!isSignedIn) {
+            return;
+        }
         let threadId = currentThreadId?.toString() || newThreadId;
 
         if (threadId) {

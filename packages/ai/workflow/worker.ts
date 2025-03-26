@@ -88,6 +88,8 @@ ctx.addEventListener('message', async (event: MessageEvent) => {
                 question,
             });
 
+            console.log('result', activeWorkflow.getTimingSummary());
+
             // Send completion message
             ctx.postMessage({
                 type: 'done',

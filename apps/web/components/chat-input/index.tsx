@@ -1,6 +1,7 @@
 import { useAgentStream } from '@/hooks/agent-provider';
 import { useChatEditor } from '@/lib/hooks';
 import { useChatStore } from '@/libs/store/chat.store';
+import { useAuth, useClerk } from '@clerk/nextjs';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -8,9 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useShallow } from 'zustand/react/shallow';
 import { ExamplePrompts } from '../exmaple-prompts';
 import { MessagesRemainingBadge } from '../messages-remaining-badge';
-import { ToolsMenu } from '../tools-menu';
 import {
-    AttachmentButton,
     ChatModeButton,
     GeneratingStatus,
     NewLineIndicator,
@@ -29,6 +28,8 @@ export const ChatInput = ({
 }) => {
     const { threadId: currentThreadId } = useParams();
     const { editor } = useChatEditor();
+    const { actor, isSignedIn } = useAuth();
+    const { openSignIn } = useClerk();
     const getThreadItems = useChatStore(state => state.getThreadItems);
     const threadItemsLength = useChatStore(useShallow(state => state.threadItems.length));
     const { handleSubmit } = useAgentStream();
@@ -60,6 +61,10 @@ export const ChatInput = ({
         const formData = new FormData();
         formData.append('query', editor.getText());
         const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
+        if (!isSignedIn) {
+            openSignIn();
+            return;
+        }
         handleSubmit({
             formData,
             newThreadId: threadId,
@@ -110,11 +115,11 @@ export const ChatInput = ({
                                     {isGenerating && !isChatPage ? (
                                         <GeneratingStatus />
                                     ) : (
-                                        <Flex gap="xs" items="center">
+                                        <Flex gap="xs" items="center" className="shrink-0">
                                             <ChatModeButton />
-                                            <AttachmentButton />
+                                            {/* <AttachmentButton /> */}
                                             <WebSearchButton />
-                                            <ToolsMenu />
+                                            {/* <ToolsMenu /> */}
                                         </Flex>
                                     )}
 
@@ -187,21 +192,21 @@ export const ChatInput = ({
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className="mb-8 flex w-full flex-col items-center gap-1"
+                        className="mb-6 flex w-full flex-col items-center gap-0"
                     >
                         <motion.h1
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 0.5 }}
                             transition={{ duration: 0.3, delay: 0.1 }}
-                            className="font-sg text-foreground/50 text-3xl font-medium tracking-tight"
+                            className="font-cabinet text-foreground/70 text-4xl font-medium tracking-tight"
                         >
-                            Good morning,
+                            Good morning ,
                         </motion.h1>
                         <motion.h1
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3, delay: 0.2 }}
-                            className="font-sg text-foreground text-3xl font-medium tracking-tight"
+                            className="font-cabinet text-4xl font-medium tracking-tight text-yellow-950"
                         >
                             How can i help you?
                         </motion.h1>

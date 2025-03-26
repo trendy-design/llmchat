@@ -74,9 +74,11 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                 >
                     <IconTrash size={16} strokeWidth={2} />
                 </Button>
-                <p className="text-muted-foreground px-2 text-xs">
-                    Generated with {getChatModeName(chatMode)}
-                </p>
+                {threadItem.mode && (
+                    <p className="text-muted-foreground px-2 text-xs">
+                        Generated with {getChatModeName(threadItem.mode)}
+                    </p>
+                )}
             </div>
         );
     }

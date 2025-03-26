@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote/rsc';
 import { serialize } from 'next-mdx-remote/serialize';
 import { memo, useEffect, useState } from 'react';
+import remarkGfm from 'remark-gfm';
 
 type MarkdownContentProps = {
     content: string;
@@ -55,20 +56,35 @@ export const removeIncompleteTags = (content: string) => {
     return content;
 };
 
+// New function to normalize content before serialization
+export const normalizeContent = (content: string) => {
+    // Replace literal "\n" strings with actual newlines
+    // This handles cases where newlines are escaped in the string
+    return content.replace(/\\n/g, '\n');
+};
+
 export const MarkdownContent = memo(({ content, className }: MarkdownContentProps) => {
-    const animatedText = content ?? '';
     const [serializedMdx, setSerializedMdx] = useState<MDXRemoteSerializeResult | null>(null);
 
     useEffect(() => {
+        if (!content) return;
+
         (async () => {
             try {
-                const mdx = await serialize(removeIncompleteTags(animatedText));
+                // Apply both normalizeContent and removeIncompleteTags
+                const normalizedContent = normalizeContent(content);
+                const cleanedContent = removeIncompleteTags(normalizedContent);
+                const mdx = await serialize(cleanedContent, {
+                    mdxOptions: {
+                        remarkPlugins: [remarkGfm],
+                    },
+                });
                 setSerializedMdx(mdx);
             } catch (error) {
                 console.error('Error serializing MDX:', error);
             }
         })();
-    }, [animatedText]);
+    }, [content]);
 
     if (!serializedMdx) {
         return null;

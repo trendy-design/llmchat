@@ -6,6 +6,7 @@ import { buildAllTools } from '../../tools/mcp';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
 import { createTask } from '../task';
 import { executeWebSearch, generateText, processWebPages } from '../utils';
+import { generateErrorMessage } from './utils';
 
 const webSearchTool = tool({
     description: 'Search the web for information',
@@ -194,15 +195,19 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
             },
         }));
 
+        console.log('answer', response);
+
         context?.update('answer', _ => response);
 
         toolsInstance?.onClose();
     },
     onError: (error, { context, events }) => {
         console.error('Task failed', error);
+        console.log('error', generateErrorMessage(error));
+
         events?.update('flow', prev => ({
             ...prev,
-            error: 'Something went wrong while processing your request. Please try again.',
+            error: generateErrorMessage(error),
             status: 'ERROR',
         }));
         return Promise.resolve({
@@ -212,7 +217,7 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
     },
     route: ({ context }) => {
         console.log('context', context);
-        if (context?.get('showSuggestions')) {
+        if (context?.get('showSuggestions') && !!context.get('answer')) {
             return 'suggestions';
         }
         return 'end';

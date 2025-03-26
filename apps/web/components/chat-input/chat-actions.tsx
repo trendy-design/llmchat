@@ -3,6 +3,7 @@ import { useChatStore } from '@/libs/store/chat.store';
 import { CHAT_MODE_CREDIT_COSTS, ChatMode } from '@repo/shared/config';
 import {
     Button,
+    cn,
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
@@ -126,14 +127,19 @@ export const WebSearchButton = () => {
 
     return (
         <Button
-            size="icon"
+            size={useWebSearch ? 'sm' : 'icon'}
             tooltip="Web Search"
             variant={useWebSearch ? 'secondary' : 'ghost'}
-            className="gap-2"
+            className={cn('gap-2', useWebSearch && 'bg-emerald-500/20 pl-2 text-emerald-600')}
             rounded="full"
             onClick={() => setUseWebSearch(!useWebSearch)}
         >
-            <IconWorld size={18} strokeWidth={2} className="text-muted-foreground" />
+            <IconWorld
+                size={16}
+                strokeWidth={2}
+                className={cn(useWebSearch ? '!text-emerald-600' : 'text-muted-foreground')}
+            />
+            {useWebSearch && <p className="text-xs">Web</p>}
         </Button>
     );
 };
@@ -252,7 +258,7 @@ export const SendStopButton = ({
             {hasApiKeyForChatMode(chatMode) ? (
                 <BYOKIcon />
             ) : (
-                <CreditIcon credits={CHAT_MODE_CREDIT_COSTS[chatMode] ?? 0} />
+                <CreditIcon credits={CHAT_MODE_CREDIT_COSTS[chatMode] ?? 0} variant="muted" />
             )}
             <Button
                 size="icon-sm"

@@ -1,10 +1,15 @@
 import { useChatStore } from '@/libs/store/chat.store';
-
+import { useAuth } from '@clerk/nextjs';
 export function MessagesRemainingBadge() {
+    const { actor } = useAuth();
     const creditLimit = useChatStore(state => state.creditLimit);
 
-    if (!creditLimit.isFetched) {
-        return null;
+    if (!creditLimit.isFetched || !actor) {
+        return (
+            <div className="text-xs text-yellow-900/80">
+                <span>deep.new</span>
+            </div>
+        );
     }
 
     return (

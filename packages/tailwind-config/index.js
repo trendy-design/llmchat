@@ -81,6 +81,7 @@ module.exports = {
             },
             fontFamily: {
                 mono: ['var(--font-geist-mono)', ...fontFamily.mono],
+                cabinet: ['var(--font-cabinet)', ...fontFamily.sans],
                 sans: ['var(--font-inter)', ...fontFamily.sans],
             },
             fontSize: {

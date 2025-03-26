@@ -2,15 +2,13 @@
 import { AgentProvider } from '@/hooks/agent-provider';
 import { useRootContext } from '@/libs/context/root';
 import { useAppStore } from '@/libs/store/app.store';
-import { useChatStore } from '@/libs/store/chat.store';
-import { SignInButton, useAuth, UserButton } from '@clerk/nextjs';
+import { SignIn, SignInButton, useAuth, UserButton } from '@clerk/nextjs';
 import { Button, Flex, Toaster } from '@repo/ui';
-import { IconSettingsFilled } from '@tabler/icons-react';
+import { IconSettings2 } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FC } from 'react';
 import { Drawer } from 'vaul';
 import { CommandSearch } from '../command-search';
-import { CreditIcon } from '../icons';
 import { SettingsModal } from '../settings-modal';
 import { Sidebar } from './side-bar';
 
@@ -22,10 +20,18 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
     const { isSidebarOpen, isMobileSidebarOpen, setIsMobileSidebarOpen } = useRootContext();
     const { isSignedIn } = useAuth();
     const setIsSettingOpen = useAppStore(state => state.setIsSettingsOpen);
-    const creditLimit = useChatStore(state => state.creditLimit);
+    const showSignInModal = useAppStore(state => state.showSignInModal);
 
     const containerClass =
         'relative flex flex-1 flex-col h-[100dvh] bg-secondary w-full overflow-hidden shadow-sm';
+
+    if (showSignInModal) {
+        return (
+            <div className="bg-secondary flex min-h-[96dvh] w-full flex-row overflow-hidden">
+                <SignIn />
+            </div>
+        );
+    }
 
     return (
         <div className="bg-secondary flex min-h-[96dvh] w-full flex-row overflow-hidden">
@@ -58,17 +64,13 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
                                 <div className="flex w-full flex-col gap-2 overflow-y-auto">
                                     {/* Auth Button Header */}
                                     <div className="fixed right-3 top-3 z-50 flex items-center gap-1">
-                                        <CreditIcon
-                                            credits={creditLimit?.remaining ?? 0}
-                                            variant="muted"
-                                        />
                                         <Button
                                             variant="ghost"
-                                            size="sm"
+                                            size="icon"
                                             rounded="full"
                                             onClick={() => setIsSettingOpen(true)}
                                         >
-                                            <IconSettingsFilled size={18} strokeWidth={2} />
+                                            <IconSettings2 size={16} strokeWidth={2} />
                                         </Button>
                                         {isSignedIn ? (
                                             <UserButton

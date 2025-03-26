@@ -41,7 +41,7 @@ export const CreditIcon = ({
     return (
         <div
             className={cn(
-                'flex-inline border-border flex h-5 items-center justify-center gap-0.5 rounded-md border pl-1 pr-2 font-mono text-xs font-medium text-yellow-900',
+                'flex-inline flex h-5 items-center justify-center gap-0.5 rounded-md border border-none pl-1 pr-2 font-mono text-xs font-medium text-yellow-900',
                 variant === 'muted' && 'border-none'
             )}
         >

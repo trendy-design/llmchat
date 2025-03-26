@@ -96,8 +96,8 @@ export const ThreadItem = memo(
                             <Alert variant="destructive">
                                 <AlertDescription>
                                     <IconAlertCircle className="mt-0.5 size-3.5" />
-                                    Something went wrong while processing your request. Please try
-                                    again.
+                                    {threadItem.error ??
+                                        'Something went wrong while processing your request. Please try again.'}
                                 </AlertDescription>
                             </Alert>
                         )}
