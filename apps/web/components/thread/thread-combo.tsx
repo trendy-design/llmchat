@@ -37,9 +37,6 @@ export function Thread() {
                             threadItem={currentThreadItem}
                             isAnimated={true}
                         />
-                        {currentThreadItem?.suggestions && (
-                            <FollowupSuggestions suggestions={currentThreadItem.suggestions} />
-                        )}
                     </div>
                 )}
             </div>

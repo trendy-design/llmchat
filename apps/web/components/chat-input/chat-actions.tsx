@@ -18,6 +18,7 @@ import {
     IconPlayerStopFilled,
     IconWorld,
 } from '@tabler/icons-react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import { BYOKIcon, CreditIcon, DeepResearchIcon } from '../icons';
 import { DotSpinner } from '../thread/step-status';
@@ -243,35 +244,61 @@ export const SendStopButton = ({
     const chatMode = useChatStore(state => state.chatMode);
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
 
-    return isGenerating && !isChatPage ? (
-        <Button
-            size="icon-sm"
-            rounded="full"
-            variant="default"
-            onClick={stopGeneration}
-            tooltip="Stop Generation"
-        >
-            <IconPlayerStopFilled size={14} strokeWidth={2} />
-        </Button>
-    ) : (
+    const renderCreditCost = () => {
+        if (isGenerating) return null;
+        if (hasApiKeyForChatMode(chatMode)) {
+            return <BYOKIcon />;
+        }
+        return <CreditIcon credits={CHAT_MODE_CREDIT_COSTS[chatMode] ?? 0} variant="muted" />;
+    };
+
+    return (
         <div className="flex flex-row items-center gap-2">
-            {hasApiKeyForChatMode(chatMode) ? (
-                <BYOKIcon />
-            ) : (
-                <CreditIcon credits={CHAT_MODE_CREDIT_COSTS[chatMode] ?? 0} variant="muted" />
-            )}
-            <Button
-                size="icon-sm"
-                rounded="full"
-                tooltip="Send Message"
-                variant={hasTextInput ? 'default' : 'secondary'}
-                disabled={!hasTextInput || isGenerating}
-                onClick={() => {
-                    sendMessage();
-                }}
-            >
-                <IconArrowUp size={20} strokeWidth={2} />
-            </Button>
+            {renderCreditCost()}
+
+            <AnimatePresence mode="wait" initial={false}>
+                {isGenerating && !isChatPage ? (
+                    <motion.div
+                        key="stop-button"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <Button
+                            size="sm"
+                            rounded="full"
+                            variant="default"
+                            onClick={stopGeneration}
+                            tooltip="Stop Generation"
+                        >
+                            <IconPlayerStopFilled size={14} strokeWidth={2} />
+                            Stop
+                        </Button>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="send-button"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.8, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <Button
+                            size="icon-sm"
+                            rounded="full"
+                            tooltip="Send Message"
+                            variant={hasTextInput ? 'default' : 'secondary'}
+                            disabled={!hasTextInput || isGenerating}
+                            onClick={() => {
+                                sendMessage();
+                            }}
+                        >
+                            <IconArrowUp size={20} strokeWidth={2} />
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };

@@ -79,7 +79,7 @@ export const Sidebar = () => {
             //   }
             // }}
             className={cn(
-                'border-border/0 fixed bottom-0 left-0 top-0 z-[40] flex h-[100dvh] flex-shrink-0 flex-col border-r border-dashed py-2 transition-all duration-200',
+                'border-border/0 fixed bottom-0 left-0 top-0 z-[50] flex h-[100dvh] flex-shrink-0 flex-col border-r border-dashed py-2 transition-all duration-200',
                 isSidebarOpen
                     ? 'bg-background border-border/70 shadow-xs top-0 h-full w-[240px] border-r'
                     : 'w-[50px]'

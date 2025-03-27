@@ -60,6 +60,7 @@ export type WorkflowEventSchema = {
             status?: 'PENDING' | 'COMPLETED' | 'ERROR';
         };
         final: boolean;
+        mode: ChatMode;
         suggestions?: string[];
     };
 };
@@ -146,6 +147,7 @@ export const runWorkflow = ({
     const events = createTypedEventEmitter<WorkflowEventSchema>({
         flow: {
             query: question,
+            mode: mode as ChatMode,
             threadId,
             threadItemId,
             status: 'PENDING',

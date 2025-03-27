@@ -119,10 +119,21 @@ module.exports = {
                     '0%': { transform: 'translateX(100%)' },
                     '100%': { transform: 'translateX(0%)' },
                 },
+                'fade-in-once': {
+                    '0%': { opacity: 0, transform: 'translateY(5px)' },
+                    '100%': { opacity: 1, transform: 'translateY(0)' },
+                },
+                'reveal-pop': {
+                    '0%': { opacity: 0, transform: 'scale(0.96) translateY(10px)' },
+                    '70%': { opacity: 1, transform: 'scale(1.01) translateY(-2px)' },
+                    '100%': { opacity: 1, transform: 'scale(1) translateY(0)' },
+                },
             },
             animation: {
                 'accordion-down': 'accordion-down 0.2s ease-out',
                 'accordion-up': 'accordion-up 0.2s ease-out',
+                'fade-in-once': 'fade-in-once 10s ease-out forwards',
+                'reveal-pop': 'reveal-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
             },
             typography: ({ theme }) => ({
                 prosetheme: {

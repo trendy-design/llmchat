@@ -201,7 +201,7 @@ export const ChatInput = ({
                             transition={{ duration: 0.3, delay: 0.1 }}
                             className="font-cabinet text-foreground/70 text-4xl font-medium tracking-tight"
                         >
-                            {`Good morning ${actor?.firstName ? `, ${actor?.firstName}` : ''},`}
+                            {`Good morning`}
                         </motion.h1>
                         <motion.h1
                             initial={{ opacity: 0 }}

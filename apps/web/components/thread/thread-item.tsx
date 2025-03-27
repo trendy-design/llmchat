@@ -1,6 +1,7 @@
 import { GoalWithSteps, ThreadItem as ThreadItemType, useChatStore } from '@/libs/store/chat.store';
-import { Alert, AlertDescription, Skeleton } from '@repo/ui';
+import { Alert, AlertDescription, cn, Skeleton } from '@repo/ui';
 import { IconAlertCircle, IconBook } from '@tabler/icons-react';
+import { motion } from 'framer-motion';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { CitationProvider } from './citation-provider';
 import { GoalsRenderer } from './components/goals';
@@ -9,6 +10,7 @@ import { Message } from './components/message';
 import { MessageActions } from './components/message-actions';
 import { QuestionPrompt } from './components/question-prompt';
 import { SourceGrid } from './components/source-grid';
+import { FollowupSuggestions } from './thread-combo';
 
 export const ThreadItem = memo(
     ({ threadItem }: { isAnimated: boolean; threadItem: ThreadItemType }) => {
@@ -47,18 +49,6 @@ export const ThreadItem = memo(
             });
         }, [threadItem.answer?.text]);
 
-        if (threadItem.status === 'QUEUED') {
-            return (
-                <div className="flex w-full flex-col items-start gap-4 pt-8">
-                    <Skeleton className="h-4 w-full" />
-                    <div className="h-4" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-[70%]" />
-                    <Skeleton className="h-4 w-[50%]" />
-                </div>
-            );
-        }
-
         return (
             <CitationProvider sources={allSources}>
                 <>
@@ -87,6 +77,11 @@ export const ThreadItem = memo(
                                     <MarkdownContent
                                         content={threadItem.answer?.text || ''}
                                         key={`answer-${threadItem.id}`}
+                                        shouldAnimate={
+                                            !['COMPLETED', 'ERROR', 'ABORTED'].includes(
+                                                threadItem.status || ''
+                                            )
+                                        }
                                     />
                                 </div>
                             )}
@@ -102,9 +97,25 @@ export const ThreadItem = memo(
                             </Alert>
                         )}
                         {(threadItem.answer?.final ||
+                            threadItem.status === 'COMPLETED' ||
                             threadItem.status === 'ABORTED' ||
                             threadItem.status === 'ERROR') && (
                             <MessageActions threadItem={threadItem} ref={messageRef} />
+                        )}
+
+                        {!!threadItem?.suggestions &&
+                            (threadItem.status === 'COMPLETED' ||
+                                threadItem.status === 'ABORTED' ||
+                                threadItem.status === 'ERROR') && (
+                                <FollowupSuggestions suggestions={threadItem.suggestions || []} />
+                            )}
+                        {threadItem.status === 'QUEUED' && (
+                            <div className="flex w-full flex-col items-start gap-2 pt-8">
+                                <MotionSkeleton className="w-full bg-gradient-to-r" />
+                                <MotionSkeleton className="w-full bg-gradient-to-r" />
+                                <MotionSkeleton className="w-[70%] bg-gradient-to-r" />
+                                <MotionSkeleton className="w-[50%] bg-gradient-to-r" />
+                            </div>
                         )}
                     </div>
                 </>
@@ -121,3 +132,21 @@ export const ThreadItem = memo(
 );
 
 ThreadItem.displayName = 'ThreadItem';
+
+export const MotionSkeleton = ({ className }: { className?: string }) => {
+    return (
+        <motion.div
+            initial={{ opacity: 0, width: '0%' }}
+            animate={{ opacity: 1, width: '100%' }}
+            exit={{ opacity: 0, width: '0%' }}
+            transition={{ duration: 2, ease: 'easeInOut', damping: 50, stiffness: 20 }}
+        >
+            <Skeleton
+                className={cn(
+                    'from-foreground/20 to-foreground/0 h-5 w-full bg-gradient-to-r',
+                    className
+                )}
+            />
+        </motion.div>
+    );
+};

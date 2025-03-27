@@ -5,6 +5,7 @@ import {
     ToolCall,
     ToolResult,
 } from '@/libs/store/chat.store';
+import { ChatMode } from '@repo/shared/config';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Badge } from '@repo/ui';
 import { IconChecklist, IconLoader2 } from '@tabler/icons-react';
 import { Fragment, memo, useEffect, useMemo, useState } from 'react';
@@ -15,6 +16,16 @@ import { ToolResultStep } from './tool-result';
 
 type GoalStepProps = {
     goal: GoalWithSteps;
+};
+
+const getTitle = (threadItem: ThreadItem) => {
+    if (threadItem.mode === ChatMode.Deep) {
+        return 'Research';
+    }
+    if ([ChatMode.DEEPSEEK_R1].includes(threadItem.mode)) {
+        return 'Thinking';
+    }
+    return 'Steps';
 };
 
 const GoalStep = memo(({ goal }: GoalStepProps) => (
@@ -144,7 +155,7 @@ export const GoalsRenderer = ({
                                     className="text-muted-foreground"
                                 />
                             )}
-                            <p className="text-sm font-medium">Workflow</p>
+                            <p className="text-sm font-medium">{getTitle(threadItem)}</p>
                             <Badge>{stepCounts} Steps</Badge>
                         </div>
                     </AccordionTrigger>

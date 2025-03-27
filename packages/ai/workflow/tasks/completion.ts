@@ -193,6 +193,8 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                 final: true,
                 status: 'COMPLETED',
             },
+            final: true,
+            status: 'COMPLETED',
         }));
 
         console.log('answer', response);

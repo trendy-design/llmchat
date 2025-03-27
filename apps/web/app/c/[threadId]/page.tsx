@@ -2,7 +2,6 @@
 import { ChatInput } from '@/components/chat-input';
 import { Thread } from '@/components/thread/thread-combo';
 import { useChatStore } from '@/libs/store/chat.store';
-import { Flex } from '@repo/ui';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useStickToBottom } from 'use-stick-to-bottom';
@@ -31,17 +30,18 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
     }, [params]);
 
     return (
-        <Flex className="h-full w-full flex-1 items-center px-8" direction="col">
-            <div className="mx-auto w-full max-w-3xl flex-1 px-4 pb-[200px]" ref={scrollRef}>
-                <div ref={contentRef}>
-                    <Thread />
-                </div>
+        <div
+            className="flex h-full w-full flex-col items-center overflow-y-auto px-8"
+            ref={scrollRef}
+        >
+            <div className="mx-auto w-full max-w-3xl px-4 pb-[200px] pt-12" ref={contentRef}>
+                <Thread />
             </div>
 
             <div className="bg-secondary fixed bottom-0 z-[30] mx-auto flex w-full max-w-3xl flex-col">
                 <ChatInput showGreeting={false} showBottomBar={false} isFollowUp={true} />
             </div>
-        </Flex>
+        </div>
     );
 };
 

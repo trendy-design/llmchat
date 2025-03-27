@@ -265,6 +265,7 @@ const processBatchUpdate = async () => {
     batchUpdateQueue.items.clear();
 
     try {
+        console.log('itemsToUpdate', itemsToUpdate);
         await db.threadItems.bulkPut(itemsToUpdate);
         // Update last update times for all processed items
         itemsToUpdate.forEach(item => {
@@ -490,6 +491,7 @@ export const useChatStore = create(
             try {
                 await db.threadItems.put(threadItem);
                 set(state => {
+                    console.log('threadItem', threadItem);
                     if (state.threadItems.find(t => t.id === threadItem.id)) {
                         state.threadItems = state.threadItems.map(t =>
                             t.id === threadItem.id ? threadItem : t

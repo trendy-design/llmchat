@@ -80,6 +80,7 @@ Your report should demonstrate subject matter expertise while remaining intellec
             ...current,
             answer: { text: answer, final: true, status: 'COMPLETED' as const },
             final: true,
+            status: 'COMPLETED',
         }));
 
         trace?.span({
@@ -105,7 +106,7 @@ Your report should demonstrate subject matter expertise while remaining intellec
         });
     },
     route: ({ result, context }) => {
-        if (context?.get('showSuggestions')) {
+        if (context?.get('showSuggestions') && !!context?.get('answer')) {
             return 'suggestions';
         }
         return 'end';
