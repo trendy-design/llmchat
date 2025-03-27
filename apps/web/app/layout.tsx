@@ -88,10 +88,10 @@ export default function ParentLayout({
         >
             <head>
                 <link rel="icon" href="/favicon.ico" sizes="any" />
-                <script
+                {/* <script
                     crossOrigin="anonymous"
                     src="//unpkg.com/react-scan/dist/auto.global.js"
-                ></script>
+                ></script> */}
             </head>
             <body>
                 <ClerkProvider>
