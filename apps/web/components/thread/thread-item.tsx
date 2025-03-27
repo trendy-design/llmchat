@@ -54,7 +54,7 @@ export const ThreadItem = memo(
                 <>
                     {threadItem.query && <Message message={threadItem.query} />}
 
-                    <div className="flex w-full flex-col items-start gap-4 pt-8">
+                    <div className="flex min-h-[60vh] w-full flex-col items-start gap-4 pt-8">
                         <GoalsRenderer
                             goals={goalsWithSteps || []}
                             reasoning={threadItem?.reasoning}

@@ -149,11 +149,7 @@ export const MemoizedMdxChunk = memo(({ chunk }: { chunk: string }) => {
         return null;
     }
 
-    return (
-        <span className="inline-block">
-            <MDXRemote {...mdx} components={mdxComponents} />
-        </span>
-    );
+    return <MDXRemote {...mdx} components={mdxComponents} />;
 });
 
 MemoizedMdxChunk.displayName = 'MemoizedMdxChunk';
