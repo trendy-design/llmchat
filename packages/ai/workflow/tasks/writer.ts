@@ -83,6 +83,12 @@ Your report should demonstrate subject matter expertise while remaining intellec
             status: 'COMPLETED',
         }));
 
+        context?.get('onFinish')?.({
+            answer,
+            threadId: context?.get('threadId'),
+            threadItemId: context?.get('threadItemId'),
+        });
+
         trace?.span({
             name: 'writer',
             input: prompt,

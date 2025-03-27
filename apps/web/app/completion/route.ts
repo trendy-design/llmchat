@@ -1,7 +1,7 @@
 import { auth } from '@clerk/nextjs/server';
 import { CHAT_MODE_CREDIT_COSTS } from '@repo/shared/config';
 import { NextRequest } from 'next/server';
-import { DAILY_CREDITS, deductCredits, getRemainingCredits } from './credit-service';
+import { DAILY_CREDITS, getRemainingCredits } from './credit-service';
 import { executeStream, sendMessage } from './stream-handlers';
 import { completionRequestSchema, SSE_HEADERS } from './types';
 
@@ -62,13 +62,7 @@ export async function POST(request: NextRequest) {
         const stream = new ReadableStream({
             async start(controller) {
                 try {
-                    const success = await deductCredits(userId, creditCost);
-
-                    if (!success) {
-                        throw new Error('Failed to deduct credits');
-                    }
-
-                    await executeStream(controller, encoder, data, abortController);
+                    await executeStream(controller, encoder, data, abortController, userId);
                 } catch (error) {
                     if (abortController.signal.aborted) {
                         sendMessage(controller, encoder, {

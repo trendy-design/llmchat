@@ -98,6 +98,7 @@ export type WorkflowContextSchema = {
     threadId: string;
     threadItemId: string;
     showSuggestions: boolean;
+    onFinish: (data: any) => void;
 };
 
 export type WorkflowConfig = {
@@ -120,6 +121,7 @@ export const runWorkflow = ({
     signal,
     webSearch = false,
     showSuggestions = false,
+    onFinish,
 }: {
     mcpConfig: Record<string, string>;
     mode: ChatMode;
@@ -131,6 +133,7 @@ export const runWorkflow = ({
     signal?: AbortSignal;
     webSearch?: boolean;
     showSuggestions?: boolean;
+    onFinish: (data: any) => void;
 }) => {
     const langfuse = new Langfuse();
     const trace = langfuse.trace({
@@ -177,6 +180,7 @@ export const runWorkflow = ({
         threadId,
         threadItemId,
         showSuggestions,
+        onFinish: onFinish as any,
     });
 
     // Use the typed builder

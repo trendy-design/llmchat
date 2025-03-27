@@ -201,6 +201,12 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
 
         context?.update('answer', _ => response);
 
+        context?.get('onFinish')?.({
+            answer: response,
+            threadId: context?.get('threadId'),
+            threadItemId: context?.get('threadItemId'),
+        });
+
         toolsInstance?.onClose();
     },
     onError: (error, { context, events }) => {

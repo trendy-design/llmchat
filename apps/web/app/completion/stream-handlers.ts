@@ -1,4 +1,6 @@
 import { runWorkflow } from '@repo/ai';
+import { CHAT_MODE_CREDIT_COSTS } from '@repo/shared/config';
+import { deductCredits } from './credit-service';
 import { CompletionRequestType, StreamController } from './types';
 import { sanitizePayloadForJSON } from './utils';
 
@@ -38,9 +40,18 @@ export async function executeStream(
     controller: StreamController,
     encoder: TextEncoder,
     data: CompletionRequestType,
-    abortController: AbortController
+    abortController: AbortController,
+    userId: string
 ) {
     try {
+        if (!userId) {
+            return new Response(JSON.stringify({ error: 'Authentication required' }), {
+                status: 401,
+                headers: { 'Content-Type': 'application/json' },
+            });
+        }
+        const creditCost = CHAT_MODE_CREDIT_COSTS[data.mode];
+
         const { signal } = abortController;
 
         const workflow = runWorkflow({
@@ -56,6 +67,13 @@ export async function executeStream(
             },
             mcpConfig: data.mcpConfig || {},
             showSuggestions: data.showSuggestions || false,
+            onFinish: async (data: any) => {
+                const success = await deductCredits(userId, creditCost);
+
+                if (!success) {
+                    throw new Error('Failed to deduct credits');
+                }
+            },
         });
 
         workflow.on('flow', payload => {
@@ -68,23 +86,23 @@ export async function executeStream(
             });
         });
 
-        const result = await workflow.start('router', {
+        await workflow.start('router', {
             question: data.prompt,
         });
 
         const timingSummary = workflow.getTimingSummary();
 
-        sendMessage(controller, encoder, {
-            type: 'done',
-            status: 'complete',
-            threadId: data.threadId,
-            threadItemId: data.threadItemId,
-            parentThreadItemId: data.parentThreadItemId,
-            result,
-        });
+        if (timingSummary)
+            sendMessage(controller, encoder, {
+                type: 'done',
+                status: 'complete',
+                threadId: data.threadId,
+                threadItemId: data.threadItemId,
+                parentThreadItemId: data.parentThreadItemId,
+            });
 
         controller.close();
-        return result;
+        return { success: true };
     } catch (error) {
         if (abortController.signal.aborted) {
             sendMessage(controller, encoder, {
