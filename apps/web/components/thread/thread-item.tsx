@@ -10,7 +10,6 @@ import { Message } from './components/message';
 import { MessageActions } from './components/message-actions';
 import { QuestionPrompt } from './components/question-prompt';
 import { SourceGrid } from './components/source-grid';
-import { FollowupSuggestions } from './thread-combo';
 
 export const ThreadItem = memo(
     ({ threadItem }: { isAnimated: boolean; threadItem: ThreadItemType }) => {
@@ -52,9 +51,23 @@ export const ThreadItem = memo(
         return (
             <CitationProvider sources={allSources}>
                 <>
-                    {threadItem.query && <Message message={threadItem.query} />}
+                    <div
+                        className={cn(
+                            'flex w-full flex-col items-start gap-4 pt-8',
+                            threadItem.status === 'QUEUED' && 'min-h-[70vh]',
+                            threadItem.status === 'PENDING' && 'min-h-[70vh]'
+                        )}
+                    >
+                        {threadItem.query && <Message message={threadItem.query} />}
 
-                    <div className="flex min-h-[60vh] w-full flex-col items-start gap-4 pt-8">
+                        {threadItem.status === 'QUEUED' && (
+                            <div className="flex w-full flex-col items-start gap-2 opacity-10">
+                                <MotionSkeleton className="mb-2 h-4 !w-[100px] rounded-md bg-yellow-900/10" />
+                                <MotionSkeleton className="w-full bg-gradient-to-r" />
+                                <MotionSkeleton className="w-[70%] bg-gradient-to-r" />
+                                <MotionSkeleton className="w-[50%] bg-gradient-to-r" />
+                            </div>
+                        )}
                         <GoalsRenderer
                             goals={goalsWithSteps || []}
                             reasoning={threadItem?.reasoning}
@@ -102,21 +115,6 @@ export const ThreadItem = memo(
                             threadItem.status === 'ERROR') && (
                             <MessageActions threadItem={threadItem} ref={messageRef} />
                         )}
-
-                        {!!threadItem?.suggestions &&
-                            (threadItem.status === 'COMPLETED' ||
-                                threadItem.status === 'ABORTED' ||
-                                threadItem.status === 'ERROR') && (
-                                <FollowupSuggestions suggestions={threadItem.suggestions || []} />
-                            )}
-                        {threadItem.status === 'QUEUED' && (
-                            <div className="flex w-full flex-col items-start gap-2 pt-8">
-                                <MotionSkeleton className="w-full bg-gradient-to-r" />
-                                <MotionSkeleton className="w-full bg-gradient-to-r" />
-                                <MotionSkeleton className="w-[70%] bg-gradient-to-r" />
-                                <MotionSkeleton className="w-[50%] bg-gradient-to-r" />
-                            </div>
-                        )}
                     </div>
                 </>
             </CitationProvider>
@@ -143,7 +141,7 @@ export const MotionSkeleton = ({ className }: { className?: string }) => {
         >
             <Skeleton
                 className={cn(
-                    'from-foreground/20 to-foreground/0 h-5 w-full bg-gradient-to-r',
+                    'h-5 w-full bg-gradient-to-r from-yellow-950/80 via-orange-600/50 to-pink-100',
                     className
                 )}
             />
