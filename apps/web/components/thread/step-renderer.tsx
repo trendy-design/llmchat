@@ -2,7 +2,7 @@ import { Step } from '@/libs/store/chat.store';
 import { Badge } from '@repo/ui';
 import { IconSearch } from '@tabler/icons-react';
 import { SearchResultsList } from '../search-results';
-import { DotSpinner } from './step-status';
+import { TextShimmer } from '../text-shimmer';
 export type StepRendererType = {
     step: Step;
 };
@@ -11,15 +11,11 @@ export const StepRenderer = ({ step }: StepRendererType) => {
         return (
             <div className="my-2 flex flex-col gap-1">
                 <div className="flex flex-col gap-2">
-                    <p className="text-muted-foreground text-xs">
-                        {step.final ? (
-                            'Searched'
-                        ) : (
-                            <span>
-                                <DotSpinner /> Searching
-                            </span>
-                        )}
-                    </p>
+                    <div className="w-[100px]">
+                        <TextShimmer duration={0.7} spread={step.final ? 0 : 2} className="text-xs">
+                            Searching
+                        </TextShimmer>
+                    </div>
 
                     <div className="flex flex-row flex-wrap gap-1">
                         {step.queries?.map((query, index) => (
@@ -37,15 +33,11 @@ export const StepRenderer = ({ step }: StepRendererType) => {
     if (step.type === 'read') {
         return (
             <div className="my-2 flex flex-col gap-2">
-                <p className="text-muted-foreground text-xs">
-                    {step.final ? (
-                        'Read'
-                    ) : (
-                        <span>
-                            <DotSpinner /> Reading
-                        </span>
-                    )}
-                </p>
+                <div className="w-[100px]">
+                    <TextShimmer duration={0.7} spread={step.final ? 0 : 2} className="text-xs">
+                        Reading
+                    </TextShimmer>
+                </div>
                 <SearchResultsList results={step.results || []} />
             </div>
         );

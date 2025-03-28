@@ -51,13 +51,7 @@ export const ThreadItem = memo(
         return (
             <CitationProvider sources={allSources}>
                 <>
-                    <div
-                        className={cn(
-                            'flex w-full flex-col items-start gap-4 pt-8',
-                            threadItem.status === 'QUEUED' && 'min-h-[70vh]',
-                            threadItem.status === 'PENDING' && 'min-h-[70vh]'
-                        )}
-                    >
+                    <div className={cn('flex w-full flex-col items-start gap-4 pt-8')}>
                         {threadItem.query && <Message message={threadItem.query} />}
 
                         {threadItem.status === 'QUEUED' && (

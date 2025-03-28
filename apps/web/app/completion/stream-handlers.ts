@@ -91,6 +91,7 @@ export async function executeStream(
         });
 
         const timingSummary = workflow.getTimingSummary();
+        console.log(timingSummary);
 
         if (timingSummary)
             sendMessage(controller, encoder, {

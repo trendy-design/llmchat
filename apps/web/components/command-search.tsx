@@ -22,12 +22,15 @@ import {
 } from '@tabler/icons-react';
 import moment from 'moment';
 import { useTheme } from 'next-themes';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export const CommandSearch = () => {
+    const { threadId: currentThreadId } = useParams();
     const { isCommandSearchOpen, setIsCommandSearchOpen } = useRootContext();
     const threads = useChatStore(state => state.threads);
+    const getThread = useChatStore(state => state.getThread);
+    const removeThread = useChatStore(state => state.deleteThread);
     const switchThread = useChatStore(state => state.switchThread);
     const router = useRouter();
     const { theme, setTheme } = useTheme();
@@ -95,6 +98,18 @@ export const CommandSearch = () => {
             action: () => {
                 router.push('/chat');
                 onClose();
+            },
+        },
+        {
+            name: 'Delete Thread',
+            icon: IconTrash,
+            action: async () => {
+                const thread = await getThread(currentThreadId as string);
+                if (thread) {
+                    removeThread(thread.id);
+                    router.push('/chat');
+                    onClose();
+                }
             },
         },
         {

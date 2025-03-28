@@ -6,7 +6,7 @@ import {
     ToolResult,
 } from '@/libs/store/chat.store';
 import { ChatMode } from '@repo/shared/config';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger, Badge } from '@repo/ui';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@repo/ui';
 import { IconChecklist, IconLoader2 } from '@tabler/icons-react';
 import { Fragment, memo, useEffect, useMemo, useState } from 'react';
 import { StepRenderer } from '../step-renderer';
@@ -25,6 +25,7 @@ const getTitle = (threadItem: ThreadItem) => {
     if ([ChatMode.DEEPSEEK_R1].includes(threadItem.mode)) {
         return 'Thinking';
     }
+
     return 'Steps';
 };
 
@@ -111,6 +112,18 @@ export const GoalsRenderer = ({
         }
     }, [allCompleted]);
 
+    useEffect(() => {
+        if (goals[0]?.status === 'PENDING') {
+            setValue('workflow');
+        }
+    }, [goals[0]]);
+
+    useEffect(() => {
+        if (reasoningSteps[0]) {
+            setValue('workflow');
+        }
+    }, [reasoningSteps[0]]);
+
     const toolCallAndResults = useMemo(() => {
         return Object.entries(threadItem?.toolCalls || {}).map(([key, toolCall]) => {
             const toolResult = threadItem?.toolResults?.[key];
@@ -141,7 +154,7 @@ export const GoalsRenderer = ({
                     className="border-border overflow-hidden rounded-xl border p-0"
                 >
                     <AccordionTrigger className="bg-background flex flex-row items-center gap-2 px-4 py-2.5">
-                        <div className="flex flex-row items-center gap-2">
+                        <div className="flex w-full flex-row items-center gap-2">
                             {isLoading ? (
                                 <IconLoader2
                                     size={16}
@@ -156,7 +169,10 @@ export const GoalsRenderer = ({
                                 />
                             )}
                             <p className="text-sm font-medium">{getTitle(threadItem)}</p>
-                            <Badge>{stepCounts} Steps</Badge>
+                            <div className="flex-1" />
+                            <p className="text-muted-foreground !text-xs">
+                                {stepCounts} {stepCounts === 1 ? 'Step' : 'Steps'}
+                            </p>
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="bg-background p-0">

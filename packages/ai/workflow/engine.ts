@@ -348,6 +348,12 @@ export class WorkflowEngine<
         const config = this.tasks.get(taskName);
         if (!config) {
             console.error(`❌ Task "${taskName}" not found.`);
+            this.executionContext.endTaskTiming(
+                taskName,
+                new Error(`Task "${taskName}" not found.`)
+            );
+            throw new Error(`Task "${taskName}" not found.`);
+
             return;
         }
 

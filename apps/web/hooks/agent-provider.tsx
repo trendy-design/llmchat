@@ -190,6 +190,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                     setTimeout(() => {
                                         fetchRemainingCredits();
                                     }, 1000);
+
                                     if (data.status === 'error') {
                                         console.error('Stream error:', data.error);
                                     }

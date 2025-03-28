@@ -2,6 +2,7 @@
 
 import { getHost } from '@/utils/url';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@repo/ui';
+import { IconExternalLink } from '@tabler/icons-react';
 import Image from 'next/image';
 import React, { memo, useEffect, useMemo, useState } from 'react';
 import { LinkFavicon } from './link-favicon';
@@ -19,15 +20,24 @@ export const LinkPreviewPopover = memo(({ url, children }: LinkPreviewType) => {
     }
 
     return (
-        <HoverCard openDelay={200} closeDelay={0}>
+        <HoverCard openDelay={200} closeDelay={100}>
             <HoverCardTrigger asChild className="cursor-pointer">
                 {children}
             </HoverCardTrigger>
             <HoverCardContent
-                className="bg-background prose-none isolate z-[100] w-[400px] rounded-xl p-0"
+                className="bg-background prose-none isolate z-[100] w-[400px] cursor-pointer rounded-xl p-0 shadow-2xl hover:border-yellow-700/50"
                 side="top"
                 align="start"
+                onClick={e => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    window.open(url, '_blank');
+                }}
             >
+                <IconExternalLink
+                    className="text-muted-foreground absolute right-3 top-3"
+                    size={14}
+                />
                 <LinkPreview url={url} />
             </HoverCardContent>
         </HoverCard>
@@ -109,7 +119,7 @@ export const LinkPreview = memo(({ url }: { url: string }) => {
         <div className="not-prose">
             {ogResult && ogResult.title && ogResult.url ? (
                 <div className="flex flex-col items-start">
-                    <div className="flex w-full flex-col items-start gap-1 p-4">
+                    <div className="flex w-full flex-col items-start gap-1.5 p-4">
                         <div className="flex flex-row items-center gap-1.5">
                             <LinkFavicon link={getHost(url)} />
 
@@ -117,10 +127,10 @@ export const LinkPreview = memo(({ url }: { url: string }) => {
                                 {parsedUrl.hostname}
                             </p>
                         </div>
-                        <p className="text-foreground line-clamp-2 w-full overflow-hidden font-sans text-sm font-medium">
+                        <p className="text-foreground line-clamp-2 w-full overflow-hidden font-sans text-xs font-medium leading-tight">
                             {ogResult.title}
                         </p>
-                        <p className="text-muted-foreground line-clamp-2 font-sans text-xs">
+                        <p className="text-muted-foreground line-clamp-2 font-sans text-xs leading-tight">
                             {ogResult.description}
                         </p>
                     </div>

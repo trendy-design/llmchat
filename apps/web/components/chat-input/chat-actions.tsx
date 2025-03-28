@@ -125,6 +125,9 @@ export const ChatModeButton = () => {
 export const WebSearchButton = () => {
     const useWebSearch = useChatStore(state => state.useWebSearch);
     const setUseWebSearch = useChatStore(state => state.setUseWebSearch);
+    const chatMode = useChatStore(state => state.chatMode);
+
+    if (chatMode === ChatMode.Deep) return null;
 
     return (
         <Button
@@ -241,21 +244,8 @@ export const SendStopButton = ({
     hasTextInput: boolean;
     sendMessage: () => void;
 }) => {
-    const chatMode = useChatStore(state => state.chatMode);
-    const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
-
-    const renderCreditCost = () => {
-        if (isGenerating) return null;
-        if (hasApiKeyForChatMode(chatMode)) {
-            return <BYOKIcon />;
-        }
-        return <CreditIcon credits={CHAT_MODE_CREDIT_COSTS[chatMode] ?? 0} variant="muted" />;
-    };
-
     return (
         <div className="flex flex-row items-center gap-2">
-            {renderCreditCost()}
-
             <AnimatePresence mode="wait" initial={false}>
                 {isGenerating && !isChatPage ? (
                     <motion.div

@@ -43,6 +43,11 @@ export const ChatInput = ({
 
     const router = useRouter();
     const sendMessage = async () => {
+        if (!isSignedIn) {
+            openSignIn();
+            return;
+        }
+
         if (!editor?.getText()) {
             return;
         }
@@ -62,10 +67,7 @@ export const ChatInput = ({
         const formData = new FormData();
         formData.append('query', editor.getText());
         const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
-        if (!isSignedIn) {
-            openSignIn();
-            return;
-        }
+
         handleSubmit({
             formData,
             newThreadId: threadId,
