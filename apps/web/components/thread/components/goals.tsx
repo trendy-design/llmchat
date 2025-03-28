@@ -61,7 +61,7 @@ const ReasoningStep = memo(({ step }: ReasoningStepProps) => (
             <div className="border-border min-h-full w-[1px] flex-1 border-l border-dashed" />
         </div>
         <div className="flex w-full flex-1 flex-col overflow-hidden pb-4 pr-2">
-            <p>{step}</p>
+            <p className="text-xs">{step}</p>
         </div>
     </div>
 ));
@@ -105,12 +105,13 @@ export const GoalsRenderer = ({
 
     const isLoading = goals.some(goal => goal.status === 'PENDING');
     const allCompleted = goals.every(goal => goal.status === 'COMPLETED');
+    const hasAnswer = !!threadItem?.answer?.text;
 
     useEffect(() => {
-        if (allCompleted) {
+        if (allCompleted || hasAnswer) {
             setValue(undefined);
         }
-    }, [allCompleted]);
+    }, [allCompleted, hasAnswer]);
 
     useEffect(() => {
         if (goals[0]?.status === 'PENDING') {

@@ -86,6 +86,15 @@ ${s}
             },
         });
 
+        events?.update('flow', current => ({
+            ...current,
+            reasoning: {
+                ...(current.reasoning || {}),
+                final: true,
+                status: 'COMPLETED' as const,
+            } as any,
+        }));
+
         trace?.span({
             name: 'analysis',
             input: prompt,

@@ -1,33 +1,108 @@
 'use client';
 
-import * as HoverCardPrimitive from '@radix-ui/react-hover-card';
+import { flip, offset, shift, useFloating, useHover, useInteractions } from '@floating-ui/react';
 import * as React from 'react';
 import { cn } from '../lib/utils';
 
-const HoverCard = HoverCardPrimitive.Root;
+type HoverCardProps = {
+    openDelay?: number;
+    closeDelay?: number;
+    children: React.ReactNode;
+};
 
-const HoverCardTrigger = HoverCardPrimitive.Trigger;
+const HoverCard = ({ openDelay = 200, closeDelay = 200, children }: HoverCardProps) => {
+    return (
+        <HoverCardRoot openDelay={openDelay} closeDelay={closeDelay}>
+            {children}
+        </HoverCardRoot>
+    );
+};
 
-const HoverCardContent = React.forwardRef<
-    React.ElementRef<typeof HoverCardPrimitive.Content>,
-    React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Content>
->(({ className, align = 'center', sideOffset = 4, ...props }, ref) => (
-    <HoverCardPrimitive.Content
-        ref={ref}
-        align={align}
-        sideOffset={sideOffset}
-        className={cn(
-            'bg-background text-card-foreground z-50 flex max-w-64 flex-col items-start rounded-md border p-4 shadow-md outline-none',
-            'data-[state=open]:animate-in data-[state=closed]:animate-out',
-            'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
-            'data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95',
-            'data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2',
-            'data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
-            className
-        )}
-        {...props}
-    />
+type HoverCardRootProps = {
+    openDelay?: number;
+    closeDelay?: number;
+    children: React.ReactNode;
+};
+
+const HoverCardRoot = ({ openDelay, closeDelay, children }: HoverCardRootProps) => {
+    const [open, setOpen] = React.useState(false);
+
+    const { refs, floatingStyles, context } = useFloating({
+        open,
+        onOpenChange: setOpen,
+        middleware: [offset(4), flip(), shift()],
+    });
+
+    const hover = useHover(context, {
+        delay: { open: openDelay, close: closeDelay },
+    });
+
+    const { getReferenceProps, getFloatingProps } = useInteractions([hover]);
+
+    // Remove useTransition since it's not available
+    const isMounted = open;
+
+    // Clone children to inject refs and props
+    const childrenArray = React.Children.toArray(children);
+    const triggerChild = childrenArray.find(
+        child => React.isValidElement(child) && child.type === HoverCardTrigger
+    );
+    const contentChild = childrenArray.find(
+        child => React.isValidElement(child) && child.type === HoverCardContent
+    );
+
+    if (!React.isValidElement(triggerChild) || !React.isValidElement(contentChild)) {
+        return null;
+    }
+
+    // Type-safe casting
+    const trigger = triggerChild as React.ReactElement<
+        React.ComponentPropsWithRef<typeof HoverCardTrigger>
+    >;
+    const content = contentChild as React.ReactElement;
+
+    // Fix the cloneElement type issue by properly casting and handling ref
+    const clonedTrigger = React.cloneElement(trigger, {
+        ref: (node: HTMLDivElement) => {
+            refs.setReference(node);
+        },
+        ...getReferenceProps(),
+    });
+
+    return (
+        <>
+            {clonedTrigger}
+            {isMounted && (
+                <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
+                    {content}
+                </div>
+            )}
+        </>
+    );
+};
+
+type HoverCardTriggerProps = React.HTMLAttributes<HTMLDivElement>;
+
+const HoverCardTrigger = React.forwardRef<HTMLDivElement, HoverCardTriggerProps>((props, ref) => (
+    <div ref={ref} {...props} className="inline-block cursor-pointer" />
 ));
-HoverCardContent.displayName = HoverCardPrimitive.Content.displayName;
+HoverCardTrigger.displayName = 'HoverCardTrigger';
+
+type HoverCardContentProps = React.HTMLAttributes<HTMLDivElement>;
+
+const HoverCardContent = React.forwardRef<HTMLDivElement, HoverCardContentProps>(
+    ({ className, ...props }, ref) => (
+        <div
+            ref={ref}
+            className={cn(
+                'bg-background text-card-foreground z-50 flex max-w-64 flex-col items-start rounded-md border p-4 shadow-md outline-none',
+                'animate-in fade-in-0 zoom-in-95',
+                className
+            )}
+            {...props}
+        />
+    )
+);
+HoverCardContent.displayName = 'HoverCardContent';
 
 export { HoverCard, HoverCardContent, HoverCardTrigger };

@@ -306,6 +306,219 @@ const throttledThreadItemUpdate = throttle(
     500
 );
 
+// Add this near the top of your file after other imports
+let dbWorker: SharedWorker | null = null;
+
+// Extend Window interface to include notifyTabSync
+declare global {
+    interface Window {
+        notifyTabSync?: (type: string, data: any) => void;
+    }
+}
+
+// Function to initialize the shared worker
+const initializeWorker = () => {
+    if (typeof window === 'undefined') return;
+
+    try {
+        // Create a shared worker
+        dbWorker = new SharedWorker(new URL('./db-sync.worker.ts', import.meta.url), {
+            type: 'module',
+        });
+
+        // Set up message handler
+        dbWorker.port.onmessage = async event => {
+            const message = event.data;
+
+            if (!message || !message.type) return;
+
+            // Handle different message types
+            switch (message.type) {
+                case 'connected':
+                    console.log('Connected to SharedWorker');
+                    break;
+
+                case 'thread-update':
+                    // Refresh threads list
+                    const threads = await db.threads.toArray();
+                    useChatStore.setState({
+                        threads: threads.sort(
+                            (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+                        ),
+                    });
+                    break;
+
+                case 'thread-item-update':
+                    // Refresh thread items if we're on the same thread
+                    const currentThreadId = useChatStore.getState().currentThreadId;
+                    if (message.data?.threadId === currentThreadId) {
+                        await useChatStore.getState().loadThreadItems(message.data.threadId);
+                    }
+                    break;
+
+                case 'thread-delete':
+                    // Handle thread deletion
+                    useChatStore.setState(state => {
+                        const newState = { ...state };
+                        newState.threads = state.threads.filter(
+                            t => t.id !== message.data.threadId
+                        );
+
+                        // Update current thread if the deleted one was active
+                        if (state.currentThreadId === message.data.threadId) {
+                            newState.currentThreadId = newState.threads[0]?.id || null;
+                            newState.currentThread = newState.threads[0] || null;
+                        }
+
+                        return newState;
+                    });
+                    break;
+
+                case 'thread-item-delete':
+                    // Handle thread item deletion
+                    if (message.data?.threadId === useChatStore.getState().currentThreadId) {
+                        useChatStore.setState(state => ({
+                            threadItems: state.threadItems.filter(
+                                item => item.id !== message.data.id
+                            ),
+                        }));
+                    }
+                    break;
+            }
+        };
+
+        // Start the connection
+        dbWorker.port.start();
+
+        // Handle worker errors
+        dbWorker.onerror = err => {
+            console.error('SharedWorker error:', err);
+        };
+    } catch (error) {
+        console.error('Failed to initialize SharedWorker:', error);
+        // Fallback to localStorage method if SharedWorker isn't supported
+        initializeTabSync();
+    }
+};
+
+// Function to initialize tab synchronization using localStorage
+const initializeTabSync = () => {
+    if (typeof window === 'undefined') return;
+
+    const SYNC_EVENT_KEY = 'chat-store-sync-event';
+    const SYNC_DATA_KEY = 'chat-store-sync-data';
+
+    // Listen for storage events from other tabs
+    window.addEventListener('storage', event => {
+        if (event.key !== SYNC_EVENT_KEY) return;
+
+        try {
+            const syncData = JSON.parse(localStorage.getItem(SYNC_DATA_KEY) || '{}');
+
+            if (!syncData || !syncData.type) return;
+
+            switch (syncData.type) {
+                case 'thread-update':
+                    // Refresh threads list
+                    db.threads.toArray().then(threads => {
+                        useChatStore.setState({
+                            threads: threads.sort(
+                                (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+                            ),
+                        });
+                    });
+                    break;
+
+                case 'thread-item-update':
+                    // Refresh thread items if we're on the same thread
+                    const currentThreadId = useChatStore.getState().currentThreadId;
+                    if (syncData.data?.threadId === currentThreadId) {
+                        useChatStore.getState().loadThreadItems(syncData.data.threadId);
+                    }
+                    break;
+
+                case 'thread-delete':
+                    // Handle thread deletion
+                    useChatStore.setState(state => {
+                        const newState = { ...state };
+                        newState.threads = state.threads.filter(
+                            t => t.id !== syncData.data.threadId
+                        );
+
+                        // Update current thread if the deleted one was active
+                        if (state.currentThreadId === syncData.data.threadId) {
+                            newState.currentThreadId = newState.threads[0]?.id || null;
+                            newState.currentThread = newState.threads[0] || null;
+                        }
+
+                        return newState;
+                    });
+                    break;
+
+                case 'thread-item-delete':
+                    // Handle thread item deletion
+                    if (syncData.data?.threadId === useChatStore.getState().currentThreadId) {
+                        useChatStore.setState(state => ({
+                            threadItems: state.threadItems.filter(
+                                item => item.id !== syncData.data.id
+                            ),
+                        }));
+                    }
+                    break;
+            }
+        } catch (error) {
+            console.error('Error processing sync data:', error);
+        }
+    });
+
+    // Function to notify other tabs about a change
+    const notifyOtherTabs = (type: string, data: any) => {
+        try {
+            // Store the sync data
+            localStorage.setItem(
+                SYNC_DATA_KEY,
+                JSON.stringify({
+                    type,
+                    data,
+                    timestamp: Date.now(),
+                })
+            );
+
+            // Trigger the storage event in other tabs
+            localStorage.setItem(SYNC_EVENT_KEY, Date.now().toString());
+        } catch (error) {
+            console.error('Error notifying other tabs:', error);
+        }
+    };
+
+    // Replace the worker notification with localStorage notification
+    window.notifyTabSync = notifyOtherTabs;
+};
+
+// Function to notify the worker about a change
+const notifyWorker = (type: string, data: any) => {
+    if (!dbWorker) {
+        // Use localStorage fallback if worker isn't available
+        if (typeof window !== 'undefined' && window.notifyTabSync) {
+            window.notifyTabSync(type, data);
+        }
+        return;
+    }
+
+    try {
+        dbWorker.port.postMessage({
+            type,
+            data,
+            timestamp: Date.now(),
+        });
+    } catch (error) {
+        console.error('Error notifying worker:', error);
+    }
+};
+
+// Create a debounced version of the notification function
+const debouncedNotify = debounce(notifyWorker, 300);
+
 export const useChatStore = create(
     immer<State & Actions>((set, get) => ({
         model: models[0],
@@ -313,7 +526,7 @@ export const useChatStore = create(
         editor: undefined,
         context: '',
         threads: [],
-        chatMode: ChatMode.Fast,
+        chatMode: ChatMode.GEMINI_2_FLASH,
         threadItems: [],
         useWebSearch: false,
         currentThreadId: null,
@@ -448,6 +661,9 @@ export const useChatStore = create(
                 state.currentThread = newThread;
             });
 
+            // Notify other tabs through the worker
+            debouncedNotify('thread-update', { threadId });
+
             return newThread;
         },
 
@@ -480,6 +696,9 @@ export const useChatStore = create(
 
             try {
                 await db.threads.put(updatedThread);
+
+                // Notify other tabs about the update
+                debouncedNotify('thread-update', { threadId: thread.id });
             } catch (error) {
                 console.error('Failed to update thread in database:', error);
             }
@@ -499,6 +718,12 @@ export const useChatStore = create(
                     } else {
                         state.threadItems.push({ ...threadItem, threadId });
                     }
+                });
+
+                // Notify other tabs
+                debouncedNotify('thread-item-update', {
+                    threadId,
+                    id: threadItem.id,
                 });
             } catch (error) {
                 console.error('Failed to create thread item:', error);
@@ -560,8 +785,12 @@ export const useChatStore = create(
                     // For critical updates or if enough time has passed, queue for immediate update
                     queueThreadItemForUpdate(updatedItem);
 
-                    // If it's a critical update, also update the timestamp to prevent
-                    // multiple rapid critical updates
+                    // Notify other tabs about the update
+                    debouncedNotify('thread-item-update', {
+                        threadId,
+                        id: threadItem.id,
+                    });
+
                     if (isCriticalUpdate) {
                         lastItemUpdateTime[threadItem.id] = now;
                     }
@@ -577,7 +806,7 @@ export const useChatStore = create(
                         id: threadItem.id,
                         threadId,
                         query: threadItem.query || '',
-                        mode: threadItem.mode || ChatMode.Fast,
+                        mode: threadItem.mode || ChatMode.GEMINI_2_FLASH,
                         createdAt: new Date(),
                         updatedAt: new Date(),
                         ...threadItem,
@@ -610,6 +839,9 @@ export const useChatStore = create(
         },
 
         deleteThreadItem: async threadItemId => {
+            const threadId = get().currentThreadId;
+            if (!threadId) return;
+
             await db.threadItems.delete(threadItemId);
             set(state => {
                 state.threadItems = state.threadItems.filter(
@@ -617,21 +849,17 @@ export const useChatStore = create(
                 );
             });
 
-            // Get current thread ID
-            const currentThreadId = get().currentThreadId;
-            if (!currentThreadId) return;
+            // Notify other tabs
+            debouncedNotify('thread-item-delete', { id: threadItemId, threadId });
 
             // Check if there are any thread items left for this thread
-            const remainingItems = await db.threadItems
-                .where('threadId')
-                .equals(currentThreadId)
-                .count();
+            const remainingItems = await db.threadItems.where('threadId').equals(threadId).count();
 
             // If no items remain, delete the thread and redirect
             if (remainingItems === 0) {
-                await db.threads.delete(currentThreadId);
+                await db.threads.delete(threadId);
                 set(state => {
-                    state.threads = state.threads.filter((t: Thread) => t.id !== currentThreadId);
+                    state.threads = state.threads.filter((t: Thread) => t.id !== threadId);
                     state.currentThreadId = state.threads[0]?.id;
                     state.currentThread = state.threads[0] || null;
                 });
@@ -651,6 +879,9 @@ export const useChatStore = create(
                 state.currentThreadId = state.threads[0]?.id;
                 state.currentThread = state.threads[0] || null;
             });
+
+            // Notify other tabs
+            debouncedNotify('thread-delete', { threadId });
         },
 
         getPreviousThreadItems: threadId => {
@@ -700,6 +931,14 @@ if (typeof window !== 'undefined') {
                 useWebSearch,
                 showSuggestions,
             });
+
+            // Initialize the shared worker for tab synchronization
+            if ('SharedWorker' in window) {
+                initializeWorker();
+            } else {
+                // Fallback to localStorage method
+                initializeTabSync();
+            }
         }
     );
 }

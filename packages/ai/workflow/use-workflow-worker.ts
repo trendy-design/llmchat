@@ -1,16 +1,6 @@
+import { ChatMode } from '@repo/shared/config';
 import { CoreAssistantMessage, CoreUserMessage } from 'ai';
 import { useEffect, useRef, useState } from 'react';
-
-export enum CompletionMode {
-    Fast = 'fast',
-    Deep = 'deep',
-    O3_Mini = 'o3-mini',
-    GPT_4o_Mini = 'gpt-4o-mini',
-    GEMINI_2_FLASH = 'gemini-flash-2.0',
-    DEEPSEEK_R1 = 'deepseek-r1',
-    CLAUDE_3_5_SONNET = 'claude-3-5-sonnet',
-    CLAUDE_3_7_SONNET = 'claude-3-7-sonnet',
-}
 
 export type WorkflowConfig = {
     maxIterations?: number;
@@ -120,7 +110,7 @@ export function useWorkflowWorker(onMessage?: (data: any) => void, onAbort?: () 
         apiKeys,
         mcpConfig,
     }: {
-        mode: CompletionMode;
+        mode: ChatMode;
         question: string;
         threadId: string;
         threadItemId: string;

@@ -6,13 +6,15 @@ import {
     cn,
     DropdownMenu,
     DropdownMenuContent,
+    DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuSeparator,
+    DropdownMenuLabel,
     DropdownMenuTrigger,
     Kbd,
 } from '@repo/ui';
 import {
     IconArrowUp,
+    IconAtom,
     IconChevronDown,
     IconPaperclip,
     IconPlayerStopFilled,
@@ -30,6 +32,13 @@ export const chatOptions = [
         value: ChatMode.Deep,
         icon: <DeepResearchIcon />,
         creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Deep],
+    },
+    {
+        label: 'Pro Search',
+        description: 'Pro search with web search',
+        value: ChatMode.Pro,
+        icon: <IconAtom size={20} className="text-muted-foreground" strokeWidth={2} />,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Pro],
     },
 ];
 
@@ -126,8 +135,10 @@ export const WebSearchButton = () => {
     const useWebSearch = useChatStore(state => state.useWebSearch);
     const setUseWebSearch = useChatStore(state => state.setUseWebSearch);
     const chatMode = useChatStore(state => state.chatMode);
+    const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
 
-    if (chatMode === ChatMode.Deep) return null;
+    if (chatMode === ChatMode.Deep || chatMode === ChatMode.Pro || hasApiKeyForChatMode(chatMode))
+        return null;
 
     return (
         <Button
@@ -180,53 +191,58 @@ export const ChatModeOptions = ({
 
     return (
         <DropdownMenuContent align="start" side="bottom" className="w-[320px]">
-            {chatOptions.map(option => (
-                <DropdownMenuItem
-                    key={option.label}
-                    onSelect={() => {
-                        setChatMode(option.value);
-                    }}
-                    className="h-auto"
-                >
-                    <div className="flex w-full flex-row items-start gap-1.5 px-1.5 py-1.5">
-                        <div className="flex flex-col gap-0 pt-1">{option.icon}</div>
+            <DropdownMenuGroup>
+                <DropdownMenuLabel>Advanced Mode</DropdownMenuLabel>
+                {chatOptions.map(option => (
+                    <DropdownMenuItem
+                        key={option.label}
+                        onSelect={() => {
+                            setChatMode(option.value);
+                        }}
+                        className="h-auto"
+                    >
+                        <div className="flex w-full flex-row items-start gap-1.5 px-1.5 py-1.5">
+                            <div className="flex flex-col gap-0 pt-1">{option.icon}</div>
 
-                        <div className="flex flex-col gap-0">
-                            {<p className="m-0 text-sm font-medium">{option.label}</p>}
-                            {option.description && (
-                                <p className="text-muted-foreground text-xs font-light">
-                                    {option.description}
-                                </p>
+                            <div className="flex flex-col gap-0">
+                                {<p className="m-0 text-sm font-medium">{option.label}</p>}
+                                {option.description && (
+                                    <p className="text-muted-foreground text-xs font-light">
+                                        {option.description}
+                                    </p>
+                                )}
+                            </div>
+                            <div className="flex-1" />
+
+                            <CreditIcon credits={option.creditCost ?? 0} variant="muted" />
+                        </div>
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuGroup>
+            <DropdownMenuGroup>
+                <DropdownMenuLabel>Models</DropdownMenuLabel>
+                {modelOptions.map(option => (
+                    <DropdownMenuItem
+                        key={option.label}
+                        onSelect={() => {
+                            setChatMode(option.value);
+                        }}
+                        className="h-auto"
+                    >
+                        <div className="flex w-full flex-row items-center gap-2.5 px-1.5 py-1.5">
+                            <div className="flex flex-col gap-0">
+                                {<p className="text-sm font-medium">{option.label}</p>}
+                            </div>
+                            <div className="flex-1" />
+                            {hasApiKeyForChatMode(option.value) ? (
+                                <BYOKIcon />
+                            ) : (
+                                <CreditIcon credits={option.creditCost ?? 0} variant="muted" />
                             )}
                         </div>
-                        <div className="flex-1" />
-
-                        <CreditIcon credits={option.creditCost ?? 0} variant="muted" />
-                    </div>
-                </DropdownMenuItem>
-            ))}
-            <DropdownMenuSeparator />
-            {modelOptions.map(option => (
-                <DropdownMenuItem
-                    key={option.label}
-                    onSelect={() => {
-                        setChatMode(option.value);
-                    }}
-                    className="h-auto"
-                >
-                    <div className="flex w-full flex-row items-center gap-2.5 px-1.5 py-1.5">
-                        <div className="flex flex-col gap-0">
-                            {<p className="text-sm font-medium">{option.label}</p>}
-                        </div>
-                        <div className="flex-1" />
-                        {hasApiKeyForChatMode(option.value) ? (
-                            <BYOKIcon />
-                        ) : (
-                            <CreditIcon credits={option.creditCost ?? 0} variant="muted" />
-                        )}
-                    </div>
-                </DropdownMenuItem>
-            ))}
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuGroup>
         </DropdownMenuContent>
     );
 };

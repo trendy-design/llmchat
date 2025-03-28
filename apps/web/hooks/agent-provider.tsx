@@ -92,6 +92,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             updateThreadItem(body.threadId as string, {
                 id: body.threadItemId as string,
                 status: 'ABORTED',
+                final: true,
             });
         });
 

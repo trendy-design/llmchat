@@ -68,6 +68,7 @@ ctx.addEventListener('message', async (event: MessageEvent) => {
                 messages,
                 config,
                 mcpConfig,
+                onFinish: (data: any) => {},
             });
 
             // Forward workflow events to the main thread

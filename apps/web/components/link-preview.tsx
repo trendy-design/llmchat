@@ -21,13 +21,9 @@ export const LinkPreviewPopover = memo(({ url, children }: LinkPreviewType) => {
 
     return (
         <HoverCard openDelay={200} closeDelay={100}>
-            <HoverCardTrigger asChild className="cursor-pointer">
-                {children}
-            </HoverCardTrigger>
+            <HoverCardTrigger className="cursor-pointer">{children}</HoverCardTrigger>
             <HoverCardContent
                 className="bg-background prose-none isolate z-[100] w-[400px] cursor-pointer rounded-xl p-0 shadow-2xl hover:border-yellow-700/50"
-                side="top"
-                align="start"
                 onClick={e => {
                     e.stopPropagation();
                     e.preventDefault();
