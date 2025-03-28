@@ -261,7 +261,7 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
                 ...prev.goals,
                 0: {
                     ...prev.goals?.[0],
-                    status: 'COMPLETED',
+                    status: 'PENDING',
                 } as any,
             },
             steps: {
@@ -298,6 +298,13 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
 
         events?.update('flow', prev => ({
             ...prev,
+            goals: {
+                ...prev.goals,
+                0: {
+                    ...prev.goals?.[0],
+                    status: 'COMPLETED',
+                } as any,
+            },
             steps: {
                 ...prev.steps,
                 1: {
