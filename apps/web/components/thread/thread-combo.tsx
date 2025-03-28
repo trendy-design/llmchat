@@ -31,7 +31,7 @@ export function Thread() {
             <div className="flex min-w-full flex-col gap-8 py-4">
                 {memoizedPreviousThreadItems}
                 {currentThreadItem && (
-                    <div key={currentThreadItem.id} className="min-h-[80dvh]">
+                    <div key={currentThreadItem.id} className="min-h-[calc(100dvh-14rem)]">
                         <ThreadItem
                             key={currentThreadItem.id}
                             threadItem={currentThreadItem}

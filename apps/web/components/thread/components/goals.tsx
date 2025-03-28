@@ -61,7 +61,7 @@ const ReasoningStep = memo(({ step }: ReasoningStepProps) => (
             <div className="border-border min-h-full w-[1px] flex-1 border-l border-dashed" />
         </div>
         <div className="flex w-full flex-1 flex-col overflow-hidden pb-4 pr-2">
-            <p className="text-xs">{step}</p>
+            <p className="text-sm">{step}</p>
         </div>
     </div>
 ));

@@ -155,7 +155,7 @@ export const CommandSearch = () => {
             <div className="w-full px-3">
                 <div className="border-border/50 h-[1px] w-full border-b" />
             </div>
-            <CommandList className="max-h-[50dvh] overflow-y-auto p-0.5 pt-1.5">
+            <CommandList className="max-h-[470px] overflow-y-auto p-0.5 pt-1.5">
                 <CommandEmpty>No results found.</CommandEmpty>
                 <CommandGroup>
                     {actions.map(action => (

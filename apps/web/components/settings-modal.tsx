@@ -1,6 +1,6 @@
 'use client';
 import { DialogFooter } from '@repo/ui';
-import { IconBoltFilled, IconTrash } from '@tabler/icons-react';
+import { IconBoltFilled, IconKey, IconTrash } from '@tabler/icons-react';
 
 import { useMcpToolsStore } from '@/libs/store/mcp-tools.store';
 import { Button } from '@repo/ui/src/components/button';
@@ -22,46 +22,48 @@ export const SettingsModal = () => {
 
     const settingMenu = [
         {
+            icon: <IconBoltFilled size={14} strokeWidth={2} className="text-muted-foreground" />,
             title: 'Usage',
             key: SETTING_TABS.CREDITS,
             component: <CreditsSettings />,
         },
         {
+            icon: <IconKey size={14} strokeWidth={2} className="text-muted-foreground" />,
             title: 'API Keys',
             key: SETTING_TABS.API_KEYS,
             component: <ApiKeySettings />,
         },
-        {
-            title: 'MCP Tools',
-            key: SETTING_TABS.MCP_TOOLS,
-            component: <MCPSettings />,
-        },
+        // {
+        //     title: 'MCP Tools',
+        //     key: SETTING_TABS.MCP_TOOLS,
+        //     component: <MCPSettings />,
+        // },
     ];
 
     return (
         <Dialog open={isSettingOpen} onOpenChange={() => setIsSettingOpen(false)}>
             <DialogContent
                 ariaTitle="Settings"
-                className="h-full max-h-[60dvh] !max-w-[700px] overflow-x-hidden rounded-xl p-0"
+                className="h-full max-h-[600px] !max-w-[700px] overflow-x-hidden rounded-xl p-0"
             >
                 <div className="no-scrollbar relative max-w-full overflow-y-auto overflow-x-hidden">
-                    <h3 className="border-border mx-4 border-b py-4 text-lg font-bold">Settings</h3>
+                    <h3 className="border-border mx-5 border-b py-4 text-lg font-bold">Settings</h3>
                     <div className="flex flex-row gap-6 p-4">
                         <div className="flex w-[160px] shrink-0 flex-col gap-1">
                             {settingMenu.map(setting => (
                                 <Button
-                                    size="sm"
                                     key={setting.key}
-                                    rounded="lg"
+                                    rounded="full"
                                     className="justify-start"
                                     variant={settingTab === setting.key ? 'secondary' : 'ghost'}
                                     onClick={() => setSettingTab(setting.key)}
                                 >
+                                    {setting.icon}
                                     {setting.title}
                                 </Button>
                             ))}
                         </div>
-                        <div className="flex flex-1 flex-col overflow-hidden">
+                        <div className="flex flex-1 flex-col overflow-hidden px-4">
                             {settingMenu.find(setting => setting.key === settingTab)?.component}
                         </div>
                     </div>
