@@ -6,9 +6,16 @@ import {
     ToolResult,
 } from '@/libs/store/chat.store';
 import { ChatMode } from '@repo/shared/config';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@repo/ui';
-import { IconChecklist, IconLoader2 } from '@tabler/icons-react';
-import { Fragment, memo, useEffect, useMemo, useState } from 'react';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+    Alert,
+    AlertDescription,
+} from '@repo/ui';
+import { IconChecklist, IconInfoCircle, IconLoader2 } from '@tabler/icons-react';
+import { memo, useEffect, useMemo, useState } from 'react';
 import { StepRenderer } from '../step-renderer';
 import { StepStatus } from '../step-status';
 import { ToolCallStep } from './tool-call';
@@ -25,8 +32,20 @@ const getTitle = (threadItem: ThreadItem) => {
     if ([ChatMode.DEEPSEEK_R1].includes(threadItem.mode)) {
         return 'Thinking';
     }
-
+    if (threadItem.mode === ChatMode.Pro) {
+        return 'Pro Search';
+    }
     return 'Steps';
+};
+
+const getNote = (threadItem: ThreadItem) => {
+    if (threadItem.mode === ChatMode.Deep) {
+        return "This may take some time around 15 minutes. Don't refresh the page. or Close the tab.";
+    }
+    if (threadItem.mode === ChatMode.Pro) {
+        return "This may take some time around 5 minutes. Don't refresh the page. or Close the tab.";
+    }
+    return '';
 };
 
 const GoalStep = memo(({ goal }: GoalStepProps) => (
@@ -38,11 +57,9 @@ const GoalStep = memo(({ goal }: GoalStepProps) => (
             </div>
             <div className="border-border min-h-full w-[1px] flex-1 border-l border-dashed" />
         </div>
-        <div className="flex w-full flex-1 flex-col overflow-hidden pb-2 pr-2">
-            <Fragment>
-                {!!goal.text && <p>{goal.text}</p>}
-                {goal.steps?.map((step, index) => <StepRenderer key={index} step={step} />)}
-            </Fragment>
+        <div className="flex w-full flex-1 flex-col gap-2 overflow-hidden pb-2 pr-2">
+            {!!goal.text && <p>{goal.text}</p>}
+            {goal.steps?.map((step, index) => <StepRenderer key={index} step={step} />)}
         </div>
     </div>
 ));
@@ -177,6 +194,18 @@ export const GoalsRenderer = ({
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="bg-background p-0">
+                        {getNote(threadItem) && (
+                            <Alert variant="default" className="rounded-none">
+                                <AlertDescription className="text-muted-foreground/70 font-normal">
+                                    <IconInfoCircle
+                                        size={16}
+                                        strokeWidth={2}
+                                        className="text-muted-foreground/70 font-normal"
+                                    />
+                                    {getNote(threadItem)}
+                                </AlertDescription>
+                            </Alert>
+                        )}
                         <div className="flex w-full flex-col overflow-hidden px-4 py-4">
                             {goals.map((goal, index) => (
                                 <GoalStep key={index} goal={goal} />

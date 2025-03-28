@@ -9,7 +9,7 @@ export type StepRendererType = {
 export const StepRenderer = ({ step }: StepRendererType) => {
     if (step.type === 'search') {
         return (
-            <div className="my-2 flex flex-col gap-1">
+            <div className="flex flex-col gap-1">
                 <div className="flex flex-col gap-2">
                     <div className="w-[100px]">
                         <TextShimmer duration={0.7} spread={step.final ? 0 : 2} className="text-xs">
@@ -32,7 +32,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
 
     if (step.type === 'read') {
         return (
-            <div className="my-2 flex flex-col gap-2">
+            <div className="flex flex-col gap-2">
                 <div className="w-[100px]">
                     <TextShimmer duration={0.7} spread={step.final ? 0 : 2} className="text-xs">
                         Reading
