@@ -1,6 +1,6 @@
+import { createTask } from '@repo/orchestrator';
 import { ModelEnum } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
-import { createTask } from '../task';
+import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
 import { executeWebSearch, generateText, getHumanizedDate, processWebPages } from '../utils';
 
 export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({

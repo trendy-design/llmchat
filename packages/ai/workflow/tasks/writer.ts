@@ -1,7 +1,7 @@
+import { createTask } from '@repo/orchestrator';
 import { format } from 'date-fns';
 import { ModelEnum } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
-import { createTask } from '../task';
+import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
 import { generateText } from '../utils';
 
 export const writerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({

@@ -1,2 +1,1 @@
-export * from './workflow/index';
-
+export * from './workflow/flow';

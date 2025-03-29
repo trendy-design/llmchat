@@ -1,8 +1,7 @@
-import { RootLayout } from '@/components/layout';
-import { ReactQueryProvider } from '@/libs/context';
-import { AuthProvider } from '@/libs/context/auth';
-import { RootProvider } from '@/libs/context/root';
 import { ClerkProvider } from '@clerk/nextjs';
+import { RootLayout } from '@repo/common/components/layout';
+import { ReactQueryProvider } from '@repo/common/context';
+import { RootProvider } from '@repo/common/context/root';
 import { TooltipProvider, cn } from '@repo/ui';
 import { GeistMono } from 'geist/font/mono';
 import type { Viewport } from 'next';
@@ -104,9 +103,7 @@ export default function ParentLayout({
           > */}
                         <TooltipProvider>
                             <ReactQueryProvider>
-                                <AuthProvider>
-                                    <RootLayout>{children}</RootLayout>
-                                </AuthProvider>
+                                <RootLayout>{children}</RootLayout>
                             </ReactQueryProvider>
                         </TooltipProvider>
                         {/* </ThemeProvider> */}

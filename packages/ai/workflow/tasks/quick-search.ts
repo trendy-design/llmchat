@@ -1,8 +1,8 @@
+import { createTask } from '@repo/orchestrator';
 import { ChatMode } from '@repo/shared/config';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
-import { createTask } from '../task';
+import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
 import { generateObject, generateText, getHumanizedDate, getSERPResults } from '../utils';
 
 const getModelFromChatMode = (mode?: string): ModelEnum => {

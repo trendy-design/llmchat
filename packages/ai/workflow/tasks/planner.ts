@@ -1,7 +1,7 @@
+import { createTask } from '@repo/orchestrator';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
-import { createTask } from '../task';
+import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
 import { generateObject, getHumanizedDate } from '../utils';
 
 export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({

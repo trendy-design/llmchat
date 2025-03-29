@@ -1,7 +1,7 @@
+import { createTask } from '@repo/orchestrator';
 import { getModelFromChatMode } from '../../models';
 import { buildAllTools } from '../../tools/mcp';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
-import { createTask } from '../task';
+import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
 import { generateText, getHumanizedDate } from '../utils';
 import { generateErrorMessage } from './utils';
 

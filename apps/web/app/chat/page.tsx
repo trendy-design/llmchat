@@ -1,7 +1,7 @@
 'use client';
-import { ChatInput } from '@/components/chat-input';
-import { RecentThreads } from '@/components/recent-threads';
-import { useChatStore } from '@/libs/store/chat.store';
+import { ChatInput } from '@repo/common/components/chat-input';
+import { RecentThreads } from '@repo/common/components/recent-threads';
+import { useChatStore } from '@repo/common/store/chat.store';
 import { Flex } from '@repo/ui';
 import Link from 'next/link';
 

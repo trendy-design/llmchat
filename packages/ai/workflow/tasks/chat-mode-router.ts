@@ -1,6 +1,6 @@
+import { createTask } from '@repo/orchestrator';
 import { ChatMode } from '@repo/shared/config';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../deep';
-import { createTask } from '../task';
+import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
 
 export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'router',

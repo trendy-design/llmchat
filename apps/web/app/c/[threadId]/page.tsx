@@ -1,7 +1,7 @@
 'use client';
-import { ChatInput } from '@/components/chat-input';
-import { Thread } from '@/components/thread/thread-combo';
-import { useChatStore } from '@/libs/store/chat.store';
+import { ChatInput } from '@repo/common/components/chat-input';
+import { Thread } from '@repo/common/components/thread/thread-combo';
+import { useChatStore } from '@repo/common/store/chat.store';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useStickToBottom } from 'use-stick-to-bottom';
