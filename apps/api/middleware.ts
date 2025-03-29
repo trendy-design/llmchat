@@ -17,6 +17,8 @@ export default clerkMiddleware(async (auth, req) => {
     const origin = req.headers.get('origin') ?? '';
     const isAllowedOrigin = allowedOrigins.includes(origin);
 
+    console.log('origin', origin);
+    console.log('allowedOrigins', allowedOrigins);
     console.log('isAllowedOrigin', isAllowedOrigin);
 
     if (!isAllowedOrigin) {
