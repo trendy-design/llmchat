@@ -52,7 +52,7 @@ export const LinkPreview = memo(({ url }: { url: string }) => {
             }
 
             setIsLoading(true);
-            const res = await fetch(`/og?url=${url}`, {
+            const res = await fetch(`/api/og?url=${url}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

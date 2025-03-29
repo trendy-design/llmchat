@@ -3,7 +3,7 @@ import { useAppStore } from '#store/app.store';
 import { Goal, Step, ThreadItem, useChatStore } from '#store/chat.store';
 import { useMcpToolsStore } from '#store/mcp-tools.store';
 import { useAuth } from '@clerk/nextjs';
-import { useWorkflowWorker } from '@repo/ai/worker';
+import { useWorkflowWorker } from '@repo/ai/workflow/worker';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
 import { createContext, ReactNode, useContext } from 'react';
@@ -95,7 +95,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             });
         });
 
-        const response = await fetch(`/completion`, {
+        const response = await fetch(`/api/completion`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

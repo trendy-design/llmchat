@@ -1,7 +1,6 @@
 import { ClerkProvider } from '@clerk/nextjs';
-import { RootLayout } from '@repo/common/components/layout';
-import { ReactQueryProvider } from '@repo/common/context';
-import { RootProvider } from '@repo/common/context/root';
+import { RootLayout } from '@repo/common/components';
+import { ReactQueryProvider, RootProvider } from '@repo/common/context';
 import { TooltipProvider, cn } from '@repo/ui';
 import { GeistMono } from 'geist/font/mono';
 import type { Viewport } from 'next';

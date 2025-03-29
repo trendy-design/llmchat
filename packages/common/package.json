@@ -8,12 +8,12 @@
         "#store/*": "./store/*",
         "#components/*": "./components/*"
     },
-    "files": [
-        "hooks",
-        "context",
-        "store",
-        "components"
-    ],
+    "exports": {
+        "./hooks": "./hooks/index.ts",
+        "./context": "./context/index.ts",
+        "./store": "./store/index.ts",
+        "./components": "./components/index.ts"
+    },
     "scripts": {
         "lint": "eslint . --max-warnings 0",
         "type-check": "tsc --noEmit"
