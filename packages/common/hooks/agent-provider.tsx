@@ -2,9 +2,10 @@ import { useAuth } from '@clerk/nextjs';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
-import { createContext, ReactNode, useContext } from 'react';
-import { useApiKeysStore, useAppStore, useChatStore, useMcpToolsStore } from '../store';
+import { createContext, ReactNode, useContext, useEffect } from 'react';
+import { useApiKeysStore, useChatStore, useMcpToolsStore } from '../store';
 import { Goal, Step, ThreadItem } from '../store/chat.store';
+import { useCredits } from './use-credits';
 
 type AgentContextType = {
     runAgent: (body: any) => Promise<void>;
@@ -32,7 +33,8 @@ const AgentContext = createContext<AgentContextType | undefined>(undefined);
 
 export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const { threadId: currentThreadId } = useParams();
-    const { isSignedIn } = useAuth();
+    const { isSignedIn, getToken } = useAuth();
+
     const updateThreadItem = useChatStore(state => state.updateThreadItem);
     const setIsGenerating = useChatStore(state => state.setIsGenerating);
     const setAbortController = useChatStore(state => state.setAbortController);
@@ -44,8 +46,11 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const getSelectedMCP = useMcpToolsStore(state => state.getSelectedMCP);
     const apiKeys = useApiKeysStore(state => state.getAllKeys);
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
-    const fetchRemainingCredits = useChatStore(state => state.fetchRemainingCredits);
-    const setShowSignInModal = useAppStore(state => state.setShowSignInModal);
+    const { fetchCredits } = useCredits();
+
+    useEffect(() => {
+        fetchCredits();
+    }, []);
 
     const router = useRouter();
     const { startWorkflow, abortWorkflow } = useWorkflowWorker(data => {
@@ -93,10 +98,14 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             });
         });
 
-        const response = await fetch(`/api/completion`, {
+        console.log('running agent', `${process.env.NEXT_PUBLIC_API_URL}/api/completion`);
+
+        const token = await getToken();
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/completion`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(body),
             credentials: 'include',
@@ -186,7 +195,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                 } else if (currentEvent === 'done' && data.type === 'done') {
                                     setIsGenerating(false);
                                     setTimeout(() => {
-                                        fetchRemainingCredits();
+                                        fetchCredits();
                                     }, 1000);
 
                                     if (data.status === 'error') {

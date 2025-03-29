@@ -14,6 +14,8 @@ export async function POST(request: NextRequest) {
         const session = await auth();
         const userId = session.userId;
 
+        console.log('userId', userId);
+
         if (!userId) {
             return new Response(JSON.stringify({ error: 'Authentication required' }), {
                 status: 401,
@@ -38,6 +40,9 @@ export async function POST(request: NextRequest) {
         const creditCost = CHAT_MODE_CREDIT_COSTS[data.mode];
         const remainingCredits = await getRemainingCredits(userId);
 
+        console.log('remainingCredits', remainingCredits);
+        console.log('creditCost', creditCost);
+
         if (remainingCredits < creditCost) {
             return new Response(
                 'You have reached the daily limit of requests. Please try again tomorrow or Use your own API key.',
@@ -47,6 +52,9 @@ export async function POST(request: NextRequest) {
 
         const enhancedHeaders = {
             ...SSE_HEADERS,
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
             'X-Credits-Available': remainingCredits.toString(),
             'X-Credits-Cost': creditCost.toString(),
             'X-Credits-Daily-Allowance': DAILY_CREDITS.toString(),

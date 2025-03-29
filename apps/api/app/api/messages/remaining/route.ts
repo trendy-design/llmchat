@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
     const userId = session?.userId;
 
     try {
+        console.log('userId', userId);
         // Get remaining credits for the user
         const remainingCredits = userId ? await getRemainingCredits(userId) : 0;
 
@@ -37,6 +38,9 @@ export async function GET(request: NextRequest) {
         const now = new Date();
         const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
         const resetTime = tomorrow.getTime();
+
+        console.log('remainingCredits', remainingCredits, userId);
+        console.log('resetTime', resetTime);
 
         return NextResponse.json(
             {

@@ -56,7 +56,7 @@ export const WebsitePreview = memo(({ url }: { url: string }) => {
             }
 
             setIsLoading(true);
-            const res = await fetch(`/api/og?url=${url}`, {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/og?url=${url}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

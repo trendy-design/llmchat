@@ -6,7 +6,6 @@ import Dexie, { Table } from 'dexie';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-
 export type Thread = {
     id: string;
     title: string;
@@ -178,7 +177,7 @@ type Actions = {
     setModel: (model: Model) => void;
     setEditor: (editor: any) => void;
     setContext: (context: string) => void;
-    fetchRemainingCredits: () => Promise<void>;
+    fetchRemainingCredits: (authToken: string) => Promise<void>;
     setIsGenerating: (isGenerating: boolean) => void;
     stopGeneration: () => void;
     setAbortController: (abortController: AbortController) => void;
@@ -567,9 +566,18 @@ export const useChatStore = create(
                 state.chatMode = chatMode;
             });
         },
-        fetchRemainingCredits: async () => {
+        fetchRemainingCredits: async (token: string) => {
             try {
-                const response = await fetch('/api/messages/remaining');
+                if (!token) return;
+                const response = await fetch(
+                    `${process.env.NEXT_PUBLIC_API_URL}/api/messages/remaining`,
+                    {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
                 if (!response.ok) throw new Error('Failed to fetch credit info');
 
                 const data = await response.json();
@@ -922,7 +930,6 @@ if (typeof window !== 'undefined') {
     // Initialize store with data from IndexedDB
     loadInitialData().then(
         ({ threads, currentThreadId, chatMode, useWebSearch, showSuggestions }) => {
-            useChatStore.getState().fetchRemainingCredits();
             useChatStore.setState({
                 threads,
                 currentThreadId,
