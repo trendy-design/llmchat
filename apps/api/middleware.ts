@@ -21,10 +21,6 @@ export default clerkMiddleware(async (auth, req) => {
     console.log('allowedOrigins', allowedOrigins);
     console.log('isAllowedOrigin', isAllowedOrigin);
 
-    if (!isAllowedOrigin) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     // Handle preflighted requests
     const isPreflight = req.method === 'OPTIONS';
 
@@ -37,6 +33,10 @@ export default clerkMiddleware(async (auth, req) => {
     }
 
     console.log('isProtectedRoute', isProtectedRoute(req));
+
+    if (!isAllowedOrigin) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     if (!isProtectedRoute(req)) return;
 
