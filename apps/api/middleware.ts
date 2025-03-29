@@ -9,77 +9,84 @@ const isProtectedRoute = createRouteMatcher([
 
 const allowedOrigins = [process.env.NEXT_PUBLIC_APP_URL];
 
-const corsOptions = {
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-};
 export default clerkMiddleware(async (auth, req) => {
     const origin = req.headers.get('origin') ?? '';
     const isAllowedOrigin = allowedOrigins.includes(origin);
-
-    console.log('origin', origin);
-    console.log('allowedOrigins', allowedOrigins);
-    console.log('isAllowedOrigin', isAllowedOrigin);
 
     // Handle preflighted requests
     const isPreflight = req.method === 'OPTIONS';
 
     if (isPreflight) {
-        const preflightHeaders = {
-            // Allow any origin that sent the preflight request
-            'Access-Control-Allow-Origin': origin || '*',
-            ...corsOptions,
-        };
-        return NextResponse.json({}, { headers: preflightHeaders });
+        const response = new NextResponse(null, { status: 204 });
+
+        // Set CORS headers for preflight
+        response.headers.set(
+            'Access-Control-Allow-Origin',
+            origin || process.env.NEXT_PUBLIC_APP_URL || '*'
+        );
+        response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+        response.headers.set(
+            'Access-Control-Allow-Headers',
+            'Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Date, X-Api-Version'
+        );
+        response.headers.set('Access-Control-Allow-Credentials', 'true');
+        response.headers.set('Access-Control-Max-Age', '86400');
+
+        return response;
     }
 
-    console.log('isProtectedRoute', isProtectedRoute(req));
+    // Create the response object that will be modified
+    const response = NextResponse.next();
 
+    // Add CORS headers to all responses
+    response.headers.set(
+        'Access-Control-Allow-Origin',
+        origin || process.env.NEXT_PUBLIC_APP_URL || '*'
+    );
+    response.headers.set('Access-Control-Allow-Credentials', 'true');
+
+    // For non-protected routes, just return with CORS headers
+    if (!isProtectedRoute(req)) {
+        return response;
+    }
+
+    // Check if the request is from an allowed origin
     if (!isAllowedOrigin) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        const errorResponse = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        errorResponse.headers.set(
+            'Access-Control-Allow-Origin',
+            origin || process.env.NEXT_PUBLIC_APP_URL || '*'
+        );
+        errorResponse.headers.set('Access-Control-Allow-Credentials', 'true');
+        return errorResponse;
     }
 
-    if (!isProtectedRoute(req)) return;
-
-    console.log('req.nextUrl.pathname', req.nextUrl.pathname);
-
+    // Handle protected routes
     if (req.nextUrl.pathname.startsWith('/api/completion')) {
-        console.log('req.nextUrl.pathname', req.nextUrl.pathname);
         const currentUser = await auth();
         const userId = currentUser?.userId;
 
         // Guest users can't use the API
         if (!userId) {
-            return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+            const errorResponse = NextResponse.json(
+                { error: 'Authentication required' },
+                { status: 401 }
+            );
+            errorResponse.headers.set(
+                'Access-Control-Allow-Origin',
+                origin || process.env.NEXT_PUBLIC_APP_URL || '*'
+            );
+            errorResponse.headers.set('Access-Control-Allow-Credentials', 'true');
+            return errorResponse;
         }
-
-        NextResponse.json({
-            headers: {
-                'Access-Control-Allow-Origin': origin,
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            },
-        });
-
-        // Let the route handler handle the credit check and deduction
-        return NextResponse.next();
     }
 
     if (req.nextUrl.pathname.startsWith('/api/messages/remaining')) {
-        console.log('req.nextUrl.pathname', req.nextUrl.pathname);
         const currentUser = await auth();
-        const userId = currentUser?.userId;
-
-        NextResponse.json({
-            headers: {
-                'Access-Control-Allow-Origin': origin,
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-            },
-        });
-
-        return NextResponse.next();
+        // Any additional logic needed for the messages remaining endpoint
     }
+
+    return response;
 });
 
 export const config = {
