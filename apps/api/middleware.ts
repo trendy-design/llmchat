@@ -26,7 +26,8 @@ export default clerkMiddleware(async (auth, req) => {
 
     if (isPreflight) {
         const preflightHeaders = {
-            ...(isAllowedOrigin && { 'Access-Control-Allow-Origin': origin }),
+            // Allow any origin that sent the preflight request
+            'Access-Control-Allow-Origin': origin || '*',
             ...corsOptions,
         };
         return NextResponse.json({}, { headers: preflightHeaders });
