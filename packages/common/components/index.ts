@@ -1,3 +1,4 @@
+'use client';
 export * from './chat-input';
 export * from './code-block/code-block';
 export * from './command-search';

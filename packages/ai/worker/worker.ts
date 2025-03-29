@@ -1,5 +1,5 @@
 import { ChatMode } from '@repo/shared/config';
-import { runWorkflow } from '../flow';
+import { runWorkflow } from '../workflow/flow';
 // Create context for the worker
 const ctx: Worker = self as any;
 

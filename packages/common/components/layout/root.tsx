@@ -1,13 +1,13 @@
 'use client';
-import { useRootContext } from '#context/root';
-import { AgentProvider } from '#hooks/agent-provider';
-import { useAppStore } from '#store/app.store';
 import { SignIn, SignInButton, useAuth, UserButton } from '@clerk/nextjs';
 import { Button, Flex, Toaster } from '@repo/ui';
 import { IconMoodSadDizzy, IconSettings2 } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FC } from 'react';
 import { Drawer } from 'vaul';
+import { useRootContext } from '../../context/root';
+import { AgentProvider } from '../../hooks/agent-provider';
+import { useAppStore } from '../../store/app.store';
 import { CommandSearch } from '../command-search';
 import { SettingsModal } from '../settings-modal';
 import { Sidebar } from './side-bar';

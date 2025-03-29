@@ -1,11 +1,11 @@
-import { mdxComponents } from '#components/mdx/mdx-components';
-import { useMdxChunker } from '#components/mdx/use-mdx-chunks';
 import { cn } from '@repo/ui';
 import { MDXRemote } from 'next-mdx-remote';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote/rsc';
 import { serialize } from 'next-mdx-remote/serialize';
 import { memo, useEffect, useState } from 'react';
 import remarkGfm from 'remark-gfm';
+import { mdxComponents } from '../../mdx/mdx-components';
+import { useMdxChunker } from '../../mdx/use-mdx-chunks';
 
 type MarkdownContentProps = {
     content: string;

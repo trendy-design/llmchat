@@ -6,12 +6,12 @@
         "lint": "eslint . --max-warnings 0",
         "type-check": "tsc --noEmit"
     },
-    "main": "./main.ts",
     "exports": {
-        ".": "./main.ts",
+        "./main": "./main.ts",
         "./models": "./models.ts",
         "./tools": "./tools/index.ts",
-        "./worker": "./workflow/worker/index.ts"
+        "./workflow": "./workflow/flow.ts",
+        "./worker": "./worker/index.ts"
     },
     "dependencies": {
         "@repo/orchestrator": "*",

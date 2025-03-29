@@ -15,6 +15,7 @@
     "globals": "^16.0.0",
     "prettier": "^3.2.5",
     "prettier-plugin-tailwindcss": "^0.5.12",
+    "tsconfig-paths-webpack-plugin": "^4.2.0",
     "turbo": "latest"
   },
   "packageManager": "bun@1.1.19",

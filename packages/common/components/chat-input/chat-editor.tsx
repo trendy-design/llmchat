@@ -1,4 +1,4 @@
-import { useChatStore } from '#store/chat.store';
+import { useChatStore } from '../../store';
 import { Flex } from '@repo/ui';
 import { Editor, EditorContent } from '@tiptap/react';
 import { FC } from 'react';

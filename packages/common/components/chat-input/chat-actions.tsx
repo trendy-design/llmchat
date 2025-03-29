@@ -1,5 +1,5 @@
-import { useApiKeysStore } from '#store/api-keys.store';
-import { useChatStore } from '#store/chat.store';
+'use client';
+import { useApiKeysStore, useChatStore } from '../../store';
 import { CHAT_MODE_CREDIT_COSTS, ChatMode } from '@repo/shared/config';
 import {
     Button,

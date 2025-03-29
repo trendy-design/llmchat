@@ -1,4 +1,3 @@
-import { useChatStore } from '#store/chat.store';
 import { Button } from '@repo/ui';
 import { IconHelpHexagon } from '@tabler/icons-react';
 import { Editor } from '@tiptap/react';
@@ -6,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useParams } from 'next/navigation';
 import { useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
+import { useChatStore } from '../../store';
 import { ThreadItem } from './thread-item';
 
 export function Thread() {

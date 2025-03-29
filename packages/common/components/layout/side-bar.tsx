@@ -1,6 +1,5 @@
-import { useRootContext } from '#context/root';
-import { useAppStore } from '#store/app.store';
-import { Thread, useChatStore } from '#store/chat.store';
+import { useRootContext } from '../../context';
+import { Thread, useAppStore, useChatStore } from '../../store';
 import { Button, cn, Flex } from '@repo/ui';
 import { IconArrowBarLeft, IconArrowBarRight, IconPlus, IconSearch } from '@tabler/icons-react';
 import moment from 'moment';

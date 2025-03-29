@@ -1,10 +1,11 @@
-import { useRootContext } from '#context/root';
-import { useAppStore } from '#store/app.store';
-import { Thread, useChatStore } from '#store/chat.store';
+'use client';
 import { Button, cn, Flex } from '@repo/ui';
 import { IconArrowBarLeft, IconArrowBarRight, IconPlus, IconSearch } from '@tabler/icons-react';
 import moment from 'moment';
 import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useRootContext } from '../context/root';
+import { useAppStore } from '../store/app.store';
+import { Thread, useChatStore } from '../store/chat.store';
 import { FullPageLoader } from './full-page-loader';
 import { HistoryItem } from './history/history-item';
 

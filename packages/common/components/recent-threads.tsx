@@ -1,10 +1,10 @@
-import { useRootContext } from '#context/root';
-import { useChatStore } from '#store/chat.store';
 import { Button } from '@repo/ui';
 import { IconArrowRight, IconMessageCircleFilled } from '@tabler/icons-react';
 import moment from 'moment';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useRootContext } from '../context/root';
+import { useChatStore } from '../store';
 
 export const RecentThreads = () => {
     const { setIsCommandSearchOpen } = useRootContext();

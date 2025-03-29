@@ -1,4 +1,4 @@
-import { runWorkflow } from '@repo/ai';
+import { runWorkflow } from '@repo/ai/workflow';
 import { CHAT_MODE_CREDIT_COSTS } from '@repo/shared/config';
 import { deductCredits } from './credit-service';
 import { CompletionRequestType, StreamController } from './types';

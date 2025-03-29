@@ -1,7 +1,7 @@
-import { ToolCall as ToolCallType } from '#store/chat.store';
 import { Badge, cn } from '@repo/ui';
 import { IconCaretDownFilled } from '@tabler/icons-react';
 import { memo, useCallback, useState } from 'react';
+import { ToolCall as ToolCallType } from '../../../store';
 import { CodeBlock } from '../../code-block/code-block';
 import { ToolIcon } from '../../icons';
 

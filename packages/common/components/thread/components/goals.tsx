@@ -1,4 +1,3 @@
-import { GoalWithSteps, Reasoning, ThreadItem, ToolCall, ToolResult } from '#store/chat.store';
 import { ChatMode } from '@repo/shared/config';
 import {
     Accordion,
@@ -10,6 +9,7 @@ import {
 } from '@repo/ui';
 import { IconChecklist, IconInfoCircle, IconLoader2 } from '@tabler/icons-react';
 import { memo, useEffect, useMemo, useState } from 'react';
+import { GoalWithSteps, Reasoning, ThreadItem, ToolCall, ToolResult } from '../../../store';
 import { StepRenderer } from '../step-renderer';
 import { StepStatus } from '../step-status';
 import { ToolCallStep } from './tool-call';

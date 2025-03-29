@@ -1,5 +1,5 @@
-import { GoalWithSteps } from '#store/chat.store';
 import { getHost } from '@repo/shared/utils';
+import { GoalWithSteps } from '../../../store';
 import { LinkFavicon } from '../../link-favicon';
 import { SourceList } from './source-list';
 

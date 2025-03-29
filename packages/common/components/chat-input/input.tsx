@@ -1,6 +1,7 @@
-import { useAgentStream } from '#hooks/agent-provider';
-import { useChatEditor } from '#hooks/use-editor';
-import { useChatStore } from '#store/chat.store';
+'use client';
+import { useAgentStream } from '../../hooks/agent-provider';
+import { useChatEditor } from '../../hooks/use-editor';
+import { useChatStore } from '../../store';
 import { useAuth, useClerk, useUser } from '@clerk/nextjs';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';

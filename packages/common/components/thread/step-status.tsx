@@ -1,5 +1,5 @@
-import { ItemStatus } from '#store/chat.store';
 import { motion } from 'framer-motion';
+import { ItemStatus } from '../../store';
 
 export const StepStatus = ({ status }: { status: ItemStatus }) => {
     switch (status) {

@@ -2,13 +2,7 @@
     "extends": "@repo/typescript-config",
     "compilerOptions": {
         "baseUrl": ".",
-        "jsx": "react-jsx",
-        "paths": {
-            "#components/*": ["./components/*"],
-            "#hooks/*": ["./hooks/*"],
-            "#context/*": ["./context/*"],
-            "#store/*": ["./store/*"]
-        }
+        "jsx": "react-jsx"
     },
     "include": ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
     "exclude": ["node_modules"]

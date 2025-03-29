@@ -1,8 +1,8 @@
-import { GoalWithSteps, ThreadItem as ThreadItemType, useChatStore } from '#store/chat.store';
 import { Alert, AlertDescription, cn, Skeleton } from '@repo/ui';
 import { IconAlertCircle, IconBook } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { memo, useEffect, useMemo, useRef } from 'react';
+import { GoalWithSteps, ThreadItem as ThreadItemType, useChatStore } from '../../store';
 import { CitationProvider } from './citation-provider';
 import { GoalsRenderer } from './components/goals';
 import { MarkdownContent } from './components/markdown-content';

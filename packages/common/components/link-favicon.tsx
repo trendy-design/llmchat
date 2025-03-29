@@ -1,3 +1,4 @@
+'use client';
 import { cn } from '@repo/ui';
 import { Globe } from 'lucide-react';
 import Image from 'next/image';

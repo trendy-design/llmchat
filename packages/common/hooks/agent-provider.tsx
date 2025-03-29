@@ -1,12 +1,10 @@
-import { useApiKeysStore } from '#store/api-keys.store';
-import { useAppStore } from '#store/app.store';
-import { Goal, Step, ThreadItem, useChatStore } from '#store/chat.store';
-import { useMcpToolsStore } from '#store/mcp-tools.store';
 import { useAuth } from '@clerk/nextjs';
-import { useWorkflowWorker } from '@repo/ai/workflow/worker';
+import { useWorkflowWorker } from '@repo/ai/worker';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
 import { createContext, ReactNode, useContext } from 'react';
+import { useApiKeysStore, useAppStore, useChatStore, useMcpToolsStore } from '../store';
+import { Goal, Step, ThreadItem } from '../store/chat.store';
 
 type AgentContextType = {
     runAgent: (body: any) => Promise<void>;

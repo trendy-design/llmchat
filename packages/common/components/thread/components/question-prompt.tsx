@@ -1,8 +1,8 @@
-import { useAgentStream } from '#hooks/agent-provider';
-import { ThreadItem, useChatStore } from '#store/chat.store';
 import { Button, RadioGroup, RadioGroupItem, Textarea } from '@repo/ui';
 import { IconCheck, IconQuestionMark, IconSquare } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
+import { useAgentStream } from '../../../hooks/agent-provider';
+import { ThreadItem, useChatStore } from '../../../store';
 
 export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
     const [selectedOption, setSelectedOption] = useState<string | null>(null);

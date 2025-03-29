@@ -1,17 +1,16 @@
 'use client';
 import { DialogFooter } from '@repo/ui';
-import { IconBoltFilled, IconKey, IconTrash } from '@tabler/icons-react';
-
-import { useMcpToolsStore } from '#store/mcp-tools.store';
 import { Button } from '@repo/ui/src/components/button';
+import { IconBoltFilled, IconKey, IconTrash } from '@tabler/icons-react';
+import { useMcpToolsStore } from '../store/mcp-tools.store';
 
 import { Badge, Dialog, DialogContent, Input } from '@repo/ui';
 
-import { ApiKeys, useApiKeysStore } from '#store/api-keys.store';
-import { SETTING_TABS, useAppStore } from '#store/app.store';
-import { useChatStore } from '#store/chat.store';
 import moment from 'moment';
 import { useState } from 'react';
+import { ApiKeys, useApiKeysStore } from '../store/api-keys.store';
+import { SETTING_TABS, useAppStore } from '../store/app.store';
+import { useChatStore } from '../store/chat.store';
 import { BYOKIcon, ToolIcon } from './icons';
 
 export const SettingsModal = () => {

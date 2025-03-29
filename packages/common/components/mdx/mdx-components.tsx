@@ -1,9 +1,9 @@
-import { CodeBlock } from '#components/code-block/code-block';
-import { LinkPreviewPopover } from '#components/link-preview';
-import { CitationProviderContext } from '#components/thread/citation-provider';
 import { isValidUrl } from '@repo/shared/utils';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import { ComponentProps, ReactElement, useContext } from 'react';
+import { CodeBlock } from '../code-block/code-block';
+import { LinkPreviewPopover } from '../link-preview';
+import { CitationProviderContext } from '../thread/citation-provider';
 
 // Simple CSS animation classes that only animate once on mount
 // Add these to your global CSS or a stylesheet

@@ -7,7 +7,7 @@ import { Placeholder } from '@tiptap/extension-placeholder';
 import { Text } from '@tiptap/extension-text';
 import { useEditor } from '@tiptap/react';
 import { useEffect } from 'react';
-import { useChatStore } from '../store/chat.store';
+import { useChatStore } from '../store';
 
 export const useChatEditor = () => {
     const setEditor = useChatStore(state => state.setEditor);

@@ -1,7 +1,7 @@
 import { IconPlus } from '@tabler/icons-react';
 
-import { useMcpToolsStore } from '#store/mcp-tools.store';
 import { Button } from '@repo/ui/src/components/button';
+import { useMcpToolsStore } from '../store/mcp-tools.store';
 
 import {
     Badge,
@@ -12,11 +12,11 @@ import {
     DropdownMenuTrigger,
 } from '@repo/ui';
 
-import { useApiKeysStore } from '#store/api-keys.store';
-import { SETTING_TABS, useAppStore } from '#store/app.store';
-import { useChatStore } from '#store/chat.store';
 import { IconCheck, IconTools } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
+import { useApiKeysStore } from '../store/api-keys.store';
+import { SETTING_TABS, useAppStore } from '../store/app.store';
+import { useChatStore } from '../store/chat.store';
 import { ToolIcon } from './icons';
 
 export const ToolsMenu = () => {

@@ -1,6 +1,6 @@
-import { useChatStore } from '#store/chat.store';
 import { Button } from '@repo/ui';
 import { CornerDownRight } from 'lucide-react';
+import { useChatStore } from '../../store';
 
 export const SelectedContext = () => {
     const contextValue = useChatStore((state: any) => state.context);

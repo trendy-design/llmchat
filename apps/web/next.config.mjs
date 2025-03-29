@@ -1,7 +1,7 @@
 import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig = {
-    transpilePackages: ['next-mdx-remote', '@repo/common'],
+    transpilePackages: ['next-mdx-remote'],
     images: {
         remotePatterns: [
             { hostname: 'icon.horse' },
@@ -12,6 +12,7 @@ const nextConfig = {
     },
     experimental: {
         optimizePackageImports: ['shiki'],
+        externalDir: true,
     },
     webpack: (config, options) => {
         if (!options.isServer) {

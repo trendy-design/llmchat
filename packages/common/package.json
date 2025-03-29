@@ -2,12 +2,6 @@
     "name": "@repo/common",
     "version": "0.1.0",
     "private": true,
-    "imports": {
-        "#hooks/*": "./hooks/*",
-        "#context/*": "./context/*",
-        "#store/*": "./store/*",
-        "#components/*": "./components/*"
-    },
     "exports": {
         "./hooks": "./hooks/index.ts",
         "./context": "./context/index.ts",
