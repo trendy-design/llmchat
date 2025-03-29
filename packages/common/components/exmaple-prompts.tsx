@@ -1,3 +1,4 @@
+import { useChatStore } from '@repo/common/store';
 import { Button } from '@repo/ui';
 import {
     IconBook,
@@ -8,7 +9,6 @@ import {
     IconSchool,
 } from '@tabler/icons-react';
 import { Editor } from '@tiptap/react';
-import { useChatStore } from '../store';
 
 export const examplePrompts = {
     howTo: [

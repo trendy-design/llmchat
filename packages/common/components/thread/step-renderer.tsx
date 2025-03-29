@@ -1,8 +1,7 @@
+import { SearchResultsList, TextShimmer } from '@repo/common/components';
+import { Step } from '@repo/common/store';
 import { Badge } from '@repo/ui';
 import { IconSearch } from '@tabler/icons-react';
-import { Step } from '../../store';
-import { SearchResultsList } from '../search-results';
-import { TextShimmer } from '../text-shimmer';
 export type StepRendererType = {
     step: Step;
 };

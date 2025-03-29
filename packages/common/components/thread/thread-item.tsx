@@ -1,15 +1,17 @@
+import {
+    CitationProvider,
+    GoalsRenderer,
+    MarkdownContent,
+    Message,
+    MessageActions,
+    QuestionPrompt,
+    SourceGrid,
+} from '@repo/common/components';
+import { GoalWithSteps, ThreadItem as ThreadItemType, useChatStore } from '@repo/common/store';
 import { Alert, AlertDescription, cn, Skeleton } from '@repo/ui';
 import { IconAlertCircle, IconBook } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { memo, useEffect, useMemo, useRef } from 'react';
-import { GoalWithSteps, ThreadItem as ThreadItemType, useChatStore } from '../../store';
-import { CitationProvider } from './citation-provider';
-import { GoalsRenderer } from './components/goals';
-import { MarkdownContent } from './components/markdown-content';
-import { Message } from './components/message';
-import { MessageActions } from './components/message-actions';
-import { QuestionPrompt } from './components/question-prompt';
-import { SourceGrid } from './components/source-grid';
 
 export const ThreadItem = memo(
     ({ threadItem }: { isAnimated: boolean; threadItem: ThreadItemType }) => {

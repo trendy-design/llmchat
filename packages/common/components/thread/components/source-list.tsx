@@ -1,3 +1,4 @@
+import { CitationProviderContext } from '@repo/common/components';
 import {
     Button,
     Dialog,
@@ -8,7 +9,6 @@ import {
     WebsitePreview,
 } from '@repo/ui';
 import { useContext, useState } from 'react';
-import { CitationProviderContext } from '../citation-provider';
 
 export const SourceList = ({
     children,

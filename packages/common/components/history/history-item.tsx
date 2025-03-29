@@ -1,3 +1,4 @@
+import { Thread, useChatStore } from '@repo/common/store';
 import {
     Button,
     cn,
@@ -12,7 +13,6 @@ import {
 import { MoreHorizontal } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { Thread, useChatStore } from '../../store';
 
 export const HistoryItem = ({
     thread,

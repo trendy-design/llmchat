@@ -1,5 +1,5 @@
+import { ItemStatus } from '@repo/common/store';
 import { motion } from 'framer-motion';
-import { ItemStatus } from '../../store';
 
 export const StepStatus = ({ status }: { status: ItemStatus }) => {
     switch (status) {

@@ -1,13 +1,11 @@
 'use client';
+import { FullPageLoader, HistoryItem } from '@repo/common/components';
+import { useRootContext } from '@repo/common/context';
+import { Thread, useAppStore, useChatStore } from '@repo/common/store';
 import { Button, cn, Flex } from '@repo/ui';
 import { IconArrowBarLeft, IconArrowBarRight, IconPlus, IconSearch } from '@tabler/icons-react';
 import moment from 'moment';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import { useRootContext } from '../context/root';
-import { useAppStore } from '../store/app.store';
-import { Thread, useChatStore } from '../store/chat.store';
-import { FullPageLoader } from './full-page-loader';
-import { HistoryItem } from './history/history-item';
 
 export const Sidebar = () => {
     const { threadId: currentThreadId } = useParams();

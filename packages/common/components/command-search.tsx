@@ -1,4 +1,6 @@
 'use client';
+import { useRootContext } from '@repo/common/context';
+import { useAppStore, useChatStore } from '@repo/common/store';
 import {
     cn,
     CommandDialog,
@@ -21,9 +23,6 @@ import moment from 'moment';
 import { useTheme } from 'next-themes';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { useRootContext } from '../context/root';
-import { useAppStore } from '../store/app.store';
-import { useChatStore } from '../store/chat.store';
 
 export const CommandSearch = () => {
     const { threadId: currentThreadId } = useParams();

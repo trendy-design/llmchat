@@ -1,12 +1,11 @@
 'use client';
+import { ChatModeOptions } from '@repo/common/components';
+import { useAgentStream, useCopyText } from '@repo/common/hooks';
+import { ThreadItem, useChatStore } from '@repo/common/store';
 import { ChatMode, getChatModeName } from '@repo/shared/config';
 import { Button, DropdownMenu, DropdownMenuTrigger } from '@repo/ui';
 import { IconCheck, IconCopy, IconRefresh, IconTrash } from '@tabler/icons-react';
 import { forwardRef, useState } from 'react';
-import { useAgentStream } from '../../../hooks/agent-provider';
-import { useCopyText } from '../../../hooks/use-copy-text';
-import { ThreadItem, useChatStore } from '../../../store';
-import { ChatModeOptions } from '../../chat-input/chat-actions';
 
 type MessageActionsProps = {
     threadItem: ThreadItem;

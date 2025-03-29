@@ -1,8 +1,7 @@
 'use client';
+import { LinkFavicon, LinkPreviewPopover } from '@repo/common/components';
 import { getHost, getHostname } from '@repo/shared/utils';
 import { Badge, Flex } from '@repo/ui';
-import { LinkFavicon } from './link-favicon';
-import { LinkPreviewPopover } from './link-preview';
 
 export type SearchResultType = {
     title: string;

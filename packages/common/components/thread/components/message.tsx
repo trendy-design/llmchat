@@ -1,7 +1,7 @@
+import { useCopyText } from '@repo/common/hooks';
 import { Button, cn } from '@repo/ui';
 import { IconCheck, IconCopy, IconPencil } from '@tabler/icons-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { useCopyText } from '../../../hooks/use-copy-text';
 
 type MessageProps = {
     message: string;

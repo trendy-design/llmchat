@@ -1,5 +1,6 @@
 'use client';
-import { useApiKeysStore, useChatStore } from '../../store';
+import { DotSpinner } from '@repo/common/components';
+import { useApiKeysStore, useChatStore } from '@repo/common/store';
 import { CHAT_MODE_CREDIT_COSTS, ChatMode } from '@repo/shared/config';
 import {
     Button,
@@ -23,7 +24,6 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
 import { BYOKIcon, CreditIcon, DeepResearchIcon } from '../icons';
-import { DotSpinner } from '../thread/step-status';
 
 export const chatOptions = [
     {

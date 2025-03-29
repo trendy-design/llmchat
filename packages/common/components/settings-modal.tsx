@@ -1,8 +1,8 @@
 'use client';
+import { useMcpToolsStore } from '@repo/common/store';
 import { DialogFooter } from '@repo/ui';
 import { Button } from '@repo/ui/src/components/button';
 import { IconBoltFilled, IconKey, IconTrash } from '@tabler/icons-react';
-import { useMcpToolsStore } from '../store/mcp-tools.store';
 
 import { Badge, Dialog, DialogContent, Input } from '@repo/ui';
 

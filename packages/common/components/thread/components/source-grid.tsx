@@ -1,7 +1,6 @@
+import { LinkFavicon, SourceList } from '@repo/common/components';
+import { GoalWithSteps } from '@repo/common/store';
 import { getHost } from '@repo/shared/utils';
-import { GoalWithSteps } from '../../../store';
-import { LinkFavicon } from '../../link-favicon';
-import { SourceList } from './source-list';
 
 type SourceGridProps = {
     goals: GoalWithSteps[];

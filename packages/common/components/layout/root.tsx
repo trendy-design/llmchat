@@ -1,16 +1,14 @@
 'use client';
 import { SignIn, SignInButton, useAuth, UserButton } from '@clerk/nextjs';
+import { CommandSearch, SettingsModal, Sidebar } from '@repo/common/components';
+import { useRootContext } from '@repo/common/context';
+import { AgentProvider } from '@repo/common/hooks';
+import { useAppStore } from '@repo/common/store';
 import { Button, Flex, Toaster } from '@repo/ui';
 import { IconMoodSadDizzy, IconSettings2 } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FC } from 'react';
 import { Drawer } from 'vaul';
-import { useRootContext } from '../../context/root';
-import { AgentProvider } from '../../hooks/agent-provider';
-import { useAppStore } from '../../store/app.store';
-import { CommandSearch } from '../command-search';
-import { SettingsModal } from '../settings-modal';
-import { Sidebar } from './side-bar';
 
 export type TRootLayout = {
     children: React.ReactNode;

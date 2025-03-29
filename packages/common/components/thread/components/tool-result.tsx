@@ -1,9 +1,8 @@
+import { CodeBlock, ToolResultIcon } from '@repo/common/components';
+import { ToolResult as ToolResultType } from '@repo/common/store';
 import { Badge, cn } from '@repo/ui';
 import { IconCaretDownFilled } from '@tabler/icons-react';
 import { memo, useCallback, useState } from 'react';
-import { ToolResult as ToolResultType } from '../../../store';
-import { CodeBlock } from '../../code-block/code-block';
-import { ToolResultIcon } from '../../icons';
 
 export type ToolResultProps = {
     toolResult: ToolResultType;

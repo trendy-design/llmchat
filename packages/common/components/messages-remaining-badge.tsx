@@ -1,5 +1,5 @@
 import { useAuth } from '@clerk/nextjs';
-import { useChatStore } from '../store';
+import { useChatStore } from '@repo/common/store';
 export function MessagesRemainingBadge() {
     const { actor } = useAuth();
     const creditLimit = useChatStore(state => state.creditLimit);

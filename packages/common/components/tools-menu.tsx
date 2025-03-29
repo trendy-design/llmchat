@@ -1,7 +1,7 @@
 import { IconPlus } from '@tabler/icons-react';
 
+import { useMcpToolsStore } from '@repo/common/store';
 import { Button } from '@repo/ui/src/components/button';
-import { useMcpToolsStore } from '../store/mcp-tools.store';
 
 import {
     Badge,
