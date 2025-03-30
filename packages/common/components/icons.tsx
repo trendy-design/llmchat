@@ -45,7 +45,8 @@ export const CreditIcon = ({
                 variant === 'muted' && 'border-none'
             )}
         >
-            <IconBoltFilled size={14} strokeWidth={2} className="text-yellow-500/80" /> {credits}
+            <IconBoltFilled size={14} strokeWidth={2} className="text-muted-foreground/50" />{' '}
+            {credits}
         </div>
     );
 };

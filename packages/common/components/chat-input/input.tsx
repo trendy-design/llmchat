@@ -1,22 +1,15 @@
 'use client';
-import { useAgentStream } from '../../hooks/agent-provider';
-import { useChatEditor } from '../../hooks/use-editor';
-import { useChatStore } from '../../store';
 import { useAuth, useClerk, useUser } from '@clerk/nextjs';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { useShallow } from 'zustand/react/shallow';
+import { useAgentStream } from '../../hooks/agent-provider';
+import { useChatEditor } from '../../hooks/use-editor';
+import { useChatStore } from '../../store';
 import { ExamplePrompts } from '../exmaple-prompts';
-import { MessagesRemainingBadge } from '../messages-remaining-badge';
-import {
-    ChatModeButton,
-    GeneratingStatus,
-    NewLineIndicator,
-    SendStopButton,
-    WebSearchButton,
-} from './chat-actions';
+import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
 import { ChatEditor } from './chat-editor';
 export const ChatInput = ({
     showGreeting = true,
@@ -128,7 +121,6 @@ export const ChatInput = ({
                                     )}
 
                                     <Flex gap="md" items="center">
-                                        <NewLineIndicator />
                                         <SendStopButton
                                             isGenerating={isGenerating}
                                             isChatPage={isChatPage}
@@ -152,7 +144,7 @@ export const ChatInput = ({
                         )}
                     </motion.div>
                 </Flex>
-                {showBottomBar && (
+                {/* {showBottomBar && (
                     <motion.div
                         initial={{ opacity: 0, y: -20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -164,7 +156,7 @@ export const ChatInput = ({
                             <MessagesRemainingBadge />
                         </span>
                     </motion.div>
-                )}
+                )} */}
             </motion.div>
         </AnimatePresence>
     );
@@ -202,7 +194,7 @@ export const ChatInput = ({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 0.5 }}
                             transition={{ duration: 0.3, delay: 0.1 }}
-                            className="font-cabinet text-foreground/70 text-4xl font-medium tracking-tight"
+                            className="text-foreground/70 text-4xl font-medium tracking-tight"
                         >
                             {`Good morning`}
                         </motion.h1>
@@ -210,7 +202,7 @@ export const ChatInput = ({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3, delay: 0.2 }}
-                            className="font-cabinet text-4xl font-medium tracking-tight text-yellow-950"
+                            className="text-foreground text-4xl font-medium tracking-tight"
                         >
                             How can i help you?
                         </motion.h1>

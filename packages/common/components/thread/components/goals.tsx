@@ -9,7 +9,13 @@ import {
     Alert,
     AlertDescription,
 } from '@repo/ui';
-import { IconChecklist, IconInfoCircle, IconLoader2 } from '@tabler/icons-react';
+import {
+    IconAtom,
+    IconChecklist,
+    IconInfoCircle,
+    IconLoader2,
+    IconNorthStar,
+} from '@tabler/icons-react';
 import { memo, useEffect, useMemo, useState } from 'react';
 
 type GoalStepProps = {
@@ -27,6 +33,16 @@ const getTitle = (threadItem: ThreadItem) => {
         return 'Pro Search';
     }
     return 'Steps';
+};
+
+const getIcon = (threadItem: ThreadItem) => {
+    if (threadItem.mode === ChatMode.Deep) {
+        return <IconAtom size={16} strokeWidth={2} className="text-muted-foreground" />;
+    }
+    if (threadItem.mode === ChatMode.Pro) {
+        return <IconNorthStar size={16} strokeWidth={2} className="text-muted-foreground" />;
+    }
+    return <IconChecklist size={16} strokeWidth={2} className="text-muted-foreground" />;
 };
 
 const getNote = (threadItem: ThreadItem) => {
@@ -171,11 +187,7 @@ export const GoalsRenderer = ({
                                     className="text-muted-foreground animate-spin"
                                 />
                             ) : (
-                                <IconChecklist
-                                    size={18}
-                                    strokeWidth={2}
-                                    className="text-muted-foreground"
-                                />
+                                getIcon(threadItem)
                             )}
                             <p className="text-sm font-medium">{getTitle(threadItem)}</p>
                             <div className="flex-1" />
@@ -186,12 +198,12 @@ export const GoalsRenderer = ({
                     </AccordionTrigger>
                     <AccordionContent className="bg-background p-0">
                         {getNote(threadItem) && (
-                            <Alert variant="default" className="rounded-none">
-                                <AlertDescription className="text-muted-foreground/70 font-normal">
+                            <Alert variant="default" className="rounded-none bg-emerald-500/10">
+                                <AlertDescription className="font-normal text-emerald-600">
                                     <IconInfoCircle
                                         size={16}
                                         strokeWidth={2}
-                                        className="text-muted-foreground/70 font-normal"
+                                        className="font-normal text-emerald-600"
                                     />
                                     {getNote(threadItem)}
                                 </AlertDescription>

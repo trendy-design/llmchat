@@ -17,27 +17,28 @@ import {
     IconArrowUp,
     IconAtom,
     IconChevronDown,
+    IconNorthStar,
     IconPaperclip,
     IconPlayerStopFilled,
     IconWorld,
 } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState } from 'react';
-import { BYOKIcon, CreditIcon, DeepResearchIcon } from '../icons';
+import { BYOKIcon, CreditIcon } from '../icons';
 
 export const chatOptions = [
     {
         label: 'Deep Research',
         description: 'In depth research on complex topic',
         value: ChatMode.Deep,
-        icon: <DeepResearchIcon />,
+        icon: <IconAtom size={16} className="text-muted-foreground" strokeWidth={2} />,
         creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Deep],
     },
     {
         label: 'Pro Search',
         description: 'Pro search with web search',
         value: ChatMode.Pro,
-        icon: <IconAtom size={20} className="text-muted-foreground" strokeWidth={2} />,
+        icon: <IconNorthStar size={16} className="text-muted-foreground" strokeWidth={2} />,
         creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Pro],
     },
 ];
@@ -300,7 +301,7 @@ export const SendStopButton = ({
                                 sendMessage();
                             }}
                         >
-                            <IconArrowUp size={20} strokeWidth={2} />
+                            <IconArrowUp size={16} strokeWidth={2} />
                         </Button>
                     </motion.div>
                 )}

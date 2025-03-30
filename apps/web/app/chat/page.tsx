@@ -1,5 +1,5 @@
 'use client';
-import { ChatInput, RecentThreads } from '@repo/common/components';
+import { ChatInput } from '@repo/common/components';
 import { useChatStore } from '@repo/common/store';
 import { Flex } from '@repo/ui';
 import Link from 'next/link';
@@ -9,11 +9,11 @@ const ChatPage = () => {
     return (
         <div className="flex w-full flex-1 flex-col overflow-hidden">
             <Flex
-                className="mx-auto h-full w-full max-w-3xl flex-1 items-center px-4 pt-32"
+                className="mx-auto h-full w-full max-w-3xl flex-1 items-center px-4 pt-48"
                 direction="col"
             >
                 <ChatInput showGreeting={true} />
-                <RecentThreads />
+                {/* <RecentThreads /> */}
             </Flex>
             <div className="flex w-full flex-row items-center justify-center gap-4 p-4">
                 <Link

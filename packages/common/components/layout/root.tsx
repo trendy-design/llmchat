@@ -5,7 +5,7 @@ import { useRootContext } from '@repo/common/context';
 import { AgentProvider } from '@repo/common/hooks';
 import { useAppStore } from '@repo/common/store';
 import { Button, Flex, Toaster } from '@repo/ui';
-import { IconMoodSadDizzy, IconSettings2 } from '@tabler/icons-react';
+import { IconMoodSadDizzy } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FC } from 'react';
 import { Drawer } from 'vaul';
@@ -32,7 +32,7 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
     }
 
     return (
-        <div className="bg-secondary flex min-h-[96dvh] w-full flex-row overflow-hidden">
+        <div className="bg-secondary flex h-[100dvh] w-full flex-row overflow-hidden">
             <div className="bg-secondary item-center fixed inset-0 z-[99999] flex justify-center md:hidden">
                 <div className="flex flex-col items-center justify-center gap-2">
                     <IconMoodSadDizzy size={24} strokeWidth={2} className="text-muted-foreground" />
@@ -69,24 +69,15 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
                         <div className={containerClass}>
                             <div className="flex h-full w-full flex-row">
                                 <div className="flex w-full flex-col gap-2 overflow-y-auto">
-                                    <div className="from-secondary to-secondary/0 via-secondary/70 fixed left-0 right-0 top-0 z-40 flex flex-row items-center justify-center gap-1 bg-gradient-to-b p-2 pb-12">
+                                    {/* <div className="from-secondary to-secondary/0 via-secondary/70 fixed left-0 right-0 top-0 z-40 flex flex-row items-center justify-center gap-1 bg-gradient-to-b p-2 pb-12">
                                         <p className="text-muted-foreground/50 font-mono text-sm font-medium tracking-tight">
                                             deep.new
                                         </p>
-                                    </div>
+                                    </div> */}
                                     {/* Auth Button Header */}
                                     <div className="fixed right-0 top-0 z-50 flex items-center gap-1 px-4 py-2">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            rounded="full"
-                                            onClick={() => setIsSettingOpen(true)}
-                                        >
-                                            <IconSettings2 size={16} strokeWidth={2} />
-                                        </Button>
                                         {isSignedIn ? (
                                             <UserButton
-                                                showName
                                                 appearance={{
                                                     elements: {
                                                         avatarBox: 'size-5 bg-muted-foreground',

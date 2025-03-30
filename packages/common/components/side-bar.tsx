@@ -3,7 +3,13 @@ import { FullPageLoader, HistoryItem } from '@repo/common/components';
 import { useRootContext } from '@repo/common/context';
 import { Thread, useAppStore, useChatStore } from '@repo/common/store';
 import { Button, cn, Flex } from '@repo/ui';
-import { IconArrowBarLeft, IconArrowBarRight, IconPlus, IconSearch } from '@tabler/icons-react';
+import {
+    IconArrowBarLeft,
+    IconArrowBarRight,
+    IconPlus,
+    IconSearch,
+    IconSettings2,
+} from '@tabler/icons-react';
 import moment from 'moment';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
@@ -20,6 +26,7 @@ export const Sidebar = () => {
     const clearAllThreads = useChatStore(state => state.clearAllThreads);
     const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
     const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
+    const setIsSettingsOpen = useAppStore(state => state.setIsSettingsOpen);
 
     const groupedThreads: Record<string, Thread[]> = {
         today: [],
@@ -73,37 +80,41 @@ export const Sidebar = () => {
     return (
         <div
             className={cn(
-                'border-border/0 relative bottom-0 left-0 top-0 z-[50] flex h-[100dvh] flex-shrink-0 flex-col border-r border-dashed py-2 transition-all duration-200',
+                'border-border/70 bottom-0 left-0 top-0 z-[50] flex h-[100dvh] flex-shrink-0 flex-col border-r border-dashed py-2 transition-all duration-200',
                 isSidebarOpen
                     ? 'bg-background border-border/70 shadow-xs top-0 h-full w-[240px] border-r'
                     : 'w-[50px]'
             )}
         >
             <Flex direction="col" className="w-full flex-1 overflow-hidden">
-                <Flex direction="col" className="w-full px-2" gap="sm">
+                <Flex direction="col" className="w-full items-center px-2" gap="sm">
                     <Button
-                        size={isSidebarOpen ? 'sm' : 'icon'}
+                        size={isSidebarOpen ? 'xs' : 'icon-sm'}
                         variant="bordered"
                         rounded="full"
                         tooltip={isSidebarOpen ? undefined : 'New Thread'}
                         tooltipSide="right"
-                        className={cn('relative w-full shadow-sm', 'justify-center')}
+                        className={cn(
+                            isSidebarOpen && 'relative w-full',
+                            'justify-center',
+                            '!text-foreground'
+                        )}
                         onClick={() => !isChatPage && push('/chat')}
                     >
                         <IconPlus
                             size={16}
                             strokeWidth={2}
-                            className={cn(isSidebarOpen && 'absolute left-2')}
+                            className={cn(isSidebarOpen && 'absolute left-2', '!text-foreground')}
                         />
                         {isSidebarOpen && 'New'}
                     </Button>
                     <Button
-                        size={isSidebarOpen ? 'sm' : 'icon'}
+                        size={isSidebarOpen ? 'xs' : 'icon-sm'}
                         variant="secondary"
                         rounded="full"
                         tooltip={isSidebarOpen ? undefined : 'Search'}
                         tooltipSide="right"
-                        className={cn('relative w-full', 'justify-center')}
+                        className={cn(isSidebarOpen && 'relative w-full', 'justify-center')}
                         onClick={() => setIsCommandSearchOpen(true)}
                     >
                         <IconSearch
@@ -140,18 +151,34 @@ export const Sidebar = () => {
                     direction={'col'}
                     justify={isSidebarOpen ? 'between' : 'center'}
                 >
+                    <Button
+                        variant="ghost"
+                        size={isSidebarOpen ? 'sm' : 'icon'}
+                        className={cn(
+                            'w-full justify-start',
+                            !isSidebarOpen && 'mx-auto justify-center'
+                        )}
+                        tooltip="Settings"
+                        tooltipSide="right"
+                        onClick={() => setIsSettingsOpen(true)}
+                    >
+                        <IconSettings2 size={16} strokeWidth={2} />
+                        {isSidebarOpen && 'Settings'}
+                    </Button>
                     {isSidebarOpen && (
-                        <Flex className="w-full items-center justify-between px-2">
-                            <Button
-                                variant="ghost"
-                                size={isSidebarOpen ? 'sm' : 'icon'}
-                                onClick={() => setIsSidebarOpen(prev => !prev)}
-                                className={cn(!isSidebarOpen && 'mx-auto')}
-                                tooltip="Close Sidebar"
-                            >
-                                <IconArrowBarLeft size={16} strokeWidth={2} /> Close
-                            </Button>
-                        </Flex>
+                        <Button
+                            variant="ghost"
+                            size={isSidebarOpen ? 'sm' : 'icon'}
+                            onClick={() => setIsSidebarOpen(prev => !prev)}
+                            className={cn(
+                                'w-full justify-start',
+                                !isSidebarOpen && 'mx-auto justify-center'
+                            )}
+                            tooltip="Close Sidebar"
+                            tooltipSide="right"
+                        >
+                            <IconArrowBarLeft size={16} strokeWidth={2} /> Close
+                        </Button>
                     )}
                     {!isSidebarOpen && (
                         <Button

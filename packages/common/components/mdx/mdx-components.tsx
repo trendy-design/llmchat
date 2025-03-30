@@ -28,7 +28,7 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
         }
         return (
             <LinkPreviewPopover url={url}>
-                <div className="group inline-flex size-4 flex-row items-center justify-center gap-1 rounded-sm border-yellow-700/20 !bg-yellow-700/20 text-[10px] text-yellow-900">
+                <div className="group inline-flex size-4 flex-row items-center justify-center gap-1 rounded-sm bg-emerald-500/20 text-[10px] text-emerald-600">
                     {citation?.index}
                 </div>
             </LinkPreviewPopover>
