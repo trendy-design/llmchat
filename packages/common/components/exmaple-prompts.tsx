@@ -94,7 +94,7 @@ export const ExamplePrompts = () => {
                 <Button
                     key={index}
                     variant="bordered"
-                    rounded="full"
+                    rounded="xl"
                     size="sm"
                     onClick={() => handleCategoryClick(category as keyof typeof examplePrompts)}
                 >

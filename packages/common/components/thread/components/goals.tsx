@@ -131,14 +131,13 @@ export const GoalsRenderer = ({
     const isStopped = threadItem.status === 'ABORTED' || threadItem.status === 'ERROR';
 
     const isLoading = goals.some(goal => goal.status === 'PENDING') && !isStopped;
-    const allCompleted = goals.every(goal => goal.status === 'COMPLETED');
     const hasAnswer = !!threadItem?.answer?.text;
 
     useEffect(() => {
-        if (allCompleted || hasAnswer) {
+        if (hasAnswer) {
             setValue(undefined);
         }
-    }, [allCompleted, hasAnswer]);
+    }, [hasAnswer]);
 
     useEffect(() => {
         if (goals[0]?.status === 'PENDING') {
@@ -194,7 +193,7 @@ export const GoalsRenderer = ({
                             )}
                             <p className="text-sm font-medium">{getTitle(threadItem)}</p>
 
-                            <p className="!text-xs text-pink-500">
+                            <p className="!text-xs text-emerald-600">
                                 {stepCounts} {stepCounts === 1 ? 'Step' : 'Steps'}
                             </p>
                             <div className="flex-1" />
@@ -202,12 +201,12 @@ export const GoalsRenderer = ({
                     </AccordionTrigger>
                     <AccordionContent className="bg-background p-0">
                         {getNote(threadItem) && (
-                            <Alert variant="default" className="rounded-none bg-pink-500/10">
-                                <AlertDescription className="font-normal text-pink-600">
+                            <Alert variant="default" className="rounded-none bg-emerald-500/10">
+                                <AlertDescription className="font-normal text-emerald-600">
                                     <IconInfoCircle
                                         size={16}
                                         strokeWidth={2}
-                                        className="font-normal text-pink-600"
+                                        className="font-normal text-emerald-600"
                                     />
                                     {getNote(threadItem)}
                                 </AlertDescription>

@@ -40,6 +40,7 @@ const buttonVariants = cva(
             rounded: {
                 default: 'rounded-sm',
                 lg: 'rounded-md',
+                xl: 'rounded-xl',
                 full: 'rounded-full',
             },
         },

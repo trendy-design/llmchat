@@ -732,8 +732,11 @@ export const useChatStore = create(
         },
 
         updateThreadItem: async (threadId, threadItem) => {
+            console.log('updateThreadItem', threadItem, threadId);
             if (!threadItem.id) return;
             if (!threadId) return;
+
+            console.log('updateThreadItem', threadItem);
 
             try {
                 const now = Date.now();

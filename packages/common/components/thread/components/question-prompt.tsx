@@ -1,5 +1,5 @@
 import { useAgentStream } from '@repo/common/hooks';
-import { ThreadItem, useChatStore } from '@repo/common/store';
+import { Answer, ThreadItem, useChatStore } from '@repo/common/store';
 import { Button, RadioGroup, RadioGroupItem, Textarea } from '@repo/ui';
 import { IconCheck, IconQuestionMark, IconSquare } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
@@ -83,17 +83,21 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
         );
     };
 
-    if (!hasClarifyingQuestions) {
-        return null;
-    }
-
     if (isSubmitted) {
         return (
-            <div className="border-border bg-background mt-2 flex w-full flex-col items-start gap-4 rounded-2xl border p-4">
-                <p className="text-base">{question}</p>
-                <p className="text-base">{threadItem.answer?.object?.submittedQuery}</p>
+            <div className="border-border bg-background mt-2 flex w-full flex-col flex-col items-start gap-4 rounded-2xl border p-4">
+                <span className="flex flex-row items-center gap-1 text-xs font-medium text-emerald-600">
+                    <IconCheck size={14} strokeWidth={2} /> Submitted
+                </span>
+                <div className="flex flex-col">
+                    <p className="text-base">{threadItem.answer?.object?.submittedQuery}</p>
+                </div>
             </div>
         );
+    }
+
+    if (!hasClarifyingQuestions) {
+        return null;
     }
 
     return (
@@ -131,14 +135,16 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
                     formData.append('query', query);
                     const threadItems = await getThreadItems(threadItem.threadId);
                     updateThreadItem(threadItem.threadId, {
+                        ...threadItem,
                         query,
                         answer: {
+                            ...threadItem.answer,
                             object: {
+                                ...threadItem.answer?.object,
                                 submittedQuery: query,
                             },
-                            text: query,
                             final: true,
-                        },
+                        } as Answer,
                         status: 'COMPLETED',
                     });
                     handleSubmit({
