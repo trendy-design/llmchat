@@ -33,7 +33,7 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
             className="flex h-full w-full flex-col items-center overflow-y-auto px-8"
             ref={scrollRef}
         >
-            <div className="mx-auto w-full max-w-3xl px-4 pb-[200px] pt-12" ref={contentRef}>
+            <div className="mx-auto w-full max-w-3xl px-4 pb-[200px] pt-8" ref={contentRef}>
                 <Thread />
             </div>
 

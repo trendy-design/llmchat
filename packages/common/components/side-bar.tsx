@@ -82,29 +82,54 @@ export const Sidebar = () => {
             className={cn(
                 'border-border/70 bottom-0 left-0 top-0 z-[50] flex h-[100dvh] flex-shrink-0 flex-col border-r border-dashed py-2 transition-all duration-200',
                 isSidebarOpen
-                    ? 'bg-background border-border/70 shadow-xs top-0 h-full w-[240px] border-r'
+                    ? 'bg-background border-border/70 shadow-xs top-0 h-full w-[260px] border-r'
                     : 'w-[50px]'
             )}
         >
             <Flex direction="col" className="w-full flex-1 overflow-hidden">
                 <Flex direction="col" className="w-full items-center px-2" gap="sm">
+                    {isSidebarOpen && (
+                        <Button
+                            variant="ghost"
+                            size={isSidebarOpen ? 'sm' : 'icon'}
+                            onClick={() => setIsSidebarOpen(prev => !prev)}
+                            className={cn(
+                                'w-full justify-start',
+                                !isSidebarOpen && 'mx-auto justify-center'
+                            )}
+                            tooltip="Close Sidebar"
+                            tooltipSide="right"
+                        >
+                            <IconArrowBarLeft size={16} strokeWidth={2} /> Close
+                        </Button>
+                    )}
+                    {!isSidebarOpen && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setIsSidebarOpen(prev => !prev)}
+                            className={cn(!isSidebarOpen && 'mx-auto')}
+                        >
+                            <IconArrowBarRight size={16} strokeWidth={2} />
+                        </Button>
+                    )}
                     <Button
                         size={isSidebarOpen ? 'xs' : 'icon-sm'}
-                        variant="bordered"
+                        variant="default"
                         rounded="full"
                         tooltip={isSidebarOpen ? undefined : 'New Thread'}
                         tooltipSide="right"
                         className={cn(
                             isSidebarOpen && 'relative w-full',
                             'justify-center',
-                            '!text-foreground'
+                            'text-background bg-tertiary-foreground border-foreground border'
                         )}
                         onClick={() => !isChatPage && push('/chat')}
                     >
                         <IconPlus
                             size={16}
                             strokeWidth={2}
-                            className={cn(isSidebarOpen && 'absolute left-2', '!text-foreground')}
+                            className={cn(isSidebarOpen && 'absolute left-2')}
                         />
                         {isSidebarOpen && 'New'}
                     </Button>
@@ -165,31 +190,6 @@ export const Sidebar = () => {
                         <IconSettings2 size={16} strokeWidth={2} />
                         {isSidebarOpen && 'Settings'}
                     </Button>
-                    {isSidebarOpen && (
-                        <Button
-                            variant="ghost"
-                            size={isSidebarOpen ? 'sm' : 'icon'}
-                            onClick={() => setIsSidebarOpen(prev => !prev)}
-                            className={cn(
-                                'w-full justify-start',
-                                !isSidebarOpen && 'mx-auto justify-center'
-                            )}
-                            tooltip="Close Sidebar"
-                            tooltipSide="right"
-                        >
-                            <IconArrowBarLeft size={16} strokeWidth={2} /> Close
-                        </Button>
-                    )}
-                    {!isSidebarOpen && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setIsSidebarOpen(prev => !prev)}
-                            className={cn(!isSidebarOpen && 'mx-auto')}
-                        >
-                            <IconArrowBarRight size={16} strokeWidth={2} />
-                        </Button>
-                    )}
                 </Flex>
             </Flex>
         </div>

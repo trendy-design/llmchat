@@ -21,16 +21,16 @@ export const StepStatus = ({ status }: { status: ItemStatus }) => {
         case 'ERROR':
             return (
                 <span className="relative flex size-3 items-center justify-center">
-                    <span className="relative flex size-2">
-                        <span className="relative inline-flex size-2 rounded-full bg-rose-400"></span>
+                    <span className="relative flex size-1">
+                        <span className="relative inline-flex size-1 rounded-full bg-rose-400"></span>
                     </span>
                 </span>
             );
         default:
             return (
                 <span className="relative flex size-3 items-center justify-center">
-                    <span className="relative flex size-2">
-                        <span className="bg-tertiary relative inline-flex size-2 rounded-full"></span>
+                    <span className="relative flex size-1">
+                        <span className="bg-tertiary relative inline-flex size-1 rounded-full"></span>
                     </span>
                 </span>
             );

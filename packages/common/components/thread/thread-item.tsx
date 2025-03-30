@@ -53,12 +53,12 @@ export const ThreadItem = memo(
         return (
             <CitationProvider sources={allSources}>
                 <>
-                    <div className={cn('flex w-full flex-col items-start gap-4 pt-8')}>
+                    <div className={cn('flex w-full flex-col items-start gap-4')}>
                         {threadItem.query && <Message message={threadItem.query} />}
 
                         {threadItem.status === 'QUEUED' && (
                             <div className="flex w-full flex-col items-start gap-2 opacity-10">
-                                <MotionSkeleton className="mb-2 h-4 !w-[100px] rounded-md bg-yellow-900/10" />
+                                <MotionSkeleton className="bg-muted-foreground/10 mb-2 h-4 !w-[100px] rounded-md" />
                                 <MotionSkeleton className="w-full bg-gradient-to-r" />
                                 <MotionSkeleton className="w-[70%] bg-gradient-to-r" />
                                 <MotionSkeleton className="w-[50%] bg-gradient-to-r" />
@@ -137,7 +137,7 @@ export const MotionSkeleton = ({ className }: { className?: string }) => {
         >
             <Skeleton
                 className={cn(
-                    'h-5 w-full bg-gradient-to-r from-yellow-950/80 via-orange-600/50 to-pink-100',
+                    'from-muted-foreground/10 h-5 w-full bg-gradient-to-r via-emerald-600/50 to-green-400/10',
                     className
                 )}
             />

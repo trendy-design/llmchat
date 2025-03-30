@@ -20,6 +20,7 @@ import { memo, useEffect, useMemo, useState } from 'react';
 
 type GoalStepProps = {
     goal: GoalWithSteps;
+    isStopped: boolean;
 };
 
 const getTitle = (threadItem: ThreadItem) => {
@@ -55,12 +56,12 @@ const getNote = (threadItem: ThreadItem) => {
     return '';
 };
 
-const GoalStep = memo(({ goal }: GoalStepProps) => (
+const GoalStep = memo(({ goal, isStopped }: GoalStepProps) => (
     <div className="flex w-full flex-row items-stretch justify-start gap-2">
         <div className="flex min-h-full shrink-0 flex-col items-center justify-start px-2">
             <div className="bg-border/50 h-1.5 shrink-0" />
             <div className="bg-background z-10">
-                <StepStatus status={goal.status || 'PENDING'} />
+                <StepStatus status={isStopped ? 'ERROR' : goal.status || 'PENDING'} />
             </div>
             <div className="border-border min-h-full w-[1px] flex-1 border-l border-dashed" />
         </div>
@@ -127,7 +128,9 @@ export const GoalsRenderer = ({
         return reasoning?.text?.split('\n\n').map(line => line.trim()) ?? [];
     }, [reasoning]);
 
-    const isLoading = goals.some(goal => goal.status === 'PENDING');
+    const isStopped = threadItem.status === 'ABORTED' || threadItem.status === 'ERROR';
+
+    const isLoading = goals.some(goal => goal.status === 'PENDING') && !isStopped;
     const allCompleted = goals.every(goal => goal.status === 'COMPLETED');
     const hasAnswer = !!threadItem?.answer?.text;
 
@@ -190,20 +193,21 @@ export const GoalsRenderer = ({
                                 getIcon(threadItem)
                             )}
                             <p className="text-sm font-medium">{getTitle(threadItem)}</p>
-                            <div className="flex-1" />
-                            <p className="text-muted-foreground !text-xs">
+
+                            <p className="!text-xs text-pink-500">
                                 {stepCounts} {stepCounts === 1 ? 'Step' : 'Steps'}
                             </p>
+                            <div className="flex-1" />
                         </div>
                     </AccordionTrigger>
                     <AccordionContent className="bg-background p-0">
                         {getNote(threadItem) && (
-                            <Alert variant="default" className="rounded-none bg-emerald-500/10">
-                                <AlertDescription className="font-normal text-emerald-600">
+                            <Alert variant="default" className="rounded-none bg-pink-500/10">
+                                <AlertDescription className="font-normal text-pink-600">
                                     <IconInfoCircle
                                         size={16}
                                         strokeWidth={2}
-                                        className="font-normal text-emerald-600"
+                                        className="font-normal text-pink-600"
                                     />
                                     {getNote(threadItem)}
                                 </AlertDescription>
@@ -211,7 +215,7 @@ export const GoalsRenderer = ({
                         )}
                         <div className="flex w-full flex-col overflow-hidden px-4 py-4">
                             {goals.map((goal, index) => (
-                                <GoalStep key={index} goal={goal} />
+                                <GoalStep key={index} goal={goal} isStopped={isStopped} />
                             ))}
                             {reasoningSteps.map((step, index) => (
                                 <ReasoningStep key={index} step={step} />

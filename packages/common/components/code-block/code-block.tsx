@@ -89,14 +89,13 @@ export const CodeBlock = ({
     return (
         <div
             className={cn(
-                'not-prose bg-background border-border relative my-4 w-full overflow-hidden rounded-xl border',
+                'not-prose bg-tertiary  relative my-4 w-full overflow-hidden rounded-xl border px-1 pb-1',
                 variant === 'secondary' && 'bg-secondary',
-                showExpandButton && isExpanded && 'pb-12',
                 className
             )}
         >
             {showHeader && (
-                <div className="bg-background border-border text-foreground flex items-center justify-between border-b py-1 pl-4 pr-1.5">
+                <div className="text-foreground flex items-center justify-between py-1 pl-3 pr-1">
                     <p className="text-muted-foreground flex flex-row items-center gap-2 text-xs tracking-wide">
                         {getLangIcon()}
                         {lang}
@@ -117,7 +116,10 @@ export const CodeBlock = ({
             )}
             <pre
                 ref={preRef}
-                className="text-foreground overflow-x-auto px-6 py-4 font-mono text-[13px] font-[300]"
+                className={cn(
+                    'text-foreground border-border bg-background relative overflow-x-auto rounded-lg border px-6 py-4 font-mono text-[13px] font-[300]',
+                    showExpandButton && isExpanded && 'pb-12'
+                )}
                 style={{
                     maxHeight: isExpanded ? 'none' : maxHeight,
                     transition: 'max-height 0.3s ease-in-out',
@@ -126,37 +128,37 @@ export const CodeBlock = ({
                 <code className={cn(`language-${lang}`)} ref={ref}>
                     {code}
                 </code>
+                {showExpandButton && !isExpanded && (
+                    <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex flex-col items-center font-sans">
+                        <div className="via-background/85 to-background flex h-16 w-full items-center justify-center bg-gradient-to-b from-transparent">
+                            <Button
+                                variant="secondary"
+                                size="xs"
+                                rounded="full"
+                                className="pointer-events-auto relative z-10 px-4"
+                                onClick={() => setIsExpanded(true)}
+                            >
+                                Show more
+                            </Button>
+                        </div>
+                    </div>
+                )}
+                {showExpandButton && isExpanded && (
+                    <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center font-sans">
+                        <div className="via-background/85 to-background flex w-full items-center justify-center bg-gradient-to-b from-transparent py-2">
+                            <Button
+                                variant="secondary"
+                                size="xs"
+                                rounded="full"
+                                className="px-4"
+                                onClick={() => setIsExpanded(false)}
+                            >
+                                Show less
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </pre>
-            {showExpandButton && !isExpanded && (
-                <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex flex-col items-center">
-                    <div className="via-background/85 to-background flex h-16 w-full items-center justify-center bg-gradient-to-b from-transparent">
-                        <Button
-                            variant="secondary"
-                            size="xs"
-                            rounded="full"
-                            className="pointer-events-auto relative z-10 px-4"
-                            onClick={() => setIsExpanded(true)}
-                        >
-                            Show more
-                        </Button>
-                    </div>
-                </div>
-            )}
-            {showExpandButton && isExpanded && (
-                <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center">
-                    <div className="via-background/85 to-background flex w-full items-center justify-center bg-gradient-to-b from-transparent py-2">
-                        <Button
-                            variant="secondary"
-                            size="xs"
-                            rounded="full"
-                            className="px-4"
-                            onClick={() => setIsExpanded(false)}
-                        >
-                            Show less
-                        </Button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

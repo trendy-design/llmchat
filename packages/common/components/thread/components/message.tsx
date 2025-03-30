@@ -30,15 +30,12 @@ export const Message = memo(({ message }: MessageProps) => {
 
     return (
         <div className="flex w-full flex-col items-end pt-4">
-            <div className="text-foreground group relative max-w-[80%]">
+            <div className="text-foreground border-border bg-background group relative max-w-[80%] overflow-hidden rounded-3xl border">
                 <div
                     ref={messageRef}
-                    className={cn(
-                        'bg-background border-border relative overflow-hidden rounded-3xl border px-3 py-2 text-base font-normal',
-                        {
-                            'pb-12': isExpanded,
-                        }
-                    )}
+                    className={cn(' relative px-3 py-2 text-base font-normal', {
+                        'pb-12': isExpanded,
+                    })}
                     style={{
                         maxHeight: isExpanded ? 'none' : maxHeight,
                         transition: 'max-height 0.3s ease-in-out',
@@ -46,8 +43,13 @@ export const Message = memo(({ message }: MessageProps) => {
                 >
                     {message}
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 hidden flex-col items-center p-1.5 group-hover:flex">
-                    <div className="via-background/85 to-background flex w-full items-center justify-end gap-1 bg-gradient-to-b from-transparent">
+                <div
+                    className={cn(
+                        'absolute bottom-0 left-0 right-0 hidden flex-col items-center  group-hover:flex',
+                        showExpandButton && 'flex'
+                    )}
+                >
+                    <div className="via-background/85 to-background flex w-full items-center justify-end gap-1 bg-gradient-to-b from-transparent p-1.5">
                         {showExpandButton && (
                             <Button
                                 variant="secondary"

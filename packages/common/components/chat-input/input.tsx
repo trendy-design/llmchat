@@ -190,19 +190,19 @@ export const ChatInput = ({
                         transition={{ duration: 0.3, ease: 'easeOut' }}
                         className="mb-6 flex w-full flex-col items-center gap-1"
                     >
-                        <motion.h1
+                        {/* <motion.h1
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 0.5 }}
                             transition={{ duration: 0.3, delay: 0.1 }}
-                            className="text-foreground/70 text-4xl font-medium tracking-tight"
+                            className="text-foreground/70 text-3xl font-medium tracking-tight"
                         >
                             {`Good morning`}
-                        </motion.h1>
+                        </motion.h1> */}
                         <motion.h1
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3, delay: 0.2 }}
-                            className="text-foreground text-4xl font-medium tracking-tight"
+                            className="text-foreground text-3xl font-medium tracking-tight"
                         >
                             How can i help you?
                         </motion.h1>
