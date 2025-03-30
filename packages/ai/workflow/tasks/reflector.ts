@@ -10,7 +10,7 @@ export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSche
         const question = context?.get('question') || '';
         const messages = context?.get('messages') || [];
         const prevQueries = context?.get('queries') || [];
-        const goalId = data?.goalId;
+        const stepId = data?.stepId;
         const prevSummaries = context?.get('summaries') || [];
         const currentYear = new Date().getFullYear();
 
@@ -81,36 +81,31 @@ CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genui
                 reasoning: z.string(),
                 queries: z.array(z.string()).optional(),
             }),
+
             messages: messages as any,
             signal,
         });
 
-        const newGoalId = goalId + 1;
+        const newStepId = stepId + 1;
 
         context?.update('queries', current => [...(current ?? []), ...(object?.queries ?? [])]);
 
-        // Update flow event with initial goal
         events?.update('flow', current => {
-            const stepId = Object.keys(current.steps || {}).length;
             return {
                 ...current,
-                goals: {
-                    ...(current.goals || {}),
-                    [newGoalId]: {
-                        text: object.reasoning,
-                        final: false,
-                        status: 'PENDING' as const,
-                        id: newGoalId,
-                    },
-                },
                 steps: {
                     ...(current.steps || {}),
-                    [stepId]: {
-                        type: 'search',
-                        queries: object.queries,
-                        status: 'COMPLETED' as const,
-                        goalId: newGoalId,
-                        final: true,
+                    [newStepId]: {
+                        text: object.reasoning,
+                        steps: {
+                            ...(current.steps?.[newStepId]?.steps || {}),
+                            search: {
+                                data: object.queries,
+                                status: 'COMPLETED' as const,
+                            },
+                        },
+                        status: 'PENDING' as const,
+                        id: newStepId,
                     },
                 },
             };
@@ -127,7 +122,7 @@ CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genui
 
         return {
             queries: object?.queries,
-            goalId: newGoalId,
+            stepId: newStepId,
         };
     },
     onError: (error, { context, events }) => {

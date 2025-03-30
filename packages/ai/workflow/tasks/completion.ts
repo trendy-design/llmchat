@@ -66,10 +66,20 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                 onReasoning: reasoning => {
                     events?.update('flow', prev => ({
                         ...prev,
-                        reasoning: {
-                            text: reasoning,
-                            final: true,
-                            status: 'COMPLETED',
+                        steps: {
+                            ...prev?.steps,
+                            0: {
+                                ...prev?.steps?.[0],
+                                id: 0,
+                                status: 'COMPLETED',
+                                steps: {
+                                    ...prev?.steps?.[0]?.steps,
+                                    reasoning: {
+                                        data: reasoning,
+                                        status: 'COMPLETED',
+                                    },
+                                },
+                            },
                         },
                     }));
                 },
@@ -90,9 +100,9 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                 onChunk: chunk => {
                     events?.update('flow', prev => ({
                         ...prev,
+
                         answer: {
                             text: chunk,
-                            final: false,
                             status: 'PENDING',
                         },
                     }));
@@ -103,10 +113,8 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                 ...prev,
                 answer: {
                     text: response,
-                    final: true,
                     status: 'COMPLETED',
                 },
-                final: true,
                 status: 'COMPLETED',
             }));
 

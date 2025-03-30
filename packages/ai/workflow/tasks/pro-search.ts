@@ -99,32 +99,26 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
         console.log(results);
         events?.update('flow', prev => ({
             ...prev,
-            goals: {
-                ...prev.goals,
-                0: {
-                    ...prev.goals?.[0],
-                    status: 'PENDING',
-                } as any,
-            },
             steps: {
                 ...prev.steps,
                 0: {
-                    ...prev.steps?.[0],
-                    type: 'search',
-                    queries: [query.query],
-                    final: true,
-                    status: 'COMPLETED',
-                } as any,
-                1: {
-                    ...prev.steps?.[1],
-                    type: 'read',
-                    results: results.map((result: any) => ({
-                        title: result.title,
-                        link: result.link,
-                    })),
-                    final: false,
+                    ...prev?.steps?.[0],
+                    id: 0,
                     status: 'PENDING',
-                } as any,
+                    steps: {
+                        search: {
+                            data: [query.query],
+                            status: 'COMPLETED',
+                        },
+                        read: {
+                            data: results.map((result: any) => ({
+                                title: result.title,
+                                link: result.link,
+                            })),
+                            status: 'PENDING',
+                        },
+                    },
+                },
             },
         }));
 
@@ -137,28 +131,26 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             { batchSize: 4, maxPages: 8, timeout: 30000 }
         );
 
-        console.log('webPageContent', webPageContent);
-
         const content = webPageContent.reduce((acc: string, result: any) => {
             return acc + `\n${result.title}\n${result.content}\n${result.link}`;
         }, '');
 
         events?.update('flow', prev => ({
             ...prev,
-            goals: {
-                ...prev.goals,
-                0: {
-                    ...prev.goals?.[0],
-                    status: 'COMPLETED',
-                } as any,
-            },
             steps: {
                 ...prev.steps,
-                1: {
-                    ...prev.steps?.[1],
-                    final: true,
+                0: {
+                    ...prev?.steps?.[0],
                     status: 'COMPLETED',
-                } as any,
+                    id: 0,
+                    steps: {
+                        ...prev.steps?.[0].steps,
+                        read: {
+                            ...prev.steps?.[0].steps?.read,
+                            status: 'COMPLETED',
+                        },
+                    },
+                },
             },
         }));
 
@@ -204,19 +196,6 @@ ${webPageContent
    - Don't Include reference list at the end.
    </citations>`;
 
-        events?.update('flow', current => ({
-            ...current,
-            goals: {
-                ...current.goals,
-                [1]: {
-                    text: 'Analyzing the findings and the gaps in the research',
-                    final: true,
-                    status: 'COMPLETED' as const,
-                    id: 1,
-                },
-            },
-        }));
-
         const reasoning = await generateText({
             prompt: analysisPrompt,
             model: ModelEnum.Deepseek_R1,
@@ -224,15 +203,54 @@ ${webPageContent
             onReasoning: chunk => {
                 events?.update('flow', current => ({
                     ...current,
-                    reasoning: {
-                        ...(current.reasoning || {}),
-                        text: chunk,
-                        final: false,
-                        status: 'PENDING' as const,
+                    steps: {
+                        ...current?.steps,
+                        1: {
+                            ...current?.steps?.[1],
+                            steps: {
+                                ...current?.steps?.[1]?.steps,
+                                reasoning: {
+                                    data: chunk,
+                                    status: 'COMPLETED',
+                                },
+                            },
+                            id: 1,
+                            status: 'PENDING' as const,
+                        },
                     },
                 }));
             },
         });
+
+        events?.update('flow', current => ({
+            ...current,
+            steps: {
+                ...current?.steps,
+                1: {
+                    ...current?.steps?.[1],
+                    steps: {
+                        ...current?.steps?.[1]?.steps,
+                        reasoning: {
+                            ...current?.steps?.[1]?.steps?.reasoning,
+                            status: 'COMPLETED',
+                        },
+                    },
+                    id: 1,
+                    status: 'COMPLETED' as const,
+                },
+                2: {
+                    ...current?.steps?.[2],
+                    steps: {
+                        ...current?.steps?.[2]?.steps,
+                        wrapup: {
+                            status: 'COMPLETED' as const,
+                        },
+                    },
+                    id: 2,
+                    status: 'COMPLETED' as const,
+                },
+            },
+        }));
 
         const prompt = buildWebSearchPrompt(reasoning, webPageContent);
 
@@ -258,10 +276,8 @@ ${webPageContent
             ...prev,
             answer: {
                 text: response,
-                final: true,
                 status: 'COMPLETED',
             },
-            final: true,
             status: 'COMPLETED',
         }));
 

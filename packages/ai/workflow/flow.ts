@@ -21,50 +21,38 @@ import {
     writerTask,
 } from './tasks';
 
+type Status = 'PENDING' | 'COMPLETED' | 'ERROR';
+
 // Define the workflow schema type
 export type WorkflowEventSchema = {
     flow: {
         query: string;
         threadId: string;
         threadItemId: string;
-        status: 'PENDING' | 'COMPLETED' | 'ERROR';
-        goals?: Record<
-            string,
-            {
-                id: number;
-                text: string;
-                final: boolean;
-                status?: 'PENDING' | 'COMPLETED' | 'ERROR';
-            }
-        >;
+        status: Status;
         steps?: Record<
             string,
             {
-                type: string;
-                final: boolean;
-                goalId?: number;
-                queries?: string[];
-                results?: {
-                    title: string;
-                    link: string;
-                }[];
+                id: number;
+                text?: string;
+                steps: Record<
+                    string,
+                    {
+                        data?: any;
+                        status: Status;
+                    }
+                >;
+                status: Status;
             }
         >;
         toolCalls?: any[];
         toolResults?: any[];
-        reasoning?: {
-            text: string;
-            final: boolean;
-            status?: 'PENDING' | 'COMPLETED' | 'ERROR';
-        };
         answer: {
             text: string;
             object?: any;
             objectType?: string;
-            final: boolean;
-            status?: 'PENDING' | 'COMPLETED' | 'ERROR';
+            status: Status;
         };
-        final: boolean;
         mode: ChatMode;
         suggestions?: string[];
     };
@@ -150,14 +138,11 @@ export const runWorkflow = ({
             threadId,
             threadItemId,
             status: 'PENDING',
-            goals: {},
             steps: {},
             answer: {
                 text: '',
-                final: false,
                 status: 'PENDING',
             },
-            final: false,
         },
     });
 

@@ -14,47 +14,29 @@ export type Thread = {
     updatedAt: Date;
 };
 
-export type ItemStatus = 'QUEUED' | 'PENDING' | 'COMPLETED' | 'ERROR' | 'ABORTED';
-
-export type Goal = {
-    id: string;
-    text: string;
-    final: boolean;
-    status?: ItemStatus;
+export type SubStep = {
+    data?: any;
+    status: ItemStatus;
 };
 
+export type ItemStatus = 'QUEUED' | 'PENDING' | 'COMPLETED' | 'ERROR' | 'ABORTED';
+
+export type Step = {
+    id: string;
+    text?: string;
+    steps?: Record<string, SubStep>;
+    status: ItemStatus;
+};
 export type Source = {
     title: string;
     link: string;
     index: number;
 };
 
-export type Step = {
-    type: 'search' | 'read';
-    queries?: string[];
-    goalId: string;
-    final: boolean;
-    results?: Array<{
-        title: string;
-        link: string;
-    }>;
-};
-
-export type GoalWithSteps = Goal & {
-    steps: Step[];
-};
-
 export type Answer = {
     text: string;
-    final: boolean;
     object?: any;
     objectType?: string;
-    status?: ItemStatus;
-};
-
-export type Reasoning = {
-    text: string;
-    final: boolean;
     status?: ItemStatus;
 };
 
@@ -75,14 +57,11 @@ export type ToolResult = {
 
 export type ThreadItem = {
     query: string;
-    goals?: Goal[];
-    reasoning?: Reasoning;
     toolCalls?: Record<string, ToolCall>;
     toolResults?: Record<string, ToolResult>;
-    steps?: Step[];
+    steps?: Record<string, Step>;
     answer?: Answer;
     sources?: Source[];
-    final?: boolean;
     status?: ItemStatus;
     createdAt: Date;
     updatedAt: Date;
@@ -775,7 +754,7 @@ export const useChatStore = create(
                 // Determine if this is a critical update that should bypass throttling
                 const isCriticalUpdate =
                     !existingItem || // New items
-                    threadItem.final === true || // Final updates
+                    threadItem.status === 'COMPLETED' || // Final updates
                     threadItem.status === 'ERROR' || // Error states
                     threadItem.status === 'ABORTED' || // Aborted states
                     threadItem.error !== undefined; // Any error information

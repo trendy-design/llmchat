@@ -12,6 +12,7 @@ export const writerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>
         const question = context?.get('question') || '';
         const summaries = context?.get('summaries') || [];
         const messages = context?.get('messages') || [];
+        const stepId = data?.stepId;
 
         const currentDate = new Date();
         const humanizedDate = format(currentDate, 'MMMM dd, yyyy, h:mm a');
@@ -63,6 +64,27 @@ ${analysis}
 Your report should demonstrate subject matter expertise while remaining intellectually accessible to informed professionals. Focus on providing substantive analysis rather than cataloging facts. Emphasize implications and significance rather than merely summarizing information.
     `;
 
+        if (stepId) {
+            const nextStepId = stepId + 1;
+            events?.update('flow', current => ({
+                ...current,
+                steps: {
+                    ...(current.steps || {}),
+                    [nextStepId]: {
+                        ...(current.steps?.[nextStepId] || {}),
+                        steps: {
+                            ...(current.steps?.[nextStepId]?.steps || {}),
+                            wrapup: {
+                                status: 'COMPLETED' as const,
+                            },
+                        },
+                        id: nextStepId,
+                        status: 'COMPLETED' as const,
+                    },
+                },
+            }));
+        }
+
         const answer = await generateText({
             prompt,
             model: ModelEnum.GEMINI_2_FLASH,
@@ -70,16 +92,15 @@ Your report should demonstrate subject matter expertise while remaining intellec
             onChunk: chunk => {
                 events?.update('flow', current => ({
                     ...current,
-                    answer: { text: chunk, final: false, status: 'PENDING' as const },
-                    final: false,
+                    answer: { text: chunk, status: 'PENDING' as const },
+                    status: 'PENDING' as const,
                 }));
             },
         });
 
         events?.update('flow', current => ({
             ...current,
-            answer: { text: answer, final: true, status: 'COMPLETED' as const },
-            final: true,
+            answer: { text: answer, status: 'COMPLETED' as const },
             status: 'COMPLETED',
         }));
 

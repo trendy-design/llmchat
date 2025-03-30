@@ -9,7 +9,7 @@ export const analysisTask = createTask<WorkflowEventSchema, WorkflowContextSchem
         const messages = context?.get('messages') || [];
         const question = context?.get('question') || '';
         const prevSummaries = context?.get('summaries') || [];
-        const nextGoalId = Object.keys(events?.getState('flow')?.goals || {}).length;
+        const nextStepId = Object.keys(events?.getState('flow')?.steps || {}).length;
 
         const prompt = `
           
@@ -55,19 +55,6 @@ ${s}
 
                 `;
 
-        events?.update('flow', current => ({
-            ...current,
-            goals: {
-                ...current.goals,
-                [nextGoalId]: {
-                    text: 'Analyzing the findings and the gaps in the research',
-                    final: true,
-                    status: 'COMPLETED' as const,
-                    id: nextGoalId,
-                },
-            },
-        }));
-
         const text = await generateText({
             prompt,
             model: ModelEnum.Deepseek_R1,
@@ -76,11 +63,20 @@ ${s}
             onReasoning: reasoning => {
                 events?.update('flow', current => ({
                     ...current,
-                    reasoning: {
-                        ...(current.reasoning || {}),
-                        text: reasoning,
-                        final: false,
-                        status: 'PENDING' as const,
+                    steps: {
+                        ...current.steps,
+                        [nextStepId]: {
+                            ...(current.steps?.[nextStepId] || {}),
+                            steps: {
+                                ...(current.steps?.[nextStepId]?.steps || {}),
+                                reasoning: {
+                                    data: reasoning,
+                                    status: 'PENDING' as const,
+                                },
+                            },
+                            id: nextStepId,
+                            status: 'PENDING' as const,
+                        },
                     },
                 }));
             },
@@ -88,11 +84,21 @@ ${s}
 
         events?.update('flow', current => ({
             ...current,
-            reasoning: {
-                ...(current.reasoning || {}),
-                final: true,
-                status: 'COMPLETED' as const,
-            } as any,
+            steps: {
+                ...current.steps,
+                [nextStepId]: {
+                    ...(current.steps?.[nextStepId] || {}),
+                    steps: {
+                        ...(current.steps?.[nextStepId]?.steps || {}),
+                        reasoning: {
+                            ...current.steps?.[nextStepId]?.steps?.reasoning,
+                            status: 'COMPLETED' as const,
+                        },
+                    },
+                    id: nextStepId,
+                    status: 'COMPLETED' as const,
+                },
+            },
         }));
 
         trace?.span({
@@ -108,6 +114,7 @@ ${s}
         return {
             queries: [],
             analysis: text,
+            stepId: nextStepId,
         };
     },
     onError: (error, { context, events }) => {

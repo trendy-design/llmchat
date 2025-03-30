@@ -4,7 +4,7 @@ import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
 import { createContext, ReactNode, useContext } from 'react';
 import { useApiKeysStore, useAppStore, useChatStore, useMcpToolsStore } from '../store';
-import { Goal, Step, ThreadItem } from '../store/chat.store';
+import { ThreadItem } from '../store/chat.store';
 
 type AgentContextType = {
     runAgent: (body: any) => Promise<void>;
@@ -50,21 +50,17 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const router = useRouter();
     const { startWorkflow, abortWorkflow } = useWorkflowWorker(data => {
         if (data.type === 'message' && data?.threadId && data?.threadItemId) {
-            const goalsArray = data.goals ? Object.values(data.goals) : [];
             const stepsArray = data.steps ? Object.values(data.steps) : [];
 
             updateThreadItem(data?.threadId, {
                 id: data?.threadItemId,
                 parentId: data?.parentThreadItemId,
                 threadId: data?.threadId,
-                goals: goalsArray as Goal[],
-                steps: stepsArray as Step[],
+                steps: data?.steps,
                 answer: data?.answer,
-                final: data?.final,
                 status: data?.status,
                 query: data?.query,
                 error: data?.error,
-                reasoning: data?.reasoning,
                 toolCalls: data?.toolCalls,
                 toolResults: data?.toolResults,
                 suggestions: data?.suggestions,
@@ -89,7 +85,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             updateThreadItem(body.threadId as string, {
                 id: body.threadItemId as string,
                 status: 'ABORTED',
-                final: true,
             });
         });
 
@@ -156,23 +151,17 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                     data?.threadId &&
                                     data?.threadItemId
                                 ) {
-                                    const goalsArray = data.goals ? Object.values(data.goals) : [];
-                                    const stepsArray = data.steps ? Object.values(data.steps) : [];
-
                                     updateThreadItem(data?.threadId, {
                                         id: data?.threadItemId,
                                         parentId: data?.parentThreadItemId,
                                         threadId: data?.threadId,
-                                        goals: goalsArray as Goal[],
-                                        steps: stepsArray as Step[],
+                                        steps: data?.steps,
                                         answer: data?.answer,
-                                        final: data?.final,
                                         status: data?.status,
                                         query: data?.query,
                                         error: data?.error,
                                         updatedAt: new Date(),
                                         mode: data?.mode,
-                                        reasoning: data?.reasoning,
                                         toolCalls: data?.toolCalls,
                                         toolResults: data?.toolResults,
                                         suggestions: data?.suggestions,

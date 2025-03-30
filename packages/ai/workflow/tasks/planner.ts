@@ -77,7 +77,7 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
             signal,
         });
 
-        const goalId = Object.keys(events?.getState('flow')?.goals || {}).length;
+        const stepId = Object.keys(events?.getState('flow')?.steps || {}).length;
 
         context?.update('queries', current => [...(current ?? []), ...(object?.queries || [])]);
         // Update flow event with initial goal
@@ -85,23 +85,19 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
             const stepId = Object.keys(current.steps || {}).length;
             return {
                 ...current,
-                goals: {
-                    ...(current.goals || {}),
-                    [goalId]: {
-                        text: object.reasoning,
-                        final: false,
-                        status: 'PENDING' as const,
-                        id: goalId,
-                    },
-                },
                 steps: {
                     ...(current.steps || {}),
                     [stepId]: {
-                        type: 'search',
-                        queries: object.queries,
-                        status: 'COMPLETED' as const,
-                        goalId: goalId,
-                        final: true,
+                        text: object.reasoning,
+                        steps: {
+                            ...(current.steps?.[stepId]?.steps || {}),
+                            search: {
+                                data: object.queries,
+                                status: 'COMPLETED' as const,
+                            },
+                        },
+                        status: 'PENDING' as const,
+                        id: stepId,
                     },
                 },
             };
@@ -118,7 +114,7 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
 
         return {
             queries: object.queries,
-            goalId,
+            stepId,
         };
     },
     onError: (error, { context, events }) => {

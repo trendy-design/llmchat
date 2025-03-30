@@ -1,13 +1,13 @@
 import {
     CitationProvider,
-    GoalsRenderer,
     MarkdownContent,
     Message,
     MessageActions,
     QuestionPrompt,
     SourceGrid,
+    Steps,
 } from '@repo/common/components';
-import { GoalWithSteps, ThreadItem as ThreadItemType, useChatStore } from '@repo/common/store';
+import { ThreadItem as ThreadItemType, useChatStore } from '@repo/common/store';
 import { Alert, AlertDescription, cn, Skeleton } from '@repo/ui';
 import { IconAlertCircle, IconBook } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
@@ -20,21 +20,15 @@ export const ThreadItem = memo(
 
         useEffect(() => {
             const sources =
-                threadItem.steps
-                    ?.filter(step => step.type === 'read')
-                    .flatMap(step => step.results?.map(result => result.link))
+                Object.values(threadItem.steps || {})
+                    ?.filter(
+                        step =>
+                            step.steps && 'read' in step?.steps && !!step.steps?.read?.data?.length
+                    )
+                    .flatMap(step => step.steps?.read?.data?.map((result: any) => result.link))
                     .filter((link): link is string => link !== undefined) || [];
             return setCurrentSources(sources);
         }, [threadItem]);
-
-        const goalsWithSteps: GoalWithSteps[] = useMemo(() => {
-            return (
-                threadItem.goals?.map(goal => ({
-                    ...goal,
-                    steps: threadItem.steps?.filter(step => step.goalId === goal.id) || [],
-                })) || []
-            );
-        }, [threadItem.goals, threadItem.steps]);
 
         const hasAnswer = useMemo(() => {
             return threadItem.answer?.text && threadItem.answer?.text.length > 0;
@@ -53,6 +47,7 @@ export const ThreadItem = memo(
         return (
             <CitationProvider sources={allSources}>
                 <>
+                    {/* <CodeBlock code={JSON.stringify(threadItem, null, 2)} lang="json" /> */}
                     <div className={cn('flex w-full flex-col items-start gap-4')}>
                         {threadItem.query && <Message message={threadItem.query} />}
 
@@ -64,9 +59,8 @@ export const ThreadItem = memo(
                                 <MotionSkeleton className="w-[50%] bg-gradient-to-r" />
                             </div>
                         )}
-                        <GoalsRenderer
-                            goals={goalsWithSteps || []}
-                            reasoning={threadItem?.reasoning}
+                        <Steps
+                            steps={Object.values(threadItem?.steps || {})}
                             threadItem={threadItem}
                         />
 
@@ -81,7 +75,7 @@ export const ThreadItem = memo(
                                         />
                                         Answer
                                     </div>
-                                    <SourceGrid goals={goalsWithSteps || []} />
+                                    <SourceGrid steps={Object.values(threadItem?.steps || {})} />
 
                                     <MarkdownContent
                                         content={threadItem.answer?.text || ''}
@@ -105,8 +99,7 @@ export const ThreadItem = memo(
                                 </AlertDescription>
                             </Alert>
                         )}
-                        {(threadItem.answer?.final ||
-                            threadItem.status === 'COMPLETED' ||
+                        {(threadItem.status === 'COMPLETED' ||
                             threadItem.status === 'ABORTED' ||
                             threadItem.status === 'ERROR') && (
                             <MessageActions threadItem={threadItem} ref={messageRef} />

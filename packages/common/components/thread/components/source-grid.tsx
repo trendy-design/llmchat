@@ -1,17 +1,15 @@
 import { LinkFavicon, SourceList } from '@repo/common/components';
-import { GoalWithSteps } from '@repo/common/store';
+import { Step } from '@repo/common/store';
 import { getHost } from '@repo/shared/utils';
 
 type SourceGridProps = {
-    goals: GoalWithSteps[];
+    steps: Step[];
 };
 
-export const SourceGrid = ({ goals }: SourceGridProps) => {
-    const sources = goals.flatMap(goal =>
-        goal.steps
-            .filter(step => step.type === 'read')
-            .flatMap(step => step.results?.map(result => result))
-    );
+export const SourceGrid = ({ steps }: SourceGridProps) => {
+    const sources = steps
+        .flatMap(step => step.steps?.read?.data?.map((result: any) => result))
+        .filter(Boolean);
 
     if (sources.length === 0) {
         return null;

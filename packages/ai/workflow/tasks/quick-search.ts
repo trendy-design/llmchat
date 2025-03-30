@@ -83,31 +83,37 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
         console.log(results);
         events?.update('flow', prev => ({
             ...prev,
-            goals: {
-                ...prev.goals,
-                0: {
-                    ...prev.goals?.[0],
-                    status: 'PENDING',
-                } as any,
-            },
             steps: {
                 ...prev.steps,
                 0: {
                     ...prev.steps?.[0],
-                    type: 'search',
-                    queries: [query.query],
-                    final: true,
+                    id: 0,
                     status: 'COMPLETED',
-                } as any,
+                    steps: {
+                        ...prev.steps?.[0]?.steps,
+                        search: {
+                            data: [query.query],
+                            status: 'COMPLETED',
+                        },
+                        read: {
+                            data: results.map((result: any) => ({
+                                title: result.title,
+                                link: result.link,
+                            })),
+                            status: 'COMPLETED',
+                        },
+                    },
+                },
                 1: {
                     ...prev.steps?.[1],
-                    type: 'read',
-                    results: results.map((result: any) => ({
-                        title: result.title,
-                        link: result.link,
-                    })),
-                    final: false,
-                    status: 'PENDING',
+                    status: 'COMPLETED',
+                    id: 1,
+                    steps: {
+                        ...prev.steps?.[1]?.steps,
+                        wrapup: {
+                            status: 'COMPLETED',
+                        },
+                    },
                 } as any,
             },
         }));
@@ -134,27 +140,11 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
 
         events?.update('flow', prev => ({
             ...prev,
-            goals: {
-                ...prev.goals,
-                0: {
-                    ...prev.goals?.[0],
-                    status: 'COMPLETED',
-                } as any,
-            },
-            steps: {
-                ...prev.steps,
-                1: {
-                    ...prev.steps?.[1],
-                    final: true,
-                    status: 'COMPLETED',
-                } as any,
-            },
+
             answer: {
                 text: response,
-                final: true,
                 status: 'COMPLETED',
             },
-            final: true,
             status: 'COMPLETED',
         }));
 

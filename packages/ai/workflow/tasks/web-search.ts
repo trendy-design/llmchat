@@ -7,24 +7,27 @@ export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
     name: 'web-search',
     execute: async ({ data, trace, events, context, signal }) => {
         const queries = data?.queries;
-        const goalId = data?.goalId;
+        const stepId = data?.stepId;
         const results = await executeWebSearch(queries, signal);
         events?.update('flow', current => {
-            const stepId = String(Object.keys(current.steps || {}).length);
             return {
                 ...current,
                 steps: {
                     ...(current.steps || {}),
                     [stepId]: {
                         ...(current.steps?.[stepId] || {}),
-                        type: 'read',
-                        final: true,
-                        goalId: Number(goalId),
+                        steps: {
+                            ...(current.steps?.[stepId]?.steps || {}),
+                            read: {
+                                data: results?.map((result: any) => ({
+                                    title: result.title,
+                                    link: result.link,
+                                })),
+                                status: 'PENDING' as const,
+                            },
+                        },
+                        id: stepId,
                         status: 'PENDING' as const,
-                        results: results?.map((result: any) => ({
-                            title: result.title,
-                            link: result.link,
-                        })),
                     },
                 },
             };
@@ -83,21 +86,23 @@ ${processedResults
         });
 
         events?.update('flow', current => {
-            const stepId = String(Object.keys(current.steps || {}).length);
             return {
                 ...current,
-                goals: {
-                    ...(current.goals || {}),
-                    [goalId]: {
-                        ...(current.goals?.[goalId] || {}),
-                        status: 'COMPLETED' as const,
-                    } as any,
-                },
                 steps: {
                     ...(current.steps || {}),
                     [stepId]: {
                         ...(current.steps?.[stepId] || {}),
-                        goalId: Number(goalId),
+                        steps: {
+                            ...(current.steps?.[stepId]?.steps || {}),
+                            read: {
+                                data: results?.map((result: any) => ({
+                                    title: result.title,
+                                    link: result.link,
+                                })),
+                                status: 'COMPLETED' as const,
+                            },
+                        },
+
                         status: 'COMPLETED' as const,
                     } as any,
                 },
@@ -110,7 +115,7 @@ ${processedResults
             output: summary,
             metadata: {
                 queries,
-                goalId,
+                stepId,
                 results,
             },
         });
@@ -121,7 +126,7 @@ ${processedResults
         ]);
 
         return {
-            goalId,
+            stepId,
             queries,
             summary,
         };
