@@ -2,7 +2,7 @@ import { createTask } from '@repo/orchestrator';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { generateObject, getHumanizedDate } from '../utils';
+import { generateObject, getHumanizedDate, handleError } from '../utils';
 
 export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'planner',
@@ -117,17 +117,6 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
             stepId,
         };
     },
-    onError: (error, { context, events }) => {
-        console.error('Task failed', error);
-        events?.update('flow', prev => ({
-            ...prev,
-            error: 'Something went wrong while processing your request. Please try again.',
-            status: 'ERROR',
-        }));
-        return Promise.resolve({
-            retry: false,
-            result: 'error',
-        });
-    },
+    onError: handleError,
     route: ({ result }) => 'web-search',
 });

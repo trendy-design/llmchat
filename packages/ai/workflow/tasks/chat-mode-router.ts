@@ -1,7 +1,7 @@
 import { createTask } from '@repo/orchestrator';
 import { ChatMode } from '@repo/shared/config';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-
+import { handleError } from '../utils';
 export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'router',
     execute: async ({ context, redirectTo }) => {
@@ -15,4 +15,5 @@ export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSc
             redirectTo('completion');
         }
     },
+    onError: handleError,
 });

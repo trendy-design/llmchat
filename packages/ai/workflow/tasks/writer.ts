@@ -2,7 +2,7 @@ import { createTask } from '@repo/orchestrator';
 import { format } from 'date-fns';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { generateText } from '../utils';
+import { generateText, handleError } from '../utils';
 
 export const writerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'writer',
@@ -124,18 +124,7 @@ Your report should demonstrate subject matter expertise while remaining intellec
 
         return answer;
     },
-    onError: (error, { context, events }) => {
-        console.error('Task failed', error);
-        events?.update('flow', prev => ({
-            ...prev,
-            error: 'Something went wrong while processing your request. Please try again.',
-            status: 'ERROR',
-        }));
-        return Promise.resolve({
-            retry: false,
-            result: 'error',
-        });
-    },
+    onError: handleError,
     route: ({ result, context }) => {
         if (context?.get('showSuggestions') && !!context?.get('answer')) {
             return 'suggestions';

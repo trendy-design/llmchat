@@ -31,6 +31,7 @@ export type Source = {
     title: string;
     link: string;
     index: number;
+    snippet?: string;
 };
 
 export type Answer = {
@@ -759,11 +760,12 @@ export const useChatStore = create(
                     threadItem.status === 'ABORTED' || // Aborted states
                     threadItem.error !== undefined; // Any error information
 
-                // Determine if we've waited long enough since the last update
-                const shouldThrottleBypass =
-                    isCriticalUpdate || timeSinceLastUpdate > DB_UPDATE_THROTTLE;
-
-                if (threadItem.persistToDB || shouldThrottleBypass) {
+                // Always persist final updates - this fixes the issue with missing updates at stream completion
+                if (
+                    threadItem.persistToDB === true ||
+                    isCriticalUpdate ||
+                    timeSinceLastUpdate > DB_UPDATE_THROTTLE
+                ) {
                     // For critical updates or if enough time has passed, queue for immediate update
                     queueThreadItemForUpdate(updatedItem);
 

@@ -83,7 +83,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                             Reading
                         </TextShimmer>
                     </div>
-                    <SearchResultsList results={step.steps?.read?.data || []} />
+                    <SearchResultsList sources={step.steps?.read?.data || []} />
                 </motion.div>
             );
         }

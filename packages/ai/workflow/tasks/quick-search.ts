@@ -1,26 +1,14 @@
 import { createTask } from '@repo/orchestrator';
-import { ChatMode } from '@repo/shared/config';
 import { z } from 'zod';
-import { ModelEnum } from '../../models';
+import { getModelFromChatMode, ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { generateObject, generateText, getHumanizedDate, getSERPResults } from '../utils';
-
-const getModelFromChatMode = (mode?: string): ModelEnum => {
-    switch (mode) {
-        case ChatMode.GEMINI_2_FLASH:
-            return ModelEnum.GEMINI_2_FLASH;
-        case ChatMode.DEEPSEEK_R1:
-            return ModelEnum.Deepseek_R1;
-        case ChatMode.CLAUDE_3_5_SONNET:
-            return ModelEnum.Claude_3_5_Sonnet;
-        case ChatMode.CLAUDE_3_7_SONNET:
-            return ModelEnum.Claude_3_7_Sonnet;
-        case ChatMode.O3_Mini:
-            return ModelEnum.O3_Mini;
-        default:
-            return ModelEnum.GPT_4o_Mini;
-    }
-};
+import {
+    generateObject,
+    generateText,
+    getHumanizedDate,
+    getSERPResults,
+    handleError,
+} from '../utils';
 
 const buildWebSearchPrompt = (results: any[]): string => {
     const today = new Date().toLocaleDateString();
@@ -67,8 +55,6 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
                         !!message.content
                 ) || [];
 
-        console.log('messages', messages);
-
         const chatMode = context?.get('mode');
         const model = getModelFromChatMode(chatMode);
 
@@ -80,11 +66,16 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
                 query: z.string(),
             }),
         });
+
         if (!query.query) {
             throw new Error('No query generated');
         }
         const results = await getSERPResults([query.query]);
-        console.log(results);
+
+        if (!results || results.length === 0) {
+            throw new Error('No results found');
+        }
+
         events?.update('flow', prev => ({
             ...prev,
             steps: {
@@ -123,6 +114,7 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
             sources: results.map((result: any, index: number) => ({
                 title: result.title,
                 link: result.link,
+                snippet: result.snippet,
                 index: index + (prev?.sources?.length || 1),
             })),
         }));
@@ -173,6 +165,7 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
             result: 'success',
         };
     },
+    onError: handleError,
     route: ({ context }) => {
         if (context?.get('showSuggestions') && context.get('answer')) {
             return 'suggestions';

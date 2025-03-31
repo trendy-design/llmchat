@@ -68,9 +68,9 @@ const inter = localFont({
     variable: '--font-inter',
 });
 
-const cabinet = localFont({
-    src: './CabinetGrotesk-Variable.woff2',
-    variable: '--font-cabinet',
+const clash = localFont({
+    src: './ClashGrotesk-Variable.woff2',
+    variable: '--font-clash',
 });
 
 export default function ParentLayout({
@@ -81,7 +81,7 @@ export default function ParentLayout({
     return (
         <html
             lang="en"
-            className={cn(GeistMono.variable, inter.variable, cabinet.variable)}
+            className={cn(GeistMono.variable, inter.variable, clash.variable)}
             suppressHydrationWarning
         >
             <head>

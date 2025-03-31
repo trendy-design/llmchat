@@ -37,7 +37,7 @@ export const SourceList = ({
                                 {source?.index}.
                             </div>
 
-                            <WebsitePreview key={source.link} url={source.link} />
+                            <WebsitePreview key={source.link} source={source} />
                         </div>
                     ))}
                 </div>

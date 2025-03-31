@@ -86,7 +86,7 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
     if (isSubmitted) {
         return (
             <div className="border-border bg-background mt-2 flex w-full flex-col flex-col items-start gap-4 rounded-2xl border p-4">
-                <span className="flex flex-row items-center gap-1 text-xs font-medium text-emerald-600">
+                <span className="flex flex-row items-center gap-1 text-xs font-medium text-teal-600">
                     <IconCheck size={14} strokeWidth={2} /> Submitted
                 </span>
                 <div className="flex flex-col">

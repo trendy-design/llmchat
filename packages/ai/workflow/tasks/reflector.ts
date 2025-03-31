@@ -2,7 +2,7 @@ import { createTask } from '@repo/orchestrator';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { generateObject, getHumanizedDate } from '../utils';
+import { generateObject, getHumanizedDate, handleError } from '../utils';
 
 export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'reflector',
@@ -125,17 +125,7 @@ CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genui
             stepId: newStepId,
         };
     },
-    onError: (error, { context, events }) => {
-        events?.update('flow', prev => ({
-            ...prev,
-            error: 'Something went wrong while processing your request. Please try again.',
-            status: 'ERROR',
-        }));
-        return Promise.resolve({
-            retry: false,
-            result: 'error',
-        });
-    },
+    onError: handleError,
     route: ({ result, executionContext, config, context }) => {
         if (result?.queries?.filter(Boolean)?.length > 0) {
             return 'web-search';

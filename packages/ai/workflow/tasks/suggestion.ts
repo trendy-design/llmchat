@@ -2,7 +2,7 @@ import { createTask } from '@repo/orchestrator';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { generateObject, getHumanizedDate } from '../utils';
+import { generateObject, getHumanizedDate, handleError } from '../utils';
 
 const SuggestionSchema = z.object({
     questions: z.array(z.string()).describe('A list of questions to user can ask followup'),
@@ -47,17 +47,7 @@ export const suggestionsTask = createTask<WorkflowEventSchema, WorkflowContextSc
             suggestions: object?.questions,
         };
     },
-    onError: (error, { context, events }) => {
-        events?.update('flow', prev => ({
-            ...prev,
-            error: 'Something went wrong while processing your request. Please try again.',
-            status: 'ERROR',
-        }));
-        return Promise.resolve({
-            retry: false,
-            result: 'error',
-        });
-    },
+    onError: handleError,
     route: ({ result }) => {
         return 'end';
     },

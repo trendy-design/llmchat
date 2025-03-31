@@ -17,11 +17,16 @@ export function Thread() {
     const currentThreadItem = useChatStore(
         useShallow(state => state.getCurrentThreadItem(currentThreadId))
     );
-
+    const isGenerating = useChatStore(useShallow(state => state.isGenerating));
     const memoizedPreviousThreadItems = useMemo(() => {
         return previousThreadItems.map(threadItem => (
             <div key={threadItem.id}>
-                <ThreadItem key={threadItem.id} threadItem={threadItem} isAnimated={false} />
+                <ThreadItem
+                    key={threadItem.id}
+                    threadItem={threadItem}
+                    isAnimated={false}
+                    isGenerating={false}
+                />
             </div>
         ));
     }, [previousThreadItems]);
@@ -36,6 +41,7 @@ export function Thread() {
                             key={currentThreadItem.id}
                             threadItem={currentThreadItem}
                             isAnimated={true}
+                            isGenerating={isGenerating}
                         />
                         <FollowupSuggestions suggestions={currentThreadItem.suggestions || []} />
                     </div>

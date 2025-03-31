@@ -14,7 +14,14 @@ import { motion } from 'framer-motion';
 import { memo, useEffect, useMemo, useRef } from 'react';
 
 export const ThreadItem = memo(
-    ({ threadItem }: { isAnimated: boolean; threadItem: ThreadItemType }) => {
+    ({
+        threadItem,
+        isGenerating,
+    }: {
+        isAnimated: boolean;
+        threadItem: ThreadItemType;
+        isGenerating: boolean;
+    }) => {
         const setCurrentSources = useChatStore(state => state.setCurrentSources);
         const messageRef = useRef<HTMLDivElement>(null);
 
@@ -91,7 +98,8 @@ export const ThreadItem = memo(
                         )}
                         {(threadItem.status === 'COMPLETED' ||
                             threadItem.status === 'ABORTED' ||
-                            threadItem.status === 'ERROR') && (
+                            threadItem.status === 'ERROR' ||
+                            !isGenerating) && (
                             <MessageActions threadItem={threadItem} ref={messageRef} />
                         )}
                     </div>

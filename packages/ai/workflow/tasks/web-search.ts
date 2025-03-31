@@ -1,7 +1,13 @@
 import { createTask } from '@repo/orchestrator';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { executeWebSearch, generateText, getHumanizedDate, processWebPages } from '../utils';
+import {
+    executeWebSearch,
+    generateText,
+    getHumanizedDate,
+    handleError,
+    processWebPages,
+} from '../utils';
 
 export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'web-search',
@@ -22,6 +28,7 @@ export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
                                 data: results?.map((result: any) => ({
                                     title: result.title,
                                     link: result.link,
+                                    snippet: result.snippet,
                                 })),
                                 status: 'PENDING' as const,
                             },
@@ -42,12 +49,17 @@ export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
                 .map((result: any, index: number) => ({
                     title: result.title,
                     link: result.link,
+                    snippet: result.snippet,
                     index: index + existingSources.length,
                 }));
             return [...existingSources, ...newSources];
         });
 
         const processedResults = await processWebPages(results, signal);
+
+        if (!processedResults || processedResults.length === 0) {
+            throw new Error('No results found');
+        }
 
         const question = context?.get('question') || '';
 
@@ -121,6 +133,7 @@ ${processedResults
                                 data: results?.map((result: any) => ({
                                     title: result.title,
                                     link: result.link,
+                                    snippet: result.snippet,
                                 })),
                                 status: 'COMPLETED' as const,
                             },
@@ -154,18 +167,7 @@ ${processedResults
             summary,
         };
     },
-    onError: (error, { context, events }) => {
-        console.error('Task failed', error);
-        events?.update('flow', prev => ({
-            ...prev,
-            error: 'Something went wrong while processing your request. Please try again.',
-            status: 'ERROR',
-        }));
-        return Promise.resolve({
-            retry: false,
-            result: 'error',
-        });
-    },
+    onError: handleError,
     route: ({ context }) => {
         const allQueries = context?.get('queries') || [];
         if (allQueries?.length < 6) {

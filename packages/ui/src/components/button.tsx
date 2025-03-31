@@ -11,7 +11,7 @@ const buttonVariants = cva(
         variants: {
             variant: {
                 default:
-                    'bg-emerald-700 border border-emerald-800 text-background [&>svg]:text-background font-semibold hover:opacity-90',
+                    'bg-teal-700 border border-teal-800 text-background [&>svg]:text-background font-semibold hover:opacity-90',
                 brand: 'bg-brand text-brand-foreground font-semibold hover:opacity-90',
                 'brand-secondary':
                     'bg-brand-secondary text-brand-secondary-foreground font-semibold hover:opacity-90',

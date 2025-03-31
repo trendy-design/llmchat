@@ -146,14 +146,14 @@ export const WebSearchButton = () => {
             size={useWebSearch ? 'sm' : 'icon'}
             tooltip="Web Search"
             variant={useWebSearch ? 'secondary' : 'ghost'}
-            className={cn('gap-2', useWebSearch && 'bg-emerald-500/20 pl-2 text-emerald-600')}
+            className={cn('gap-2', useWebSearch && 'bg-teal-500/20 pl-2 text-teal-600')}
             rounded="full"
             onClick={() => setUseWebSearch(!useWebSearch)}
         >
             <IconWorld
                 size={18}
                 strokeWidth={2}
-                className={cn(useWebSearch ? '!text-emerald-600' : 'text-muted-foreground')}
+                className={cn(useWebSearch ? '!text-teal-600' : 'text-muted-foreground')}
             />
             {useWebSearch && <p className="text-xs">Web</p>}
         </Button>

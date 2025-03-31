@@ -133,7 +133,7 @@ export const Sidebar = () => {
                         className={cn(
                             isSidebarOpen && 'relative w-full',
                             'justify-center',
-                            'text-background border border-emerald-800 bg-emerald-700'
+                            'text-background border border-teal-800 bg-teal-700'
                         )}
                         onClick={() => !isChatPage && push('/chat')}
                     >
@@ -191,7 +191,7 @@ export const Sidebar = () => {
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <div className="hover:bg-quaternary flex w-full cursor-pointer flex-row items-center gap-3 rounded-lg p-2 px-3">
-                                    <div className="flex size-5 items-center justify-center rounded-full bg-emerald-800">
+                                    <div className="flex size-5 items-center justify-center rounded-full bg-teal-800">
                                         <Image
                                             src={user?.imageUrl ?? ''}
                                             width={0}
@@ -263,7 +263,7 @@ export const Sidebar = () => {
                                         !isSidebarOpen && 'justify-center'
                                     )}
                                 >
-                                    <div className="flex size-5 items-center justify-center rounded-full bg-emerald-800">
+                                    <div className="flex size-5 items-center justify-center rounded-full bg-teal-800">
                                         <IconUser
                                             size={14}
                                             strokeWidth={2}

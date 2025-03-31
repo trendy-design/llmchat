@@ -73,7 +73,11 @@ const HoverCardRoot = ({ openDelay, closeDelay, children }: HoverCardRootProps) 
         <>
             {clonedTrigger}
             {isMounted && (
-                <div ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
+                <div
+                    ref={refs.setFloating}
+                    style={{ ...floatingStyles, zIndex: 999 }}
+                    {...getFloatingProps()}
+                >
                     {content}
                 </div>
             )}
@@ -95,7 +99,7 @@ const HoverCardContent = React.forwardRef<HTMLDivElement, HoverCardContentProps>
         <div
             ref={ref}
             className={cn(
-                'bg-background text-card-foreground z-50 flex max-w-64 flex-col items-start rounded-md border p-4 shadow-md outline-none',
+                'bg-background text-card-foreground isolate z-[200] flex max-w-64 flex-col items-start rounded-md border p-4 shadow-md outline-none',
                 'animate-in fade-in-0 zoom-in-95',
                 className
             )}

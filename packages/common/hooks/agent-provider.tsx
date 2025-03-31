@@ -142,6 +142,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                         } else if (line.startsWith('data: ')) {
                             jsonData = line.slice(6);
 
+                            console.log('jsonData', jsonData);
+
                             try {
                                 const data = JSON.parse(jsonData);
                                 console.log('event:', currentEvent, 'data:', data);
@@ -204,9 +206,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 status: 'ERROR',
                 error: 'Stream connection error: ' + (streamError as Error).message,
             });
-        } finally {
-            reader.releaseLock();
-            setIsGenerating(false);
         }
     };
 

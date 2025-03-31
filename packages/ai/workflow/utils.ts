@@ -1,3 +1,4 @@
+import { TaskParams } from '@repo/orchestrator';
 import {
     CoreMessage,
     extractReasoningMiddleware,
@@ -9,6 +10,7 @@ import { format } from 'date-fns';
 import { ZodSchema } from 'zod';
 import { ModelEnum } from '../models';
 import { getLanguageModel } from '../providers';
+import { generateErrorMessage } from './tasks/utils';
 
 export const generateText = async ({
     prompt,
@@ -225,7 +227,13 @@ export const getHumanizedDate = () => {
 
 export const getSERPResults = async (queries: string[]) => {
     const myHeaders = new Headers();
-    myHeaders.append('X-API-KEY', process.env.SERPER_API_KEY || (self as any).SERPER_API_KEY || '');
+    const apiKey = process.env.SERPER_API_KEY || (self as any).SERPER_API_KEY || '';
+
+    if (!apiKey) {
+        throw new Error('SERPER_API_KEY is not configured');
+    }
+
+    myHeaders.append('X-API-KEY', apiKey);
     myHeaders.append('Content-Type', 'application/json');
 
     const raw = JSON.stringify(
@@ -235,12 +243,23 @@ export const getSERPResults = async (queries: string[]) => {
     );
 
     try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
         const response = await fetch('https://google.serper.dev/search', {
             method: 'POST',
             headers: myHeaders,
             body: raw,
             redirect: 'follow',
+            signal: controller.signal,
         });
+
+        clearTimeout(timeoutId);
+
+        if (!response.ok) {
+            throw new Error(`SERP API responded with status: ${response.status}`);
+        }
+
         const batchResult = await response.json();
 
         const organicResultsLists =
@@ -431,4 +450,20 @@ export type TReaderResult = {
     markdown?: string;
     source?: 'jina' | 'readability';
     error?: string;
+};
+
+export const handleError = (error: Error, { context, events }: TaskParams) => {
+    const errorMessage = generateErrorMessage(error);
+    console.error('Task failed', error);
+
+    events?.update('flow', prev => ({
+        ...prev,
+        error: errorMessage,
+        status: 'ERROR',
+    }));
+
+    return Promise.resolve({
+        retry: false,
+        result: 'error',
+    });
 };

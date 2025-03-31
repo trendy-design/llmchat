@@ -10,12 +10,10 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
 
         const source = getSourceByIndex(parseInt(index));
 
-        console.log(source, children);
-
         const url = source?.link;
 
         if (!url) {
-            return <span className="text-red-500">{index}</span>;
+            return null;
         }
 
         const isValid = isValidUrl(url);
@@ -25,7 +23,7 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
         }
 
         return (
-            <LinkPreviewPopover url={url}>
+            <LinkPreviewPopover source={source}>
                 <div className="group mx-0.5 inline-flex size-4 flex-row items-center justify-center gap-1 rounded-sm bg-emerald-600/20 text-[10px] font-medium text-emerald-700">
                     {source?.index}
                 </div>

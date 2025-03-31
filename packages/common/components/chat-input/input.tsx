@@ -1,5 +1,6 @@
 'use client';
 import { useAuth, useClerk, useUser } from '@clerk/nextjs';
+import { MessagesRemainingBadge } from '@repo/common/components';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -76,6 +77,8 @@ export const ChatInput = ({
 
     const renderChatInput = () => (
         <AnimatePresence>
+            <MessagesRemainingBadge />
+
             <motion.div
                 className="w-full"
                 initial={{ opacity: 0, y: 10 }}
@@ -144,19 +147,6 @@ export const ChatInput = ({
                         )}
                     </motion.div>
                 </Flex>
-                {/* {showBottomBar && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.25, ease: 'easeOut' }}
-                        className="mx-1.5 -mt-2 flex h-10 flex-row items-center gap-2 rounded-b-2xl border-x border-b border-yellow-900/20 bg-yellow-700/5 px-2 pt-2"
-                    >
-                        <span className="px-2 text-xs font-light">
-                            <MessagesRemainingBadge />
-                        </span>
-                    </motion.div>
-                )} */}
             </motion.div>
         </AnimatePresence>
     );
@@ -198,14 +188,14 @@ export const ChatInput = ({
                         >
                             {`Good morning`}
                         </motion.h1> */}
-                        {/* <motion.h1
+                        <motion.h1
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3, delay: 0.2 }}
-                            className="text-foreground text-3xl font-medium tracking-tight"
+                            className="font-clash text-foreground text-[32px] font-semibold !text-teal-900"
                         >
-                            How can i help you?
-                        </motion.h1> */}
+                            What can i help you with?
+                        </motion.h1>
                     </motion.div>
                 )}
 

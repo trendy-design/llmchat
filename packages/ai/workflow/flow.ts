@@ -136,7 +136,8 @@ export const runWorkflow = ({
 
     // Set default values for config
     const workflowConfig: WorkflowConfig = {
-        maxIterations: 5,
+        maxIterations: 2,
+        timeoutMs: 480000, // Add default timeout of
         ...config,
     };
 

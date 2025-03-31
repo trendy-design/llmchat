@@ -139,7 +139,7 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
                             )}
                             <p className="text-sm font-medium">{getTitle(threadItem)}</p>
 
-                            <p className="!text-xs text-emerald-600">
+                            <p className="!text-xs text-teal-600">
                                 {stepCounts} {stepCounts === 1 ? 'Step' : 'Steps'}
                             </p>
                             <div className="flex-1" />
