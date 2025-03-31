@@ -1,16 +1,29 @@
 'use client';
+import { useClerk, useUser } from '@clerk/nextjs';
 import { FullPageLoader, HistoryItem } from '@repo/common/components';
 import { useRootContext } from '@repo/common/context';
 import { Thread, useAppStore, useChatStore } from '@repo/common/store';
-import { Button, cn, Flex } from '@repo/ui';
+import {
+    Button,
+    cn,
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+    Flex,
+} from '@repo/ui';
 import {
     IconArrowBarLeft,
     IconArrowBarRight,
+    IconLogout,
     IconPlus,
     IconSearch,
-    IconSettings2,
+    IconSelector,
+    IconSettings,
+    IconUser,
 } from '@tabler/icons-react';
 import moment from 'moment';
+import Image from 'next/image';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
 export const Sidebar = () => {
@@ -23,6 +36,9 @@ export const Sidebar = () => {
     const sortThreads = (threads: Thread[], sortBy: 'createdAt') => {
         return [...threads].sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
     };
+
+    const { isSignedIn, user } = useUser();
+    const { openUserProfile, signOut } = useClerk();
     const clearAllThreads = useChatStore(state => state.clearAllThreads);
     const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
     const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
@@ -56,12 +72,8 @@ export const Sidebar = () => {
         if (threads.length === 0) return null;
         return (
             <Flex gap="xs" direction="col" items="start" className="w-full">
-                <p className="text-muted-foreground py-1 text-xs">{title}</p>
-                <Flex
-                    className="border-border/50 w-full gap-0.5 border-l pl-2"
-                    gap="none"
-                    direction="col"
-                >
+                <p className="text-muted-foreground px-2 py-1 text-xs font-medium">{title}</p>
+                <Flex className="border-border/50 w-full" gap="none" direction="col">
                     {threads.map(thread => (
                         <HistoryItem
                             thread={thread}
@@ -80,14 +92,12 @@ export const Sidebar = () => {
     return (
         <div
             className={cn(
-                'border-border/70 bottom-0 left-0 top-0 z-[50] flex h-[100dvh] flex-shrink-0 flex-col border-r border-dashed py-2 transition-all duration-200',
-                isSidebarOpen
-                    ? 'bg-background border-border/70 shadow-xs top-0 h-full w-[260px] border-r'
-                    : 'w-[50px]'
+                'bottom-0 left-0 top-0 z-[50] flex h-[100dvh] flex-shrink-0 flex-col  py-2 transition-all duration-200',
+                isSidebarOpen ? 'top-0 h-full w-[220px]' : 'w-[60px]'
             )}
         >
             <Flex direction="col" className="w-full flex-1 overflow-hidden">
-                <Flex direction="col" className="w-full items-center px-2" gap="sm">
+                <Flex direction="col" className="w-full items-end px-4" gap="sm">
                     {isSidebarOpen && (
                         <Button
                             variant="ghost"
@@ -114,15 +124,15 @@ export const Sidebar = () => {
                         </Button>
                     )}
                     <Button
-                        size={isSidebarOpen ? 'xs' : 'icon-sm'}
+                        size={isSidebarOpen ? 'sm' : 'icon-sm'}
                         variant="default"
-                        rounded="full"
+                        rounded="lg"
                         tooltip={isSidebarOpen ? undefined : 'New Thread'}
                         tooltipSide="right"
                         className={cn(
                             isSidebarOpen && 'relative w-full',
                             'justify-center',
-                            'text-background bg-tertiary-foreground border-foreground border'
+                            'text-background border border-emerald-800 bg-emerald-700'
                         )}
                         onClick={() => !isChatPage && push('/chat')}
                     >
@@ -134,9 +144,9 @@ export const Sidebar = () => {
                         {isSidebarOpen && 'New'}
                     </Button>
                     <Button
-                        size={isSidebarOpen ? 'xs' : 'icon-sm'}
-                        variant="secondary"
-                        rounded="full"
+                        size={isSidebarOpen ? 'sm' : 'icon-sm'}
+                        variant="bordered"
+                        rounded="lg"
                         tooltip={isSidebarOpen ? undefined : 'Search'}
                         tooltipSide="right"
                         className={cn(isSidebarOpen && 'relative w-full', 'justify-center')}
@@ -176,20 +186,50 @@ export const Sidebar = () => {
                     direction={'col'}
                     justify={isSidebarOpen ? 'between' : 'center'}
                 >
-                    <Button
-                        variant="ghost"
-                        size={isSidebarOpen ? 'sm' : 'icon'}
-                        className={cn(
-                            'w-full justify-start',
-                            !isSidebarOpen && 'mx-auto justify-center'
-                        )}
-                        tooltip="Settings"
-                        tooltipSide="right"
-                        onClick={() => setIsSettingsOpen(true)}
-                    >
-                        <IconSettings2 size={16} strokeWidth={2} />
-                        {isSidebarOpen && 'Settings'}
-                    </Button>
+                    {isSignedIn && (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <div className="hover:bg-quaternary flex w-full cursor-pointer flex-row items-center gap-3 rounded-lg p-2 px-3">
+                                    <div className="flex size-5 items-center justify-center rounded-full bg-emerald-800">
+                                        <Image
+                                            src={user?.imageUrl ?? ''}
+                                            width={0}
+                                            height={0}
+                                            sizes="100vw"
+                                            className="size-full rounded-full"
+                                            alt={user?.fullName ?? ''}
+                                        />
+                                    </div>
+                                    {isSidebarOpen && (
+                                        <p className="flex-1 text-sm font-medium">
+                                            {user?.fullName}
+                                        </p>
+                                    )}
+                                    {isSidebarOpen && (
+                                        <IconSelector
+                                            size={14}
+                                            strokeWidth={2}
+                                            className="text-muted-foreground"
+                                        />
+                                    )}
+                                </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem onClick={() => setIsSettingsOpen(true)}>
+                                    <IconSettings size={16} strokeWidth={2} />
+                                    Settings
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => openUserProfile()}>
+                                    <IconUser size={16} strokeWidth={2} />
+                                    Profile
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => signOut()}>
+                                    <IconLogout size={16} strokeWidth={2} />
+                                    Logout
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    )}
                 </Flex>
             </Flex>
         </div>

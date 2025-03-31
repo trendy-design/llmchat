@@ -46,13 +46,16 @@ ${s}
 
 
 <citations>
- Citations and References:
-   - Use inline citations using <Source> tags when referencing specific information
-      For example: <Source>https://www.google.com</Source> <Source>https://www.xyz.com</Source>
-   - Cite multiple sources when information appears in multiple research summaries
-   - Don't Include reference list at the end.
+ ## Citations and References:
+   - Based on provided references in each findings, you must cite the sources in the analysis.
+   - Use inline citations like [1] to reference the source
+   - For example: According to recent findings [1][3], progress in this area has accelerated
+   - When information appears in multiple findings, cite all relevant findings using multiple numbers
+   - Integrate citations naturally without disrupting reading flow
+   - must add a numbered reference list at the end with format:
+      [1] https://www.example.com
+      [2] https://www.another-source.com
    </citations>
-
                 `;
 
         const text = await generateText({
@@ -99,6 +102,7 @@ ${s}
                     status: 'COMPLETED' as const,
                 },
             },
+            sources: context?.get('sources') || [],
         }));
 
         trace?.span({

@@ -1,4 +1,4 @@
-import { CitationProviderContext } from '@repo/common/components';
+import { Source } from '@repo/common/store';
 import {
     Button,
     Dialog,
@@ -8,21 +8,21 @@ import {
     DialogTrigger,
     WebsitePreview,
 } from '@repo/ui';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 export const SourceList = ({
     children,
-    otherSources,
+    sources,
 }: {
     children: React.ReactNode;
-    otherSources: string[];
+    sources: Source[];
 }) => {
-    const { citations } = useContext(CitationProviderContext);
     const [isOpen, setIsOpen] = useState(false);
-
-    if (Object.keys(citations).length === 0 && otherSources.length === 0) {
+    if (!sources || !Array.isArray(sources) || sources?.length === 0) {
         return null;
     }
+
+    const sortedSources = [...sources].sort((a, b) => a?.index - b?.index);
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -31,21 +31,13 @@ export const SourceList = ({
             <DialogContent ariaTitle="Sources" className="border-none p-0">
                 <DialogTitle className="p-4">Sources</DialogTitle>
                 <div className="flex max-h-[50vh] flex-col gap-6 overflow-y-auto px-6 pb-6">
-                    {Object.entries(citations).map(([url, citation]) => (
-                        <div className="flex flex-row items-start gap-2" key={url}>
+                    {sortedSources.map(source => (
+                        <div className="flex flex-row items-start gap-2" key={source.link}>
                             <div className="text-muted-foreground group inline-flex size-5 shrink-0 flex-row items-center justify-center gap-1 rounded-sm text-sm">
-                                {citation?.index}.
+                                {source?.index}.
                             </div>
 
-                            <WebsitePreview key={url} url={url} />
-                        </div>
-                    ))}
-                    {otherSources?.map(source => (
-                        <div className="flex flex-row items-start gap-2" key={source}>
-                            <div className="text-muted-foreground group inline-flex size-5 shrink-0 flex-row items-center justify-center gap-1 rounded-sm text-sm">
-                                {''}
-                            </div>
-                            <WebsitePreview url={source} />
+                            <WebsitePreview key={source.link} url={source.link} />
                         </div>
                     ))}
                 </div>

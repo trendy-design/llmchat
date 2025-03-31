@@ -1,5 +1,5 @@
 'use client';
-import { ChatInput, Thread } from '@repo/common/components';
+import { ChatInput, Thread, ThreadNavBar } from '@repo/common/components';
 import { useChatStore } from '@repo/common/store';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -33,11 +33,12 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
             className="flex h-full w-full flex-col items-center overflow-y-auto px-8"
             ref={scrollRef}
         >
+            <ThreadNavBar />
             <div className="mx-auto w-full max-w-3xl px-4 pb-[200px] pt-8" ref={contentRef}>
                 <Thread />
             </div>
 
-            <div className="bg-secondary fixed bottom-0 z-[30] mx-auto flex w-full max-w-3xl flex-col">
+            <div className="bg-secondary absolute bottom-0 z-[30] mx-auto flex w-full max-w-3xl flex-col">
                 <ChatInput showGreeting={false} showBottomBar={false} isFollowUp={true} />
             </div>
         </div>

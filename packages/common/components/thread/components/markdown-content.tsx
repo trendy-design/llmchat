@@ -1,9 +1,14 @@
-import { mdxComponents, useMdxChunker } from '@repo/common/components';
+import {
+    ErrorBoundary,
+    ErrorPlaceholder,
+    mdxComponents,
+    useMdxChunker,
+} from '@repo/common/components';
 import { cn } from '@repo/ui';
 import { MDXRemote } from 'next-mdx-remote';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote/rsc';
 import { serialize } from 'next-mdx-remote/serialize';
-import { memo, useEffect, useState } from 'react';
+import { memo, Suspense, useEffect, useState } from 'react';
 import remarkGfm from 'remark-gfm';
 
 type MarkdownContentProps = {
@@ -22,9 +27,14 @@ const markdownStyles = {
     'animate-fade-in prose prose-sm min-w-full': true,
 
     // Text styles
-    'prose-p:font-light prose-p:tracking-[0.01em]': true,
-    'prose-headings:text-base prose-headings:font-medium prose-headings:tracking-[0.005em]': true,
+    'prose-p:font-normal prose-p:text-base prose-p:text-muted-foreground': true,
+    'prose-headings:text-base prose-headings:font-medium ': true,
+    'prose-h1:text-lg prose-h1:font-medium ': true,
+    'prose-h2:text-lg prose-h2:font-medium ': true,
+    'prose-h3:text-lg prose-h3:font-medium ': true,
     'prose-strong:font-medium prose-th:font-medium': true,
+
+    'prose-li:text-muted-foreground prose-li:font-normal': true,
 
     // Code styles
     'prose-code:font-mono prose-code:text-sm prose-code:font-normal': true,
@@ -70,6 +80,19 @@ export const normalizeContent = (content: string) => {
     return content.replace(/\\n/g, '\n');
 };
 
+function parseCitationsWithSourceTags(markdown: string): string {
+    // Regular expression to match citations like [1], [2], etc.
+    const citationRegex = /\[(\d+)\]/g;
+    let result = markdown;
+
+    // Replace each citation with the wrapped version
+    result = result.replace(citationRegex, (match, p1) => {
+        return `<Source>${p1}</Source>`;
+    });
+
+    return result;
+}
+
 export const MarkdownContent = memo(({ content, className }: MarkdownContentProps) => {
     const [previousContent, setPreviousContent] = useState<string[]>([]);
     const [currentContent, setCurrentContent] = useState<string>('');
@@ -81,7 +104,10 @@ export const MarkdownContent = memo(({ content, className }: MarkdownContentProp
         (async () => {
             try {
                 const normalizedContent = normalizeContent(content);
-                const cleanedContent = removeIncompleteTags(normalizedContent);
+                const cleanedContent = parseCitationsWithSourceTags(normalizedContent);
+
+                console.log(cleanedContent);
+                // const cleanedContent = removeIncompleteTags(normalizedContent);
                 const { chunks } = await chunkMdx(cleanedContent);
                 console.log(chunks);
 
@@ -106,9 +132,15 @@ export const MarkdownContent = memo(({ content, className }: MarkdownContentProp
     return (
         <div className={cn('', markdownStyles, className)}>
             {previousContent.map(chunk => (
-                <MemoizedMdxChunk key={chunk} chunk={chunk} />
+                <ErrorBoundary fallback={<ErrorPlaceholder />}>
+                    <MemoizedMdxChunk key={chunk} chunk={chunk} />
+                </ErrorBoundary>
             ))}
-            {currentContent && <MemoizedMdxChunk chunk={currentContent} />}
+            {currentContent && (
+                <ErrorBoundary fallback={<ErrorPlaceholder />}>
+                    <MemoizedMdxChunk chunk={currentContent} />
+                </ErrorBoundary>
+            )}
         </div>
     );
 });
@@ -148,7 +180,13 @@ export const MemoizedMdxChunk = memo(({ chunk }: { chunk: string }) => {
         return null;
     }
 
-    return <MDXRemote {...mdx} components={mdxComponents} />;
+    return (
+        <ErrorBoundary fallback={<ErrorPlaceholder />}>
+            <Suspense fallback={<div>Loading...</div>}>
+                <MDXRemote {...mdx} components={mdxComponents} />
+            </Suspense>
+        </ErrorBoundary>
+    );
 });
 
 MemoizedMdxChunk.displayName = 'MemoizedMdxChunk';

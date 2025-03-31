@@ -1,10 +1,10 @@
 'use client';
-import { SignIn, SignInButton, useAuth, UserButton } from '@clerk/nextjs';
+import { SignIn } from '@clerk/nextjs';
 import { CommandSearch, SettingsModal, Sidebar } from '@repo/common/components';
 import { useRootContext } from '@repo/common/context';
 import { AgentProvider } from '@repo/common/hooks';
 import { useAppStore } from '@repo/common/store';
-import { Button, Flex, Toaster } from '@repo/ui';
+import { Flex, Toaster } from '@repo/ui';
 import { IconMoodSadDizzy } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FC } from 'react';
@@ -16,12 +16,11 @@ export type TRootLayout = {
 
 export const RootLayout: FC<TRootLayout> = ({ children }) => {
     const { isSidebarOpen, isMobileSidebarOpen, setIsMobileSidebarOpen } = useRootContext();
-    const { isSignedIn } = useAuth();
     const setIsSettingOpen = useAppStore(state => state.setIsSettingsOpen);
     const showSignInModal = useAppStore(state => state.showSignInModal);
 
     const containerClass =
-        'relative flex flex-1 flex-col h-[100dvh] bg-secondary w-full overflow-hidden shadow-sm';
+        'relative flex flex-1 flex-col h-[calc(100dvh)] border border-border rounded-l-sm bg-secondary w-full overflow-hidden shadow-sm';
 
     if (showSignInModal) {
         return (
@@ -32,8 +31,8 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
     }
 
     return (
-        <div className="bg-secondary flex h-[100dvh] w-full flex-row overflow-hidden">
-            <div className="bg-secondary item-center fixed inset-0 z-[99999] flex justify-center md:hidden">
+        <div className="bg-tertiary flex h-[100dvh] w-full flex-row overflow-hidden">
+            <div className="bg-tertiary item-center fixed inset-0 z-[99999] flex justify-center md:hidden">
                 <div className="flex flex-col items-center justify-center gap-2">
                     <IconMoodSadDizzy size={24} strokeWidth={2} className="text-muted-foreground" />
                     <span className="text-muted-foreground text-center text-sm">
@@ -64,34 +63,14 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
 
             {/* Main Content */}
             <Flex className="w-full">
-                <motion.div className="flex flex-1 gap-0 overflow-hidden p-0">
+                <motion.div className="flex flex-1 gap-0 overflow-hidden">
                     <AgentProvider>
                         <div className={containerClass}>
-                            <div className="flex h-full w-full flex-row">
-                                <div className="flex w-full flex-col gap-2 overflow-y-auto">
-                                    <div className="from-secondary to-secondary/0 via-secondary/70 fixed left-0 right-0 top-0 z-40 flex flex-row items-center justify-center gap-1 bg-gradient-to-b p-2 pb-12"></div>
+                            <div className="relative flex h-full w-full flex-row">
+                                <div className=" flex w-full flex-col gap-2 overflow-y-auto">
+                                    <div className="from-secondary to-secondary/0 via-secondary/70 absolute left-0 right-0 top-0 z-40 flex flex-row items-center justify-center gap-1 bg-gradient-to-b p-2 pb-12"></div>
                                     {/* Auth Button Header */}
-                                    <div className="fixed right-0 top-0 z-50 flex items-center gap-1 px-4 py-2">
-                                        {isSignedIn ? (
-                                            <UserButton
-                                                appearance={{
-                                                    elements: {
-                                                        avatarBox:
-                                                            'size-6 bg-muted-foreground border border-border',
-                                                        userButtonAvatarBox: 'bg-muted-foreground',
-                                                        userPreviewAvatarIcon:
-                                                            'bg-muted-foreground',
-                                                    },
-                                                }}
-                                            />
-                                        ) : (
-                                            <SignInButton mode="modal">
-                                                <Button variant="default" size="sm" rounded="full">
-                                                    Log in
-                                                </Button>
-                                            </SignInButton>
-                                        )}
-                                    </div>
+
                                     {children}
                                 </div>
                             </div>

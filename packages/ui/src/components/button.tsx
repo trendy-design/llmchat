@@ -6,12 +6,12 @@ import { cn } from '../lib/utils';
 import { Tooltip } from './tooltip';
 
 const buttonVariants = cva(
-    'inline-flex items-center gap-1 justify-center font-medium whitespace-nowrap rounded-xl transition-colors focus-visible:outline-none [&>svg]:text-muted-foreground disabled:opacity-70',
+    'inline-flex items-center gap-2 justify-center font-medium whitespace-nowrap rounded-xl transition-colors focus-visible:outline-none [&>svg]:text-muted-foreground disabled:opacity-70',
     {
         variants: {
             variant: {
                 default:
-                    'bg-foreground text-background [&>svg]:text-background font-semibold hover:opacity-90',
+                    'bg-emerald-700 border border-emerald-800 text-background [&>svg]:text-background font-semibold hover:opacity-90',
                 brand: 'bg-brand text-brand-foreground font-semibold hover:opacity-90',
                 'brand-secondary':
                     'bg-brand-secondary text-brand-secondary-foreground font-semibold hover:opacity-90',

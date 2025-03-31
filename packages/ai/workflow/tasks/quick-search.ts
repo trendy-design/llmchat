@@ -31,21 +31,25 @@ Today is ${today}.
 ${results
     .map(
         (result, index) => `
-<result-${index}>
-    <title>${result.title}</title>
-    <snippet>${result.snippet}</snippet>
-    <link>${result.link}</link>
-</result-${index}>
+<result>
+    \n\n
+    ## [${index + 1}] ${result.link}
+    \n\n
+    ### Title: ${result.title}
+    \n\n
+    ### Snippet: ${result.snippet}
+</result>
 `
     )
     .join('\n')}
 
+**Must use citations for the findings**\n\n
 <citation-method>
-    - Use inline citations with <Source> tags for each statement where possible.
-    - Example: According to recent findings <Source>https://www.example.com</Source>, progress in this area has accelerated
-    - When information appears in multiple sources, cite all relevant sources
-    - Use multiple citations for each statement if multiple sources stated the same information.
+    - Use numbered citations like [1], [2], etc. for referencing findings
+    - Example: According to recent findings [1][3], progress in this area has accelerated
+    - When information appears in multiple findings, cite all relevant findings using multiple numbers
     - Integrate citations naturally without disrupting reading flow
+    - Don't add citations to the end of the report, just use them in the report
 </citation-method>`;
 
     return prompt;
@@ -116,6 +120,11 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
                     },
                 } as any,
             },
+            sources: results.map((result: any, index: number) => ({
+                title: result.title,
+                link: result.link,
+                index: index + (prev?.sources?.length || 1),
+            })),
         }));
 
         const searchContent = results.reduce((acc: string, result: any) => {

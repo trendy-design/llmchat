@@ -43,10 +43,10 @@ const getIcon = (threadItem: ThreadItem) => {
 
 const getNote = (threadItem: ThreadItem) => {
     if (threadItem.mode === ChatMode.Deep) {
-        return "This may take some time around 15 minutes. Don't refresh the page. or Close the tab.";
+        return 'This process takes approximately 15 minutes. Please keep the page open during this time.';
     }
     if (threadItem.mode === ChatMode.Pro) {
-        return "This may take some time around 5 minutes. Don't refresh the page. or Close the tab.";
+        return 'This process takes approximately 5 minutes. Please keep the page open during this time.';
     }
     return '';
 };
@@ -70,7 +70,7 @@ const ToolStep = memo(({ toolCall, toolResult }: ToolStepProps) => (
             <div className="bg-border/50 min-h-full w-[1px] flex-1" />
         </div>
         <div className="flex w-full flex-1 flex-col gap-2 overflow-hidden pb-2">
-            <p className="text-sm">I'll use the following tool</p>
+            <p className="text-sm">Using the following tool</p>
             {toolCall && <ToolCallStep toolCall={toolCall} />}
             {toolResult && <ToolResultStep toolResult={toolResult} />}
         </div>
@@ -124,7 +124,7 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
             >
                 <AccordionItem
                     value="workflow"
-                    className="border-border overflow-hidden rounded-xl border p-0"
+                    className="border-border overflow-hidden rounded-lg border p-0"
                 >
                     <AccordionTrigger className="bg-background flex flex-row items-center gap-2 px-4 py-2.5">
                         <div className="flex w-full flex-row items-center gap-2">
@@ -147,12 +147,12 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
                     </AccordionTrigger>
                     <AccordionContent className="bg-background p-0">
                         {getNote(threadItem) && (
-                            <Alert variant="default" className="rounded-none bg-emerald-500/10">
-                                <AlertDescription className="font-normal text-emerald-600">
+                            <Alert variant="default" className="rounded-none bg-yellow-300/10">
+                                <AlertDescription className="font-normal text-yellow-700">
                                     <IconInfoCircle
                                         size={16}
                                         strokeWidth={2}
-                                        className="font-normal text-emerald-600"
+                                        className="font-normal text-yellow-700"
                                     />
                                     {getNote(threadItem)}
                                 </AlertDescription>

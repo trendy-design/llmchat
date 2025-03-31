@@ -18,14 +18,17 @@
         --vaul-overlay-background-start: transparent;
         --vaul-overlay-background-end: rgba(0, 0, 0, 0.4);
 
-        --background: 25 12% 100%;
-        --foreground: 25 12% 2%;
+        --background: 60 12% 100%;
+        --foreground: 60 12% 2%;
 
-        --secondary: 25 12% 98%;
-        --secondary-foreground: 25 12% 4%;
+        --secondary: 60 12% 98%;
+        --secondary-foreground: 60 12% 4%;
 
-        --tertiary: 25 12% 94%;
-        --tertiary-foreground: 25 12% 8%;
+        --tertiary: 60 12% 94%;
+        --tertiary-foreground: 60 12% 8%;
+
+        --quaternary: 60 12% 90%;
+        --quaternary-foreground: 60 12% 8%;
 
         --card: 40 30% 98%;
         --card-foreground: 20 15% 10%;
@@ -36,8 +39,8 @@
         --brand: 25 12% 10%;
         --brand-foreground: 25 12% 96%;
 
-        --muted: 40 15% 92%;
-        --muted-foreground: 20 10% 45%;
+        --muted: 60 12% 80%;
+        --muted-foreground: 60 4% 36%;
 
         --accent: 40 15% 92%;
         --accent-foreground: 20 15% 10%;
@@ -45,10 +48,10 @@
         --destructive: 0 84% 60%;
         --destructive-foreground: 40 30% 98%;
 
-        --border: 25 12% 88%;
-        --soft: 25 12% 92%;
-        --hard: 25 12% 80%;
-        --input: 25 12% 85%;
+        --border: 60 12% 86%;
+        --soft: 60 12% 92%;
+        --hard: 60 12% 80%;
+        --input: 60 12% 85%;
         --ring: 20 15% 10%;
 
         --radius: 0.5rem;
@@ -105,7 +108,7 @@
     }
 
     body {
-        @apply bg-background text-foreground font-sans font-light;
+        @apply bg-background text-foreground font-sans font-normal;
     }
 
     strong {

@@ -143,7 +143,6 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
                                 ...threadItem.answer?.object,
                                 submittedQuery: query,
                             },
-                            final: true,
                         } as Answer,
                         status: 'COMPLETED',
                     });

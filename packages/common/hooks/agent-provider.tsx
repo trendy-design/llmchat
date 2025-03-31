@@ -64,6 +64,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 toolCalls: data?.toolCalls,
                 toolResults: data?.toolResults,
                 suggestions: data?.suggestions,
+                sources: data?.sources,
             });
         }
         if (data.type === 'done') {
@@ -165,6 +166,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                         toolCalls: data?.toolCalls,
                                         toolResults: data?.toolResults,
                                         suggestions: data?.suggestions,
+                                        sources: data?.sources,
                                         persistToDB:
                                             Date.now() - lastDbUpdate >= DB_UPDATE_INTERVAL,
                                     });

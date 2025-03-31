@@ -61,7 +61,6 @@ export type ThreadItem = {
     toolResults?: Record<string, ToolResult>;
     steps?: Record<string, Step>;
     answer?: Answer;
-    sources?: Source[];
     status?: ItemStatus;
     createdAt: Date;
     updatedAt: Date;
@@ -73,6 +72,7 @@ export type ThreadItem = {
     error?: string;
     suggestions?: string[];
     persistToDB?: boolean;
+    sources?: Source[];
 };
 
 export type MessageGroup = {

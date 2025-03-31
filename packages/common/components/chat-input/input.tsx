@@ -84,7 +84,7 @@ export const ChatInput = ({
             >
                 <Flex
                     direction="col"
-                    className="bg-background border-border hover:border-hard relative z-10 w-full rounded-2xl border"
+                    className="bg-background border-hard relative z-10 w-full rounded-xl border  shadow-sm"
                 >
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -198,14 +198,14 @@ export const ChatInput = ({
                         >
                             {`Good morning`}
                         </motion.h1> */}
-                        <motion.h1
+                        {/* <motion.h1
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3, delay: 0.2 }}
                             className="text-foreground text-3xl font-medium tracking-tight"
                         >
                             How can i help you?
-                        </motion.h1>
+                        </motion.h1> */}
                     </motion.div>
                 )}
 

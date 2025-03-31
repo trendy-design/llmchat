@@ -34,26 +34,16 @@ export const ThreadItem = memo(
             return threadItem.answer?.text && threadItem.answer?.text.length > 0;
         }, [threadItem.answer]);
 
-        const allSources = useMemo(() => {
-            const sourceMatches =
-                threadItem.answer?.text?.match(/<Source>([^]*?)<\/Source>/g) || [];
-
-            return sourceMatches.map(match => {
-                const content = match.replace(/<Source>([^]*?)<\/Source>/, '$1').trim();
-                return content;
-            });
-        }, [threadItem.answer?.text]);
-
         return (
-            <CitationProvider sources={allSources}>
+            <CitationProvider sources={threadItem.sources || []}>
                 <>
                     {/* <CodeBlock code={JSON.stringify(threadItem, null, 2)} lang="json" /> */}
-                    <div className={cn('flex w-full flex-col items-start gap-4')}>
+                    <div className={cn('flex w-full flex-col items-start gap-6 pt-4')}>
                         {threadItem.query && <Message message={threadItem.query} />}
 
                         {threadItem.status === 'QUEUED' && (
                             <div className="flex w-full flex-col items-start gap-2 opacity-10">
-                                <MotionSkeleton className="bg-muted-foreground/10 mb-2 h-4 !w-[100px] rounded-md" />
+                                <MotionSkeleton className="bg-muted-foreground/40 mb-2 h-4 !w-[100px] rounded-md" />
                                 <MotionSkeleton className="w-full bg-gradient-to-r" />
                                 <MotionSkeleton className="w-[70%] bg-gradient-to-r" />
                                 <MotionSkeleton className="w-[50%] bg-gradient-to-r" />
@@ -75,7 +65,7 @@ export const ThreadItem = memo(
                                         />
                                         Answer
                                     </div>
-                                    <SourceGrid steps={Object.values(threadItem?.steps || {})} />
+                                    <SourceGrid sources={threadItem.sources || []} />
 
                                     <MarkdownContent
                                         content={threadItem.answer?.text || ''}
@@ -130,7 +120,7 @@ export const MotionSkeleton = ({ className }: { className?: string }) => {
         >
             <Skeleton
                 className={cn(
-                    'from-muted-foreground/10 h-5 w-full bg-gradient-to-r via-emerald-600/50 to-green-400/10',
+                    'from-muted-foreground/50 via-muted-foreground/30 to-muted-foreground/10 h-5 w-full bg-gradient-to-r',
                     className
                 )}
             />

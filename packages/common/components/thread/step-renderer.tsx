@@ -13,7 +13,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
         if (step.text) {
             return (
                 <motion.p
-                    className="text-sm"
+                    className="text-muted-foreground text-sm"
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.1 }}
@@ -107,7 +107,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                             Analyzing
                         </TextShimmer>
                     </div>
-                    <p>
+                    <p className="text-muted-foreground text-sm">
                         {step.steps?.reasoning?.data
                             ?.split('\n\n')
                             .map((line: string, index: number) => (
@@ -162,7 +162,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                 />
             </div>
             <motion.div
-                className="flex w-full flex-1 flex-col gap-2 overflow-hidden pb-2 pr-2"
+                className="flex w-full flex-1 flex-col gap-4 overflow-hidden pb-2 pr-2"
                 initial={{ opacity: 0, y: 5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}

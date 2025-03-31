@@ -30,7 +30,7 @@ export const Message = memo(({ message }: MessageProps) => {
 
     return (
         <div className="flex w-full flex-col items-end pt-4">
-            <div className="text-foreground border-border bg-background group relative max-w-[80%] overflow-hidden rounded-3xl border">
+            <div className="text-foreground border-border bg-background group relative max-w-[80%] overflow-hidden rounded-xl border">
                 <div
                     ref={messageRef}
                     className={cn(' relative px-3 py-2 text-base font-normal', {

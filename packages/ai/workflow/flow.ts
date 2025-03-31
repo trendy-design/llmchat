@@ -54,6 +54,11 @@ export type WorkflowEventSchema = {
             status: Status;
         };
         mode: ChatMode;
+        sources?: {
+            index: number;
+            title: string;
+            link: string;
+        }[];
         suggestions?: string[];
     };
 };
@@ -87,6 +92,11 @@ export type WorkflowContextSchema = {
     webSearch: boolean;
     queries: string[];
     summaries: string[];
+    sources: {
+        index: number;
+        title: string;
+        link: string;
+    }[];
     answer: string | undefined;
     threadId: string;
     threadItemId: string;
@@ -156,6 +166,7 @@ export const runWorkflow = ({
         goals: [],
         queries: [],
         steps: [],
+        sources: [],
         summaries: [],
         answer: undefined,
         threadId,

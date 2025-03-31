@@ -1,29 +1,27 @@
 import { LinkFavicon, SourceList } from '@repo/common/components';
-import { Step } from '@repo/common/store';
+import { Source } from '@repo/common/store';
 import { getHost } from '@repo/shared/utils';
 
 type SourceGridProps = {
-    steps: Step[];
+    sources: Source[];
 };
 
-export const SourceGrid = ({ steps }: SourceGridProps) => {
-    const sources = steps
-        .flatMap(step => step.steps?.read?.data?.map((result: any) => result))
-        .filter(Boolean);
-
-    if (sources.length === 0) {
+export const SourceGrid = ({ sources }: SourceGridProps) => {
+    if (!sources || !Array.isArray(sources) || sources?.length === 0) {
         return null;
     }
 
+    const sortedSources = [...sources].sort((a, b) => a?.index - b?.index);
+
     return (
         <div className="grid grid-cols-4 gap-2 pb-6 pt-3">
-            {sources.slice(0, 3).map((source, index) => (
+            {sortedSources.slice(0, 3).map((source, index) => (
                 <div
                     key={index}
                     onClick={() => {
                         window?.open(source?.link, '_blank');
                     }}
-                    className="bg-tertiary/80 hover:bg-tertiary flex cursor-pointer flex-col justify-between rounded-xl p-2"
+                    className="bg-quaternary/80 hover:bg-quaternary flex cursor-pointer flex-col justify-between rounded-md p-2"
                 >
                     {source?.link && (
                         <div className="flex flex-row items-center gap-1 pb-1">
@@ -37,14 +35,10 @@ export const SourceGrid = ({ steps }: SourceGridProps) => {
                 </div>
             ))}
             {sources.length > 3 && (
-                <SourceList
-                    otherSources={sources
-                        ?.map(source => source?.link)
-                        .filter(link => link !== undefined)}
-                >
+                <SourceList sources={sources}>
                     <div
                         key={4}
-                        className="bg-tertiary/80 hover:bg-tertiary flex cursor-pointer flex-col items-start gap-1 rounded-xl p-2"
+                        className="bg-quaternary/80 hover:bg-quaternary flex cursor-pointer flex-col items-start gap-1 rounded-md p-2"
                     >
                         <div className="flex flex-row gap-1">
                             {sources

@@ -7,6 +7,7 @@ const nextConfig = {
             { hostname: 'icon.horse' },
             { hostname: 'icons.duckduckgo.com' },
             { hostname: 'www.google.com' },
+            { hostname: 'img.clerk.com' },
             { hostname: 'zyqdiwxgffuy8ymd.public.blob.vercel-storage.com' },
         ],
     },

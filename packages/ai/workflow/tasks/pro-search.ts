@@ -42,24 +42,31 @@ ${analysis}
 
 Here are the search results:
 
+<research_findings>
 ${results
-    .map(
-        (result, index) => `
-<result-${index}>
-    <title>${result.title}</title>
-    <snippet>${result.content}</snippet>
-    <link>${result.link}</link>
-</result-${index}>
+    ?.map(
+        (s, index) => `
+
+## Finding ${index + 1}
+
+<title>${s.title}</title>
+<content>${s.content}</content>
+<link>${s.link}</link>
+
 `
     )
-    .join('\n')}
+    .join('\n\n\n')}
+</research_findings>
 
+Must use citations for the findings.
 <citation-method>
-    - Use inline citations with <Source> tags for each statement where possible.
-    - Example: According to recent findings <Source>https://www.example.com</Source>, progress in this area has accelerated
-    - When information appears in multiple sources, cite all relevant sources
-    - Use multiple citations for each statement if multiple sources stated the same information.
+    - Use finding number as citations like [1], [2], etc. for referencing findings
+    - Example: According to recent findings [1][3], progress in this area has accelerated
+    - When information appears in multiple findings, cite all relevant findings using multiple numbers
     - Integrate citations naturally without disrupting reading flow
+    - Include a numbered reference list at the end with format:
+      [1] https://www.example.com
+      [2] https://www.another-source.com
 </citation-method>`;
 
     return prompt;
@@ -188,13 +195,25 @@ ${webPageContent
 - Document your analysis in a structured format that will serve as the foundation for creating a comprehensive report.
 
 
-<citations>
- Citations and References:
-   - Use inline citations using <Source> tags when referencing specific information
-      For example: <Source>https://www.google.com</Source> <Source>https://www.xyz.com</Source>
-   - Cite multiple sources when information appears in multiple research summaries
-   - Don't Include reference list at the end.
-   </citations>`;
+
+Must use citations for the findings.
+<citation-method>
+    - Use numbered citations like [1], [2], etc. for referencing findings
+    - Example: According to recent findings [1][3], progress in this area has accelerated
+    - When information appears in multiple findings, cite all relevant findings using multiple numbers
+    - Integrate citations naturally without disrupting reading flow
+    - Don't add citations to the end of the report, just use them in the report
+</citation-method>
+`;
+
+        events?.update('flow', current => ({
+            ...current,
+            sources: webPageContent.map((result: any, index: number) => ({
+                title: result.title,
+                link: result.link,
+                index: index + (current?.sources?.length || 1),
+            })),
+        }));
 
         const reasoning = await generateText({
             prompt: analysisPrompt,
@@ -217,6 +236,16 @@ ${webPageContent
                             id: 1,
                             status: 'PENDING' as const,
                         },
+                    },
+                }));
+            },
+            onChunk: chunk => {
+                events?.update('flow', current => ({
+                    ...current,
+                    answer: {
+                        ...current.answer,
+                        text: chunk,
+                        status: 'PENDING' as const,
                     },
                 }));
             },
@@ -256,37 +285,37 @@ ${webPageContent
 
         console.log('prompt', prompt);
 
-        const response = await generateText({
-            model,
-            messages: [...messages, { role: 'user', content }],
-            prompt,
-            onChunk: chunk => {
-                events?.update('flow', current => ({
-                    ...current,
-                    answer: {
-                        ...current.answer,
-                        text: chunk,
-                        status: 'PENDING' as const,
-                    },
-                }));
-            },
-        });
+        // const response = await generateText({
+        //     model,
+        //     messages: [...messages, { role: 'user', content }],
+        //     prompt,
+        //     onChunk: chunk => {
+        //         events?.update('flow', current => ({
+        //             ...current,
+        //             answer: {
+        //                 ...current.answer,
+        //                 text: chunk,
+        //                 status: 'PENDING' as const,
+        //             },
+        //         }));
+        //     },
+        // });
 
         events?.update('flow', prev => ({
             ...prev,
             answer: {
-                text: response,
+                text: reasoning,
                 status: 'COMPLETED',
             },
             status: 'COMPLETED',
         }));
 
-        context?.update('answer', _ => response);
+        context?.update('answer', _ => reasoning);
 
         const onFinish = context?.get('onFinish');
         if (onFinish) {
             onFinish({
-                answer: response,
+                answer: reasoning,
                 threadId: context?.get('threadId'),
                 threadItemId: context?.get('threadItemId'),
             });

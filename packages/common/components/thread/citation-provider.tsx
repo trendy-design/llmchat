@@ -1,3 +1,4 @@
+import { Source } from '@repo/common/store';
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 
 export type Citation = {
@@ -38,72 +39,33 @@ const getFavIcon = (host?: string) => {
 };
 
 export type CitationProviderContextType = {
-    citations: Record<string, Citation>;
+    sources: Source[];
+    getSourceByIndex: (index: number) => Source | undefined;
 };
 
 export const CitationProviderContext = createContext<CitationProviderContextType>({
-    citations: {},
+    sources: [],
+    getSourceByIndex: () => undefined,
 });
 
 export const CitationProvider = ({
     sources,
     children,
-}: PropsWithChildren<{ sources?: string[] }>) => {
-    const [citations, setCitations] = useState<Record<string, Citation>>({});
+}: PropsWithChildren<{ sources?: Source[] }>) => {
+    const [sourceList, setSourceList] = useState<Source[]>([]);
 
     useEffect(() => {
-        const processCitations = () => {
-            const allCitations = sources || [];
-            const uniqueCitations = Array.from(new Set(allCitations)).filter(Boolean);
-            const MAX_VISIBLE_CITATIONS = 4;
-
-            const newCitations = uniqueCitations.reduce((citations, url, index) => {
-                console.log(url);
-                const isValid = isValidUrl(url);
-                const host = getHost(url);
-                if (!host) return citations;
-                const favIcon = getFavIcon(host);
-                if (!isValid) return citations;
-
-                if (index < MAX_VISIBLE_CITATIONS) {
-                    return {
-                        ...citations,
-                        [url]: {
-                            index: index + 1,
-                            url,
-                            host,
-                            favIcon,
-                        },
-                    };
-                }
-
-                if (index === MAX_VISIBLE_CITATIONS) {
-                    return {
-                        ...citations,
-                        [url]: {
-                            index: index + 1,
-                            url,
-                            host,
-                            favIcon,
-                            isExtra: true,
-                            extraCount: uniqueCitations.length - MAX_VISIBLE_CITATIONS,
-                        },
-                    };
-                }
-
-                return citations;
-            }, {});
-
-            if (JSON.stringify(newCitations) !== JSON.stringify(citations)) {
-                setCitations(newCitations);
-            }
-        };
-
-        processCitations();
+        if (sources && Array.isArray(sources)) {
+            setSourceList(sources);
+        }
     }, [sources]);
 
+    const getSourceByIndex = (index: number) => {
+        return sourceList.find(source => source.index === index);
+    };
+
     return (
-        <CitationProviderContext.Provider value={{ citations }}>
+        <CitationProviderContext.Provider value={{ sources: sourceList, getSourceByIndex }}>
             {children}
         </CitationProviderContext.Provider>
     );

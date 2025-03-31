@@ -85,7 +85,7 @@ export const FollowupSuggestions = ({ suggestions }: { suggestions: string[] }) 
                         <Button
                             variant="bordered"
                             size="default"
-                            rounded="full"
+                            rounded="xl"
                             className="hover:bg-tertiary group cursor-pointer hover:border-yellow-900/20"
                             onClick={() => {
                                 editor?.commands.clearContent();

@@ -273,14 +273,13 @@ export const SendStopButton = ({
                         transition={{ duration: 0.2 }}
                     >
                         <Button
-                            size="sm"
+                            size="icon"
                             rounded="full"
                             variant="default"
                             onClick={stopGeneration}
                             tooltip="Stop Generation"
                         >
                             <IconPlayerStopFilled size={14} strokeWidth={2} />
-                            Stop
                         </Button>
                     </motion.div>
                 ) : (

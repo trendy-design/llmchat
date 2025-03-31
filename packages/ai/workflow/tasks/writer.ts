@@ -46,20 +46,24 @@ ${analysis}
    - Make connections between related information across different sources
    - Maintain an objective, analytical tone throughout
 
-3. Citations Method:
-   - Use inline citations with <Source> tags for each statement where possible.
-   - Example: According to recent findings <Source>https://www.example.com</Source>, progress in this area has accelerated
-   - When information appears in multiple sources, cite all relevant sources
-   - Use multiple citations for each statement if multiple sources stated the same information.
-   - Integrate citations naturally without disrupting reading flow
 
-4. Formatting Standards:
+3. Formatting Standards:
    - Highlight key figures, critical statistics, and significant findings with bold text
    - Construct balanced continuous paragraphs (4-5 sentences per paragraph not more than that) with logical flow instead of shorter sentences.
    - Use headings strategically only for major thematic shifts depending on the question asked and content
    - Use lists, tables, links, images when appropriate
    - Implement markdown tables for comparative data where appropriate
    - Ensure proper spacing between sections for optimal readability
+
+4. Citations:
+   - Based on provided references in each findings, you must cite the sources in the report.
+   - Use inline citations like [1] to reference the source
+   - For example: According to recent findings [1][3], progress in this area has accelerated
+   - When information appears in multiple findings, cite all relevant findings using multiple numbers
+   - Integrate citations naturally without disrupting reading flow
+
+Note: **Reference list at the end is not required.**
+
 
 Your report should demonstrate subject matter expertise while remaining intellectually accessible to informed professionals. Focus on providing substantive analysis rather than cataloging facts. Emphasize implications and significance rather than merely summarizing information.
     `;
@@ -87,7 +91,7 @@ Your report should demonstrate subject matter expertise while remaining intellec
 
         const answer = await generateText({
             prompt,
-            model: ModelEnum.GEMINI_2_FLASH,
+            model: ModelEnum.Claude_3_7_Sonnet,
             signal,
             onChunk: chunk => {
                 events?.update('flow', current => ({

@@ -33,7 +33,22 @@ export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             };
         });
 
+        context?.update('sources', current => {
+            const existingSources = current ?? [];
+            const newSources = results
+                ?.filter(
+                    (result: any) => !existingSources.some(source => source.link === result.link)
+                )
+                .map((result: any, index: number) => ({
+                    title: result.title,
+                    link: result.link,
+                    index: index + existingSources.length,
+                }));
+            return [...existingSources, ...newSources];
+        });
+
         const processedResults = await processWebPages(results, signal);
+
         const question = context?.get('question') || '';
 
         const prompt = `
@@ -48,9 +63,13 @@ ${question}
 **Web Search Results**
 ${processedResults
     .filter(result => !!result?.content && !!result?.link)
+    .map(result => ({
+        ...result,
+        index: context?.get('sources')?.find(s => s.link === result.link)?.index,
+    }))
     .map(
         (result: any) =>
-            `<web-search-results>\n\n - ${result.title}: ${result.link} \n\n ${result.content} \n\n</web-search-results>`
+            `<findings index="${result.index}">\n\n ## [${result.index}] ${result.link}\n\n ### Title: ${result.title}\n\n ${result.content} \n\n</findings>`
     )
     .join('\n')}
 
@@ -71,12 +90,16 @@ ${processedResults
 </output_format>
 
 <citations>
- Citations and References:
-   - Use inline citations using <Source> tags when referencing specific information
-      For example: <Source>https://www.google.com</Source> <Source>https://www.xyz.com</Source>
-   - Cite multiple sources when information appears in multiple research summaries
-   - Don't Include reference list at the end.
-   </citations>
+ **Citations and References:**
+   - each findings have given number which can be used to reference the source
+   - Use inline citations like [1] to reference the source
+   - For example: According to recent findings [1][3], progress in this area has accelerated
+   - When information appears in multiple findings, cite all relevant findings using multiple numbers
+   - Integrate citations naturally without disrupting reading flow
+   - Must include a numbered reference list at the end with format:
+      [1] https://www.example.com
+      [2] https://www.another-source.com
+</citations>
 
       `;
 
