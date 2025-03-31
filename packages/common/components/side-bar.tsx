@@ -20,6 +20,7 @@ import {
     IconSearch,
     IconSelector,
     IconSettings,
+    IconSettings2,
     IconUser,
 } from '@tabler/icons-react';
 import moment from 'moment';
@@ -38,7 +39,7 @@ export const Sidebar = () => {
     };
 
     const { isSignedIn, user } = useUser();
-    const { openUserProfile, signOut } = useClerk();
+    const { openUserProfile, signOut, openSignIn } = useClerk();
     const clearAllThreads = useChatStore(state => state.clearAllThreads);
     const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
     const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
@@ -168,7 +169,7 @@ export const Sidebar = () => {
                         direction="col"
                         gap="md"
                         className={cn(
-                            'border-border/70 mt-3 w-full flex-1 overflow-y-auto border-t border-dashed p-3',
+                            'border-border/70 no-scrollbar mt-3 w-full flex-1 overflow-y-auto border-t border-dashed p-3',
                             isSidebarOpen ? 'flex' : 'hidden'
                         )}
                     >
@@ -186,7 +187,7 @@ export const Sidebar = () => {
                     direction={'col'}
                     justify={isSidebarOpen ? 'between' : 'center'}
                 >
-                    {isSignedIn && (
+                    {isSignedIn ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <div className="hover:bg-quaternary flex w-full cursor-pointer flex-row items-center gap-3 rounded-lg p-2 px-3">
@@ -229,6 +230,50 @@ export const Sidebar = () => {
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
+                    ) : (
+                        <Flex direction={isSidebarOpen ? 'col' : 'col'} gap="xs" className="w-full">
+                            <Button
+                                variant="ghost"
+                                size={isSidebarOpen ? 'sm' : 'icon-sm'}
+                                className={cn(
+                                    'hover:bg-quaternary w-full justify-start',
+                                    !isSidebarOpen && 'mx-auto'
+                                )}
+                                onClick={() => setIsSettingsOpen(true)}
+                                tooltip={isSidebarOpen ? undefined : 'Settings'}
+                                tooltipSide="right"
+                            >
+                                <IconSettings2 size={16} strokeWidth={2} />
+                                {isSidebarOpen && 'Settings'}
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size={isSidebarOpen ? 'sm' : 'icon-sm'}
+                                className={cn(
+                                    'hover:bg-quaternary w-full justify-start',
+                                    !isSidebarOpen && 'mx-auto'
+                                )}
+                                onClick={() => openSignIn()}
+                                tooltip={isSidebarOpen ? undefined : 'Sign In'}
+                                tooltipSide="right"
+                            >
+                                <div
+                                    className={cn(
+                                        'flex items-center gap-2',
+                                        !isSidebarOpen && 'justify-center'
+                                    )}
+                                >
+                                    <div className="flex size-5 items-center justify-center rounded-full bg-emerald-800">
+                                        <IconUser
+                                            size={14}
+                                            strokeWidth={2}
+                                            className="text-white"
+                                        />
+                                    </div>
+                                    {isSidebarOpen && 'Sign In'}
+                                </div>
+                            </Button>
+                        </Flex>
                     )}
                 </Flex>
             </Flex>

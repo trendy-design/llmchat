@@ -146,10 +146,12 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
                         } as Answer,
                         status: 'COMPLETED',
                     });
-                    handleSubmit({
-                        formData,
-                        messages: threadItems,
-                    });
+                    setTimeout(() => {
+                        handleSubmit({
+                            formData,
+                            messages: threadItems,
+                        });
+                    }, 2000);
                 }}
             >
                 Submit
