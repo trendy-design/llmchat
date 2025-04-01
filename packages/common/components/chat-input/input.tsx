@@ -91,7 +91,7 @@ export const ChatInput = ({
             <MessagesRemainingBadge />
 
             <motion.div
-                className="w-full"
+                className="w-full px-2"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.2, ease: 'easeOut' }}
@@ -218,7 +218,7 @@ export const ChatInput = ({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3, delay: 0.2 }}
-                            className="font-clash text-foreground flex flex-row items-center gap-2 text-[32px] font-semibold !text-teal-900"
+                            className="font-clash text-foreground flex flex-row items-center gap-2 text-[32px] font-semibold !text-emerald-900"
                         >
                             How can i help you today?
                         </motion.h1>

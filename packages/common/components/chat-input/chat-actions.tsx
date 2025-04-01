@@ -155,7 +155,7 @@ export const WebSearchButton = () => {
             <IconWorld
                 size={18}
                 strokeWidth={2}
-                className={cn(useWebSearch ? '!text-teal-600' : 'text-muted-foreground')}
+                className={cn(useWebSearch ? '!text-emerald-600' : 'text-muted-foreground')}
             />
             {useWebSearch && <p className="text-xs">Web</p>}
         </Button>

@@ -74,7 +74,7 @@ const categoryIcons = {
     creative: { name: 'Creative', icon: IconPencil, color: '!text-green-700' },
     advice: { name: 'Advice', icon: IconBook, color: '!text-purple-700' },
     analysis: { name: 'Analysis', icon: IconChartBar, color: '!text-red-700' },
-    learning: { name: 'Learning', icon: IconSchool, color: '!text-orange-700' },
+    learning: { name: 'Learning', icon: IconSchool, color: '!text-emerald-700' },
 };
 
 export const ExamplePrompts = () => {

@@ -28,7 +28,7 @@ export function MessagesRemainingBadge() {
                         : `You have ${creditLimit.remaining} credits left today.`}{' '}
                     For continuous use,
                     <span
-                        className="inline-flex shrink-0 cursor-pointer flex-row items-center gap-1 pl-1 font-medium text-teal-600 "
+                        className="inline-flex shrink-0 cursor-pointer flex-row items-center gap-1 pl-1 font-medium text-emerald-600 "
                         onClick={() => {
                             setIsSettingsOpen(true);
                             setSettingTab('api-keys');

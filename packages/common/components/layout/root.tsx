@@ -20,7 +20,7 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
     const showSignInModal = useAppStore(state => state.showSignInModal);
 
     const containerClass =
-        'relative flex flex-1 flex-row h-[calc(99dvh)]  border border-border rounded-sm bg-secondary w-full overflow-hidden shadow-sm';
+        'relative flex flex-1 flex-row h-[calc(99dvh)] border border-border rounded-sm bg-secondary w-full overflow-hidden shadow-sm';
 
     if (showSignInModal) {
         return (
@@ -62,12 +62,12 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
             </Drawer.Root>
 
             {/* Main Content */}
-            <Flex className="w-full">
-                <motion.div className="flex flex-1 gap-0 overflow-hidden py-1 pr-1">
+            <Flex className="flex-1 overflow-hidden">
+                <motion.div className="flex w-full py-1 pr-1">
                     <AgentProvider>
                         <div className={containerClass}>
-                            <div className="relative flex h-full w-full flex-row">
-                                <div className=" flex w-full flex-col gap-2 overflow-y-auto">
+                            <div className="relative flex h-full w-0 flex-1 flex-row">
+                                <div className="flex w-full flex-col gap-2 overflow-y-auto">
                                     <div className="from-secondary to-secondary/0 via-secondary/70 absolute left-0 right-0 top-0 z-40 flex flex-row items-center justify-center gap-1 bg-gradient-to-b p-2 pb-12"></div>
                                     {/* Auth Button Header */}
 
@@ -104,9 +104,9 @@ export const SideDrawer = () => {
                         damping: 30,
                         exit: { duration: 0.2 },
                     }}
-                    className=" flex min-h-[99dvh] w-[500px] shrink-0 flex-col overflow-hidden p-1.5 "
+                    className="flex min-h-[99dvh] w-[500px] shrink-0 flex-col overflow-hidden py-1.5 pr-1.5"
                 >
-                    <div className="bg-background border-border flex h-full flex-col overflow-hidden rounded-md border shadow-sm">
+                    <div className="bg-background border-border flex h-full w-full flex-col overflow-hidden rounded-md border shadow-sm">
                         <div className="border-border flex flex-row items-center justify-between gap-2 border-b py-1.5 pl-4 pr-2">
                             <div className="text-sm font-medium">
                                 {typeof sideDrawer.title === 'function'

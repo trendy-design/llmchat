@@ -90,9 +90,9 @@ export const MCPSettings = () => {
                     Connected Tools{' '}
                     <Badge
                         variant="secondary"
-                        className="inline-flex items-center gap-1 rounded-full bg-transparent text-teal-600"
+                        className="inline-flex items-center gap-1 rounded-full bg-transparent text-emerald-600"
                     >
-                        <span className="inline-block size-2 rounded-full bg-teal-600"></span>
+                        <span className="inline-block size-2 rounded-full bg-emerald-600"></span>
                         {mcpConfig && Object.keys(mcpConfig).length} Connected
                     </Badge>
                 </p>
@@ -408,7 +408,10 @@ export const CreditsSettings = () => {
         {
             title: 'Plan',
             value: (
-                <Badge variant="secondary" className="rounded-full bg-teal-600/10 text-teal-600">
+                <Badge
+                    variant="secondary"
+                    className="rounded-full bg-emerald-600/10 text-emerald-600"
+                >
                     <span className="text-xs font-medium">FREE</span>
                 </Badge>
             ),

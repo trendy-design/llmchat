@@ -34,7 +34,7 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
             ref={scrollRef}
         >
             {/* <ThreadNavBar /> */}
-            <div className="mx-auto w-full max-w-3xl px-4 pb-[200px] pt-8" ref={contentRef}>
+            <div className="mx-auto w-full max-w-3xl px-4 pb-[200px] pt-2" ref={contentRef}>
                 <Thread />
             </div>
 

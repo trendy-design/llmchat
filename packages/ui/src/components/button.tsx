@@ -11,11 +11,11 @@ const buttonVariants = cva(
         variants: {
             variant: {
                 default:
-                    'bg-teal-700 border border-teal-800 text-background [&>svg]:text-background font-semibold hover:opacity-90',
+                    'bg-emerald-700 border border-emerald-800 text-background [&>svg]:text-background font-semibold hover:opacity-90',
                 brand: 'bg-brand text-brand-foreground font-semibold hover:opacity-90',
                 'brand-secondary':
                     'bg-brand-secondary text-brand-secondary-foreground font-semibold hover:opacity-90',
-                accent: 'text-teal-600 bg-teal-600/10 hover:bg-teal-600/20',
+                accent: 'text-emerald-600 bg-emerald-600/10 hover:bg-emerald-600/20',
                 outlined: 'bg-background text-foreground outline outline-border hover:bg-secondary',
                 destructive: 'bg-destructive text-destructive-foreground hover:opacity-90',
                 bordered:

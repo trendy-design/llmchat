@@ -2,13 +2,7 @@ import { StepRenderer, StepStatus, ToolCallStep, ToolResultStep } from '@repo/co
 import { Step, ThreadItem, ToolCall, ToolResult, useAppStore } from '@repo/common/store';
 import { ChatMode } from '@repo/shared/config';
 import { Badge, Button } from '@repo/ui';
-import {
-    IconAtom,
-    IconChecklist,
-    IconChevronRight,
-    IconLoader2,
-    IconNorthStar,
-} from '@tabler/icons-react';
+import { IconAtom, IconChecklist, IconChevronRight, IconNorthStar } from '@tabler/icons-react';
 import { memo, useEffect, useMemo } from 'react';
 const getTitle = (threadItem: ThreadItem) => {
     if (threadItem.mode === ChatMode.Deep) {
@@ -25,12 +19,12 @@ const getTitle = (threadItem: ThreadItem) => {
 
 const getIcon = (threadItem: ThreadItem) => {
     if (threadItem.mode === ChatMode.Deep) {
-        return <IconAtom size={16} strokeWidth={2} className="text-muted-foreground" />;
+        return <IconAtom size={14} strokeWidth={2} />;
     }
     if (threadItem.mode === ChatMode.Pro) {
-        return <IconNorthStar size={16} strokeWidth={2} className="text-muted-foreground" />;
+        return <IconNorthStar size={14} strokeWidth={2} />;
     }
-    return <IconChecklist size={16} strokeWidth={2} className="text-muted-foreground" />;
+    return <IconChecklist size={14} strokeWidth={2} />;
 };
 
 const getNote = (threadItem: ThreadItem) => {
@@ -126,15 +120,7 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
     const renderTitle = () => {
         return (
             <span className="flex flex-row items-center gap-2">
-                {isLoading ? (
-                    <IconLoader2
-                        size={14}
-                        strokeWidth={2}
-                        className="text-muted-foreground animate-spin"
-                    />
-                ) : (
-                    getIcon(threadItem)
-                )}
+                {getIcon(threadItem)}
                 <p className="text-sm font-medium">{getTitle(threadItem)}</p>
             </span>
         );

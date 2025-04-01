@@ -107,9 +107,9 @@ export const Sidebar = () => {
                             !isSidebarOpen && 'justify-center px-0'
                         )}
                     >
-                        <Logo className="size-4 text-cyan-900" />
+                        <Logo className="size-4 text-emerald-900" />
                         {isSidebarOpen && (
-                            <p className="font-clash text-lg font-bold tracking-wide text-cyan-900">
+                            <p className="font-clash text-lg font-bold tracking-wide text-emerald-900">
                                 deep.new
                             </p>
                         )}
@@ -144,7 +144,7 @@ export const Sidebar = () => {
                         className={cn(
                             isSidebarOpen && 'relative w-full',
                             'justify-center'
-                            // 'text-background border border-cyan-800 bg-cyan-700'
+                            // 'text-background border border-emerald-800 bg-emerald-700'
                         )}
                         onClick={() => !isChatPage && push('/chat')}
                     >
@@ -220,7 +220,7 @@ export const Sidebar = () => {
                                     !isSidebarOpen && 'px-1.5'
                                 )}
                             >
-                                <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-cyan-800">
+                                <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-800">
                                     {user && user.hasImage ? (
                                         <img
                                             src={user?.imageUrl ?? ''}
