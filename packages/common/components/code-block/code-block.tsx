@@ -46,20 +46,12 @@ export const CodeBlock = ({
     const ref = useRef<HTMLElement>(null);
     const preRef = useRef<HTMLPreElement>(null);
     const { copy, showCopied } = useClipboard();
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [showExpandButton, setShowExpandButton] = useState(false);
 
     useEffect(() => {
         if (ref?.current && code) {
             Prism.highlightElement(ref.current);
         }
     }, [code, lang]);
-
-    useEffect(() => {
-        if (preRef.current) {
-            setShowExpandButton(preRef.current.scrollHeight > maxHeight);
-        }
-    }, [code, maxHeight]);
 
     const getLangIcon = () => {
         switch (lang) {
@@ -117,47 +109,12 @@ export const CodeBlock = ({
             <pre
                 ref={preRef}
                 className={cn(
-                    'text-foreground border-border bg-background relative overflow-x-auto rounded-lg border px-6 py-4 font-mono text-[13px] font-[300]',
-                    showExpandButton && isExpanded && 'pb-12'
+                    'text-foreground border-border bg-background no-scrollbar relative overflow-x-auto rounded-lg border px-6 py-4 font-mono text-[13px] font-[300]'
                 )}
-                style={{
-                    maxHeight: isExpanded ? 'none' : maxHeight,
-                    transition: 'max-height 0.3s ease-in-out',
-                }}
             >
                 <code className={cn(`language-${lang}`)} ref={ref}>
                     {code}
                 </code>
-                {showExpandButton && !isExpanded && (
-                    <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex flex-col items-center font-sans">
-                        <div className="via-background/85 to-background flex h-16 w-full items-center justify-center bg-gradient-to-b from-transparent">
-                            <Button
-                                variant="secondary"
-                                size="xs"
-                                rounded="full"
-                                className="pointer-events-auto relative z-10 px-4"
-                                onClick={() => setIsExpanded(true)}
-                            >
-                                Show more
-                            </Button>
-                        </div>
-                    </div>
-                )}
-                {showExpandButton && isExpanded && (
-                    <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center font-sans">
-                        <div className="via-background/85 to-background flex w-full items-center justify-center bg-gradient-to-b from-transparent py-2">
-                            <Button
-                                variant="secondary"
-                                size="xs"
-                                rounded="full"
-                                className="px-4"
-                                onClick={() => setIsExpanded(false)}
-                            >
-                                Show less
-                            </Button>
-                        </div>
-                    </div>
-                )}
             </pre>
         </div>
     );

@@ -21,6 +21,8 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                         !!message.content
                 ) || [];
 
+        console.log('messages', messages);
+
         const mode = context.get('mode');
         const webSearch = context.get('webSearch') || false;
         const mcpConfig = context.get('mcpConfig') || {};

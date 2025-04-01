@@ -2,12 +2,14 @@ import { useCopyText } from '@repo/common/hooks';
 import { Button, cn } from '@repo/ui';
 import { IconCheck, IconCopy, IconPencil } from '@tabler/icons-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { ImageMessage } from './image-message';
 
 type MessageProps = {
     message: string;
+    imageAttachment?: string;
 };
 
-export const Message = memo(({ message }: MessageProps) => {
+export const Message = memo(({ message, imageAttachment }: MessageProps) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const messageRef = useRef<HTMLDivElement>(null);
     const [showExpandButton, setShowExpandButton] = useState(false);
@@ -29,7 +31,8 @@ export const Message = memo(({ message }: MessageProps) => {
     const toggleExpand = useCallback(() => setIsExpanded(prev => !prev), []);
 
     return (
-        <div className="flex w-full flex-col items-end pt-4">
+        <div className="flex w-full flex-col items-end gap-2 pt-4">
+            {imageAttachment && <ImageMessage imageAttachment={imageAttachment} />}
             <div className="text-foreground border-border bg-background group relative max-w-[80%] overflow-hidden rounded-xl border">
                 <div
                     ref={messageRef}

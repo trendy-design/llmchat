@@ -46,7 +46,12 @@ export const ThreadItem = memo(
                 <>
                     {/* <CodeBlock code={JSON.stringify(threadItem, null, 2)} lang="json" /> */}
                     <div className={cn('flex w-full flex-col items-start gap-6 pt-4')}>
-                        {threadItem.query && <Message message={threadItem.query} />}
+                        {threadItem.query && (
+                            <Message
+                                message={threadItem.query}
+                                imageAttachment={threadItem?.imageAttachment}
+                            />
+                        )}
 
                         {threadItem.status === 'QUEUED' && (
                             <div className="flex w-full flex-col items-start gap-2 opacity-10">

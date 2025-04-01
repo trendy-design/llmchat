@@ -74,6 +74,7 @@ export type ThreadItem = {
     suggestions?: string[];
     persistToDB?: boolean;
     sources?: Source[];
+    imageAttachment?: string;
 };
 
 export type MessageGroup = {
@@ -135,6 +136,7 @@ type State = {
     editor: any;
     chatMode: ChatMode;
     context: string;
+    imageAttachment: { base64?: string; file?: File };
     abortController: AbortController | null;
     threads: Thread[];
     threadItems: ThreadItem[];
@@ -159,6 +161,8 @@ type Actions = {
     setEditor: (editor: any) => void;
     setContext: (context: string) => void;
     fetchRemainingCredits: () => Promise<void>;
+    setImageAttachment: (imageAttachment: { base64?: string; file?: File }) => void;
+    clearImageAttachment: () => void;
     setIsGenerating: (isGenerating: boolean) => void;
     stopGeneration: () => void;
     setAbortController: (abortController: AbortController) => void;
@@ -512,6 +516,7 @@ export const useChatStore = create(
         currentThreadId: null,
         currentThread: null,
         currentThreadItem: null,
+        imageAttachment: { base64: undefined, file: undefined },
         messageGroups: [],
         abortController: null,
         isLoadingThreads: false,
@@ -525,6 +530,18 @@ export const useChatStore = create(
             isFetched: false,
         },
         showSuggestions: true,
+
+        setImageAttachment: (imageAttachment: { base64?: string; file?: File }) => {
+            set(state => {
+                state.imageAttachment = imageAttachment;
+            });
+        },
+
+        clearImageAttachment: () => {
+            set(state => {
+                state.imageAttachment = { base64: undefined, file: undefined };
+            });
+        },
 
         setShowSuggestions: (showSuggestions: boolean) => {
             localStorage.setItem(CONFIG_KEY, JSON.stringify({ showSuggestions }));

@@ -1,6 +1,11 @@
 'use client';
 import { useAuth, useClerk, useUser } from '@clerk/nextjs';
-import { MessagesRemainingBadge } from '@repo/common/components';
+import {
+    ImageAttachment,
+    ImageDropzoneRoot,
+    MessagesRemainingBadge,
+} from '@repo/common/components';
+import { useImageAttachment } from '@repo/common/hooks';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -12,6 +17,8 @@ import { useChatStore } from '../../store';
 import { ExamplePrompts } from '../exmaple-prompts';
 import { ChatModeButton, GeneratingStatus, SendStopButton, WebSearchButton } from './chat-actions';
 import { ChatEditor } from './chat-editor';
+import { ImageUpload } from './image-upload';
+
 export const ChatInput = ({
     showGreeting = true,
     showBottomBar = true,
@@ -33,9 +40,11 @@ export const ChatInput = ({
     const useWebSearch = useChatStore(state => state.useWebSearch);
     const isGenerating = useChatStore(state => state.isGenerating);
     const isChatPage = usePathname().startsWith('/chat');
+    const imageAttachment = useChatStore(state => state.imageAttachment);
+    const clearImageAttachment = useChatStore(state => state.clearImageAttachment);
     const stopGeneration = useChatStore(state => state.stopGeneration);
     const hasTextInput = !!editor?.getText();
-
+    const { dropzonProps, handleImageUpload } = useImageAttachment();
     const router = useRouter();
     const sendMessage = async () => {
         if (!isSignedIn) {
@@ -61,6 +70,7 @@ export const ChatInput = ({
         // First submit the message
         const formData = new FormData();
         formData.append('query', editor.getText());
+        imageAttachment?.base64 && formData.append('imageAttachment', imageAttachment?.base64);
         const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
 
         handleSubmit({
@@ -70,6 +80,7 @@ export const ChatInput = ({
             useWebSearch,
         });
         editor.commands.clearContent();
+        clearImageAttachment();
         if (currentThreadId !== threadId) {
             router.push(`/c/${threadId}`);
         }
@@ -79,75 +90,85 @@ export const ChatInput = ({
         <AnimatePresence>
             <MessagesRemainingBadge />
 
-            <motion.div
-                className="w-full"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2, ease: 'easeOut' }}
-            >
-                <Flex
-                    direction="col"
-                    className="bg-background border-hard relative z-10 w-full rounded-xl border  shadow-sm"
+            <ImageDropzoneRoot dropzoneProps={dropzonProps}>
+                <motion.div
+                    className="w-full"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
                 >
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.15 }}
-                        className="flex w-full flex-shrink-0 overflow-hidden rounded-xl"
+                    <Flex
+                        direction="col"
+                        className="bg-background border-hard relative z-10 w-full rounded-xl border  shadow-sm"
                     >
-                        {editor?.isEditable ? (
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.15, ease: 'easeOut' }}
-                                className="w-full"
-                            >
-                                <Flex className="flex w-full flex-row items-end gap-0">
-                                    <ChatEditor sendMessage={sendMessage} editor={editor} />
-                                </Flex>
-
-                                <Flex
-                                    className="w-full gap-0 px-2 py-2"
-                                    gap="none"
-                                    items="center"
-                                    justify="between"
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.15 }}
+                            className="flex w-full flex-shrink-0 overflow-hidden rounded-xl"
+                        >
+                            {editor?.isEditable ? (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ duration: 0.15, ease: 'easeOut' }}
+                                    className="w-full"
                                 >
-                                    {isGenerating && !isChatPage ? (
-                                        <GeneratingStatus />
-                                    ) : (
-                                        <Flex gap="xs" items="center" className="shrink-0">
-                                            <ChatModeButton />
-                                            {/* <AttachmentButton /> */}
-                                            <WebSearchButton />
-                                            {/* <ToolsMenu /> */}
-                                        </Flex>
-                                    )}
-
-                                    <Flex gap="md" items="center">
-                                        <SendStopButton
-                                            isGenerating={isGenerating}
-                                            isChatPage={isChatPage}
-                                            stopGeneration={stopGeneration}
-                                            hasTextInput={hasTextInput}
-                                            sendMessage={sendMessage}
-                                        />
+                                    <ImageAttachment />
+                                    <Flex className="flex w-full flex-row items-end gap-0">
+                                        <ChatEditor sendMessage={sendMessage} editor={editor} />
                                     </Flex>
-                                </Flex>
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                className="flex h-24 w-full items-center justify-center"
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.15 }}
-                            >
-                                <div className="animate-pulse">Loading editor...</div>
-                            </motion.div>
-                        )}
-                    </motion.div>
-                </Flex>
-            </motion.div>
+
+                                    <Flex
+                                        className="w-full gap-0 px-2 py-2"
+                                        gap="none"
+                                        items="center"
+                                        justify="between"
+                                    >
+                                        {isGenerating && !isChatPage ? (
+                                            <GeneratingStatus />
+                                        ) : (
+                                            <Flex gap="xs" items="center" className="shrink-0">
+                                                <ChatModeButton />
+                                                {/* <AttachmentButton /> */}
+                                                <WebSearchButton />
+                                                {/* <ToolsMenu /> */}
+                                                <ImageUpload
+                                                    id="image-attachment"
+                                                    label="Image"
+                                                    tooltip="Image Attachment"
+                                                    showIcon={true}
+                                                    handleImageUpload={handleImageUpload}
+                                                />
+                                            </Flex>
+                                        )}
+
+                                        <Flex gap="md" items="center">
+                                            <SendStopButton
+                                                isGenerating={isGenerating}
+                                                isChatPage={isChatPage}
+                                                stopGeneration={stopGeneration}
+                                                hasTextInput={hasTextInput}
+                                                sendMessage={sendMessage}
+                                            />
+                                        </Flex>
+                                    </Flex>
+                                </motion.div>
+                            ) : (
+                                <motion.div
+                                    className="flex h-24 w-full items-center justify-center"
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.15 }}
+                                >
+                                    <div className="animate-pulse">Loading editor...</div>
+                                </motion.div>
+                            )}
+                        </motion.div>
+                    </Flex>
+                </motion.div>
+            </ImageDropzoneRoot>
         </AnimatePresence>
     );
 

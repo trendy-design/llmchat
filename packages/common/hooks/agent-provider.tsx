@@ -245,6 +245,9 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
 
         const optimisticAiThreadItemId = existingThreadItemId ?? nanoid();
 
+        const query = formData.get('query') as string;
+        const imageAttachment = formData.get('imageAttachment') as string;
+
         const aiThreadItem: ThreadItem = {
             id: optimisticAiThreadItemId,
             createdAt: new Date(),
@@ -252,6 +255,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             status: 'QUEUED' as const,
             threadId,
             query: formData.get('query') as string,
+            imageAttachment: formData.get('imageAttachment') as string,
             mode: newChatMode ?? (chatMode as any),
         };
 
@@ -264,7 +268,18 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             ...(messages?.flatMap(item => [
                 {
                     role: 'user' as const,
-                    content: item.query || '',
+                    content: item.imageAttachment
+                        ? [
+                              {
+                                  type: 'text' as const,
+                                  text: item?.query || '',
+                              },
+                              {
+                                  type: 'image' as const,
+                                  image: imageAttachment,
+                              },
+                          ]
+                        : item.query || '',
                 },
                 {
                     role: 'assistant' as const,
@@ -273,7 +288,18 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             ]) || []),
             {
                 role: 'user' as const,
-                content: (formData.get('query') as string) || '',
+                content: imageAttachment
+                    ? [
+                          {
+                              type: 'text' as const,
+                              text: query || '',
+                          },
+                          {
+                              type: 'image' as const,
+                              image: imageAttachment,
+                          },
+                      ]
+                    : query || '',
             },
         ];
 
