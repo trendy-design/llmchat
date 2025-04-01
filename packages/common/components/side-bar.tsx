@@ -20,12 +20,10 @@ import {
     IconSearch,
     IconSelector,
     IconSettings,
-    IconSettings2,
     IconUser,
 } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import moment from 'moment';
-import Image from 'next/image';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
 export const Sidebar = () => {
@@ -95,27 +93,48 @@ export const Sidebar = () => {
         <div
             className={cn(
                 'bottom-0 left-0 top-0 z-[50] flex h-[100dvh] flex-shrink-0 flex-col  py-2 transition-all duration-200',
-                isSidebarOpen ? 'top-0 h-full w-[220px]' : 'w-[60px]'
+                isSidebarOpen ? 'top-0 h-full w-[220px]' : 'w-[50px]'
             )}
         >
-            <Flex direction="col" className="w-full flex-1 overflow-hidden">
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3, delay: 0.2 }}
-                    className={cn(
-                        'mb-4 flex h-8  w-full items-center justify-start gap-1.5 px-4',
-                        !isSidebarOpen && 'justify-center'
-                    )}
-                >
-                    <Logo className="size-4 text-teal-900" />
+            <Flex direction="col" className="w-full flex-1 items-center overflow-hidden">
+                <div className="mb-4 flex w-full flex-row items-center justify-between ">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.3, delay: 0.2 }}
+                        className={cn(
+                            'flex h-8  w-full items-center justify-start gap-1.5 px-4',
+                            !isSidebarOpen && 'justify-center px-0'
+                        )}
+                    >
+                        <Logo className="size-4 text-cyan-900" />
+                        {isSidebarOpen && (
+                            <p className="font-clash text-lg font-bold tracking-wide text-cyan-900">
+                                deep.new
+                            </p>
+                        )}
+                    </motion.div>
                     {isSidebarOpen && (
-                        <p className="font-clash text-lg font-bold tracking-wide text-teal-900">
-                            deep.new
-                        </p>
+                        <Button
+                            variant="ghost"
+                            tooltip="Close Sidebar"
+                            tooltipSide="right"
+                            size="icon"
+                            onClick={() => setIsSidebarOpen(prev => !prev)}
+                            className={cn(!isSidebarOpen && 'mx-auto')}
+                        >
+                            <IconArrowBarLeft size={16} strokeWidth={2} />
+                        </Button>
                     )}
-                </motion.div>
-                <Flex direction="col" className="w-full items-end px-4" gap="sm">
+                </div>
+                <Flex
+                    direction="col"
+                    className={cn(
+                        'w-full items-end px-4',
+                        !isSidebarOpen && 'items-center justify-center px-0'
+                    )}
+                    gap="sm"
+                >
                     <Button
                         size={isSidebarOpen ? 'xs' : 'icon-sm'}
                         variant="secondary"
@@ -125,7 +144,7 @@ export const Sidebar = () => {
                         className={cn(
                             isSidebarOpen && 'relative w-full',
                             'justify-center'
-                            // 'text-background border border-teal-800 bg-teal-700'
+                            // 'text-background border border-cyan-800 bg-cyan-700'
                         )}
                         onClick={() => !isChatPage && push('/chat')}
                     >
@@ -174,124 +193,94 @@ export const Sidebar = () => {
                 )}
 
                 <Flex
-                    className="mt-auto w-full p-2"
+                    className={cn(
+                        'mt-auto w-full items-center p-2',
+                        isSidebarOpen && 'items-start justify-between'
+                    )}
                     gap="xs"
                     direction={'col'}
-                    justify={isSidebarOpen ? 'between' : 'center'}
                 >
-                    {isSignedIn ? (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <div className="hover:bg-quaternary flex w-full cursor-pointer flex-row items-center gap-3 rounded-lg p-2 px-3">
-                                    <div className="flex size-5 items-center justify-center rounded-full bg-teal-800">
-                                        <Image
-                                            src={user?.imageUrl ?? ''}
-                                            width={0}
-                                            height={0}
-                                            sizes="100vw"
-                                            className="size-full rounded-full"
-                                            alt={user?.fullName ?? ''}
-                                        />
-                                    </div>
-                                    {isSidebarOpen && (
-                                        <p className="flex-1 text-sm font-medium">
-                                            {user?.fullName}
-                                        </p>
-                                    )}
-                                    {isSidebarOpen && (
-                                        <IconSelector
-                                            size={14}
-                                            strokeWidth={2}
-                                            className="text-muted-foreground"
-                                        />
-                                    )}
-                                </div>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuItem onClick={() => setIsSettingsOpen(true)}>
-                                    <IconSettings size={16} strokeWidth={2} />
-                                    Settings
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => openUserProfile()}>
-                                    <IconUser size={16} strokeWidth={2} />
-                                    Profile
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => signOut()}>
-                                    <IconLogout size={16} strokeWidth={2} />
-                                    Logout
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    ) : (
-                        <Flex direction={isSidebarOpen ? 'col' : 'col'} gap="xs" className="w-full">
-                            <Button
-                                variant="ghost"
-                                size={isSidebarOpen ? 'sm' : 'icon-sm'}
-                                className={cn(
-                                    'hover:bg-quaternary w-full justify-start',
-                                    !isSidebarOpen && 'mx-auto'
-                                )}
-                                onClick={() => setIsSettingsOpen(true)}
-                                tooltip={isSidebarOpen ? undefined : 'Settings'}
-                                tooltipSide="right"
-                            >
-                                <IconSettings2 size={16} strokeWidth={2} />
-                                {isSidebarOpen && 'Settings'}
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size={isSidebarOpen ? 'sm' : 'icon-sm'}
-                                className={cn(
-                                    'hover:bg-quaternary w-full justify-start',
-                                    !isSidebarOpen && 'mx-auto'
-                                )}
-                                onClick={() => openSignIn()}
-                                tooltip={isSidebarOpen ? undefined : 'Sign In'}
-                                tooltipSide="right"
-                            >
-                                <div
-                                    className={cn(
-                                        'flex items-center gap-2',
-                                        !isSidebarOpen && 'justify-center'
-                                    )}
-                                >
-                                    <div className="flex size-5 items-center justify-center rounded-full bg-teal-800">
-                                        <IconUser
-                                            size={14}
-                                            strokeWidth={2}
-                                            className="text-white"
-                                        />
-                                    </div>
-                                    {isSidebarOpen && 'Sign In'}
-                                </div>
-                            </Button>
-                        </Flex>
-                    )}{' '}
-                    {isSidebarOpen && (
-                        <Button
-                            variant="ghost"
-                            size={isSidebarOpen ? 'sm' : 'icon'}
-                            onClick={() => setIsSidebarOpen(prev => !prev)}
-                            className={cn(
-                                'w-full justify-start',
-                                !isSidebarOpen && 'mx-auto justify-center'
-                            )}
-                            tooltip="Close Sidebar"
-                            tooltipSide="right"
-                        >
-                            <IconArrowBarLeft size={16} strokeWidth={2} /> Close
-                        </Button>
-                    )}
                     {!isSidebarOpen && (
                         <Button
                             variant="ghost"
                             size="icon"
+                            tooltip="Open Sidebar"
+                            tooltipSide="right"
                             onClick={() => setIsSidebarOpen(prev => !prev)}
                             className={cn(!isSidebarOpen && 'mx-auto')}
                         >
                             <IconArrowBarRight size={16} strokeWidth={2} />
                         </Button>
                     )}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <div
+                                className={cn(
+                                    'hover:bg-quaternary flex w-full cursor-pointer flex-row items-center gap-3 rounded-lg p-2 px-2',
+                                    !isSidebarOpen && 'px-1.5'
+                                )}
+                            >
+                                <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-cyan-800">
+                                    {user && user.hasImage ? (
+                                        <img
+                                            src={user?.imageUrl ?? ''}
+                                            width={0}
+                                            height={0}
+                                            className="size-full shrink-0 rounded-full"
+                                            alt={user?.fullName ?? ''}
+                                        />
+                                    ) : (
+                                        <IconUser
+                                            size={14}
+                                            strokeWidth={2}
+                                            className="text-background"
+                                        />
+                                    )}
+                                </div>
+                                {!isSignedIn && (
+                                    <p className="line-clamp-1 flex-1 !text-sm font-medium">
+                                        Sign in to continue
+                                    </p>
+                                )}
+                                {isSidebarOpen && (
+                                    <p className="line-clamp-1 flex-1 !text-sm font-medium">
+                                        {user?.fullName}
+                                    </p>
+                                )}
+                                {isSidebarOpen && (
+                                    <IconSelector
+                                        size={14}
+                                        strokeWidth={2}
+                                        className="text-muted-foreground"
+                                    />
+                                )}
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem onClick={() => setIsSettingsOpen(true)}>
+                                <IconSettings size={16} strokeWidth={2} />
+                                Settings
+                            </DropdownMenuItem>
+                            {!isSignedIn && (
+                                <DropdownMenuItem onClick={() => openSignIn()}>
+                                    <IconUser size={16} strokeWidth={2} />
+                                    Log in
+                                </DropdownMenuItem>
+                            )}
+                            {isSignedIn && (
+                                <DropdownMenuItem onClick={() => openUserProfile()}>
+                                    <IconUser size={16} strokeWidth={2} />
+                                    Profile
+                                </DropdownMenuItem>
+                            )}
+                            {isSignedIn && (
+                                <DropdownMenuItem onClick={() => signOut()}>
+                                    <IconLogout size={16} strokeWidth={2} />
+                                    Logout
+                                </DropdownMenuItem>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </Flex>
             </Flex>
         </div>

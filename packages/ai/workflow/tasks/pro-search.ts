@@ -25,10 +25,9 @@ const getAnalysisPrompt = (question: string, webPageContent: SearchResult[]): st
 
 Today is ${getHumanizedDate()}.
 
-You are a Research Analyst tasked with thoroughly analyzing findings related to "${question}" before composing a comprehensive report. 
+You are a Research Write tasked with thoroughly analyzing findings related to "${question}" before composing a comprehensive report. 
 
-You gonna perform pre-writing analysis of the research findings.
-
+Once you have analyzed the research findings, you will compose a comprehensive report.
 ## Research Materials
 
 <research_findings>
@@ -47,18 +46,36 @@ ${webPageContent
     .join('\n\n\n')}
 </research_findings>
 
-## Analysis Instructions
-- Analyze the research findings one by one and highlight the most important information which will be used to compose a comprehensive report.
-- Document your analysis in a structured format that will serve as the foundation for creating a comprehensive report.
+## Report Requirements:
+1. Structure and Organization:
+   - Begin with a concise executive summary highlighting key developments
+   - Organize content thematically with clear progression between topics, Group related information into coherent categories
+   - Use a consistent hierarchical structure throughout
+   - Conclude with analytical insights identifying patterns, implications, and future directions
 
-Must use citations for the findings.
-<citation-method>
-    - Use numbered citations like [1], [2], etc. for referencing findings
-    - Example: According to recent findings [1][3], progress in this area has accelerated
-    - When information appears in multiple findings, cite all relevant findings using multiple numbers
-    - Integrate citations naturally without disrupting reading flow
-    - Don't add citations to the end of the report, just use them in the report
-</citation-method>
+2. Content and Analysis:
+   - Provide specific details, data points, and technical information where relevant
+   - Analyze the significance of key findings within the broader context
+   - Make connections between related information across different sources
+   - Maintain an objective, analytical tone throughout
+
+
+3. Formatting Standards:
+   - Highlight key figures, critical statistics, and significant findings with bold text
+   - Construct balanced continuous paragraphs (4-5 sentences per paragraph not more than that) with logical flow instead of shorter sentences.
+   - Use headings strategically only for major thematic shifts depending on the question asked and content
+   - Use lists, tables, links, images when appropriate
+   - Implement markdown tables for comparative data where appropriate
+   - Ensure proper spacing between sections for optimal readability
+
+4. Citations:
+   - Based on provided references in each findings, you must cite the sources in the report.
+   - Use inline citations like [1] to reference the source
+   - For example: According to recent findings [1][3], progress in this area has accelerated
+   - When information appears in multiple findings, cite all relevant findings using multiple numbers
+   - Integrate citations naturally without disrupting reading flow
+
+Note: **Reference list at the end is not required.**
 `;
 };
 
