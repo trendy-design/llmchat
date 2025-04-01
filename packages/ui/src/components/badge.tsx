@@ -7,7 +7,7 @@ const badgeVariants = cva(
     {
         variants: {
             variant: {
-                default: 'bg-tertiary text-tertiary-foreground rounded-md',
+                default: 'bg-tertiary text-emerald-900 rounded-md',
                 secondary: 'bg-tertiary text-tertiary-foreground rounded-full',
                 tertiary: 'bg-brand text-brand-foreground rounded-full',
                 brand: 'bg-brand text-brand-foreground',

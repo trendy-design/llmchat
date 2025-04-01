@@ -30,7 +30,7 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
 
     return (
         <div
-            className="flex h-full w-full flex-col items-center overflow-y-auto px-8"
+            className="no-scrollbar flex h-full w-full flex-col items-center overflow-y-auto px-8"
             ref={scrollRef}
         >
             {/* <ThreadNavBar /> */}

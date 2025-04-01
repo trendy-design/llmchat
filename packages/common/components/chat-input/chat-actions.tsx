@@ -148,7 +148,7 @@ export const WebSearchButton = () => {
             size={useWebSearch ? 'sm' : 'icon'}
             tooltip="Web Search"
             variant={useWebSearch ? 'secondary' : 'ghost'}
-            className={cn('gap-2', useWebSearch && 'bg-teal-500/20 pl-2 text-teal-600')}
+            className={cn('gap-2', useWebSearch && 'bg-emerald-500/20 pl-2 text-emerald-700')}
             rounded="full"
             onClick={() => setUseWebSearch(!useWebSearch)}
         >

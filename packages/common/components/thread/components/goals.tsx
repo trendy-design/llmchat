@@ -1,23 +1,15 @@
 import { StepRenderer, StepStatus, ToolCallStep, ToolResultStep } from '@repo/common/components';
-import { Step, ThreadItem, ToolCall, ToolResult } from '@repo/common/store';
+import { Step, ThreadItem, ToolCall, ToolResult, useAppStore } from '@repo/common/store';
 import { ChatMode } from '@repo/shared/config';
-import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-    Alert,
-    AlertDescription,
-} from '@repo/ui';
+import { Badge, Button } from '@repo/ui';
 import {
     IconAtom,
     IconChecklist,
-    IconInfoCircle,
+    IconChevronRight,
     IconLoader2,
     IconNorthStar,
 } from '@tabler/icons-react';
-import { memo, useEffect, useMemo, useState } from 'react';
-
+import { memo, useEffect, useMemo } from 'react';
 const getTitle = (threadItem: ThreadItem) => {
     if (threadItem.mode === ChatMode.Deep) {
         return 'Research';
@@ -78,7 +70,8 @@ const ToolStep = memo(({ toolCall, toolResult }: ToolStepProps) => (
 ));
 
 export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: ThreadItem }) => {
-    const [value, setValue] = useState<string | undefined>(undefined);
+    const openSideDrawer = useAppStore(state => state.openSideDrawer);
+    const dismissSideDrawer = useAppStore(state => state.dismissSideDrawer);
 
     const isStopped = threadItem.status === 'ABORTED' || threadItem.status === 'ERROR';
 
@@ -87,13 +80,13 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
 
     useEffect(() => {
         if (hasAnswer) {
-            setValue(undefined);
+            dismissSideDrawer();
         }
     }, [hasAnswer]);
 
     useEffect(() => {
         if (steps[0]?.status === 'PENDING') {
-            setValue('workflow');
+            handleClick();
         }
     }, [steps[0]]);
 
@@ -113,62 +106,57 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
         return null;
     }
 
+    const handleClick = () => {
+        openSideDrawer({
+            badge: stepCounts,
+            title: renderTitle,
+            renderContent: () => (
+                <div className="flex w-full flex-1 flex-col px-2 py-4">
+                    {steps.map((step, index) => (
+                        <StepRenderer key={index} step={step} />
+                    ))}
+                    {/* {toolCallAndResults.map(({ toolCall, toolResult }) => (
+                        <ToolStep toolCall={toolCall} toolResult={toolResult} />
+                    ))} */}
+                </div>
+            ),
+        });
+    };
+
+    const renderTitle = () => {
+        return (
+            <span className="flex flex-row items-center gap-2">
+                {isLoading ? (
+                    <IconLoader2
+                        size={14}
+                        strokeWidth={2}
+                        className="text-muted-foreground animate-spin"
+                    />
+                ) : (
+                    getIcon(threadItem)
+                )}
+                <p className="text-sm font-medium">{getTitle(threadItem)}</p>
+            </span>
+        );
+    };
+
     return (
         <>
-            <Accordion
-                type="single"
-                value={value}
-                collapsible
-                className="w-full"
-                onValueChange={setValue}
+            <Button
+                variant="secondary"
+                size="sm"
+                className="flex flex-row items-center gap-2"
+                onClick={() => {
+                    handleClick();
+                }}
             >
-                <AccordionItem
-                    value="workflow"
-                    className="border-border overflow-hidden rounded-lg border p-0"
-                >
-                    <AccordionTrigger className="bg-background flex flex-row items-center gap-2 px-4 py-2.5">
-                        <div className="flex w-full flex-row items-center gap-2">
-                            {isLoading ? (
-                                <IconLoader2
-                                    size={16}
-                                    strokeWidth={2}
-                                    className="text-muted-foreground animate-spin"
-                                />
-                            ) : (
-                                getIcon(threadItem)
-                            )}
-                            <p className="text-sm font-medium">{getTitle(threadItem)}</p>
+                {renderTitle()}
 
-                            <p className="!text-xs text-teal-600">
-                                {stepCounts} {stepCounts === 1 ? 'Step' : 'Steps'}
-                            </p>
-                            <div className="flex-1" />
-                        </div>
-                    </AccordionTrigger>
-                    <AccordionContent className="bg-background p-0">
-                        {getNote(threadItem) && (
-                            <Alert variant="default" className="rounded-none bg-yellow-300/10">
-                                <AlertDescription className="font-normal text-yellow-700">
-                                    <IconInfoCircle
-                                        size={16}
-                                        strokeWidth={2}
-                                        className="font-normal text-yellow-700"
-                                    />
-                                    {getNote(threadItem)}
-                                </AlertDescription>
-                            </Alert>
-                        )}
-                        <div className="flex w-full flex-col overflow-hidden px-4 py-4">
-                            {steps.map((step, index) => (
-                                <StepRenderer key={index} step={step} />
-                            ))}
-                            {/* {toolCallAndResults.map(({ toolCall, toolResult }) => (
-                                <ToolStep toolCall={toolCall} toolResult={toolResult} />
-                            ))} */}
-                        </div>
-                    </AccordionContent>
-                </AccordionItem>
-            </Accordion>
+                <Badge variant="default" size="sm">
+                    {stepCounts} {stepCounts === 1 ? 'Step' : 'Steps'}
+                </Badge>
+                <IconChevronRight size={14} strokeWidth={2} />
+            </Button>
         </>
     );
 };

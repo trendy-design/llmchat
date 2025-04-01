@@ -98,7 +98,7 @@ export const ChatInput = ({
             >
                 <Flex
                     direction="col"
-                    className="bg-background border-hard relative z-10 w-full rounded-xl border  shadow-sm"
+                    className="bg-background border-hard relative z-10 w-full rounded-lg border  shadow-sm"
                 >
                     {' '}
                     <ImageDropzoneRoot dropzoneProps={dropzonProps}>
@@ -106,7 +106,7 @@ export const ChatInput = ({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.15 }}
-                            className="flex w-full flex-shrink-0 overflow-hidden rounded-xl"
+                            className="flex w-full flex-shrink-0 overflow-hidden rounded-lg"
                         >
                             {editor?.isEditable ? (
                                 <motion.div

@@ -1,23 +1,7 @@
 import { Source } from '@repo/common/store';
-import {
-    Button,
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogTitle,
-    DialogTrigger,
-    WebsitePreview,
-} from '@repo/ui';
-import { useState } from 'react';
+import { WebsitePreview } from '@repo/ui';
 
-export const SourceList = ({
-    children,
-    sources,
-}: {
-    children: React.ReactNode;
-    sources: Source[];
-}) => {
-    const [isOpen, setIsOpen] = useState(false);
+export const SourceList = ({ sources }: { sources: Source[] }) => {
     if (!sources || !Array.isArray(sources) || sources?.length === 0) {
         return null;
     }
@@ -25,34 +9,16 @@ export const SourceList = ({
     const sortedSources = [...sources].sort((a, b) => a?.index - b?.index);
 
     return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>{children}</DialogTrigger>
+        <div className="flex min-h-full flex-col gap-6 py-3 pl-2 pr-4">
+            {sortedSources.map(source => (
+                <div className="flex w-full flex-row items-start gap-4" key={source.link}>
+                    <div className="group mx-0.5 my-0.5 inline-flex size-4 shrink-0 flex-row items-center justify-center gap-1 rounded-sm bg-emerald-600/20 text-[10px] font-medium text-emerald-700">
+                        {source?.index}
+                    </div>
 
-            <DialogContent ariaTitle="Sources" className="border-none p-0">
-                <DialogTitle className="p-4">Sources</DialogTitle>
-                <div className="flex max-h-[50vh] flex-col gap-6 overflow-y-auto px-6 pb-6">
-                    {sortedSources.map(source => (
-                        <div className="flex flex-row items-start gap-2" key={source.link}>
-                            <div className="text-muted-foreground group inline-flex size-5 shrink-0 flex-row items-center justify-center gap-1 rounded-sm text-sm">
-                                {source?.index}.
-                            </div>
-
-                            <WebsitePreview key={source.link} source={source} />
-                        </div>
-                    ))}
+                    <WebsitePreview key={source.link} source={source} />
                 </div>
-                <DialogFooter className="border-t p-4">
-                    <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => {
-                            setIsOpen(false);
-                        }}
-                    >
-                        Close
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+            ))}
+        </div>
     );
 };

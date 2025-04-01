@@ -47,7 +47,7 @@ export const ThreadItem = memo(
             <CitationProvider sources={threadItem.sources || []}>
                 <>
                     {/* <CodeBlock code={JSON.stringify(threadItem, null, 2)} lang="json" /> */}
-                    <div className={cn('flex w-full flex-col items-start gap-6 pt-4')}>
+                    <div className={cn('flex w-full flex-col items-start gap-3 pt-4')}>
                         {threadItem.query && (
                             <Message
                                 message={threadItem.query}
@@ -56,9 +56,14 @@ export const ThreadItem = memo(
                             />
                         )}
 
+                        <div className="text-muted-foreground flex flex-row items-center gap-1.5 text-xs font-medium">
+                            <IconBook size={16} strokeWidth={2} className="text-muted-foreground" />
+                            Answer
+                        </div>
+
                         {threadItem.status === 'QUEUED' && (
                             <div className="flex w-full flex-col items-start gap-2 opacity-10">
-                                <MotionSkeleton className="bg-muted-foreground/40 mb-2 h-4 !w-[100px] rounded-md" />
+                                <MotionSkeleton className="bg-muted-foreground/40 mb-2 h-4 !w-[100px] rounded-sm" />
                                 <MotionSkeleton className="w-full bg-gradient-to-r" />
                                 <MotionSkeleton className="w-[70%] bg-gradient-to-r" />
                                 <MotionSkeleton className="w-[50%] bg-gradient-to-r" />
@@ -72,14 +77,6 @@ export const ThreadItem = memo(
                         <div ref={messageRef} className="w-full">
                             {hasAnswer && threadItem.answer?.text && (
                                 <div className="flex flex-col">
-                                    <div className="text-muted-foreground flex flex-row items-center gap-1.5 py-2 text-xs font-medium">
-                                        <IconBook
-                                            size={16}
-                                            strokeWidth={2}
-                                            className="text-muted-foreground"
-                                        />
-                                        Answer
-                                    </div>
                                     <SourceGrid sources={threadItem.sources || []} />
 
                                     <MarkdownContent
@@ -140,7 +137,7 @@ export const MotionSkeleton = ({ className }: { className?: string }) => {
         >
             <Skeleton
                 className={cn(
-                    'from-muted-foreground/50 via-muted-foreground/30 to-muted-foreground/10 h-5 w-full bg-gradient-to-r',
+                    'from-muted-foreground/70 via-muted-foreground/50 to-muted-foreground/10 h-5 w-full rounded-sm bg-gradient-to-r',
                     className
                 )}
             />

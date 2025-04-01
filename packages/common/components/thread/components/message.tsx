@@ -39,7 +39,7 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
             {imageAttachment && <ImageMessage imageAttachment={imageAttachment} />}
             <div
                 className={cn(
-                    'text-foreground border-border bg-background group relative max-w-[80%] overflow-hidden rounded-xl border',
+                    'text-foreground border-border bg-background group relative max-w-[80%] overflow-hidden rounded-md border',
                     isEditing && 'border-hard'
                 )}
             >
@@ -47,7 +47,7 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
                     <>
                         <div
                             ref={messageRef}
-                            className={cn(' relative px-3 py-2 text-base font-normal', {
+                            className={cn(' relative px-3 py-2 text-sm font-normal', {
                                 'pb-12': isExpanded,
                             })}
                             style={{
@@ -157,8 +157,6 @@ export const EditMessage = memo(({ message, onCancel, threadItem, width }: TEdit
             newChatMode: threadItem.mode,
             useWebSearch: false, //
         });
-
-        onCancel();
     };
 
     return (

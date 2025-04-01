@@ -4,8 +4,8 @@ import { CommandSearch, SettingsModal, Sidebar } from '@repo/common/components';
 import { useRootContext } from '@repo/common/context';
 import { AgentProvider } from '@repo/common/hooks';
 import { useAppStore } from '@repo/common/store';
-import { Flex, Toaster } from '@repo/ui';
-import { IconMoodSadDizzy } from '@tabler/icons-react';
+import { Badge, Button, Flex, Toaster } from '@repo/ui';
+import { IconMoodSadDizzy, IconX } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FC } from 'react';
 import { Drawer } from 'vaul';
@@ -20,7 +20,7 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
     const showSignInModal = useAppStore(state => state.showSignInModal);
 
     const containerClass =
-        'relative flex flex-1 flex-col h-[calc(99dvh)]  border border-border rounded-l-sm bg-secondary w-full overflow-hidden shadow-sm';
+        'relative flex flex-1 flex-row h-[calc(99dvh)]  border border-border rounded-sm bg-secondary w-full overflow-hidden shadow-sm';
 
     if (showSignInModal) {
         return (
@@ -74,6 +74,7 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
                                     {children}
                                 </div>
                             </div>
+                            <SideDrawer />
                         </div>
                     </AgentProvider>
                 </motion.div>
@@ -83,5 +84,54 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
 
             <Toaster />
         </div>
+    );
+};
+
+export const SideDrawer = () => {
+    const sideDrawer = useAppStore(state => state.sideDrawer);
+    const dismissSideDrawer = useAppStore(state => state.dismissSideDrawer);
+
+    return (
+        <AnimatePresence>
+            {sideDrawer.open && (
+                <motion.div
+                    initial={{ opacity: 0, x: 40 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 40 }}
+                    transition={{
+                        type: 'spring',
+                        stiffness: 300,
+                        damping: 30,
+                        exit: { duration: 0.2 },
+                    }}
+                    className=" flex min-h-[99dvh] w-[500px] shrink-0 flex-col overflow-hidden p-1.5 "
+                >
+                    <div className="bg-background border-border flex h-full flex-col overflow-hidden rounded-md border shadow-sm">
+                        <div className="border-border flex flex-row items-center justify-between gap-2 border-b py-1.5 pl-4 pr-2">
+                            <div className="text-sm font-medium">
+                                {typeof sideDrawer.title === 'function'
+                                    ? sideDrawer.title()
+                                    : sideDrawer.title}
+                            </div>
+                            {sideDrawer.badge && (
+                                <Badge variant="default">{sideDrawer.badge}</Badge>
+                            )}
+                            <div className="flex-1" />
+                            <Button
+                                variant="secondary"
+                                size="icon-xs"
+                                onClick={() => dismissSideDrawer()}
+                                tooltip="Close"
+                            >
+                                <IconX size={14} strokeWidth={2} />
+                            </Button>
+                        </div>
+                        <div className="no-scrollbar flex flex-1 flex-col gap-2 overflow-y-auto p-2">
+                            {sideDrawer.renderContent()}
+                        </div>
+                    </div>
+                </motion.div>
+            )}
+        </AnimatePresence>
     );
 };
