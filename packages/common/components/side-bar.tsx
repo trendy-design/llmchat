@@ -1,6 +1,6 @@
 'use client';
 import { useClerk, useUser } from '@clerk/nextjs';
-import { FullPageLoader, HistoryItem } from '@repo/common/components';
+import { FullPageLoader, HistoryItem, Logo } from '@repo/common/components';
 import { useRootContext } from '@repo/common/context';
 import { Thread, useAppStore, useChatStore } from '@repo/common/store';
 import {
@@ -23,6 +23,7 @@ import {
     IconSettings2,
     IconUser,
 } from '@tabler/icons-react';
+import { motion } from 'framer-motion';
 import moment from 'moment';
 import Image from 'next/image';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -98,42 +99,33 @@ export const Sidebar = () => {
             )}
         >
             <Flex direction="col" className="w-full flex-1 overflow-hidden">
-                <Flex direction="col" className="w-full items-end px-4" gap="sm">
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
+                    className={cn(
+                        'mb-4 flex h-8  w-full items-center justify-start gap-1.5 px-4',
+                        !isSidebarOpen && 'justify-center'
+                    )}
+                >
+                    <Logo className="size-4 text-teal-900" />
                     {isSidebarOpen && (
-                        <Button
-                            variant="ghost"
-                            size={isSidebarOpen ? 'sm' : 'icon'}
-                            onClick={() => setIsSidebarOpen(prev => !prev)}
-                            className={cn(
-                                'w-full justify-start',
-                                !isSidebarOpen && 'mx-auto justify-center'
-                            )}
-                            tooltip="Close Sidebar"
-                            tooltipSide="right"
-                        >
-                            <IconArrowBarLeft size={16} strokeWidth={2} /> Close
-                        </Button>
+                        <p className="font-clash text-lg font-bold tracking-wide text-teal-900">
+                            deep.new
+                        </p>
                     )}
-                    {!isSidebarOpen && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => setIsSidebarOpen(prev => !prev)}
-                            className={cn(!isSidebarOpen && 'mx-auto')}
-                        >
-                            <IconArrowBarRight size={16} strokeWidth={2} />
-                        </Button>
-                    )}
+                </motion.div>
+                <Flex direction="col" className="w-full items-end px-4" gap="sm">
                     <Button
-                        size={isSidebarOpen ? 'sm' : 'icon-sm'}
-                        variant="default"
+                        size={isSidebarOpen ? 'xs' : 'icon-sm'}
+                        variant="secondary"
                         rounded="lg"
                         tooltip={isSidebarOpen ? undefined : 'New Thread'}
                         tooltipSide="right"
                         className={cn(
                             isSidebarOpen && 'relative w-full',
-                            'justify-center',
-                            'text-background border border-teal-800 bg-teal-700'
+                            'justify-center'
+                            // 'text-background border border-teal-800 bg-teal-700'
                         )}
                         onClick={() => !isChatPage && push('/chat')}
                     >
@@ -145,7 +137,7 @@ export const Sidebar = () => {
                         {isSidebarOpen && 'New'}
                     </Button>
                     <Button
-                        size={isSidebarOpen ? 'sm' : 'icon-sm'}
+                        size={isSidebarOpen ? 'xs' : 'icon-sm'}
                         variant="bordered"
                         rounded="lg"
                         tooltip={isSidebarOpen ? undefined : 'Search'}
@@ -274,6 +266,31 @@ export const Sidebar = () => {
                                 </div>
                             </Button>
                         </Flex>
+                    )}{' '}
+                    {isSidebarOpen && (
+                        <Button
+                            variant="ghost"
+                            size={isSidebarOpen ? 'sm' : 'icon'}
+                            onClick={() => setIsSidebarOpen(prev => !prev)}
+                            className={cn(
+                                'w-full justify-start',
+                                !isSidebarOpen && 'mx-auto justify-center'
+                            )}
+                            tooltip="Close Sidebar"
+                            tooltipSide="right"
+                        >
+                            <IconArrowBarLeft size={16} strokeWidth={2} /> Close
+                        </Button>
+                    )}
+                    {!isSidebarOpen && (
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setIsSidebarOpen(prev => !prev)}
+                            className={cn(!isSidebarOpen && 'mx-auto')}
+                        >
+                            <IconArrowBarRight size={16} strokeWidth={2} />
+                        </Button>
                     )}
                 </Flex>
             </Flex>

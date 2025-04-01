@@ -23,9 +23,9 @@ import {
     IconWorld,
 } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { BYOKIcon, CreditIcon } from '../icons';
-
 export const chatOptions = [
     {
         label: 'Deep Research',
@@ -113,10 +113,12 @@ export const ChatModeButton = () => {
     const setChatMode = useChatStore(state => state.setChatMode);
     const [isChatModeOpen, setIsChatModeOpen] = useState(false);
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
+    const isChatPage = usePathname().startsWith('/chat');
 
-    const selectedOption = [...chatOptions, ...modelOptions].find(
-        option => option.value === chatMode
-    );
+    const selectedOption =
+        (isChatPage
+            ? [...chatOptions, ...modelOptions].find(option => option.value === chatMode)
+            : [...modelOptions].find(option => option.value === chatMode)) ?? modelOptions[0];
 
     return (
         <DropdownMenu open={isChatModeOpen} onOpenChange={setIsChatModeOpen}>
@@ -189,37 +191,40 @@ export const ChatModeOptions = ({
     setChatMode: (chatMode: ChatMode) => void;
 }) => {
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
+    const isChatPage = usePathname().startsWith('/chat');
 
     return (
         <DropdownMenuContent align="start" side="bottom" className="w-[320px]">
-            <DropdownMenuGroup>
-                <DropdownMenuLabel>Advanced Mode</DropdownMenuLabel>
-                {chatOptions.map(option => (
-                    <DropdownMenuItem
-                        key={option.label}
-                        onSelect={() => {
-                            setChatMode(option.value);
-                        }}
-                        className="h-auto"
-                    >
-                        <div className="flex w-full flex-row items-start gap-1.5 px-1.5 py-1.5">
-                            <div className="flex flex-col gap-0 pt-1">{option.icon}</div>
+            {isChatPage && (
+                <DropdownMenuGroup>
+                    <DropdownMenuLabel>Advanced Mode</DropdownMenuLabel>
+                    {chatOptions.map(option => (
+                        <DropdownMenuItem
+                            key={option.label}
+                            onSelect={() => {
+                                setChatMode(option.value);
+                            }}
+                            className="h-auto"
+                        >
+                            <div className="flex w-full flex-row items-start gap-1.5 px-1.5 py-1.5">
+                                <div className="flex flex-col gap-0 pt-1">{option.icon}</div>
 
-                            <div className="flex flex-col gap-0">
-                                {<p className="m-0 text-sm font-medium">{option.label}</p>}
-                                {option.description && (
-                                    <p className="text-muted-foreground text-xs font-light">
-                                        {option.description}
-                                    </p>
-                                )}
+                                <div className="flex flex-col gap-0">
+                                    {<p className="m-0 text-sm font-medium">{option.label}</p>}
+                                    {option.description && (
+                                        <p className="text-muted-foreground text-xs font-light">
+                                            {option.description}
+                                        </p>
+                                    )}
+                                </div>
+                                <div className="flex-1" />
+
+                                <CreditIcon credits={option.creditCost ?? 0} variant="muted" />
                             </div>
-                            <div className="flex-1" />
-
-                            <CreditIcon credits={option.creditCost ?? 0} variant="muted" />
-                        </div>
-                    </DropdownMenuItem>
-                ))}
-            </DropdownMenuGroup>
+                        </DropdownMenuItem>
+                    ))}
+                </DropdownMenuGroup>
+            )}
             <DropdownMenuGroup>
                 <DropdownMenuLabel>Models</DropdownMenuLabel>
                 {modelOptions.map(option => (
@@ -273,7 +278,7 @@ export const SendStopButton = ({
                         transition={{ duration: 0.2 }}
                     >
                         <Button
-                            size="icon"
+                            size="icon-sm"
                             rounded="full"
                             variant="default"
                             onClick={stopGeneration}

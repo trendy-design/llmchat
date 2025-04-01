@@ -178,6 +178,7 @@ type Actions = {
     getPreviousThreadItems: (threadId?: string) => ThreadItem[];
     getCurrentThreadItem: (threadId?: string) => ThreadItem | null;
     getCurrentThread: () => Thread | null;
+    removeFollowupThreadItems: (threadItemId: string) => Promise<void>;
     getThreadItems: (threadId: string) => Promise<ThreadItem[]>;
     loadThreadItems: (threadId: string) => Promise<void>;
     setCurrentThreadItem: (threadItem: ThreadItem) => void;
@@ -579,6 +580,31 @@ export const useChatStore = create(
             } catch (error) {
                 console.error('Error fetching remaining credits:', error);
             }
+        },
+
+        removeFollowupThreadItems: async (threadItemId: string) => {
+            const threadItem = await db.threadItems.get(threadItemId);
+            if (!threadItem) return;
+            const threadItems = await db.threadItems
+                .where('createdAt')
+                .above(threadItem.createdAt)
+                .and(item => item.threadId === threadItem.threadId)
+                .toArray();
+            for (const threadItem of threadItems) {
+                await db.threadItems.delete(threadItem.id);
+            }
+            set(state => {
+                state.threadItems = state.threadItems.filter(
+                    t => t.createdAt <= threadItem.createdAt || t.threadId !== threadItem.threadId
+                );
+            });
+
+            // Notify other tabs
+            debouncedNotify('thread-item-delete', {
+                threadId: threadItem.threadId,
+                id: threadItemId,
+                isFollowupRemoval: true,
+            });
         },
 
         getThreadItems: async (threadId: string) => {

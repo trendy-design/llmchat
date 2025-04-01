@@ -26,6 +26,7 @@ export function Thread() {
                     threadItem={threadItem}
                     isAnimated={false}
                     isGenerating={false}
+                    isLast={false}
                 />
             </div>
         ));
@@ -42,6 +43,7 @@ export function Thread() {
                             threadItem={currentThreadItem}
                             isAnimated={true}
                             isGenerating={isGenerating}
+                            isLast={true}
                         />
                         <FollowupSuggestions suggestions={currentThreadItem.suggestions || []} />
                     </div>

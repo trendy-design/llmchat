@@ -20,7 +20,7 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
     const showSignInModal = useAppStore(state => state.showSignInModal);
 
     const containerClass =
-        'relative flex flex-1 flex-col h-[calc(100dvh)] border border-border rounded-l-sm bg-secondary w-full overflow-hidden shadow-sm';
+        'relative flex flex-1 flex-col h-[calc(99dvh)]  border border-border rounded-l-sm bg-secondary w-full overflow-hidden shadow-sm';
 
     if (showSignInModal) {
         return (
@@ -63,7 +63,7 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
 
             {/* Main Content */}
             <Flex className="w-full">
-                <motion.div className="flex flex-1 gap-0 overflow-hidden">
+                <motion.div className="flex flex-1 gap-0 overflow-hidden py-1 pr-1">
                     <AgentProvider>
                         <div className={containerClass}>
                             <div className="relative flex h-full w-full flex-row">

@@ -1,5 +1,5 @@
 'use client';
-import { ChatInput, Thread, ThreadNavBar } from '@repo/common/components';
+import { ChatInput, Thread } from '@repo/common/components';
 import { useChatStore } from '@repo/common/store';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -33,7 +33,7 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
             className="flex h-full w-full flex-col items-center overflow-y-auto px-8"
             ref={scrollRef}
         >
-            <ThreadNavBar />
+            {/* <ThreadNavBar /> */}
             <div className="mx-auto w-full max-w-3xl px-4 pb-[200px] pt-8" ref={contentRef}>
                 <Thread />
             </div>

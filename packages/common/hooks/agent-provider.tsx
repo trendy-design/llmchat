@@ -268,7 +268,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             ...(messages?.flatMap(item => [
                 {
                     role: 'user' as const,
-                    content: item.imageAttachment
+                    content: !!item?.imageAttachment
                         ? [
                               {
                                   type: 'text' as const,
@@ -276,7 +276,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                               },
                               {
                                   type: 'image' as const,
-                                  image: imageAttachment,
+                                  image: item?.imageAttachment,
                               },
                           ]
                         : item.query || '',
@@ -288,7 +288,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             ]) || []),
             {
                 role: 'user' as const,
-                content: imageAttachment
+                content: !!imageAttachment
                     ? [
                           {
                               type: 'text' as const,
@@ -302,6 +302,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     : query || '',
             },
         ];
+
+        console.log('coreMessages', coreMessages);
 
         if (hasApiKeyForChatMode(newChatMode ?? (chatMode as any))) {
             const abortController = new AbortController();

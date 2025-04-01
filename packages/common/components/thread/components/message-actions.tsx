@@ -9,10 +9,11 @@ import { forwardRef, useState } from 'react';
 
 type MessageActionsProps = {
     threadItem: ThreadItem;
+    isLast: boolean;
 };
 
 export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
-    ({ threadItem }, ref) => {
+    ({ threadItem, isLast }, ref) => {
         const { handleSubmit } = useAgentStream();
         const removeThreadItem = useChatStore(state => state.deleteThreadItem);
         const getThreadItems = useChatStore(state => state.getThreadItems);
@@ -67,17 +68,19 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                         />
                     </DropdownMenu>
                 )}
-                <Button
-                    variant="secondary"
-                    size="icon-sm"
-                    rounded="full"
-                    onClick={() => {
-                        removeThreadItem(threadItem.id);
-                    }}
-                    tooltip="Remove"
-                >
-                    <IconTrash size={16} strokeWidth={2} />
-                </Button>
+                {isLast && (
+                    <Button
+                        variant="secondary"
+                        size="icon-sm"
+                        rounded="full"
+                        onClick={() => {
+                            removeThreadItem(threadItem.id);
+                        }}
+                        tooltip="Remove"
+                    >
+                        <IconTrash size={16} strokeWidth={2} />
+                    </Button>
+                )}
                 {threadItem.mode && (
                     <p className="text-muted-foreground px-2 text-xs">
                         Generated with {getChatModeName(threadItem.mode)}

@@ -9,7 +9,7 @@ import { useEditor } from '@tiptap/react';
 import { useEffect } from 'react';
 import { useChatStore } from '../store';
 
-export const useChatEditor = () => {
+export const useChatEditor = (editorProps: { defaultContent?: string }) => {
     const setEditor = useChatStore(state => state.setEditor);
     const editor = useEditor({
         extensions: [
@@ -48,6 +48,13 @@ export const useChatEditor = () => {
                     });
                 }
                 // setOpenPromptsBotCombo(false);
+            }
+        },
+        onCreate(props) {
+            if (editorProps?.defaultContent) {
+                props.editor.commands.setContent(editorProps?.defaultContent || '', true, {
+                    preserveWhitespace: true,
+                });
             }
         },
 

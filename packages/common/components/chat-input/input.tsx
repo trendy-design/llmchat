@@ -29,7 +29,7 @@ export const ChatInput = ({
     isFollowUp?: boolean;
 }) => {
     const { threadId: currentThreadId } = useParams();
-    const { editor } = useChatEditor();
+    const { editor } = useChatEditor({});
     const { user } = useUser();
     const { actor, isSignedIn } = useAuth();
     const { openSignIn } = useClerk();
@@ -90,17 +90,18 @@ export const ChatInput = ({
         <AnimatePresence>
             <MessagesRemainingBadge />
 
-            <ImageDropzoneRoot dropzoneProps={dropzonProps}>
-                <motion.div
-                    className="w-full"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.2, ease: 'easeOut' }}
+            <motion.div
+                className="w-full"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+            >
+                <Flex
+                    direction="col"
+                    className="bg-background border-hard relative z-10 w-full rounded-xl border  shadow-sm"
                 >
-                    <Flex
-                        direction="col"
-                        className="bg-background border-hard relative z-10 w-full rounded-xl border  shadow-sm"
-                    >
+                    {' '}
+                    <ImageDropzoneRoot dropzoneProps={dropzonProps}>
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -116,7 +117,11 @@ export const ChatInput = ({
                                 >
                                     <ImageAttachment />
                                     <Flex className="flex w-full flex-row items-end gap-0">
-                                        <ChatEditor sendMessage={sendMessage} editor={editor} />
+                                        <ChatEditor
+                                            sendMessage={sendMessage}
+                                            editor={editor}
+                                            className="px-4 pt-4"
+                                        />
                                     </Flex>
 
                                     <Flex
@@ -166,9 +171,9 @@ export const ChatInput = ({
                                 </motion.div>
                             )}
                         </motion.div>
-                    </Flex>
-                </motion.div>
-            </ImageDropzoneRoot>
+                    </ImageDropzoneRoot>
+                </Flex>
+            </motion.div>
         </AnimatePresence>
     );
 
@@ -213,9 +218,9 @@ export const ChatInput = ({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3, delay: 0.2 }}
-                            className="font-clash text-foreground text-[32px] font-semibold !text-teal-900"
+                            className="font-clash text-foreground flex flex-row items-center gap-2 text-[32px] font-semibold !text-teal-900"
                         >
-                            What can i help you with?
+                            How can i help you today?
                         </motion.h1>
                     </motion.div>
                 )}

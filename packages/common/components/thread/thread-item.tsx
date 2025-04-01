@@ -17,10 +17,12 @@ export const ThreadItem = memo(
     ({
         threadItem,
         isGenerating,
+        isLast,
     }: {
         isAnimated: boolean;
         threadItem: ThreadItemType;
         isGenerating: boolean;
+        isLast: boolean;
     }) => {
         const setCurrentSources = useChatStore(state => state.setCurrentSources);
         const messageRef = useRef<HTMLDivElement>(null);
@@ -50,6 +52,7 @@ export const ThreadItem = memo(
                             <Message
                                 message={threadItem.query}
                                 imageAttachment={threadItem?.imageAttachment}
+                                threadItem={threadItem}
                             />
                         )}
 
@@ -105,7 +108,11 @@ export const ThreadItem = memo(
                             threadItem.status === 'ABORTED' ||
                             threadItem.status === 'ERROR' ||
                             !isGenerating) && (
-                            <MessageActions threadItem={threadItem} ref={messageRef} />
+                            <MessageActions
+                                threadItem={threadItem}
+                                ref={messageRef}
+                                isLast={isLast}
+                            />
                         )}
                     </div>
                 </>
