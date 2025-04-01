@@ -6,20 +6,15 @@ import { generateObject, getHumanizedDate, handleError } from '../utils';
 
 const ClarificationResponseSchema = z.object({
     needsClarification: z.boolean(),
-    reasoning: z.string().min(1).describe('Explanation of why clarification is needed').optional(),
-    clarifyingQuestion: z.object({
-        question: z.string().min(1).describe('A specific question to ask the user'),
-        type: z
-            .enum(['multiple'])
-            .describe('The type of choice the user can make. you can also give multiple choices'),
-        options: z.array(z.string()).min(1).max(3).describe('2-3 options for the question'),
-    }),
-    refinedQuery: z
-        .string()
-        .describe(
-            'Refined query with the same format as the original query but more specific and accurate'
-        )
+    reasoning: z.string().optional(),
+    clarifyingQuestion: z
+        .object({
+            question: z.string(),
+            choiceType: z.enum(['multiple', 'single']),
+            options: z.array(z.string()).min(1).max(3),
+        })
         .optional(),
+    refinedQuery: z.string().optional(),
 });
 
 export const refineQueryTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
@@ -32,22 +27,27 @@ export const refineQueryTask = createTask<WorkflowEventSchema, WorkflowContextSc
 
                 CURRENT DATE: ${getHumanizedDate()}
 
-                Analyze the user's question and current query to determine if it's specific and effective for research purposes.
-                You can also give multiple choices for the clarifying questions to enhance the user query.
+                Analyze the user's question to determine if it needs clarification before research.
 
-                If the query is already well-formed:
+                For well-formed queries:
                 - Return needsClarification: false
-                - Provide a refinedQuery that enhances the original while maintaining its format
+                - Provide a refinedQuery that enhances the original
 
-                If the query needs improvement:
+                For queries needing improvement:
                 - Return needsClarification: true
-                - Provide reasoning explaining why clarification is needed
-                - Include 1-2 clarifying questions with 2-3 answer options each
+                - Provide reasoning explaining why
+                - Include clarifying questions with 2-3 options
+                - The choiceType should be single or multiple based on the question
 
-                If user has replied to clarifying questions, return needsClarification: false
-                - Provide a refinedQuery that incorporates the user's response
-
-                Based on the user's conversation, refine the query to enable deep, comprehensive research.`;
+                If the user has already responded to previous clarifying questions:
+                - Return needsClarification: false
+                - Provide a refinedQuery incorporating their response
+                
+                If the user has not responded to clarifying questions:
+                - Return needsClarification: false
+                - Use the original query
+                
+                `;
 
         const object = await generateObject({
             prompt,
@@ -66,8 +66,9 @@ export const refineQueryTask = createTask<WorkflowEventSchema, WorkflowContextSc
                         object: object,
                         objectType: 'clarifyingQuestions',
                         final: true,
-                        status: 'COMPLETED',
+                        status: 'HUMAN_REVIEW',
                     },
+                    status: 'COMPLETED',
                 };
             });
         } else {

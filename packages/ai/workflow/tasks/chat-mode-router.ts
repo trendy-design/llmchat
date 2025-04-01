@@ -1,3 +1,4 @@
+import { trimMessageHistoryEstimated } from '@repo/ai/models';
 import { createTask } from '@repo/orchestrator';
 import { ChatMode } from '@repo/shared/config';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
@@ -6,6 +7,14 @@ export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSc
     name: 'router',
     execute: async ({ context, redirectTo }) => {
         const mode = context?.get('mode') || ChatMode.GEMINI_2_FLASH;
+
+        const messageHistory = context?.get('messages') || [];
+        const trimmedMessageHistory = trimMessageHistoryEstimated(messageHistory, mode);
+        context?.set('messages', trimmedMessageHistory.trimmedMessages ?? []);
+
+        if (!trimmedMessageHistory?.trimmedMessages) {
+            throw new Error('Maximum message history reached');
+        }
 
         if (mode === ChatMode.Deep) {
             redirectTo('refine-query');

@@ -1,7 +1,7 @@
 'use client';
 import { DotSpinner } from '@repo/common/components';
 import { useApiKeysStore, useChatStore } from '@repo/common/store';
-import { CHAT_MODE_CREDIT_COSTS, ChatMode } from '@repo/shared/config';
+import { CHAT_MODE_CREDIT_COSTS, ChatMode, ChatModeConfig } from '@repo/shared/config';
 import {
     Button,
     cn,
@@ -140,8 +140,7 @@ export const WebSearchButton = () => {
     const chatMode = useChatStore(state => state.chatMode);
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
 
-    if (chatMode === ChatMode.Deep || chatMode === ChatMode.Pro || hasApiKeyForChatMode(chatMode))
-        return null;
+    if (!ChatModeConfig[chatMode]?.webSearch && !hasApiKeyForChatMode(chatMode)) return null;
 
     return (
         <Button

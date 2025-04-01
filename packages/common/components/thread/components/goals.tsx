@@ -2,7 +2,13 @@ import { StepRenderer, StepStatus, ToolCallStep, ToolResultStep } from '@repo/co
 import { Step, ThreadItem, ToolCall, ToolResult, useAppStore } from '@repo/common/store';
 import { ChatMode } from '@repo/shared/config';
 import { Badge, Button } from '@repo/ui';
-import { IconAtom, IconChecklist, IconChevronRight, IconNorthStar } from '@tabler/icons-react';
+import {
+    IconAtom,
+    IconChecklist,
+    IconChevronRight,
+    IconLoader2,
+    IconNorthStar,
+} from '@tabler/icons-react';
 import { memo, useEffect, useMemo } from 'react';
 const getTitle = (threadItem: ThreadItem) => {
     if (threadItem.mode === ChatMode.Deep) {
@@ -66,11 +72,16 @@ const ToolStep = memo(({ toolCall, toolResult }: ToolStepProps) => (
 export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: ThreadItem }) => {
     const openSideDrawer = useAppStore(state => state.openSideDrawer);
     const dismissSideDrawer = useAppStore(state => state.dismissSideDrawer);
+    const updateSideDrawer = useAppStore(state => state.updateSideDrawer);
 
     const isStopped = threadItem.status === 'ABORTED' || threadItem.status === 'ERROR';
 
     const isLoading = steps.some(step => step.status === 'PENDING') && !isStopped;
-    const hasAnswer = !!threadItem?.answer?.text;
+    const hasAnswer =
+        !!threadItem?.answer?.text &&
+        (threadItem.status === 'COMPLETED' ||
+            threadItem.status === 'ABORTED' ||
+            threadItem.status === 'ERROR');
 
     useEffect(() => {
         if (hasAnswer) {
@@ -96,9 +107,19 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
 
     const stepCounts = steps.length;
 
-    if (steps.length === 0 && !toolCallAndResults.length) {
-        return null;
-    }
+    useEffect(() => {
+        if (steps.length > 0) {
+            updateSideDrawer({
+                renderContent: () => (
+                    <div className="flex w-full flex-1 flex-col px-2 py-4">
+                        {steps.map((step, index) => (
+                            <StepRenderer key={index} step={step} />
+                        ))}
+                    </div>
+                ),
+            });
+        }
+    }, [steps]);
 
     const handleClick = () => {
         openSideDrawer({
@@ -120,11 +141,19 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
     const renderTitle = () => {
         return (
             <span className="flex flex-row items-center gap-2">
-                {getIcon(threadItem)}
+                {isLoading ? (
+                    <IconLoader2 size={14} strokeWidth={2} className=" animate-spin" />
+                ) : (
+                    getIcon(threadItem)
+                )}
                 <p className="text-sm font-medium">{getTitle(threadItem)}</p>
             </span>
         );
     };
+
+    if (steps.length === 0 && !toolCallAndResults.length) {
+        return null;
+    }
 
     return (
         <>

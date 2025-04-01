@@ -14,8 +14,9 @@
     },
     "dependencies": {
         "@repo/ai": "*",
+        "@repo/shared": "*",
         "@repo/ui": "*",
-        "@repo/shared": "*"
+        "@tiptap/extension-character-count": "^2.11.7"
     },
     "devDependencies": {
         "@repo/typescript-config": "*",

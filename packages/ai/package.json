@@ -14,7 +14,6 @@
         "./worker": "./worker/index.ts"
     },
     "dependencies": {
-        "@repo/orchestrator": "*",
         "@ai-sdk/anthropic": "^1.1.8",
         "@ai-sdk/fireworks": "^0.1.16",
         "@ai-sdk/google": "^1.1.16",
@@ -22,11 +21,13 @@
         "@ai-sdk/togetherai": "^0.1.11",
         "@anthropic-ai/sdk": "^0.36.3",
         "@modelcontextprotocol/sdk": "^1.6.1",
+        "@repo/orchestrator": "*",
         "@repo/shared": "*",
         "@types/node": "^20.11.5",
         "ai": "^4.1.40",
         "braintrust": "^0.0.187",
         "dotenv": "^16.4.5",
+        "js-tiktoken": "^1.0.19",
         "json-schema-to-zod": "^2.6.0",
         "langfuse": "^3.36.0",
         "openai": "^4.24.1",

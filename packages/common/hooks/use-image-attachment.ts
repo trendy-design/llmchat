@@ -53,6 +53,16 @@ export const useImageAttachment = () => {
             return;
         }
 
+        const MAX_FILE_SIZE = 3 * 1024 * 1024; // 3MB in bytes
+        if (file && file.size > MAX_FILE_SIZE) {
+            toast({
+                title: 'File too large',
+                description: 'Image size should be less than 3MB.',
+                variant: 'destructive',
+            });
+            return;
+        }
+
         reader.onload = () => {
             if (typeof reader.result !== 'string') return;
             const base64String = reader?.result?.split(',')[1];

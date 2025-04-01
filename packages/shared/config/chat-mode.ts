@@ -9,6 +9,49 @@ export enum ChatMode {
     CLAUDE_3_7_SONNET = 'claude-3-7-sonnet',
 }
 
+export const ChatModeConfig = {
+    [ChatMode.Deep]: {
+        webSearch: false,
+        imageUpload: false,
+        retry: false,
+    },
+    [ChatMode.Pro]: {
+        webSearch: false,
+        imageUpload: false,
+        retry: false,
+    },
+    [ChatMode.O3_Mini]: {
+        webSearch: true,
+        imageUpload: true,
+        retry: true,
+    },
+    [ChatMode.GPT_4o_Mini]: {
+        webSearch: true,
+        imageUpload: true,
+        retry: true,
+    },
+    [ChatMode.CLAUDE_3_5_SONNET]: {
+        webSearch: true,
+        imageUpload: true,
+        retry: true,
+    },
+    [ChatMode.CLAUDE_3_7_SONNET]: {
+        webSearch: true,
+        imageUpload: true,
+        retry: true,
+    },
+    [ChatMode.GEMINI_2_FLASH]: {
+        webSearch: true,
+        imageUpload: true,
+        retry: true,
+    },
+    [ChatMode.DEEPSEEK_R1]: {
+        webSearch: true,
+        imageUpload: true,
+        retry: true,
+    },
+};
+
 export const CHAT_MODE_CREDIT_COSTS = {
     [ChatMode.Deep]: 10,
     [ChatMode.Pro]: 5,

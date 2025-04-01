@@ -33,6 +33,7 @@ type Actions = {
     setSettingTab: (tab: (typeof SETTING_TABS)[keyof typeof SETTING_TABS]) => void;
     setShowSignInModal: (show: boolean) => void;
     openSideDrawer: (props: Omit<SideDrawerProps, 'open'>) => void;
+    updateSideDrawer: (props: Partial<SideDrawerProps>) => void;
     dismissSideDrawer: () => void;
 };
 
@@ -54,6 +55,10 @@ export const useAppStore = create(
         sideDrawer: { open: false, title: '', renderContent: () => null, badge: undefined },
         openSideDrawer: (props: Omit<SideDrawerProps, 'open'>) =>
             set({ sideDrawer: { ...props, open: true } }),
+        updateSideDrawer: (props: Partial<SideDrawerProps>) =>
+            set(state => ({
+                sideDrawer: { ...state.sideDrawer, ...props },
+            })),
         dismissSideDrawer: () =>
             set({
                 sideDrawer: { open: false, title: '', renderContent: () => null, badge: undefined },

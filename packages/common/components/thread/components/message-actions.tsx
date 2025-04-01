@@ -42,7 +42,7 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                         {status === 'copied' ? 'Copied' : 'Copy'}
                     </Button>
                 )}
-                {threadItem.status !== 'ERROR' && (
+                {threadItem.status !== 'ERROR' && threadItem.answer?.status !== 'HUMAN_REVIEW' && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="secondary" size="xs" rounded="full" tooltip="Rewrite">

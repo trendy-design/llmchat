@@ -1,8 +1,10 @@
 import { createTask } from '@repo/orchestrator';
 import { z } from 'zod';
-import { ModelEnum } from '../../models';
+import { estimateTokens, ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
 import { generateObject, getHumanizedDate, handleError } from '../utils';
+
+const MAX_ALLOWED_TOKENS = 1000;
 
 const SuggestionSchema = z.object({
     questions: z.array(z.string()).describe('A list of questions to user can ask followup'),
@@ -13,6 +15,19 @@ export const suggestionsTask = createTask<WorkflowEventSchema, WorkflowContextSc
     execute: async ({ trace, events, context, data, signal }) => {
         const question = context?.get('question') || '';
         const answer = context?.get('answer') || '';
+
+        const tokens = estimateTokens([
+            {
+                role: 'user',
+                content: question,
+            },
+        ]);
+
+        if (tokens > MAX_ALLOWED_TOKENS) {
+            return {
+                suggestions: [],
+            };
+        }
         const prompt = `You are a professional research reviewer assistant tasked with suggesting followup questions to the user.
                 based on the conversation, suggest 2-3 followup questions to the user.
 

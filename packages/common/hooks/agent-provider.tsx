@@ -1,8 +1,8 @@
-import { useAuth } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
-import { createContext, ReactNode, useContext } from 'react';
+import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { useApiKeysStore, useAppStore, useChatStore, useMcpToolsStore } from '../store';
 import { ThreadItem } from '../store/chat.store';
 
@@ -33,6 +33,7 @@ const AgentContext = createContext<AgentContextType | undefined>(undefined);
 export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const { threadId: currentThreadId } = useParams();
     const { isSignedIn } = useAuth();
+    const { user } = useUser();
     const updateThreadItem = useChatStore(state => state.updateThreadItem);
     const setIsGenerating = useChatStore(state => state.setIsGenerating);
     const setAbortController = useChatStore(state => state.setAbortController);
@@ -46,6 +47,10 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
     const fetchRemainingCredits = useChatStore(state => state.fetchRemainingCredits);
     const setShowSignInModal = useAppStore(state => state.setShowSignInModal);
+
+    useEffect(() => {
+        fetchRemainingCredits();
+    }, [user?.id]);
 
     const router = useRouter();
     const { startWorkflow, abortWorkflow } = useWorkflowWorker(data => {

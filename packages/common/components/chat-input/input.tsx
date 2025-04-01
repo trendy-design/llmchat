@@ -73,10 +73,14 @@ export const ChatInput = ({
         imageAttachment?.base64 && formData.append('imageAttachment', imageAttachment?.base64);
         const threadItems = currentThreadId ? await getThreadItems(currentThreadId.toString()) : [];
 
+        console.log('threadItems', threadItems);
+
         handleSubmit({
             formData,
             newThreadId: threadId,
-            messages: threadItems,
+            messages: threadItems.sort(
+                (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+            ),
             useWebSearch,
         });
         editor.commands.clearContent();
@@ -100,7 +104,6 @@ export const ChatInput = ({
                     direction="col"
                     className="bg-background border-hard relative z-10 w-full rounded-lg border  shadow-sm"
                 >
-                    {' '}
                     <ImageDropzoneRoot dropzoneProps={dropzonProps}>
                         <motion.div
                             initial={{ opacity: 0 }}

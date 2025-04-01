@@ -15,7 +15,7 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
 
     const options: string[] = threadItem.answer?.object?.clarifyingQuestion?.options || [];
     const question = threadItem.answer?.object?.clarifyingQuestion?.question || '';
-    const type = threadItem.answer?.object?.clarifyingQuestion?.type || 'single';
+    const choiceType = threadItem.answer?.object?.clarifyingQuestion?.choiceType || 'multiple';
     const isSubmitted = !!threadItem.answer?.object?.submittedQuery;
 
     const handleOptionChange = (value: string) => {
@@ -109,7 +109,7 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
 
             <p className="text-base">{question}</p>
 
-            {type === 'single' ? renderRadioGroup() : renderCheckboxGroup()}
+            {choiceType === 'single' ? renderRadioGroup() : renderCheckboxGroup()}
 
             <div className="mt-2 w-full">
                 <Textarea
@@ -126,7 +126,7 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
                 rounded="full"
                 onClick={async () => {
                     let query = '';
-                    if (type === 'single') {
+                    if (choiceType === 'single') {
                         query = `${selectedOption} \n\n ${customOption}`;
                     } else {
                         query = `${selectedOptions.join(', ')} \n\n ${customOption}`;

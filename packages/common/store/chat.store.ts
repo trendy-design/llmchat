@@ -19,7 +19,7 @@ export type SubStep = {
     status: ItemStatus;
 };
 
-export type ItemStatus = 'QUEUED' | 'PENDING' | 'COMPLETED' | 'ERROR' | 'ABORTED';
+export type ItemStatus = 'QUEUED' | 'PENDING' | 'COMPLETED' | 'ERROR' | 'ABORTED' | 'HUMAN_REVIEW';
 
 export type Step = {
     id: string;
@@ -949,7 +949,6 @@ if (typeof window !== 'undefined') {
     // Initialize store with data from IndexedDB
     loadInitialData().then(
         ({ threads, currentThreadId, chatMode, useWebSearch, showSuggestions }) => {
-            useChatStore.getState().fetchRemainingCredits();
             useChatStore.setState({
                 threads,
                 currentThreadId,

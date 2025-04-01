@@ -1,4 +1,5 @@
 import { ChatMode } from '@repo/shared/config';
+import { CoreMessage } from 'ai';
 import { ProviderEnumType } from './providers';
 
 export enum ModelEnum {
@@ -109,4 +110,72 @@ export const getModelFromChatMode = (mode?: string): ModelEnum => {
         default:
             return ModelEnum.GPT_4o_Mini;
     }
+};
+
+export const getChatModeMaxTokens = (mode: ChatMode) => {
+    switch (mode) {
+        case ChatMode.GEMINI_2_FLASH:
+            return 500000;
+        case ChatMode.DEEPSEEK_R1:
+            return 100000;
+        case ChatMode.CLAUDE_3_5_SONNET:
+            return 100000;
+        case ChatMode.CLAUDE_3_7_SONNET:
+            return 100000;
+        case ChatMode.O3_Mini:
+            return 100000;
+        case ChatMode.GPT_4o_Mini:
+            return 100000;
+        case ChatMode.Deep:
+            return 100000;
+        default:
+            return 100000;
+    }
+};
+
+const estimateTokensByWordCount = (text: string): number => {
+    // Simple word splitting by whitespace
+    const words = text.trim().split(/\s+/);
+
+    // Using a multiplier of 1.35 tokens per word for English text
+    const estimatedTokens = Math.ceil(words.length * 1.35);
+
+    return estimatedTokens;
+};
+
+export const estimateTokens = (messages: CoreMessage[]): number => {
+    const allContent = messages.map(message => message.content as string).join('\n');
+    return estimateTokensByWordCount(allContent);
+};
+
+export const trimMessageHistoryEstimated = (messages: CoreMessage[], chatMode: ChatMode) => {
+    const maxTokens = getChatModeMaxTokens(chatMode);
+    let trimmedMessages = [...messages];
+
+    if (trimmedMessages.length <= 1) {
+        const tokenCount = estimateTokens(trimmedMessages);
+        return { trimmedMessages, tokenCount };
+    }
+
+    const latestMessage = trimmedMessages.pop()!;
+
+    const messageSizes = trimmedMessages.map(msg => {
+        const tokens = estimateTokensByWordCount(msg.content as string);
+        return { message: msg, tokens };
+    });
+
+    let totalTokens = messageSizes.reduce((sum, item) => sum + item.tokens, 0);
+    totalTokens += estimateTokensByWordCount(latestMessage.content as string);
+
+    while (totalTokens > maxTokens && messageSizes.length > 0) {
+        const removed = messageSizes.shift();
+        if (removed) {
+            totalTokens -= removed.tokens;
+        }
+    }
+
+    trimmedMessages = messageSizes.map(item => item.message);
+    trimmedMessages.push(latestMessage);
+
+    return { trimmedMessages, tokenCount: totalTokens };
 };

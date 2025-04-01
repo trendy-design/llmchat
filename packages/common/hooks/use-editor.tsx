@@ -1,10 +1,12 @@
 import { DisableEnter, ShiftEnterToLineBreak } from '@repo/shared/utils';
+import CharacterCount from '@tiptap/extension-character-count';
 import { Document } from '@tiptap/extension-document';
 import { HardBreak } from '@tiptap/extension-hard-break';
 import { Highlight } from '@tiptap/extension-highlight';
 import { Paragraph } from '@tiptap/extension-paragraph';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { Text } from '@tiptap/extension-text';
+
 import { useEditor } from '@tiptap/react';
 import { useEffect } from 'react';
 import { useChatStore } from '../store';
@@ -18,6 +20,9 @@ export const useChatEditor = (editorProps: { defaultContent?: string }) => {
             Text,
             Placeholder.configure({
                 placeholder: 'Ask anything',
+            }),
+            CharacterCount.configure({
+                limit: 400000,
             }),
             ShiftEnterToLineBreak,
             Highlight.configure({

@@ -5,7 +5,7 @@ import {
     WorkflowConfig,
 } from '@repo/orchestrator';
 import { ChatMode } from '@repo/shared/config';
-import { CoreAssistantMessage, CoreUserMessage } from 'ai';
+import { CoreMessage } from 'ai';
 import { Langfuse } from 'langfuse';
 import {
     analysisTask,
@@ -21,7 +21,7 @@ import {
     writerTask,
 } from './tasks';
 
-type Status = 'PENDING' | 'COMPLETED' | 'ERROR';
+type Status = 'PENDING' | 'COMPLETED' | 'ERROR' | 'HUMAN_REVIEW';
 
 // Define the workflow schema type
 export type WorkflowEventSchema = {
@@ -68,10 +68,7 @@ export type WorkflowContextSchema = {
     mcpConfig: Record<string, string>;
     question: string;
     search_queries: string[];
-    messages: {
-        role: 'user' | 'assistant';
-        content: string;
-    }[];
+    messages: CoreMessage[];
     mode: ChatMode;
     goals: {
         id: number;
@@ -122,7 +119,7 @@ export const runWorkflow = ({
     question: string;
     threadId: string;
     threadItemId: string;
-    messages: (CoreUserMessage | CoreAssistantMessage)[];
+    messages: CoreMessage[];
     config?: WorkflowConfig;
     signal?: AbortSignal;
     webSearch?: boolean;

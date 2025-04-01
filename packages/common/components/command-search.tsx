@@ -16,7 +16,6 @@ import {
     IconKey,
     IconMessageCircleFilled,
     IconPlus,
-    IconTools,
     IconTrash,
 } from '@tabler/icons-react';
 import moment from 'moment';
@@ -121,15 +120,6 @@ export const CommandSearch = () => {
             },
         },
         {
-            name: 'MCP Tools',
-            icon: IconTools,
-            action: () => {
-                setIsSettingsOpen(true);
-                setSettingTab('mcp-tools');
-                onClose();
-            },
-        },
-        {
             name: 'Remove All Threads',
             icon: IconTrash,
             action: () => {
@@ -160,7 +150,7 @@ export const CommandSearch = () => {
                     {actions.map(action => (
                         <CommandItem
                             key={action.name}
-                            className="gap-2"
+                            className="gap-3"
                             value={action.name}
                             onSelect={action.action}
                         >
