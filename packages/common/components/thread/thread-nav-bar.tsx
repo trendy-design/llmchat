@@ -1,4 +1,5 @@
-import { Thread, useChatStore } from '@repo/common/store';
+import { useChatStore } from '@repo/common/store';
+import { Thread } from '@repo/shared/types';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';

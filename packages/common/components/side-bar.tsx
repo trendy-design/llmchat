@@ -2,7 +2,8 @@
 import { useClerk, useUser } from '@clerk/nextjs';
 import { FullPageLoader, HistoryItem, Logo } from '@repo/common/components';
 import { useRootContext } from '@repo/common/context';
-import { Thread, useAppStore, useChatStore } from '@repo/common/store';
+import { useAppStore, useChatStore } from '@repo/common/store';
+import { Thread } from '@repo/shared/types';
 import {
     Button,
     cn,
@@ -16,6 +17,7 @@ import {
     IconArrowBarLeft,
     IconArrowBarRight,
     IconLogout,
+    IconPinned,
     IconPlus,
     IconSearch,
     IconSelector,
@@ -33,6 +35,8 @@ export const Sidebar = () => {
     const { push } = useRouter();
     const isChatPage = pathname.startsWith('/chat');
     const threads = useChatStore(state => state.threads);
+    const pinThread = useChatStore(state => state.pinThread);
+    const unpinThread = useChatStore(state => state.unpinThread);
     const sortThreads = (threads: Thread[], sortBy: 'createdAt') => {
         return [...threads].sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
     };
@@ -55,6 +59,7 @@ export const Sidebar = () => {
     sortThreads(threads, 'createdAt')?.forEach(thread => {
         const createdAt = moment(thread.createdAt);
         const now = moment();
+
         if (createdAt.isSame(now, 'day')) {
             groupedThreads.today.push(thread);
         } else if (createdAt.isSame(now.clone().subtract(1, 'day'), 'day')) {
@@ -66,25 +71,48 @@ export const Sidebar = () => {
         } else {
             groupedThreads.previousMonths.push(thread);
         }
+
+        //TODO: Paginate these threads
     });
 
-    const renderGroup = (title: string, threads: Thread[]) => {
-        if (threads.length === 0) return null;
+    const renderGroup = ({
+        title,
+        threads,
+
+        groupIcon,
+        renderEmptyState,
+    }: {
+        title: string;
+        threads: Thread[];
+        groupIcon?: React.ReactNode;
+        renderEmptyState?: () => React.ReactNode;
+    }) => {
+        if (threads.length === 0 && !renderEmptyState) return null;
         return (
             <Flex gap="xs" direction="col" items="start" className="w-full">
-                <p className="text-muted-foreground px-2 py-1 text-xs font-medium">{title}</p>
-                <Flex className="border-border/50 w-full" gap="none" direction="col">
-                    {threads.map(thread => (
-                        <HistoryItem
-                            thread={thread}
-                            key={thread.id}
-                            dismiss={() => {
-                                setIsSidebarOpen(prev => false);
-                            }}
-                            isActive={thread.id === currentThreadId}
-                        />
-                    ))}
-                </Flex>
+                <div className="text-muted-foreground flex flex-row items-center gap-1 px-2 py-1 text-xs font-medium opacity-70">
+                    {groupIcon}
+                    {title}
+                </div>
+                {threads.length === 0 && renderEmptyState ? (
+                    renderEmptyState()
+                ) : (
+                    <Flex className="border-border/50 w-full" gap="none" direction="col">
+                        {threads.map(thread => (
+                            <HistoryItem
+                                thread={thread}
+                                pinThread={() => pinThread(thread.id)}
+                                unpinThread={() => unpinThread(thread.id)}
+                                isPinned={thread.pinned}
+                                key={thread.id}
+                                dismiss={() => {
+                                    setIsSidebarOpen(prev => false);
+                                }}
+                                isActive={thread.id === currentThreadId}
+                            />
+                        ))}
+                    </Flex>
+                )}
             </Flex>
         );
     };
@@ -92,7 +120,7 @@ export const Sidebar = () => {
     return (
         <div
             className={cn(
-                'bottom-0 left-0 top-0 z-[50] flex h-[100dvh] flex-shrink-0 flex-col  py-2 transition-all duration-200',
+                'relative bottom-0 left-0 top-0 z-[50] flex h-[100dvh] flex-shrink-0 flex-col  py-2 transition-all duration-200',
                 isSidebarOpen ? 'top-0 h-full w-[220px]' : 'w-[50px]'
             )}
         >
@@ -184,17 +212,34 @@ export const Sidebar = () => {
                             isSidebarOpen ? 'flex' : 'hidden'
                         )}
                     >
-                        {renderGroup('Today', groupedThreads.today)}
-                        {renderGroup('Yesterday', groupedThreads.yesterday)}
-                        {renderGroup('Last 7 Days', groupedThreads.last7Days)}
-                        {renderGroup('Last 30 Days', groupedThreads.last30Days)}
-                        {renderGroup('Previous Months', groupedThreads.previousMonths)}
+                        {renderGroup({
+                            title: 'Pinned',
+                            threads: threads
+                                .filter(thread => thread.pinned)
+                                .sort((a, b) => b.pinnedAt.getTime() - a.pinnedAt.getTime()),
+                            groupIcon: <IconPinned size={14} strokeWidth={2} />,
+                            renderEmptyState: () => (
+                                <div className="border-hard flex w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed p-2">
+                                    <p className="text-muted-foreground text-xs opacity-50">
+                                        No pinned threads
+                                    </p>
+                                </div>
+                            ),
+                        })}
+                        {renderGroup({ title: 'Today', threads: groupedThreads.today })}
+                        {renderGroup({ title: 'Yesterday', threads: groupedThreads.yesterday })}
+                        {renderGroup({ title: 'Last 7 Days', threads: groupedThreads.last7Days })}
+                        {renderGroup({ title: 'Last 30 Days', threads: groupedThreads.last30Days })}
+                        {renderGroup({
+                            title: 'Previous Months',
+                            threads: groupedThreads.previousMonths,
+                        })}
                     </Flex>
                 )}
 
                 <Flex
                     className={cn(
-                        'mt-auto w-full items-center p-2',
+                        'from-tertiary via-tertiary/95 absolute bottom-0 mt-auto w-full items-center bg-gradient-to-t via-60% to-transparent p-2 pt-12',
                         isSidebarOpen && 'items-start justify-between'
                     )}
                     gap="xs"

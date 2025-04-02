@@ -4,9 +4,9 @@
     "private": true,
     "exports": {
         "./config": "./config/index.ts",
-        "./types": "./types/index.ts",
+        "./db": "./db/index.ts",
         "./utils": "./utils/index.ts",
-        "./db": "./db/index.ts"
+        "./types": "./types.ts"
     },
     "scripts": {
         "lint": "eslint .",

@@ -1,6 +1,6 @@
 'use client';
 
-import { Source } from '@repo/common/store';
+import { Source } from '@repo/shared/types';
 import { getHost } from '@repo/shared/utils';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@repo/ui';
 import { IconExternalLink } from '@tabler/icons-react';

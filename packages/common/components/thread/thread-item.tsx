@@ -7,7 +7,8 @@ import {
     SourceGrid,
     Steps,
 } from '@repo/common/components';
-import { ThreadItem as ThreadItemType, useChatStore } from '@repo/common/store';
+import { useChatStore } from '@repo/common/store';
+import { ThreadItem as ThreadItemType } from '@repo/shared/types';
 import { Alert, AlertDescription, cn, Skeleton } from '@repo/ui';
 import { IconAlertCircle, IconBook } from '@tabler/icons-react';
 import { motion } from 'framer-motion';

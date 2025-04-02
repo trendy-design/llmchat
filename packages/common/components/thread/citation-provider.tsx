@@ -1,4 +1,4 @@
-import { Source } from '@repo/common/store';
+import { Source } from '@repo/shared/types';
 import { createContext, PropsWithChildren, useEffect, useState } from 'react';
 
 export type Citation = {

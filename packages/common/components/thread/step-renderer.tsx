@@ -1,5 +1,5 @@
 import { SearchResultsList, StepStatus, TextShimmer } from '@repo/common/components';
-import { Step } from '@repo/common/store';
+import { Step } from '@repo/shared/types';
 import { Badge } from '@repo/ui';
 import { IconSearch } from '@tabler/icons-react';
 import { motion } from 'framer-motion';

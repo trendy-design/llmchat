@@ -1,4 +1,4 @@
-import { ItemStatus } from '@repo/common/store';
+import { ItemStatus } from '@repo/shared/types';
 import { motion } from 'framer-motion';
 
 export const StepStatus = ({ status }: { status: ItemStatus }) => {

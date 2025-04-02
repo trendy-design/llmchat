@@ -1,5 +1,6 @@
 import { LinkFavicon, SourceList } from '@repo/common/components';
-import { Source, useAppStore } from '@repo/common/store';
+import { useAppStore } from '@repo/common/store';
+import { Source } from '@repo/shared/types';
 import { getHost } from '@repo/shared/utils';
 
 type SourceGridProps = {

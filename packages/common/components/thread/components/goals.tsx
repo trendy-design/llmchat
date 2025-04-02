@@ -1,6 +1,7 @@
 import { StepRenderer, StepStatus, ToolCallStep, ToolResultStep } from '@repo/common/components';
-import { Step, ThreadItem, ToolCall, ToolResult, useAppStore } from '@repo/common/store';
+import { useAppStore } from '@repo/common/store';
 import { ChatMode } from '@repo/shared/config';
+import { Step, ThreadItem, ToolCall, ToolResult } from '@repo/shared/types';
 import { Badge, Button } from '@repo/ui';
 import {
     IconAtom,

@@ -1,6 +1,7 @@
 import { ChatEditor } from '@repo/common/components';
 import { useAgentStream, useChatEditor, useCopyText } from '@repo/common/hooks';
-import { ThreadItem, useChatStore } from '@repo/common/store';
+import { useChatStore } from '@repo/common/store';
+import { ThreadItem } from '@repo/shared/types';
 import { Button, cn } from '@repo/ui';
 import { IconCheck, IconCopy, IconPencil } from '@tabler/icons-react';
 import { memo, useCallback, useEffect, useRef, useState } from 'react';

@@ -1,5 +1,5 @@
 import { CodeBlock, ToolIcon } from '@repo/common/components';
-import { ToolCall as ToolCallType } from '@repo/common/store';
+import { ToolCall as ToolCallType } from '@repo/shared/types';
 import { Badge, cn } from '@repo/ui';
 import { IconCaretDownFilled } from '@tabler/icons-react';
 import { memo, useCallback, useState } from 'react';

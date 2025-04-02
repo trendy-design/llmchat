@@ -1,5 +1,6 @@
 import { useAgentStream } from '@repo/common/hooks';
-import { Answer, ThreadItem, useChatStore } from '@repo/common/store';
+import { useChatStore } from '@repo/common/store';
+import { Answer, ThreadItem } from '@repo/shared/types';
 import { Button, RadioGroup, RadioGroupItem, Textarea } from '@repo/ui';
 import { IconCheck, IconQuestionMark, IconSquare } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';

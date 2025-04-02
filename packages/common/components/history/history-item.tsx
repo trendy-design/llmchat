@@ -1,4 +1,5 @@
-import { Thread, useChatStore } from '@repo/common/store';
+import { useChatStore } from '@repo/common/store';
+import { Thread } from '@repo/shared/types';
 import {
     Button,
     cn,
@@ -8,20 +9,24 @@ import {
     DropdownMenuTrigger,
     Flex,
     Input,
-    Type,
 } from '@repo/ui';
 import { MoreHorizontal } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-
 export const HistoryItem = ({
     thread,
     dismiss,
     isActive,
+    isPinned,
+    pinThread,
+    unpinThread,
 }: {
     thread: Thread;
     dismiss: () => void;
     isActive?: boolean;
+    isPinned?: boolean;
+    pinThread: (threadId: string) => void;
+    unpinThread: (threadId: string) => void;
 }) => {
     const { threadId: currentThreadId } = useParams();
     const updateThread = useChatStore(state => state.updateThread);
@@ -65,12 +70,11 @@ export const HistoryItem = ({
         if (!isEditing) {
             push(`/c/${thread.id}`);
             switchThread(thread.id);
-            dismiss();
         }
     };
 
     const containerClasses = cn(
-        'gap-2 w-full group w-full cursor-pointer flex flex-row items-center h-8 py-0.5 pl-2 pr-1 rounded-md hover:bg-quaternary',
+        'gap-2 w-full group w-full relative cursor-pointer flex flex-row items-center h-8 py-0.5 pl-2 pr-1 rounded-md hover:bg-quaternary',
         isActive || isEditing ? 'bg-tertiary' : ''
     );
 
@@ -108,12 +112,9 @@ export const HistoryItem = ({
                         className="flex-1 overflow-hidden"
                         gap="none"
                     >
-                        <Type
-                            className="hover:text-foreground line-clamp-1 w-full text-xs"
-                            size="xs"
-                        >
+                        <p className="hover:text-foreground line-clamp-1 w-full text-xs">
                             {thread.title}
-                        </Type>
+                        </p>
                     </Flex>
                 </>
             )}
@@ -122,7 +123,7 @@ export const HistoryItem = ({
                     <Button
                         variant="ghost"
                         size="icon-xs"
-                        className="!w-none invisible shrink-0 group-hover:visible group-hover:w-6"
+                        className="bg-quaternary invisible absolute right-1 shrink-0 group-hover:visible group-hover:w-6"
                         onClick={e => {
                             e.stopPropagation();
                             setOpenOptions(!openOptions);
@@ -152,6 +153,15 @@ export const HistoryItem = ({
                     >
                         Delete Chat
                     </DropdownMenuItem>
+                    {isPinned ? (
+                        <DropdownMenuItem onClick={() => unpinThread(thread.id)}>
+                            Unpin
+                        </DropdownMenuItem>
+                    ) : (
+                        <DropdownMenuItem onClick={() => pinThread(thread.id)}>
+                            Pin
+                        </DropdownMenuItem>
+                    )}
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

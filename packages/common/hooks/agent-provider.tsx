@@ -1,22 +1,15 @@
 import { useAuth, useUser } from '@clerk/nextjs';
 import { useWorkflowWorker } from '@repo/ai/worker';
+import { ChatMode } from '@repo/shared/config';
+import { ThreadItem } from '@repo/shared/types';
+import { buildCoreMessagesFromThreadItems } from '@repo/shared/utils';
 import { nanoid } from 'nanoid';
-import { useParams, useRouter } from 'next/navigation';
-import { createContext, ReactNode, useContext, useEffect } from 'react';
+import { useParams } from 'next/navigation';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo } from 'react';
 import { useApiKeysStore, useAppStore, useChatStore, useMcpToolsStore } from '../store';
-import { ThreadItem } from '../store/chat.store';
-
-type AgentContextType = {
+export type AgentContextType = {
     runAgent: (body: any) => Promise<void>;
-    handleSubmit: ({
-        formData,
-        newThreadId,
-        existingThreadItemId,
-        newChatMode,
-        messages,
-        useWebSearch,
-        showSuggestions,
-    }: {
+    handleSubmit: (args: {
         formData: FormData;
         newThreadId?: string;
         existingThreadItemId?: string;
@@ -34,407 +27,378 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const { threadId: currentThreadId } = useParams();
     const { isSignedIn } = useAuth();
     const { user } = useUser();
-    const updateThreadItem = useChatStore(state => state.updateThreadItem);
-    const setIsGenerating = useChatStore(state => state.setIsGenerating);
-    const setAbortController = useChatStore(state => state.setAbortController);
-    const createThreadItem = useChatStore(state => state.createThreadItem);
-    const setCurrentThreadItem = useChatStore(state => state.setCurrentThreadItem);
-    const setCurrentSources = useChatStore(state => state.setCurrentSources);
-    const updateThread = useChatStore(state => state.updateThread);
-    const chatMode = useChatStore(state => state.chatMode);
+
+    const {
+        updateThreadItem,
+        setIsGenerating,
+        setAbortController,
+        createThreadItem,
+        setCurrentThreadItem,
+        setCurrentSources,
+        updateThread,
+        chatMode,
+        fetchRemainingCredits,
+    } = useChatStore(state => ({
+        updateThreadItem: state.updateThreadItem,
+        setIsGenerating: state.setIsGenerating,
+        setAbortController: state.setAbortController,
+        createThreadItem: state.createThreadItem,
+        setCurrentThreadItem: state.setCurrentThreadItem,
+        setCurrentSources: state.setCurrentSources,
+        updateThread: state.updateThread,
+        chatMode: state.chatMode,
+        fetchRemainingCredits: state.fetchRemainingCredits,
+    }));
+
     const getSelectedMCP = useMcpToolsStore(state => state.getSelectedMCP);
     const apiKeys = useApiKeysStore(state => state.getAllKeys);
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
-    const fetchRemainingCredits = useChatStore(state => state.fetchRemainingCredits);
     const setShowSignInModal = useAppStore(state => state.setShowSignInModal);
 
+    // Fetch remaining credits when user changes
     useEffect(() => {
         fetchRemainingCredits();
-    }, [user?.id]);
+    }, [user?.id, fetchRemainingCredits]);
 
-    // Single shared map for both methods
-    const threadItemMap = new Map<string, ThreadItem>();
+    // In-memory store for thread items
+    const threadItemMap = useMemo(() => new Map<string, ThreadItem>(), []);
 
-    // Shared function to handle updates
-    const handleThreadItemUpdate = (
-        threadId: string,
-        threadItemId: string,
-        eventType: string,
-        eventData: any,
-        parentThreadItemId?: string,
-        shouldPersistToDB: boolean = true
-    ) => {
-        const threadItemState = threadItemMap.get(threadItemId);
+    // Define common event types to reduce repetition
+    const EVENT_TYPES = [
+        'steps',
+        'sources',
+        'answer',
+        'error',
+        'status',
+        'suggestions',
+        'toolCalls',
+        'toolResults',
+    ];
 
-        // Update the in-memory state
-        threadItemMap.set(threadItemId, {
-            ...threadItemState,
-            [eventType]:
-                eventType === 'answer'
+    // Helper: Update in-memory and store thread item
+    const handleThreadItemUpdate = useCallback(
+        (
+            threadId: string,
+            threadItemId: string,
+            eventType: string,
+            eventData: any,
+            parentThreadItemId?: string,
+            shouldPersistToDB: boolean = true
+        ) => {
+            const prevItem = threadItemMap.get(threadItemId) || ({} as ThreadItem);
+            const updatedItem: ThreadItem = {
+                ...prevItem,
+                query: eventData?.query || prevItem.query || '',
+                mode: eventData?.mode || prevItem.mode,
+                threadId,
+                parentId: parentThreadItemId || prevItem.parentId,
+                id: threadItemId,
+                createdAt: prevItem.createdAt || new Date(),
+                updatedAt: new Date(),
+                ...(eventType === 'answer'
                     ? {
-                          ...eventData['answer'],
-                          text: (threadItemState?.answer?.text || '') + eventData['answer'].text,
+                          answer: {
+                              ...eventData.answer,
+                              text: (prevItem.answer?.text || '') + eventData.answer.text,
+                          },
                       }
-                    : eventData[eventType],
-            query: eventData?.query || threadItemState?.query || '',
-            mode: eventData?.mode || threadItemState?.mode,
-            threadId,
-            parentId: parentThreadItemId || threadItemState?.parentId,
-            id: threadItemId,
-            createdAt: threadItemState?.createdAt || new Date(),
-            updatedAt: new Date(),
-        });
+                    : { [eventType]: eventData[eventType] }),
+            };
 
-        // Update the thread item in the store
-        updateThreadItem(threadId, {
-            ...threadItemMap.get(threadItemId),
-            persistToDB: shouldPersistToDB,
-        });
-    };
+            threadItemMap.set(threadItemId, updatedItem);
+            updateThreadItem(threadId, { ...updatedItem, persistToDB: shouldPersistToDB });
+        },
+        [threadItemMap, updateThreadItem]
+    );
 
-    const router = useRouter();
-    const { startWorkflow, abortWorkflow } = useWorkflowWorker(data => {
-        console.log('data', data);
-
-        if (data?.threadId && data?.threadItemId) {
-            if (
-                data.event &&
-                [
-                    'steps',
-                    'sources',
-                    'answer',
-                    'error',
-                    'status',
-                    'suggestions',
-                    'toolCalls',
-                    'toolResults',
-                ].includes(data.event)
-            ) {
-                handleThreadItemUpdate(
-                    data.threadId,
-                    data.threadItemId,
-                    data.event,
-                    data,
-                    data.parentThreadItemId
-                );
-            }
-        }
-
-        if (data.type === 'done') {
-            setIsGenerating(false);
-            setTimeout(() => {
-                fetchRemainingCredits();
-            }, 1000);
-
-            if (data?.threadItemId) {
-                threadItemMap.delete(data.threadItemId);
-            }
-        }
-    });
-
-    const runAgent = async (body: any) => {
-        const abortController = new AbortController();
-        setAbortController(abortController);
-        if (!abortController) {
-            return;
-        }
-        setIsGenerating(true);
-
-        abortController.signal.addEventListener('abort', () => {
-            console.log('abortController aborted');
-            setIsGenerating(false);
-            updateThreadItem(body.threadId as string, {
-                id: body.threadItemId as string,
-                status: 'ABORTED',
-            });
-        });
-
-        const response = await fetch(`/api/completion`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body),
-            credentials: 'include',
-            cache: 'no-store',
-            signal: abortController?.signal,
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            setIsGenerating(false);
-
-            let errorMessage = errorText;
-
-            updateThreadItem(body.threadId as string, {
-                id: body.threadItemId as string,
-                status: 'ERROR',
-                error: errorMessage,
-            });
-            console.error('Error response:', errorText);
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        if (!response.body) {
-            throw new Error('No response body received');
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-
-        try {
-            let lastDbUpdate = Date.now();
-            const DB_UPDATE_INTERVAL = 1000;
-
-            while (true) {
-                const { value, done } = await reader.read();
-                if (done) break;
-
-                try {
-                    const chunk = decoder.decode(value);
-                    const lines = chunk.split('\n');
-                    let currentEvent = '';
-                    let jsonData = '';
-
-                    for (const line of lines) {
-                        if (line.startsWith('event: ')) {
-                            currentEvent = line.slice(7);
-                        } else if (line.startsWith('data: ')) {
-                            jsonData = line.slice(6);
-
-                            try {
-                                const data = JSON.parse(jsonData);
-                                console.log('event:', currentEvent, 'data:', data);
-
-                                if (
-                                    [
-                                        'steps',
-                                        'sources',
-                                        'answer',
-                                        'error',
-                                        'status',
-                                        'suggestions',
-                                        'toolCalls',
-                                        'toolResults',
-                                    ].includes(currentEvent) &&
-                                    data?.threadId &&
-                                    data?.threadItemId
-                                ) {
-                                    const shouldPersistToDB =
-                                        Date.now() - lastDbUpdate >= DB_UPDATE_INTERVAL;
-
-                                    handleThreadItemUpdate(
-                                        data.threadId,
-                                        data.threadItemId,
-                                        currentEvent,
-                                        data,
-                                        data.parentThreadItemId,
-                                        shouldPersistToDB
-                                    );
-
-                                    if (shouldPersistToDB) {
-                                        lastDbUpdate = Date.now();
-                                    }
-                                } else if (currentEvent === 'done' && data.type === 'done') {
-                                    setIsGenerating(false);
-                                    setTimeout(() => {
-                                        fetchRemainingCredits();
-                                    }, 1000);
-
-                                    if (data.threadItemId) {
-                                        threadItemMap.delete(data.threadItemId);
-                                    }
-
-                                    if (data.status === 'error') {
-                                        console.error('Stream error:', data.error);
-                                    }
-                                }
-                            } catch (parseError) {
-                                console.warn('Parse error:', parseError);
-                                console.warn('Malformed data:', jsonData);
-                                continue;
-                            }
-                        }
-                    }
-                } catch (chunkError) {
-                    // Skip problematic chunk and continue with the next one
-                    console.warn('Skipping problematic chunk');
-                    continue;
+    const { startWorkflow, abortWorkflow } = useWorkflowWorker(
+        useCallback(
+            (data: any) => {
+                if (
+                    data?.threadId &&
+                    data?.threadItemId &&
+                    data.event &&
+                    EVENT_TYPES.includes(data.event)
+                ) {
+                    handleThreadItemUpdate(
+                        data.threadId,
+                        data.threadItemId,
+                        data.event,
+                        data,
+                        data.parentThreadItemId
+                    );
                 }
-            }
-        } catch (streamError) {
-            console.error('Fatal stream error:', streamError);
-            updateThreadItem(body.threadId as string, {
-                id: body.threadItemId as string,
-                status: 'ERROR',
-                error: 'Stream connection error: ' + (streamError as Error).message,
-            });
-        }
-    };
 
-    const handleSubmit = async ({
-        formData,
-        newThreadId,
-        existingThreadItemId,
-        newChatMode,
-        messages,
-        useWebSearch,
-        showSuggestions,
-    }: {
-        formData: FormData;
-        newThreadId?: string;
-        existingThreadItemId?: string;
-        newChatMode?: string;
-        messages?: ThreadItem[];
-        useWebSearch?: boolean;
-        showSuggestions?: boolean;
-    }) => {
-        if (!isSignedIn) {
-            return;
-        }
-        let threadId = currentThreadId?.toString() || newThreadId;
-
-        if (threadId) {
-            console.log('updating thread');
-            updateThread({
-                id: threadId,
-                title: formData.get('query') as string,
-            });
-        }
-
-        if (!threadId) {
-            return;
-        }
-
-        const optimisticAiThreadItemId = existingThreadItemId ?? nanoid();
-
-        const query = formData.get('query') as string;
-        const imageAttachment = formData.get('imageAttachment') as string;
-
-        const aiThreadItem: ThreadItem = {
-            id: optimisticAiThreadItemId,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            status: 'QUEUED' as const,
-            threadId,
-            query: formData.get('query') as string,
-            imageAttachment: formData.get('imageAttachment') as string,
-            mode: newChatMode ?? (chatMode as any),
-        };
-
-        createThreadItem(aiThreadItem);
-        setCurrentThreadItem(aiThreadItem);
-        setIsGenerating(true);
-        setCurrentSources([]);
-
-        const coreMessages = [
-            ...(messages?.flatMap(item => [
-                {
-                    role: 'user' as const,
-                    content: !!item?.imageAttachment
-                        ? [
-                              {
-                                  type: 'text' as const,
-                                  text: item?.query || '',
-                              },
-                              {
-                                  type: 'image' as const,
-                                  image: item?.imageAttachment,
-                              },
-                          ]
-                        : item.query || '',
-                },
-                {
-                    role: 'assistant' as const,
-                    content: item.answer?.text || '',
-                },
-            ]) || []),
-            {
-                role: 'user' as const,
-                content: !!imageAttachment
-                    ? [
-                          {
-                              type: 'text' as const,
-                              text: query || '',
-                          },
-                          {
-                              type: 'image' as const,
-                              image: imageAttachment,
-                          },
-                      ]
-                    : query || '',
+                if (data.type === 'done') {
+                    setIsGenerating(false);
+                    setTimeout(fetchRemainingCredits, 1000);
+                    if (data?.threadItemId) {
+                        threadItemMap.delete(data.threadItemId);
+                    }
+                }
             },
-        ];
+            [handleThreadItemUpdate, setIsGenerating, fetchRemainingCredits, threadItemMap]
+        )
+    );
 
-        console.log('coreMessages', coreMessages);
-
-        if (hasApiKeyForChatMode(newChatMode ?? (chatMode as any))) {
+    const runAgent = useCallback(
+        async (body: any) => {
             const abortController = new AbortController();
             setAbortController(abortController);
-            if (!abortController) {
-                return;
-            }
-            console.log('local-web-agent');
             setIsGenerating(true);
 
             abortController.signal.addEventListener('abort', () => {
-                console.log('abortController aborted');
+                console.info('Abort controller triggered');
                 setIsGenerating(false);
-                abortWorkflow();
-                updateThreadItem(threadId, {
-                    id: optimisticAiThreadItemId,
-                    status: 'ABORTED',
+                updateThreadItem(body.threadId, { id: body.threadItemId, status: 'ABORTED' });
+            });
+
+            try {
+                const response = await fetch('/api/completion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body),
+                    credentials: 'include',
+                    cache: 'no-store',
+                    signal: abortController.signal,
                 });
-            });
 
-            startWorkflow({
-                mode: newChatMode ?? (chatMode as any),
-                question: formData.get('query') as string,
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    setIsGenerating(false);
+                    updateThreadItem(body.threadId, {
+                        id: body.threadItemId,
+                        status: 'ERROR',
+                        error: errorText,
+                    });
+                    console.error('Error response:', errorText);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                if (!response.body) {
+                    throw new Error('No response body received');
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let lastDbUpdate = Date.now();
+                const DB_UPDATE_INTERVAL = 1000;
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    try {
+                        const chunk = decoder.decode(value);
+                        const lines = chunk.split('\n');
+                        let currentEvent = '';
+
+                        for (const line of lines) {
+                            if (line.startsWith('event: ')) {
+                                currentEvent = line.slice(7);
+                            } else if (line.startsWith('data: ')) {
+                                const jsonData = line.slice(6);
+                                try {
+                                    const data = JSON.parse(jsonData);
+                                    if (
+                                        EVENT_TYPES.includes(currentEvent) &&
+                                        data?.threadId &&
+                                        data?.threadItemId
+                                    ) {
+                                        const shouldPersistToDB =
+                                            Date.now() - lastDbUpdate >= DB_UPDATE_INTERVAL;
+                                        handleThreadItemUpdate(
+                                            data.threadId,
+                                            data.threadItemId,
+                                            currentEvent,
+                                            data,
+                                            data.parentThreadItemId,
+                                            shouldPersistToDB
+                                        );
+                                        if (shouldPersistToDB) {
+                                            lastDbUpdate = Date.now();
+                                        }
+                                    } else if (currentEvent === 'done' && data.type === 'done') {
+                                        setIsGenerating(false);
+                                        setTimeout(fetchRemainingCredits, 1000);
+                                        if (data.threadItemId) {
+                                            threadItemMap.delete(data.threadItemId);
+                                        }
+                                        if (data.status === 'error') {
+                                            console.error('Stream error:', data.error);
+                                        }
+                                    }
+                                } catch (jsonError) {
+                                    console.warn('JSON parse error for data:', jsonData, jsonError);
+                                }
+                            }
+                        }
+                    } catch (chunkError) {
+                        console.warn('Skipping problematic chunk', chunkError);
+                    }
+                }
+            } catch (streamError: any) {
+                console.error('Fatal stream error:', streamError);
+                updateThreadItem(body.threadId, {
+                    id: body.threadItemId,
+                    status: 'ERROR',
+                    error: 'Stream connection error: ' + streamError.message,
+                });
+            }
+        },
+        [
+            setAbortController,
+            setIsGenerating,
+            updateThreadItem,
+            handleThreadItemUpdate,
+            fetchRemainingCredits,
+            EVENT_TYPES,
+            threadItemMap,
+        ]
+    );
+
+    const handleSubmit = useCallback(
+        async ({
+            formData,
+            newThreadId,
+            existingThreadItemId,
+            newChatMode,
+            messages,
+            useWebSearch,
+            showSuggestions,
+        }: {
+            formData: FormData;
+            newThreadId?: string;
+            existingThreadItemId?: string;
+            newChatMode?: string;
+            messages?: ThreadItem[];
+            useWebSearch?: boolean;
+            showSuggestions?: boolean;
+        }) => {
+            const mode = (newChatMode || chatMode) as ChatMode;
+            if (!isSignedIn) {
+                setShowSignInModal(true);
+                return;
+            }
+
+            const threadId = currentThreadId?.toString() || newThreadId;
+            if (!threadId) return;
+
+            // Update thread title
+            updateThread({ id: threadId, title: formData.get('query') as string });
+
+            const optimisticAiThreadItemId = existingThreadItemId || nanoid();
+            const query = formData.get('query') as string;
+            const imageAttachment = formData.get('imageAttachment') as string;
+
+            const aiThreadItem: ThreadItem = {
+                id: optimisticAiThreadItemId,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                status: 'QUEUED',
                 threadId,
-                messages: coreMessages,
-                mcpConfig: getSelectedMCP(),
-                threadItemId: optimisticAiThreadItemId,
-                parentThreadItemId: '',
-                apiKeys: apiKeys(),
+                query,
+                imageAttachment,
+                mode,
+            };
+
+            createThreadItem(aiThreadItem);
+            setCurrentThreadItem(aiThreadItem);
+            setIsGenerating(true);
+            setCurrentSources([]);
+
+            // Build core messages array
+            const coreMessages = buildCoreMessagesFromThreadItems({
+                messages: messages || [],
+                query,
+                imageAttachment,
             });
-        } else {
-            console.log('remote-web-agent');
-            runAgent({
-                mode: newChatMode ?? (chatMode as any),
-                prompt: formData.get('query') as string,
-                threadId,
-                messages: coreMessages,
-                mcpConfig: getSelectedMCP(),
-                threadItemId: optimisticAiThreadItemId,
-                parentThreadItemId: '',
-                webSearch: useWebSearch,
-                showSuggestions: true,
+
+            if (hasApiKeyForChatMode(mode)) {
+                const abortController = new AbortController();
+                setAbortController(abortController);
+                setIsGenerating(true);
+
+                abortController.signal.addEventListener('abort', () => {
+                    console.info('Abort signal received');
+                    setIsGenerating(false);
+                    abortWorkflow();
+                    updateThreadItem(threadId, { id: optimisticAiThreadItemId, status: 'ABORTED' });
+                });
+
+                startWorkflow({
+                    mode,
+                    question: query,
+                    threadId,
+                    messages: coreMessages,
+                    mcpConfig: getSelectedMCP(),
+                    threadItemId: optimisticAiThreadItemId,
+                    parentThreadItemId: '',
+                    apiKeys: apiKeys(),
+                });
+            } else {
+                // Fallback to remote agent
+                await runAgent({
+                    mode: newChatMode || chatMode,
+                    prompt: query,
+                    threadId,
+                    messages: coreMessages,
+                    mcpConfig: getSelectedMCP(),
+                    threadItemId: optimisticAiThreadItemId,
+                    parentThreadItemId: '',
+                    webSearch: useWebSearch,
+                    showSuggestions: showSuggestions ?? true,
+                });
+            }
+        },
+        [
+            isSignedIn,
+            currentThreadId,
+            chatMode,
+            setShowSignInModal,
+            updateThread,
+            createThreadItem,
+            setCurrentThreadItem,
+            setIsGenerating,
+            setCurrentSources,
+            abortWorkflow,
+            startWorkflow,
+            getSelectedMCP,
+            apiKeys,
+            hasApiKeyForChatMode,
+            updateThreadItem,
+            runAgent,
+        ]
+    );
+
+    const updateContext = useCallback(
+        (threadId: string, data: any) => {
+            console.info('Updating context', data);
+            updateThreadItem(threadId, {
+                id: data.threadItemId,
+                parentId: data.parentThreadItemId,
+                threadId: data.threadId,
+                metadata: data.context,
             });
-        }
-    };
+        },
+        [updateThreadItem]
+    );
 
-    const updateContext = (threadId: string, data: any) => {
-        console.log('updateContext', data);
-        updateThreadItem(threadId, {
-            id: data.threadItemId,
-            parentId: data.parentThreadItemId,
-            threadId: data.threadId,
-            metadata: data.context,
-        });
-    };
+    const contextValue = useMemo(
+        () => ({
+            runAgent,
+            handleSubmit,
+            updateContext,
+        }),
+        [runAgent, handleSubmit, updateContext]
+    );
 
-    const value = {
-        runAgent,
-        handleSubmit,
-        updateContext,
-    };
-
-    return <AgentContext.Provider value={value}>{children}</AgentContext.Provider>;
+    return <AgentContext.Provider value={contextValue}>{children}</AgentContext.Provider>;
 };
 
 export const useAgentStream = (): AgentContextType => {
     const context = useContext(AgentContext);
-    if (context === undefined) {
+    if (!context) {
         throw new Error('useAgentStream must be used within an AgentProvider');
     }
     return context;

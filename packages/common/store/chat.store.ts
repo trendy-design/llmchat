@@ -2,85 +2,11 @@
 
 import { Model, models } from '@repo/ai/models';
 import { ChatMode } from '@repo/shared/config';
+import { MessageGroup, Thread, ThreadItem } from '@repo/shared/types';
 import Dexie, { Table } from 'dexie';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-
-export type Thread = {
-    id: string;
-    title: string;
-    createdAt: Date;
-    updatedAt: Date;
-};
-
-export type SubStep = {
-    data?: any;
-    status: ItemStatus;
-};
-
-export type ItemStatus = 'QUEUED' | 'PENDING' | 'COMPLETED' | 'ERROR' | 'ABORTED' | 'HUMAN_REVIEW';
-
-export type Step = {
-    id: string;
-    text?: string;
-    steps?: Record<string, SubStep>;
-    status: ItemStatus;
-};
-export type Source = {
-    title: string;
-    link: string;
-    index: number;
-    snippet?: string;
-};
-
-export type Answer = {
-    text: string;
-    object?: any;
-    objectType?: string;
-    status?: ItemStatus;
-};
-
-export type ToolCall = {
-    type: 'tool-call';
-    toolCallId: string;
-    toolName: string;
-    args: any;
-};
-
-export type ToolResult = {
-    type: 'tool-result';
-    toolCallId: string;
-    toolName: string;
-    args: any;
-    result: any;
-};
-
-export type ThreadItem = {
-    query: string;
-    toolCalls?: Record<string, ToolCall>;
-    toolResults?: Record<string, ToolResult>;
-    steps?: Record<string, Step>;
-    answer?: Answer;
-    status?: ItemStatus;
-    createdAt: Date;
-    updatedAt: Date;
-    id: string;
-    parentId?: string;
-    threadId: string;
-    metadata?: Record<string, any>;
-    mode: ChatMode;
-    error?: string;
-    suggestions?: string[];
-    persistToDB?: boolean;
-    sources?: Source[];
-    imageAttachment?: string;
-};
-
-export type MessageGroup = {
-    userMessage: ThreadItem;
-    assistantMessages: ThreadItem[];
-};
 
 class ThreadDatabase extends Dexie {
     threads!: Table<Thread>;
@@ -89,7 +15,7 @@ class ThreadDatabase extends Dexie {
     constructor() {
         super('ThreadDatabase');
         this.version(1).stores({
-            threads: 'id, createdAt',
+            threads: 'id, createdAt, pinned, pinnedAt',
             threadItems: 'id, threadId, parentId, createdAt',
         });
     }
@@ -170,6 +96,8 @@ type Actions = {
     setChatMode: (chatMode: ChatMode) => void;
     updateThread: (thread: Pick<Thread, 'id' | 'title'>) => Promise<void>;
     getThread: (threadId: string) => Promise<Thread | null>;
+    pinThread: (threadId: string) => Promise<void>;
+    unpinThread: (threadId: string) => Promise<void>;
     createThreadItem: (threadItem: ThreadItem) => Promise<void>;
     updateThreadItem: (threadId: string, threadItem: Partial<ThreadItem>) => Promise<void>;
     switchThread: (threadId: string) => void;
@@ -565,6 +493,29 @@ export const useChatStore = create(
                 state.chatMode = chatMode;
             });
         },
+
+        pinThread: async (threadId: string) => {
+            await db.threads.update(threadId, { pinned: true, pinnedAt: new Date() });
+            set(state => {
+                state.threads = state.threads.map(thread =>
+                    thread.id === threadId
+                        ? { ...thread, pinned: true, pinnedAt: new Date() }
+                        : thread
+                );
+            });
+        },
+
+        unpinThread: async (threadId: string) => {
+            await db.threads.update(threadId, { pinned: false, pinnedAt: new Date() });
+            set(state => {
+                state.threads = state.threads.map(thread =>
+                    thread.id === threadId
+                        ? { ...thread, pinned: false, pinnedAt: new Date() }
+                        : thread
+                );
+            });
+        },
+
         fetchRemainingCredits: async () => {
             try {
                 const response = await fetch('/api/messages/remaining');
@@ -580,6 +531,11 @@ export const useChatStore = create(
             } catch (error) {
                 console.error('Error fetching remaining credits:', error);
             }
+        },
+
+        getPinnedThreads: async () => {
+            const threads = await db.threads.where('pinned').equals('true').toArray();
+            return threads.sort((a, b) => b.pinnedAt.getTime() - a.pinnedAt.getTime());
         },
 
         removeFollowupThreadItems: async (threadItemId: string) => {
@@ -676,6 +632,8 @@ export const useChatStore = create(
                 title: thread?.title || 'New Thread',
                 updatedAt: new Date(),
                 createdAt: new Date(),
+                pinned: false,
+                pinnedAt: new Date(),
             };
             await db.threads.add(newThread);
             set(state => {

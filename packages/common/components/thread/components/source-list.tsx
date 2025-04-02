@@ -1,4 +1,4 @@
-import { Source } from '@repo/common/store';
+import { Source } from '@repo/shared/types';
 import { WebsitePreview } from '@repo/ui';
 
 export const SourceList = ({ sources }: { sources: Source[] }) => {
