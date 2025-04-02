@@ -80,7 +80,7 @@ ctx.addEventListener('message', async (event: MessageEvent) => {
                     threadItemId,
                     parentThreadItemId,
                     mode,
-                    question,
+                    query: question,
                     [event]: payload,
                 });
             });

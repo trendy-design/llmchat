@@ -22,7 +22,7 @@ const buttonVariants = cva(
                     'border border-border bg-background text-foreground opacity-100 hover:opacity-80',
                 secondary:
                     'bg-quaternary text-emerald-900 opacity-100 hover:opacity-80 [&>svg]:text-emerald-900',
-                ghost: 'hover:bg-tertiary text-foreground opacity-100 hover:opacity-80',
+                ghost: 'hover:bg-quaternary text-foreground opacity-100 hover:opacity-80',
                 link: 'text-muted-foreground underline-offset-4 hover:underline h-auto decoration-border',
                 text: 'p-0 text-xs',
             },

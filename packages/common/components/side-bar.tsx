@@ -16,6 +16,8 @@ import {
 import {
     IconArrowBarLeft,
     IconArrowBarRight,
+    IconChevronRight,
+    IconHistory,
     IconLogout,
     IconPinned,
     IconPlus,
@@ -125,7 +127,7 @@ export const Sidebar = () => {
             )}
         >
             <Flex direction="col" className="w-full flex-1 items-center overflow-hidden">
-                <div className="mb-4 flex w-full flex-row items-center justify-between ">
+                <div className="mb-4 flex w-full flex-row items-center justify-between">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -147,9 +149,9 @@ export const Sidebar = () => {
                             variant="ghost"
                             tooltip="Close Sidebar"
                             tooltipSide="right"
-                            size="icon"
+                            size="icon-sm"
                             onClick={() => setIsSidebarOpen(prev => !prev)}
-                            className={cn(!isSidebarOpen && 'mx-auto')}
+                            className={cn(!isSidebarOpen && 'mx-auto', 'mr-2')}
                         >
                             <IconArrowBarLeft size={16} strokeWidth={2} />
                         </Button>
@@ -158,7 +160,7 @@ export const Sidebar = () => {
                 <Flex
                     direction="col"
                     className={cn(
-                        'w-full items-end px-4',
+                        'w-full items-end px-3 ',
                         !isSidebarOpen && 'items-center justify-center px-0'
                     )}
                     gap="sm"
@@ -200,6 +202,32 @@ export const Sidebar = () => {
                         {isSidebarOpen && 'Search'}
                     </Button>
                 </Flex>
+                <Flex
+                    direction="col"
+                    gap="xs"
+                    className={cn(
+                        'border-hard mt-3 w-full  justify-center border-t border-dashed px-3 py-2',
+                        !isSidebarOpen && 'items-center justify-center px-0'
+                    )}
+                >
+                    <Button
+                        size={isSidebarOpen ? 'xs' : 'icon-sm'}
+                        variant="secondary"
+                        rounded="lg"
+                        tooltip={isSidebarOpen ? undefined : 'Recent'}
+                        tooltipSide="right"
+                        className={cn(
+                            'text-muted-foreground w-full justify-start',
+                            !isSidebarOpen && 'w-auto justify-center'
+                        )}
+                        onClick={() => push('/recent')}
+                    >
+                        <IconHistory size={14} strokeWidth={2} />
+                        {isSidebarOpen && 'Recent'}
+                        {isSidebarOpen && <span className="inline-flex flex-1" />}
+                        {isSidebarOpen && <IconChevronRight size={14} strokeWidth={2} />}
+                    </Button>
+                </Flex>
 
                 {false ? (
                     <FullPageLoader />
@@ -208,7 +236,7 @@ export const Sidebar = () => {
                         direction="col"
                         gap="md"
                         className={cn(
-                            'border-border/70 no-scrollbar mt-3 w-full flex-1 overflow-y-auto border-t border-dashed p-3',
+                            'no-scrollbar w-full flex-1 overflow-y-auto px-3',
                             isSidebarOpen ? 'flex' : 'hidden'
                         )}
                     >
