@@ -72,14 +72,16 @@ ctx.addEventListener('message', async (event: MessageEvent) => {
             });
 
             // Forward workflow events to the main thread
-            activeWorkflow.on('flow', payload => {
+            activeWorkflow.onAll((event, payload) => {
                 console.log('payload', payload);
                 ctx.postMessage({
-                    type: 'message',
+                    event: event,
                     threadId,
                     threadItemId,
                     parentThreadItemId,
-                    ...payload,
+                    mode,
+                    question,
+                    [event]: payload,
                 });
             });
 

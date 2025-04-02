@@ -9,7 +9,6 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
     execute: async ({ trace, events, context, data, signal }) => {
         const messages = context?.get('messages') || [];
         const question = context?.get('question') || '';
-
         const currentYear = new Date().getFullYear();
 
         const prompt = `
@@ -77,28 +76,25 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
             signal,
         });
 
-        const stepId = Object.keys(events?.getState('flow')?.steps || {}).length;
+        const stepId = Object.keys(events?.getState('steps')?.data || {}).length;
 
         context?.update('queries', current => [...(current ?? []), ...(object?.queries || [])]);
         // Update flow event with initial goal
-        events?.update('flow', current => {
-            const stepId = Object.keys(current.steps || {}).length;
+        events?.update('steps', current => {
             return {
                 ...current,
-                steps: {
-                    ...(current.steps || {}),
-                    [stepId]: {
-                        text: object.reasoning,
-                        steps: {
-                            ...(current.steps?.[stepId]?.steps || {}),
-                            search: {
-                                data: object.queries,
-                                status: 'COMPLETED' as const,
-                            },
+
+                [stepId]: {
+                    text: object.reasoning,
+                    steps: {
+                        ...(current?.[stepId]?.steps || {}),
+                        search: {
+                            data: object.queries,
+                            status: 'COMPLETED' as const,
                         },
-                        status: 'PENDING' as const,
-                        id: stepId,
                     },
+                    status: 'PENDING' as const,
+                    id: stepId,
                 },
             };
         });

@@ -1,15 +1,17 @@
 import { useUser } from '@clerk/nextjs';
-import { useAppStore, useChatStore } from '@repo/common/store';
+import { useApiKeysStore, useAppStore, useChatStore } from '@repo/common/store';
 import { motion } from 'framer-motion';
 import { BYOKIcon } from './icons';
 
 export function MessagesRemainingBadge() {
     const { user } = useUser();
+    const chatMode = useChatStore(state => state.chatMode);
+    const hasApiKeys = useApiKeysStore(state => state.hasApiKeyForChatMode(chatMode));
     const creditLimit = useChatStore(state => state.creditLimit);
     const setIsSettingsOpen = useAppStore(state => state.setIsSettingsOpen);
     const setSettingTab = useAppStore(state => state.setSettingTab);
 
-    if (!creditLimit.isFetched || !user || creditLimit?.remaining > 1) {
+    if (!creditLimit.isFetched || !user || creditLimit?.remaining > 5 || hasApiKeys) {
         return null;
     }
 

@@ -52,28 +52,83 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         fetchRemainingCredits();
     }, [user?.id]);
 
+    // Single shared map for both methods
+    const threadItemMap = new Map<string, ThreadItem>();
+
+    // Shared function to handle updates
+    const handleThreadItemUpdate = (
+        threadId: string,
+        threadItemId: string,
+        eventType: string,
+        eventData: any,
+        parentThreadItemId?: string,
+        shouldPersistToDB: boolean = true
+    ) => {
+        const threadItemState = threadItemMap.get(threadItemId);
+
+        // Update the in-memory state
+        threadItemMap.set(threadItemId, {
+            ...threadItemState,
+            [eventType]:
+                eventType === 'answer'
+                    ? {
+                          ...eventData['answer'],
+                          text: (threadItemState?.answer?.text || '') + eventData['answer'].text,
+                      }
+                    : eventData[eventType],
+            query: eventData?.query || threadItemState?.query || '',
+            mode: eventData?.mode || threadItemState?.mode,
+            threadId,
+            parentId: parentThreadItemId || threadItemState?.parentId,
+            id: threadItemId,
+            createdAt: threadItemState?.createdAt || new Date(),
+            updatedAt: new Date(),
+        });
+
+        // Update the thread item in the store
+        updateThreadItem(threadId, {
+            ...threadItemMap.get(threadItemId),
+            persistToDB: shouldPersistToDB,
+        });
+    };
+
     const router = useRouter();
     const { startWorkflow, abortWorkflow } = useWorkflowWorker(data => {
-        if (data.type === 'message' && data?.threadId && data?.threadItemId) {
-            const stepsArray = data.steps ? Object.values(data.steps) : [];
+        console.log('data', data);
 
-            updateThreadItem(data?.threadId, {
-                id: data?.threadItemId,
-                parentId: data?.parentThreadItemId,
-                threadId: data?.threadId,
-                steps: data?.steps,
-                answer: data?.answer,
-                status: data?.status,
-                query: data?.query,
-                error: data?.error,
-                toolCalls: data?.toolCalls,
-                toolResults: data?.toolResults,
-                suggestions: data?.suggestions,
-                sources: data?.sources,
-            });
+        if (data?.threadId && data?.threadItemId) {
+            if (
+                data.event &&
+                [
+                    'steps',
+                    'sources',
+                    'answer',
+                    'error',
+                    'status',
+                    'suggestions',
+                    'toolCalls',
+                    'toolResults',
+                ].includes(data.event)
+            ) {
+                handleThreadItemUpdate(
+                    data.threadId,
+                    data.threadItemId,
+                    data.event,
+                    data,
+                    data.parentThreadItemId
+                );
+            }
         }
+
         if (data.type === 'done') {
             setIsGenerating(false);
+            setTimeout(() => {
+                fetchRemainingCredits();
+            }, 1000);
+
+            if (data?.threadItemId) {
+                threadItemMap.delete(data.threadItemId);
+            }
         }
     });
 
@@ -147,38 +202,37 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                         } else if (line.startsWith('data: ')) {
                             jsonData = line.slice(6);
 
-                            console.log('jsonData', jsonData);
-
                             try {
                                 const data = JSON.parse(jsonData);
                                 console.log('event:', currentEvent, 'data:', data);
 
                                 if (
-                                    currentEvent === 'message' &&
-                                    data.type === 'message' &&
+                                    [
+                                        'steps',
+                                        'sources',
+                                        'answer',
+                                        'error',
+                                        'status',
+                                        'suggestions',
+                                        'toolCalls',
+                                        'toolResults',
+                                    ].includes(currentEvent) &&
                                     data?.threadId &&
                                     data?.threadItemId
                                 ) {
-                                    updateThreadItem(data?.threadId, {
-                                        id: data?.threadItemId,
-                                        parentId: data?.parentThreadItemId,
-                                        threadId: data?.threadId,
-                                        steps: data?.steps,
-                                        answer: data?.answer,
-                                        status: data?.status,
-                                        query: data?.query,
-                                        error: data?.error,
-                                        updatedAt: new Date(),
-                                        mode: data?.mode,
-                                        toolCalls: data?.toolCalls,
-                                        toolResults: data?.toolResults,
-                                        suggestions: data?.suggestions,
-                                        sources: data?.sources,
-                                        persistToDB:
-                                            Date.now() - lastDbUpdate >= DB_UPDATE_INTERVAL,
-                                    });
+                                    const shouldPersistToDB =
+                                        Date.now() - lastDbUpdate >= DB_UPDATE_INTERVAL;
 
-                                    if (Date.now() - lastDbUpdate >= DB_UPDATE_INTERVAL) {
+                                    handleThreadItemUpdate(
+                                        data.threadId,
+                                        data.threadItemId,
+                                        currentEvent,
+                                        data,
+                                        data.parentThreadItemId,
+                                        shouldPersistToDB
+                                    );
+
+                                    if (shouldPersistToDB) {
                                         lastDbUpdate = Date.now();
                                     }
                                 } else if (currentEvent === 'done' && data.type === 'done') {
@@ -186,6 +240,10 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                     setTimeout(() => {
                                         fetchRemainingCredits();
                                     }, 1000);
+
+                                    if (data.threadItemId) {
+                                        threadItemMap.delete(data.threadItemId);
+                                    }
 
                                     if (data.status === 'error') {
                                         console.error('Stream error:', data.error);

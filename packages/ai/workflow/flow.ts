@@ -25,42 +25,44 @@ type Status = 'PENDING' | 'COMPLETED' | 'ERROR' | 'HUMAN_REVIEW';
 
 // Define the workflow schema type
 export type WorkflowEventSchema = {
-    flow: {
-        query: string;
-        threadId: string;
-        threadItemId: string;
-        status: Status;
-        steps?: Record<
-            string,
-            {
-                id: number;
-                text?: string;
-                steps: Record<
-                    string,
-                    {
-                        data?: any;
-                        status: Status;
-                    }
-                >;
-                status: Status;
-            }
-        >;
-        toolCalls?: any[];
-        toolResults?: any[];
-        answer: {
-            text: string;
-            object?: any;
-            objectType?: string;
+    steps?: Record<
+        string,
+        {
+            id: number;
+            text?: string;
+            steps: Record<
+                string,
+                {
+                    data?: any;
+                    status: Status;
+                }
+            >;
             status: Status;
-        };
-        mode: ChatMode;
-        sources?: {
-            index: number;
-            title: string;
-            link: string;
-        }[];
-        suggestions?: string[];
+        }
+    >;
+    toolCalls?: any[];
+    toolResults?: any[];
+
+    answer: {
+        text?: string;
+        object?: any;
+        objectType?: string;
+        finalText?: string;
+        status: Status;
     };
+    sources?: {
+        index: number;
+        title: string;
+        link: string;
+    }[];
+
+    error?: {
+        error: string;
+        status: Status;
+    };
+    status: Status;
+
+    suggestions?: string[];
 };
 
 // Define the context schema type
@@ -140,18 +142,21 @@ export const runWorkflow = ({
 
     // Create typed event emitter with the proper type
     const events = createTypedEventEmitter<WorkflowEventSchema>({
-        flow: {
-            query: question,
-            mode: mode as ChatMode,
-            threadId,
-            threadItemId,
+        steps: {},
+        toolCalls: [],
+        toolResults: [],
+        answer: {
+            text: '',
+
             status: 'PENDING',
-            steps: {},
-            answer: {
-                text: '',
-                status: 'PENDING',
-            },
         },
+        sources: [],
+        suggestions: [],
+        error: {
+            error: '',
+            status: 'PENDING',
+        },
+        status: 'PENDING',
     });
 
     const context = createContext<WorkflowContextSchema>({
@@ -176,7 +181,7 @@ export const runWorkflow = ({
     // Use the typed builder
     const builder = new WorkflowBuilder({
         trace,
-        initialEventState: events.getAllState().flow,
+        initialEventState: events.getAllState(),
         events,
         context,
         config: workflowConfig,

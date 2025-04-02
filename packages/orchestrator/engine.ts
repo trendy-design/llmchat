@@ -298,6 +298,10 @@ export class WorkflowEngine<
         this.events?.on(event, callback);
     }
 
+    onAll(callback: (event: keyof TEvent, data: any) => void) {
+        this.events?.onAll(callback);
+    }
+
     addTask(name: string, config: TaskConfig<TEvent, TContext>) {
         this.tasks.set(name, config);
     }

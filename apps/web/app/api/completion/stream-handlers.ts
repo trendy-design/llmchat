@@ -76,13 +76,18 @@ export async function executeStream(
             },
         });
 
-        workflow.on('flow', payload => {
+        workflow.onAll((event, payload) => {
+            console.log('event', event, payload);
             sendMessage(controller, encoder, {
-                type: 'message',
+                type: event,
                 threadId: data.threadId,
                 threadItemId: data.threadItemId,
                 parentThreadItemId: data.parentThreadItemId,
-                ...payload,
+                query: data.prompt,
+                mode: data.mode,
+                webSearch: data.webSearch || false,
+                showSuggestions: data.showSuggestions || false,
+                [event]: payload,
             });
         });
 

@@ -13,14 +13,19 @@
         "check-types": "tsc --noEmit"
     },
     "dependencies": {
-        "@tiptap/react": "^2.4.0",
-        "langchain": "^0.2.0",
         "@langchain/core": "^0.1.62",
-        "lucide-react": "^0.435.0",
-        "zod": "^3.23.8",
-        "zustand": "^4.5.4",
+        "@tiptap/react": "^2.4.0",
+        "@types/pdfkit": "^0.13.9",
         "drizzle-orm": "^0.33.0",
-        "drizzle-zod": "^0.5.1"
+        "drizzle-zod": "^0.5.1",
+        "html2pdf.js": "^0.10.3",
+        "jspdf": "^3.0.1",
+        "langchain": "^0.2.0",
+        "lucide-react": "^0.435.0",
+        "marked": "^15.0.7",
+        "pdfkit": "^0.16.0",
+        "zod": "^3.23.8",
+        "zustand": "^4.5.4"
     },
     "devDependencies": {
         "@types/react": "^18",

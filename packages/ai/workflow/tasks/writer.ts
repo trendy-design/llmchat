@@ -70,21 +70,19 @@ Your report should demonstrate subject matter expertise while remaining intellec
 
         if (stepId) {
             const nextStepId = stepId + 1;
-            events?.update('flow', current => ({
+            events?.update('steps', current => ({
                 ...current,
-                steps: {
-                    ...(current.steps || {}),
-                    [nextStepId]: {
-                        ...(current.steps?.[nextStepId] || {}),
-                        steps: {
-                            ...(current.steps?.[nextStepId]?.steps || {}),
-                            wrapup: {
-                                status: 'COMPLETED' as const,
-                            },
+
+                [nextStepId]: {
+                    ...(current?.[nextStepId] || {}),
+                    steps: {
+                        ...(current?.[nextStepId]?.steps || {}),
+                        wrapup: {
+                            status: 'COMPLETED' as const,
                         },
-                        id: nextStepId,
-                        status: 'COMPLETED' as const,
                     },
+                    id: nextStepId,
+                    status: 'COMPLETED' as const,
                 },
             }));
         }
@@ -93,19 +91,19 @@ Your report should demonstrate subject matter expertise while remaining intellec
             prompt,
             model: ModelEnum.Claude_3_7_Sonnet,
             signal,
-            onChunk: chunk => {
-                events?.update('flow', current => ({
+            onChunk: (chunk, fullText) => {
+                events?.update('answer', current => ({
                     ...current,
-                    answer: { text: chunk, status: 'PENDING' as const },
+                    text: chunk,
                     status: 'PENDING' as const,
                 }));
             },
         });
 
-        events?.update('flow', current => ({
+        events?.update('answer', current => ({
             ...current,
-            answer: { text: answer, status: 'COMPLETED' as const },
-            status: 'COMPLETED',
+            text: answer,
+            status: 'COMPLETED' as const,
         }));
 
         context?.get('onFinish')?.({
@@ -113,6 +111,8 @@ Your report should demonstrate subject matter expertise while remaining intellec
             threadId: context?.get('threadId'),
             threadItemId: context?.get('threadItemId'),
         });
+
+        events?.update('status', prev => 'COMPLETED');
 
         trace?.span({
             name: 'writer',

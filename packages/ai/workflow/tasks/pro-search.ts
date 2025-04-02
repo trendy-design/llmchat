@@ -128,27 +128,24 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             }
 
             // Update event with search results
-            events?.update('flow', prev => ({
+            events?.update('steps', prev => ({
                 ...prev,
-                steps: {
-                    ...prev.steps,
-                    0: {
-                        ...prev?.steps?.[0],
-                        id: 0,
-                        status: 'PENDING',
-                        steps: {
-                            search: {
-                                data: [query.query],
-                                status: 'COMPLETED',
-                            },
-                            read: {
-                                data: searchResults.map(result => ({
-                                    title: result.title,
-                                    link: result.link,
-                                    snippet: result.snippet,
-                                })),
-                                status: 'PENDING',
-                            },
+                0: {
+                    ...prev?.[0],
+                    id: 0,
+                    status: 'PENDING',
+                    steps: {
+                        search: {
+                            data: [query.query],
+                            status: 'COMPLETED',
+                        },
+                        read: {
+                            data: searchResults.map(result => ({
+                                title: result.title,
+                                link: result.link,
+                                snippet: result.snippet,
+                            })),
+                            status: 'PENDING',
                         },
                     },
                 },
@@ -178,35 +175,32 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             }
 
             // Update event with read status
-            events?.update('flow', prev => ({
+            events?.update('steps', prev => ({
                 ...prev,
-                steps: {
-                    ...prev.steps,
-                    0: {
-                        ...prev?.steps?.[0],
-                        status: 'COMPLETED',
-                        id: 0,
-                        steps: {
-                            ...prev.steps?.[0].steps,
-                            read: {
-                                ...prev.steps?.[0].steps?.read,
-                                status: 'COMPLETED',
-                            },
+                0: {
+                    ...prev?.[0],
+                    status: 'COMPLETED',
+                    id: 0,
+                    steps: {
+                        ...prev?.[0].steps,
+                        read: {
+                            ...prev?.[0].steps?.read,
+                            status: 'COMPLETED',
                         },
                     },
                 },
             }));
 
             // Update flow with sources
-            events?.update('flow', current => ({
-                ...current,
-                sources: searchResults?.map((result: SearchResult, index: number) => ({
+            events?.update('sources', current => [
+                ...(current || []),
+                ...searchResults?.map((result: SearchResult, index: number) => ({
                     title: result.title,
                     link: result.link,
                     snippet: result.snippet,
-                    index: index + (current?.sources?.length || 1),
+                    index: index + (current?.length || 1),
                 })),
-            }));
+            ]);
 
             // Step 4: Generate analysis
             let reasoning = '';
@@ -216,33 +210,27 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
                     model: ModelEnum.Deepseek_R1,
                     messages,
                     onReasoning: chunk => {
-                        events?.update('flow', current => ({
+                        events?.update('steps', current => ({
                             ...current,
-                            steps: {
-                                ...current?.steps,
-                                1: {
-                                    ...current?.steps?.[1],
-                                    steps: {
-                                        ...current?.steps?.[1]?.steps,
-                                        reasoning: {
-                                            data: chunk,
-                                            status: 'COMPLETED',
-                                        },
+                            1: {
+                                ...current?.[1],
+                                steps: {
+                                    ...current?.[1]?.steps,
+                                    reasoning: {
+                                        data: chunk,
+                                        status: 'COMPLETED',
                                     },
-                                    id: 1,
-                                    status: 'PENDING' as const,
                                 },
+                                id: 1,
+                                status: 'PENDING' as const,
                             },
                         }));
                     },
-                    onChunk: chunk => {
-                        events?.update('flow', current => ({
+                    onChunk: (chunk, fullText) => {
+                        events?.update('answer', current => ({
                             ...current,
-                            answer: {
-                                ...current.answer,
-                                text: chunk,
-                                status: 'PENDING' as const,
-                            },
+                            text: chunk,
+                            status: 'PENDING' as const,
                         }));
                     },
                 });
@@ -257,45 +245,42 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             }
 
             // Update flow with completed reasoning
-            events?.update('flow', current => ({
+            events?.update('steps', current => ({
                 ...current,
-                steps: {
-                    ...current?.steps,
-                    1: {
-                        ...current?.steps?.[1],
-                        steps: {
-                            ...current?.steps?.[1]?.steps,
-                            reasoning: {
-                                ...current?.steps?.[1]?.steps?.reasoning,
-                                status: 'COMPLETED',
-                            },
+                1: {
+                    ...current?.[1],
+                    steps: {
+                        ...current?.[1]?.steps,
+                        reasoning: {
+                            ...current?.[1]?.steps?.reasoning,
+                            status: 'COMPLETED',
                         },
-                        id: 1,
-                        status: 'COMPLETED' as const,
                     },
-                    2: {
-                        ...current?.steps?.[2],
-                        steps: {
-                            ...current?.steps?.[2]?.steps,
-                            wrapup: {
-                                status: 'COMPLETED' as const,
-                            },
+                    id: 1,
+                    status: 'COMPLETED' as const,
+                },
+                2: {
+                    ...current?.[2],
+                    steps: {
+                        ...current?.[2]?.steps,
+                        wrapup: {
+                            status: 'COMPLETED' as const,
                         },
-                        id: 2,
-                        status: 'COMPLETED' as const,
                     },
+                    id: 2,
+                    status: 'COMPLETED' as const,
                 },
             }));
 
             // Update flow with completed answer
-            events?.update('flow', prev => ({
+            events?.update('answer', prev => ({
                 ...prev,
-                answer: {
-                    text: reasoning,
-                    status: 'COMPLETED',
-                },
+                text: '',
+                fullText: reasoning,
                 status: 'COMPLETED',
             }));
+
+            events?.update('status', current => 'COMPLETED');
 
             context?.update('answer', _ => reasoning);
 
@@ -317,7 +302,7 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             console.error('Error in proSearchTask:', error);
 
             // Update flow with error status
-            events?.update('flow', prev => ({
+            events?.update('error', prev => ({
                 ...prev,
                 error: error instanceof Error ? error.message : 'Unknown error occurred',
                 status: 'ERROR',

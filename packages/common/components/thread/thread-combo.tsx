@@ -56,9 +56,11 @@ export function Thread() {
 export const FollowupSuggestions = ({ suggestions }: { suggestions: string[] }) => {
     const editor: Editor | undefined = useChatStore(useShallow(state => state.editor));
 
-    if (!suggestions || suggestions.length === 0) {
+    if (!suggestions || suggestions?.length === 0) {
         return null;
     }
+
+    console.log('suggestions', suggestions);
 
     return (
         <motion.div
@@ -82,7 +84,7 @@ export const FollowupSuggestions = ({ suggestions }: { suggestions: string[] }) 
                 animate="show"
                 className="flex flex-col gap-1.5"
             >
-                {suggestions.map(suggestion => (
+                {suggestions?.map(suggestion => (
                     <motion.div
                         key={suggestion}
                         variants={{

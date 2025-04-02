@@ -76,46 +76,45 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
             throw new Error('No results found');
         }
 
-        events?.update('flow', prev => ({
+        events?.update('steps', prev => ({
             ...prev,
-            steps: {
-                ...prev.steps,
-                0: {
-                    ...prev.steps?.[0],
-                    id: 0,
-                    status: 'COMPLETED',
-                    steps: {
-                        ...prev.steps?.[0]?.steps,
-                        search: {
-                            data: [query.query],
-                            status: 'COMPLETED',
-                        },
-                        read: {
-                            data: results.map((result: any) => ({
-                                title: result.title,
-                                link: result.link,
-                            })),
-                            status: 'COMPLETED',
-                        },
+            0: {
+                ...prev?.[0],
+                id: 0,
+                status: 'COMPLETED',
+                steps: {
+                    ...prev?.[0]?.steps,
+                    search: {
+                        data: [query.query],
+                        status: 'COMPLETED',
+                    },
+                    read: {
+                        data: results.map((result: any) => ({
+                            title: result.title,
+                            link: result.link,
+                        })),
+                        status: 'COMPLETED',
                     },
                 },
-                1: {
-                    ...prev.steps?.[1],
-                    status: 'COMPLETED',
-                    id: 1,
-                    steps: {
-                        ...prev.steps?.[1]?.steps,
-                        wrapup: {
-                            status: 'COMPLETED',
-                        },
-                    },
-                } as any,
             },
-            sources: results.map((result: any, index: number) => ({
+            1: {
+                ...prev?.[1],
+                status: 'COMPLETED',
+                id: 1,
+                steps: {
+                    ...prev?.[1]?.steps,
+                    wrapup: {
+                        status: 'COMPLETED',
+                    },
+                },
+            },
+        }));
+
+        events?.update('sources', prev => ({
+            ...prev,
+            ...results.map((result: any, index: number) => ({
                 title: result.title,
                 link: result.link,
-                snippet: result.snippet,
-                index: index + (prev?.sources?.length || 1),
             })),
         }));
 
@@ -127,25 +126,19 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
             model,
             messages: [...messages, { role: 'user', content: searchContent }],
             prompt: buildWebSearchPrompt(results),
-            onChunk: chunk => {
-                events?.update('flow', current => ({
+            onChunk: (chunk, fullText) => {
+                events?.update('answer', current => ({
                     ...current,
-                    answer: {
-                        ...current.answer,
-                        text: chunk,
-                        status: 'PENDING' as const,
-                    },
+                    text: chunk,
+                    status: 'PENDING' as const,
                 }));
             },
         });
 
-        events?.update('flow', prev => ({
+        events?.update('answer', prev => ({
             ...prev,
-
-            answer: {
-                text: response,
-                status: 'COMPLETED',
-            },
+            text: undefined,
+            fullText: response,
             status: 'COMPLETED',
         }));
 
@@ -159,6 +152,8 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
                 threadItemId: context?.get('threadItemId'),
             });
         }
+
+        events?.update('status', prev => 'COMPLETED');
 
         return {
             retry: false,

@@ -15,27 +15,24 @@ export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
         const queries = data?.queries;
         const stepId = data?.stepId;
         const results = await executeWebSearch(queries, signal);
-        events?.update('flow', current => {
+        events?.update('steps', current => {
             return {
                 ...current,
-                steps: {
-                    ...(current.steps || {}),
-                    [stepId]: {
-                        ...(current.steps?.[stepId] || {}),
-                        steps: {
-                            ...(current.steps?.[stepId]?.steps || {}),
-                            read: {
-                                data: results?.map((result: any) => ({
-                                    title: result.title,
-                                    link: result.link,
-                                    snippet: result.snippet,
-                                })),
-                                status: 'PENDING' as const,
-                            },
+                [stepId]: {
+                    ...(current?.[stepId] || {}),
+                    steps: {
+                        ...(current?.[stepId]?.steps || {}),
+                        read: {
+                            data: results?.map((result: any) => ({
+                                title: result.title,
+                                link: result.link,
+                                snippet: result.snippet,
+                            })),
+                            status: 'PENDING' as const,
                         },
-                        id: stepId,
-                        status: 'PENDING' as const,
                     },
+                    id: stepId,
+                    status: 'PENDING' as const,
                 },
             };
         });
@@ -120,27 +117,24 @@ ${processedResults
             prompt,
         });
 
-        events?.update('flow', current => {
+        events?.update('steps', current => {
             return {
                 ...current,
-                steps: {
-                    ...(current.steps || {}),
-                    [stepId]: {
-                        ...(current.steps?.[stepId] || {}),
-                        steps: {
-                            ...(current.steps?.[stepId]?.steps || {}),
-                            read: {
-                                data: results?.map((result: any) => ({
-                                    title: result.title,
-                                    link: result.link,
-                                    snippet: result.snippet,
-                                })),
-                                status: 'COMPLETED' as const,
-                            },
+                [stepId]: {
+                    ...(current?.[stepId] || {}),
+                    steps: {
+                        ...(current?.[stepId]?.steps || {}),
+                        read: {
+                            data: results?.map((result: any) => ({
+                                title: result.title,
+                                link: result.link,
+                                snippet: result.snippet,
+                            })),
+                            status: 'COMPLETED' as const,
                         },
+                    },
 
-                        status: 'COMPLETED' as const,
-                    } as any,
+                    status: 'COMPLETED' as const,
                 },
             };
         });

@@ -117,9 +117,10 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
                         ))}
                     </div>
                 ),
+                title: () => renderTitle(),
             });
         }
-    }, [steps]);
+    }, [steps, threadItem?.status]);
 
     const handleClick = () => {
         openSideDrawer({

@@ -90,23 +90,20 @@ CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genui
 
         context?.update('queries', current => [...(current ?? []), ...(object?.queries ?? [])]);
 
-        events?.update('flow', current => {
+        events?.update('steps', current => {
             return {
                 ...current,
-                steps: {
-                    ...(current.steps || {}),
-                    [newStepId]: {
-                        text: object.reasoning,
-                        steps: {
-                            ...(current.steps?.[newStepId]?.steps || {}),
-                            search: {
-                                data: object.queries,
-                                status: 'COMPLETED' as const,
-                            },
+                [newStepId]: {
+                    text: object.reasoning,
+                    steps: {
+                        ...(current?.[newStepId]?.steps || {}),
+                        search: {
+                            data: object.queries,
+                            status: 'COMPLETED' as const,
                         },
-                        status: 'PENDING' as const,
-                        id: newStepId,
                     },
+                    status: 'PENDING' as const,
+                    id: newStepId,
                 },
             };
         });

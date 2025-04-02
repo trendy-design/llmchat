@@ -9,7 +9,7 @@ export const analysisTask = createTask<WorkflowEventSchema, WorkflowContextSchem
         const messages = context?.get('messages') || [];
         const question = context?.get('question') || '';
         const prevSummaries = context?.get('summaries') || [];
-        const nextStepId = Object.keys(events?.getState('flow')?.steps || {}).length;
+        const nextStepId = Object.keys(events?.getState('steps') || {}).length;
 
         const prompt = `
           
@@ -64,46 +64,44 @@ ${s}
             messages: messages as any,
             signal,
             onReasoning: reasoning => {
-                events?.update('flow', current => ({
+                events?.update('steps', current => ({
                     ...current,
-                    steps: {
-                        ...current.steps,
-                        [nextStepId]: {
-                            ...(current.steps?.[nextStepId] || {}),
-                            steps: {
-                                ...(current.steps?.[nextStepId]?.steps || {}),
-                                reasoning: {
-                                    data: reasoning,
-                                    status: 'PENDING' as const,
-                                },
+                    [nextStepId]: {
+                        ...(current?.[nextStepId] || {}),
+                        steps: {
+                            ...(current?.[nextStepId]?.steps || {}),
+                            reasoning: {
+                                data: reasoning,
+                                status: 'PENDING' as const,
                             },
-                            id: nextStepId,
-                            status: 'PENDING' as const,
                         },
+                        id: nextStepId,
+                        status: 'PENDING' as const,
                     },
                 }));
             },
         });
 
-        events?.update('flow', current => ({
+        events?.update('steps', current => ({
             ...current,
-            steps: {
-                ...current.steps,
-                [nextStepId]: {
-                    ...(current.steps?.[nextStepId] || {}),
-                    steps: {
-                        ...(current.steps?.[nextStepId]?.steps || {}),
-                        reasoning: {
-                            ...current.steps?.[nextStepId]?.steps?.reasoning,
-                            status: 'COMPLETED' as const,
-                        },
+
+            [nextStepId]: {
+                ...(current?.[nextStepId] || {}),
+                steps: {
+                    ...(current?.[nextStepId]?.steps || {}),
+                    reasoning: {
+                        ...current?.[nextStepId]?.steps?.reasoning,
+                        status: 'COMPLETED' as const,
                     },
-                    id: nextStepId,
-                    status: 'COMPLETED' as const,
                 },
+                id: nextStepId,
+                status: 'COMPLETED' as const,
             },
-            sources: context?.get('sources') || [],
         }));
+
+        events?.update('sources', current => {
+            return [...(current || []), ...(context?.get('sources') || [])];
+        });
 
         trace?.span({
             name: 'analysis',

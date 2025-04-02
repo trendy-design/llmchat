@@ -27,7 +27,7 @@ export const generateText = async ({
 }: {
     prompt: string;
     model: ModelEnum;
-    onChunk?: (chunk: string) => void;
+    onChunk?: (chunk: string, fullText: string) => void;
     messages?: CoreMessage[];
     onReasoning?: (chunk: string) => void;
     tools?: ToolSet;
@@ -76,7 +76,7 @@ export const generateText = async ({
 
             if (chunk.type === 'text-delta') {
                 fullText += chunk.textDelta;
-                onChunk?.(fullText);
+                onChunk?.(chunk.textDelta, fullText);
             }
             if (chunk.type === 'reasoning') {
                 reasoning += chunk.textDelta;
@@ -456,7 +456,7 @@ export const handleError = (error: Error, { context, events }: TaskParams) => {
     const errorMessage = generateErrorMessage(error);
     console.error('Task failed', error);
 
-    events?.update('flow', prev => ({
+    events?.update('error', prev => ({
         ...prev,
         error: errorMessage,
         status: 'ERROR',

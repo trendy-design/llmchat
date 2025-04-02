@@ -6,7 +6,6 @@ import { ChatMode, getChatModeName } from '@repo/shared/config';
 import { Button, DropdownMenu, DropdownMenuTrigger } from '@repo/ui';
 import { IconCheck, IconCopy, IconRefresh, IconTrash } from '@tabler/icons-react';
 import { forwardRef, useState } from 'react';
-
 type MessageActionsProps = {
     threadItem: ThreadItem;
     isLast: boolean;
@@ -68,6 +67,7 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                         />
                     </DropdownMenu>
                 )}
+
                 {isLast && (
                     <Button
                         variant="secondary"

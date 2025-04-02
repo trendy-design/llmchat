@@ -58,19 +58,18 @@ export const refineQueryTask = createTask<WorkflowEventSchema, WorkflowContextSc
         });
 
         if (object?.needsClarification) {
-            events?.update('flow', current => {
+            events?.update('answer', current => {
                 return {
                     ...current,
-                    answer: {
-                        text: object.reasoning,
-                        object: object,
-                        objectType: 'clarifyingQuestions',
-                        final: true,
-                        status: 'HUMAN_REVIEW',
-                    },
-                    status: 'COMPLETED',
+                    text: '',
+                    object: object,
+                    objectType: 'clarifyingQuestions',
+                    finalText: object.reasoning,
+                    status: 'HUMAN_REVIEW',
                 };
             });
+
+            events?.update('status', prev => 'COMPLETED');
         } else {
             context?.update('question', current => object?.refinedQuery || question);
         }

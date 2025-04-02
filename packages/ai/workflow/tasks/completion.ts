@@ -66,20 +66,17 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                     ...(tools?.allTools || {}),
                 },
                 onReasoning: reasoning => {
-                    events?.update('flow', prev => ({
+                    events?.update('steps', prev => ({
                         ...prev,
-                        steps: {
-                            ...prev?.steps,
-                            0: {
-                                ...prev?.steps?.[0],
-                                id: 0,
-                                status: 'COMPLETED',
-                                steps: {
-                                    ...prev?.steps?.[0]?.steps,
-                                    reasoning: {
-                                        data: reasoning,
-                                        status: 'COMPLETED',
-                                    },
+                        0: {
+                            ...prev?.[0],
+                            id: 0,
+                            status: 'COMPLETED',
+                            steps: {
+                                ...prev?.[0]?.steps,
+                                reasoning: {
+                                    data: reasoning,
+                                    status: 'COMPLETED',
                                 },
                             },
                         },
@@ -87,40 +84,37 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                 },
                 onToolCall: toolCall => {
                     toolCallsMap[toolCall.toolCallId] = toolCall;
-                    events?.update('flow', prev => ({
+                    events?.update('toolCalls', prev => ({
                         ...prev,
-                        toolCalls: toolCallsMap as any,
+                        ...(toolCallsMap as any),
                     }));
                 },
                 onToolResult: toolResult => {
                     toolResultsMap[toolResult.toolCallId] = toolResult;
-                    events?.update('flow', prev => ({
+                    events?.update('toolResults', prev => ({
                         ...prev,
-                        toolResults: toolResultsMap as any,
+                        ...(toolResultsMap as any),
                     }));
                 },
-                onChunk: chunk => {
-                    events?.update('flow', prev => ({
+                onChunk: (chunk, fullText) => {
+                    events?.update('answer', prev => ({
                         ...prev,
-
-                        answer: {
-                            text: chunk,
-                            status: 'PENDING',
-                        },
+                        text: chunk,
+                        status: 'PENDING',
                     }));
                 },
             });
 
-            events?.update('flow', prev => ({
+            events?.update('answer', prev => ({
                 ...prev,
-                answer: {
-                    text: response,
-                    status: 'COMPLETED',
-                },
+                text: '',
+                fullText: response,
                 status: 'COMPLETED',
             }));
 
             context.update('answer', _ => response);
+
+            events?.update('status', prev => 'COMPLETED');
 
             const onFinish = context.get('onFinish');
             if (onFinish) {
@@ -140,7 +134,7 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
         const errorMessage = generateErrorMessage(error);
         console.error('Task failed', error);
 
-        events?.update('flow', prev => ({
+        events?.update('error', prev => ({
             ...prev,
             error: errorMessage,
             status: 'ERROR',
