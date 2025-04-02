@@ -1,6 +1,5 @@
 export const generateErrorMessage = (error: Error | string) => {
     if (error instanceof Error) {
-        console.log('errorjjj', error.message);
         if (error.message.includes('429')) {
             return 'You have reached the limit of requests per minute. Please try again later.';
         }
@@ -17,12 +16,10 @@ export const generateErrorMessage = (error: Error | string) => {
             return 'The request timed out. Please try again.';
         }
 
-        console.log('errorkkk', error.message.toLowerCase());
         if (
             error.message.toLowerCase().includes('api') &&
             error.message.toLowerCase().includes('key')
         ) {
-            console.log('api key error');
             return 'The API key is invalid. Please try again.';
         }
 

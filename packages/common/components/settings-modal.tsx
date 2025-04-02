@@ -200,8 +200,6 @@ const AddToolDialog = ({ isOpen, onOpenChange, onAddTool }: AddToolDialogProps) 
         // Clear error if any
         setError('');
 
-        console.log(mcpToolName, mcpToolUrl);
-
         // Add the tool
         onAddTool({
             [mcpToolName]: mcpToolUrl,

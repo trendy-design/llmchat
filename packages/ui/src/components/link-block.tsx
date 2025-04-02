@@ -3,53 +3,14 @@
 import { LinkFavicon } from '@repo/common/components';
 import { Source } from '@repo/shared/types';
 import { getHost } from '@repo/shared/utils';
-import React, { memo, useState } from 'react';
+import React, { memo } from 'react';
 
 export type LinkPreviewType = {
     url: string;
     children: React.ReactNode;
 };
 
-export const LinkPreview = ({ url, children }: LinkPreviewType) => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    if (!url?.trim()?.length) {
-        return null;
-    }
-
-    const handleMouseEnter = () => {
-        console.log('mouse enter');
-        setIsHovered(true);
-    };
-
-    const handleMouseLeave = () => {
-        console.log('mouse leave');
-        setIsHovered(false);
-    };
-
-    return <>{children}</>;
-
-    // return <Popover open={isHovered} onOpenChange={setIsHovered}>
-    //   <PopoverTrigger onMouseEnter={handleMouseEnter}
-    //     onMouseLeave={handleMouseLeave}
-    //     onClick={e => {
-    //       e.preventDefault();
-    //     }} asChild>
-    //     {children}
-    //   </PopoverTrigger>
-    //   <PopoverContent className='z-[10] bg-background p-0'>
-    //     <WebsitePreview url={url} />
-    //   </PopoverContent>
-    // </Popover>
-};
-
-// Add this cache outside the component
-const ogCache = new Map<string, any>();
-
 export const WebsitePreview = memo(({ source }: { source: Source }) => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [ogResult, setOgResult] = useState<any | null>(null);
-
     return (
         <div className="not-prose">
             <div className="flex flex-col items-start">

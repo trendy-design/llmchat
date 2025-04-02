@@ -74,9 +74,9 @@ type State = {
     isLoadingThreadItems: boolean;
     currentSources: string[];
     creditLimit: {
-        remaining: number;
-        maxLimit: number;
-        reset: string;
+        remaining: number | undefined;
+        maxLimit: number | undefined;
+        reset: string | undefined;
         isAuthenticated: boolean;
         isFetched: boolean;
     };
@@ -178,7 +178,6 @@ const processBatchUpdate = async () => {
     batchUpdateQueue.items.clear();
 
     try {
-        console.log('itemsToUpdate', itemsToUpdate);
         await db.threadItems.bulkPut(itemsToUpdate);
         // Update last update times for all processed items
         itemsToUpdate.forEach(item => {
@@ -212,13 +211,6 @@ const queueThreadItemForUpdate = (threadItem: ThreadItem) => {
     }
 };
 
-const debouncedThreadUpdate = debounce((thread: Thread) => db.threads.put(thread), 1000);
-
-const throttledThreadItemUpdate = throttle(
-    (threadItem: ThreadItem) => queueThreadItemForUpdate(threadItem),
-    500
-);
-
 // Add this near the top of your file after other imports
 let dbWorker: SharedWorker | null = null;
 
@@ -235,7 +227,7 @@ const initializeWorker = () => {
 
     try {
         // Create a shared worker
-        dbWorker = new SharedWorker(new URL('./db-sync.worker.ts', import.meta.url), {
+        dbWorker = new SharedWorker(new URL('./db-sync.worker.ts', import.meta?.url), {
             type: 'module',
         });
 
@@ -452,9 +444,9 @@ export const useChatStore = create(
         isLoadingThreadItems: false,
         currentSources: [],
         creditLimit: {
-            remaining: 0,
-            maxLimit: 0,
-            reset: '',
+            remaining: undefined,
+            maxLimit: undefined,
+            reset: undefined,
             isAuthenticated: false,
             isFetched: false,
         },
@@ -691,7 +683,6 @@ export const useChatStore = create(
             try {
                 await db.threadItems.put(threadItem);
                 set(state => {
-                    console.log('threadItem', threadItem);
                     if (state.threadItems.find(t => t.id === threadItem.id)) {
                         state.threadItems = state.threadItems.map(t =>
                             t.id === threadItem.id ? threadItem : t
@@ -713,11 +704,8 @@ export const useChatStore = create(
         },
 
         updateThreadItem: async (threadId, threadItem) => {
-            console.log('updateThreadItem', threadItem, threadId);
             if (!threadItem.id) return;
             if (!threadId) return;
-
-            console.log('updateThreadItem', threadItem);
 
             try {
                 const now = Date.now();

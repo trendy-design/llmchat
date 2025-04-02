@@ -55,8 +55,6 @@ ctx.addEventListener('message', async (event: MessageEvent) => {
                 self.SERPER_API_KEY = apiKeys.SERPER_API_KEY;
                 self.JINA_API_KEY = apiKeys.JINA_API_KEY;
                 self.NEXT_PUBLIC_APP_URL = apiKeys.NEXT_PUBLIC_APP_URL;
-
-                console.log('[Worker] Starting workflow with env:', self.AI_API_KEYS);
             }
 
             // Initialize the workflow
@@ -73,7 +71,6 @@ ctx.addEventListener('message', async (event: MessageEvent) => {
 
             // Forward workflow events to the main thread
             activeWorkflow.onAll((event, payload) => {
-                console.log('payload', payload);
                 ctx.postMessage({
                     event: event,
                     threadId,
@@ -90,8 +87,6 @@ ctx.addEventListener('message', async (event: MessageEvent) => {
             const result = await activeWorkflow.start(startTask, {
                 question,
             });
-
-            console.log('result', activeWorkflow.getTimingSummary());
 
             // Send completion message
             ctx.postMessage({

@@ -51,8 +51,6 @@ export const suggestionsTask = createTask<WorkflowEventSchema, WorkflowContextSc
 
         events?.update('suggestions', current => object?.questions ?? []);
 
-        console.log('suggestions', object?.questions);
-
         return {
             suggestions: object?.questions,
         };

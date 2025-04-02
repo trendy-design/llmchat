@@ -105,12 +105,7 @@ export const MarkdownContent = memo(({ content, className }: MarkdownContentProp
             try {
                 const normalizedContent = normalizeContent(content);
                 const cleanedContent = parseCitationsWithSourceTags(normalizedContent);
-
-                console.log(cleanedContent);
-                // const cleanedContent = removeIncompleteTags(normalizedContent);
                 const { chunks } = await chunkMdx(cleanedContent);
-                console.log(chunks);
-
                 if (chunks.length > 0) {
                     // Everything except the last chunk becomes previous content
                     if (chunks.length > 1) {

@@ -7,9 +7,10 @@ import { useAppStore } from '@repo/common/store';
 import { Badge, Button, Flex, Toaster } from '@repo/ui';
 import { IconMoodSadDizzy, IconX } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { usePathname } from 'next/navigation';
 import { FC } from 'react';
+import { useStickToBottom } from 'use-stick-to-bottom';
 import { Drawer } from 'vaul';
-
 export type TRootLayout = {
     children: React.ReactNode;
 };
@@ -88,12 +89,18 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
 };
 
 export const SideDrawer = () => {
+    const pathname = usePathname();
     const sideDrawer = useAppStore(state => state.sideDrawer);
     const dismissSideDrawer = useAppStore(state => state.dismissSideDrawer);
+    const { scrollRef, contentRef } = useStickToBottom({
+        stiffness: 1,
+        damping: 0,
+    });
+    const isThreadPage = pathname.startsWith('/c/');
 
     return (
         <AnimatePresence>
-            {sideDrawer.open && (
+            {sideDrawer.open && isThreadPage && (
                 <motion.div
                     initial={{ opacity: 0, x: 40 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -126,8 +133,13 @@ export const SideDrawer = () => {
                                 <IconX size={14} strokeWidth={2} />
                             </Button>
                         </div>
-                        <div className="no-scrollbar flex flex-1 flex-col gap-2 overflow-y-auto p-2">
-                            {sideDrawer.renderContent()}
+                        <div
+                            className="no-scrollbar flex flex-1 flex-col gap-2 overflow-y-auto p-2"
+                            ref={scrollRef}
+                        >
+                            <div ref={contentRef} className="w-full">
+                                {sideDrawer.renderContent()}
+                            </div>
                         </div>
                     </div>
                 </motion.div>

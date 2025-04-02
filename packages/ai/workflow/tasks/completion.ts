@@ -1,6 +1,5 @@
 import { createTask } from '@repo/orchestrator';
 import { getModelFromChatMode } from '../../models';
-import { buildAllTools } from '../../tools/mcp';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
 import { generateText, getHumanizedDate } from '../utils';
 import { generateErrorMessage } from './utils';
@@ -21,8 +20,6 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                         !!message.content
                 ) || [];
 
-        console.log('messages', messages);
-
         const mode = context.get('mode');
         const webSearch = context.get('webSearch') || false;
         const mcpConfig = context.get('mcpConfig') || {};
@@ -34,18 +31,18 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
 
         const model = getModelFromChatMode(mode);
 
-        const config = {
-            proxyEndpoint: process.env.NEXT_PUBLIC_APP_URL + '/mcp/proxy',
-            mcpServers: mcpConfig,
-        };
+        // const config = {
+        //     proxyEndpoint: process.env.NEXT_PUBLIC_APP_URL + '/mcp/proxy',
+        //     mcpServers: mcpConfig,
+        // };
 
-        let toolsInstance = undefined;
-        let tools = undefined;
+        // let toolsInstance = undefined;
+        // let tools = undefined;
 
-        if (Object.keys(mcpConfig).length > 0) {
-            toolsInstance = await buildAllTools(config);
-            tools = toolsInstance;
-        }
+        // if (Object.keys(mcpConfig).length > 0) {
+        //     toolsInstance = await buildAllTools(config);
+        //     tools = toolsInstance;
+        // }
 
         const toolCallsMap: Record<string, any> = {};
         const toolResultsMap: Record<string, any> = {};
@@ -61,10 +58,10 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                 prompt,
                 signal,
                 toolChoice: 'auto',
-                maxSteps: 8,
-                tools: {
-                    ...(tools?.allTools || {}),
-                },
+                maxSteps: 2,
+                // tools: {
+                //     ...(tools?.allTools || {}),
+                // },
                 onReasoning: reasoning => {
                     events?.update('steps', prev => ({
                         ...prev,
@@ -125,9 +122,9 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                 });
             }
         } finally {
-            if (toolsInstance?.onClose) {
-                toolsInstance.onClose();
-            }
+            // if (toolsInstance?.onClose) {
+            //     toolsInstance.onClose();
+            // }
         }
     },
     onError: (error, { context, events }) => {

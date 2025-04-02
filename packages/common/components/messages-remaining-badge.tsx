@@ -11,7 +11,12 @@ export function MessagesRemainingBadge() {
     const setIsSettingsOpen = useAppStore(state => state.setIsSettingsOpen);
     const setSettingTab = useAppStore(state => state.setSettingTab);
 
-    if (!creditLimit.isFetched || !user || creditLimit?.remaining > 5 || hasApiKeys) {
+    if (
+        !creditLimit.isFetched ||
+        !user ||
+        (creditLimit?.remaining && creditLimit?.remaining > 5) ||
+        hasApiKeys
+    ) {
         return null;
     }
 
