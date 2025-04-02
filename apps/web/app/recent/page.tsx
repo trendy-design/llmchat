@@ -79,16 +79,16 @@ export default function ThreadsPage() {
                 <h3 className="font-clash text-2xl font-semibold tracking-wide text-emerald-900">
                     Chat History
                 </h3>
-                <Command className="bg-secondary w-full">
+                <Command className="bg-secondary !max-h-auto w-full">
                     <CommandInput
                         placeholder="Search"
                         className="bg-tertiary h-8 w-full rounded-sm"
                     />
 
-                    <CommandList className="bg-secondary mt-2">
+                    <CommandList className="bg-secondary mt-2 !max-h-none gap-2">
                         {threads?.length > 0 ? (
                             threads.map(thread => (
-                                <CommandItem key={thread.id}>
+                                <CommandItem key={thread.id} className="mb-2">
                                     <div
                                         className="bg-tertiary hover:bg-quaternary group relative flex w-full cursor-pointer flex-col items-start rounded-md p-4 transition-all duration-200"
                                         onClick={() => handleThreadClick(thread.id)}
@@ -106,7 +106,7 @@ export default function ThreadsPage() {
                                                         onClick={e => e.stopPropagation()}
                                                     />
                                                 ) : (
-                                                    <p className="text-sm font-medium">
+                                                    <p className="line-clamp-2 w-full text-sm font-medium">
                                                         {thread.title}
                                                     </p>
                                                 )}
