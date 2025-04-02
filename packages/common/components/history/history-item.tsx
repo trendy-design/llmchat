@@ -74,7 +74,7 @@ export const HistoryItem = ({
     };
 
     const containerClasses = cn(
-        'gap-2 w-full group w-full relative cursor-pointer flex flex-row items-center h-8 py-0.5 pl-2 pr-1 rounded-md hover:bg-quaternary',
+        'gap-2 w-full group w-full relative cursor-pointer flex flex-row items-center h-7 py-0.5 pl-2 pr-1 rounded-sm hover:bg-quaternary',
         isActive || isEditing ? 'bg-tertiary' : ''
     );
 

@@ -175,7 +175,7 @@ export const EditMessage = memo(({ message, onCancel, threadItem, width }: TEdit
                     sendMessage={() => {
                         handleSave(editor?.getText() || '');
                     }}
-                    className="max-w-full overflow-y-scroll p-0"
+                    className="max-w-full overflow-y-scroll p-0 text-sm"
                 />
             </div>
             <div className={cn('flex-col items-center  group-hover:flex')}>

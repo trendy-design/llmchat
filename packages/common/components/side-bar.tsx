@@ -127,13 +127,14 @@ export const Sidebar = () => {
             )}
         >
             <Flex direction="col" className="w-full flex-1 items-center overflow-hidden">
-                <div className="mb-4 flex w-full flex-row items-center justify-between">
+                <div className="mb-3 flex w-full flex-row items-center justify-between">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 0.3, delay: 0.2 }}
+                        onClick={() => push('/chat')}
                         className={cn(
-                            'flex h-8  w-full items-center justify-start gap-1.5 px-4',
+                            'flex h-8  w-full cursor-pointer items-center justify-start gap-1.5 px-4',
                             !isSidebarOpen && 'justify-center px-0'
                         )}
                     >
