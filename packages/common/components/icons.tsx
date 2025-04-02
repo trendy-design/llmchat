@@ -41,12 +41,11 @@ export const CreditIcon = ({
     return (
         <div
             className={cn(
-                'flex-inline flex h-5 items-center justify-center gap-0.5 rounded-md border border-none pl-1 pr-2 font-mono text-xs font-medium text-yellow-900',
+                'flex-inline text-muted-foreground flex h-5 items-center justify-center gap-0.5 rounded-md border border-none font-mono text-xs font-medium opacity-50',
                 variant === 'muted' && 'border-none'
             )}
         >
-            <IconBoltFilled size={14} strokeWidth={2} className="text-muted-foreground/50" />{' '}
-            {credits}
+            <IconBoltFilled size={14} strokeWidth={2} className="text-muted-foreground" /> {credits}
         </div>
     );
 };

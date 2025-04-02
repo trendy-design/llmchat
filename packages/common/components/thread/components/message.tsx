@@ -1,4 +1,4 @@
-import { ChatEditor } from '@repo/common/components';
+import { ChatEditor, markdownStyles } from '@repo/common/components';
 import { useAgentStream, useChatEditor, useCopyText } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
 import { ThreadItem } from '@repo/shared/types';
@@ -48,8 +48,9 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
                     <>
                         <div
                             ref={messageRef}
-                            className={cn(' relative px-3 py-2 text-sm font-normal', {
+                            className={cn(' prose-sm relative px-3 py-2 font-normal', {
                                 'pb-12': isExpanded,
+                                markdownStyles,
                             })}
                             style={{
                                 maxHeight: isExpanded ? 'none' : maxHeight,
@@ -175,7 +176,7 @@ export const EditMessage = memo(({ message, onCancel, threadItem, width }: TEdit
                     sendMessage={() => {
                         handleSave(editor?.getText() || '');
                     }}
-                    className="max-w-full overflow-y-scroll p-0 text-sm"
+                    className={cn('prose-sm max-w-full overflow-y-scroll p-0', markdownStyles)}
                 />
             </div>
             <div className={cn('flex-col items-center  group-hover:flex')}>

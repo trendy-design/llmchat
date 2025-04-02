@@ -11,19 +11,7 @@ import { serialize } from 'next-mdx-remote/serialize';
 import { memo, Suspense, useEffect, useState } from 'react';
 import remarkGfm from 'remark-gfm';
 
-type MarkdownContentProps = {
-    content: string;
-    className?: string;
-    shouldAnimate?: boolean;
-};
-
-type NestedChunk = {
-    id: string;
-    content: string;
-    children: NestedChunk[];
-};
-
-const markdownStyles = {
+export const markdownStyles = {
     'animate-fade-in prose prose-sm min-w-full': true,
 
     // Text styles
@@ -57,6 +45,18 @@ const markdownStyles = {
 
     // Theme
     'prose-prosetheme': true,
+};
+
+type MarkdownContentProps = {
+    content: string;
+    className?: string;
+    shouldAnimate?: boolean;
+};
+
+type NestedChunk = {
+    id: string;
+    content: string;
+    children: NestedChunk[];
 };
 
 export const removeIncompleteTags = (content: string) => {
