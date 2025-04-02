@@ -77,7 +77,6 @@ export async function executeStream(
         });
 
         workflow.onAll((event, payload) => {
-            console.log('event', event, payload);
             sendMessage(controller, encoder, {
                 type: event,
                 threadId: data.threadId,
@@ -96,7 +95,7 @@ export async function executeStream(
         });
 
         const timingSummary = workflow.getTimingSummary();
-        console.log(timingSummary);
+        console.log('timingSummary', timingSummary);
 
         if (timingSummary)
             sendMessage(controller, encoder, {
