@@ -2,7 +2,7 @@ import { createTask } from '@repo/orchestrator';
 import { format } from 'date-fns';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { generateText, handleError } from '../utils';
+import { ChunkBuffer, generateText, handleError } from '../utils';
 
 export const writerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'writer',
@@ -87,18 +87,29 @@ Your report should demonstrate subject matter expertise while remaining intellec
             }));
         }
 
+        const chunkBuffer = new ChunkBuffer({
+            threshold: 150,
+            breakOn: ['\n\n', '.', '!', '?'],
+            onFlush: (text: string) => {
+                events?.update('answer', current => ({
+                    ...current,
+                    text,
+                    status: 'PENDING' as const,
+                }));
+            },
+        });
+
         const answer = await generateText({
             prompt,
             model: ModelEnum.Claude_3_7_Sonnet,
             signal,
             onChunk: (chunk, fullText) => {
-                events?.update('answer', current => ({
-                    ...current,
-                    text: chunk,
-                    status: 'PENDING' as const,
-                }));
+                chunkBuffer.add(chunk);
             },
         });
+
+        // Make sure to flush any remaining content
+        chunkBuffer.flush();
 
         events?.update('answer', current => ({
             ...current,

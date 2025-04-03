@@ -1,7 +1,7 @@
 import { createTask } from '@repo/orchestrator';
 import { getModelFromChatMode } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { generateText, getHumanizedDate } from '../utils';
+import { ChunkBuffer, generateText, getHumanizedDate } from '../utils';
 import { generateErrorMessage } from './utils';
 
 export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
@@ -51,6 +51,18 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
         Today is ${getHumanizedDate()}.
         `;
 
+        const chunkBuffer = new ChunkBuffer({
+            threshold: 100,
+            breakOn: ['\n\n', '.', '!', '?'],
+            onFlush: (text: string) => {
+                events?.update('answer', current => ({
+                    ...current,
+                    text,
+                    status: 'PENDING' as const,
+                }));
+            },
+        });
+
         try {
             const response = await generateText({
                 model,
@@ -94,13 +106,11 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                     }));
                 },
                 onChunk: (chunk, fullText) => {
-                    events?.update('answer', prev => ({
-                        ...prev,
-                        text: chunk,
-                        status: 'PENDING',
-                    }));
+                    chunkBuffer.add(chunk);
                 },
             });
+
+            chunkBuffer.flush();
 
             events?.update('answer', prev => ({
                 ...prev,

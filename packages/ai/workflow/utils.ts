@@ -12,6 +12,44 @@ import { ModelEnum } from '../models';
 import { getLanguageModel } from '../providers';
 import { generateErrorMessage } from './tasks/utils';
 
+export type ChunkBufferOptions = {
+    threshold?: number;
+    breakOn?: string[];
+    onFlush: (text: string) => void;
+};
+
+export class ChunkBuffer {
+    private buffer = '';
+    private threshold: number;
+    private breakPatterns: string[];
+    private onFlush: (text: string) => void;
+
+    constructor(options: ChunkBufferOptions) {
+        this.threshold = options.threshold || 100;
+        this.breakPatterns = options.breakOn || ['\n\n', '.', '!', '?'];
+        this.onFlush = options.onFlush;
+    }
+
+    add(chunk: string): void {
+        this.buffer += chunk;
+
+        const shouldFlush =
+            this.buffer.length >= this.threshold ||
+            this.breakPatterns.some(pattern => chunk.includes(pattern) || chunk.endsWith(pattern));
+
+        if (shouldFlush) {
+            this.flush();
+        }
+    }
+
+    flush(): void {
+        if (this.buffer.length > 0) {
+            this.onFlush(this.buffer);
+            this.buffer = '';
+        }
+    }
+}
+
 export const generateText = async ({
     prompt,
     model,
