@@ -264,6 +264,11 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     error: 'Stream connection error: ' + streamError.message,
                 });
             } finally {
+                setIsGenerating(false);
+                updateThreadItem(body.threadId, {
+                    id: body.threadItemId,
+                    status: 'COMPLETED',
+                });
                 const totalTime = performance.now() - startTime;
                 console.info(`Stream completed in ${totalTime.toFixed(2)}ms`);
             }

@@ -53,8 +53,9 @@ export const useAppStore = create(
             set({ settingTab: tab }),
         setShowSignInModal: (show: boolean) => set({ showSignInModal: show }),
         sideDrawer: { open: false, title: '', renderContent: () => null, badge: undefined },
-        openSideDrawer: (props: Omit<SideDrawerProps, 'open'>) =>
-            set({ sideDrawer: { ...props, open: true } }),
+        openSideDrawer: (props: Omit<SideDrawerProps, 'open'>) => {
+            set({ sideDrawer: { ...props, open: true } });
+        },
         updateSideDrawer: (props: Partial<SideDrawerProps>) =>
             set(state => ({
                 sideDrawer: { ...state.sideDrawer, ...props },

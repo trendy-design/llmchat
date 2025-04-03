@@ -124,6 +124,8 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
     }, [steps, threadItem?.status]);
 
     const handleClick = () => {
+        dismissSideDrawer();
+
         openSideDrawer({
             badge: stepCounts,
             title: renderTitle,
