@@ -44,6 +44,17 @@ export const ThreadItem = memo(
             return threadItem.answer?.text && threadItem.answer?.text.length > 0;
         }, [threadItem.answer]);
 
+        const hasResponse = useMemo(() => {
+            return (
+                threadItem.steps ||
+                threadItem.answer ||
+                threadItem.object ||
+                threadItem.error ||
+                threadItem.status === 'COMPLETED' ||
+                threadItem.status === 'ABORTED' ||
+                threadItem.status === 'ERROR'
+            );
+        }, [threadItem]);
         return (
             <CitationProvider sources={threadItem.sources || []}>
                 <>
@@ -62,7 +73,7 @@ export const ThreadItem = memo(
                             Answer
                         </div>
 
-                        {threadItem.status === 'QUEUED' && (
+                        {!hasResponse && (
                             <div className="flex w-full flex-col items-start gap-2 opacity-10">
                                 <MotionSkeleton className="bg-muted-foreground/40 mb-2 h-4 !w-[100px] rounded-sm" />
                                 <MotionSkeleton className="w-full bg-gradient-to-r" />

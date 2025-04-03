@@ -55,7 +55,7 @@ export type WorkflowEventSchema = {
         title: string;
         link: string;
     }[];
-
+    object?: Record<string, any>;
     error?: {
         error: string;
         status: Status;
@@ -152,6 +152,7 @@ export const runWorkflow = ({
         },
         sources: [],
         suggestions: [],
+        object: {},
         error: {
             error: '',
             status: 'PENDING',

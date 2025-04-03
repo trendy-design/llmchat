@@ -73,6 +73,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         'suggestions',
         'toolCalls',
         'toolResults',
+        'object',
     ];
 
     // Helper: Update in-memory and store thread item
@@ -85,7 +86,13 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             parentThreadItemId?: string,
             shouldPersistToDB: boolean = true
         ) => {
-            console.log('handleThreadItemUpdate', threadItemId, eventType, eventData);
+            console.log(
+                'handleThreadItemUpdate',
+                threadItemId,
+                eventType,
+                eventData,
+                shouldPersistToDB
+            );
             const prevItem = threadItemMap.get(threadItemId) || ({} as ThreadItem);
             const updatedItem: ThreadItem = {
                 ...prevItem,
@@ -94,6 +101,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 threadId,
                 parentId: parentThreadItemId || prevItem.parentId,
                 id: threadItemId,
+                object: eventData?.object || prevItem.object,
                 createdAt: prevItem.createdAt || new Date(),
                 updatedAt: new Date(),
                 ...(eventType === 'answer'
@@ -107,7 +115,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             };
 
             threadItemMap.set(threadItemId, updatedItem);
-            updateThreadItem(threadId, { ...updatedItem, persistToDB: shouldPersistToDB });
+            updateThreadItem(threadId, { ...updatedItem, persistToDB: true });
         },
         [threadItemMap, updateThreadItem]
     );
@@ -152,7 +160,11 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             abortController.signal.addEventListener('abort', () => {
                 console.info('Abort controller triggered');
                 setIsGenerating(false);
-                updateThreadItem(body.threadId, { id: body.threadItemId, status: 'ABORTED' });
+                updateThreadItem(body.threadId, {
+                    id: body.threadItemId,
+                    status: 'ABORTED',
+                    persistToDB: true,
+                });
             });
 
             try {
@@ -172,6 +184,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                         id: body.threadItemId,
                         status: 'ERROR',
                         error: errorText,
+                        persistToDB: true,
                     });
                     console.error('Error response:', errorText);
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -265,10 +278,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 });
             } finally {
                 setIsGenerating(false);
-                updateThreadItem(body.threadId, {
-                    id: body.threadItemId,
-                    status: 'COMPLETED',
-                });
+
                 const totalTime = performance.now() - startTime;
                 console.info(`Stream completed in ${totalTime.toFixed(2)}ms`);
             }

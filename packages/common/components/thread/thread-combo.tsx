@@ -96,13 +96,13 @@ export const FollowupSuggestions = ({ suggestions }: { suggestions: string[] }) 
                             variant="bordered"
                             size="default"
                             rounded="default"
-                            className="hover:bg-tertiary group cursor-pointer hover:border-yellow-900/20"
+                            className="hover:bg-tertiary group h-auto min-h-7 max-w-full cursor-pointer justify-start overflow-hidden whitespace-normal py-1.5 text-left hover:border-yellow-900/20"
                             onClick={() => {
                                 editor?.commands.clearContent();
                                 editor?.commands.insertContent(suggestion);
                             }}
                         >
-                            {suggestion}{' '}
+                            {suggestion}
                         </Button>
                     </motion.div>
                 ))}

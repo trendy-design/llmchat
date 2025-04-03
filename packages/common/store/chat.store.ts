@@ -101,6 +101,7 @@ type Actions = {
     createThreadItem: (threadItem: ThreadItem) => Promise<void>;
     updateThreadItem: (threadId: string, threadItem: Partial<ThreadItem>) => Promise<void>;
     switchThread: (threadId: string) => void;
+
     deleteThreadItem: (threadItemId: string) => Promise<void>;
     deleteThread: (threadId: string) => Promise<void>;
     getPreviousThreadItems: (threadId?: string) => ThreadItem[];
@@ -707,15 +708,15 @@ export const useChatStore = create(
             if (!threadItem.id) return;
             if (!threadId) return;
 
-            try {
-                const now = Date.now();
-                const lastUpdate = lastItemUpdateTime[threadItem.id] || 0;
-                const timeSinceLastUpdate = now - lastUpdate;
+            const { threadItems } = get();
 
+            try {
                 // Fetch the existing item
                 let existingItem: ThreadItem | undefined;
                 try {
-                    existingItem = await db.threadItems.get(threadItem.id);
+                    existingItem =
+                        threadItems.find(t => t.id === threadItem.id) ??
+                        (await db.threadItems.get(threadItem.id));
                 } catch (error) {
                     console.warn(`Couldn't fetch existing item ${threadItem.id}:`, error);
                 }
@@ -741,33 +742,35 @@ export const useChatStore = create(
                     }
                 });
 
-                // Determine if this is a critical update that should bypass throttling
-                const isCriticalUpdate =
-                    !existingItem || // New items
-                    threadItem.status === 'COMPLETED' || // Final updates
-                    threadItem.status === 'ERROR' || // Error states
-                    threadItem.status === 'ABORTED' || // Aborted states
-                    threadItem.error !== undefined; // Any error information
+                // // Determine if this is a critical update that should bypass throttling
+                // const isCriticalUpdate =
+                //     !existingItem || // New items
+                //     threadItem.status === 'COMPLETED' || // Final updates
+                //     threadItem.status === 'ERROR' || // Error states
+                //     threadItem.status === 'ABORTED' || // Aborted states
+                //     threadItem.error !== undefined; // Any error information
 
-                // Always persist final updates - this fixes the issue with missing updates at stream completion
-                if (
-                    threadItem.persistToDB === true ||
-                    isCriticalUpdate ||
-                    timeSinceLastUpdate > DB_UPDATE_THROTTLE
-                ) {
-                    // For critical updates or if enough time has passed, queue for immediate update
-                    queueThreadItemForUpdate(updatedItem);
+                // // Always persist final updates - this fixes the issue with missing updates at stream completion
+                // if (
+                //     threadItem.persistToDB === true ||
+                //     isCriticalUpdate ||
+                //     timeSinceLastUpdate > DB_UPDATE_THROTTLE
+                // ) {
+                //     // For critical updates or if enough time has passed, queue for immediate update
+                //     queueThreadItemForUpdate(updatedItem);
 
-                    // Notify other tabs about the update
-                    debouncedNotify('thread-item-update', {
-                        threadId,
-                        id: threadItem.id,
-                    });
+                queueThreadItemForUpdate(updatedItem);
 
-                    if (isCriticalUpdate) {
-                        lastItemUpdateTime[threadItem.id] = now;
-                    }
-                }
+                // Notify other tabs about the update
+                debouncedNotify('thread-item-update', {
+                    threadId,
+                    id: threadItem.id,
+                });
+
+                // if (isCriticalUpdate) {
+                //     lastItemUpdateTime[threadItem.id] = now;
+                // }
+                // }
                 // Non-critical updates that are too soon after the last update
                 // won't be persisted yet, but will be in the UI state
             } catch (error) {

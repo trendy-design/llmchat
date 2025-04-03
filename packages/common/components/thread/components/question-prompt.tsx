@@ -14,10 +14,10 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
     const getThreadItems = useChatStore(state => state.getThreadItems);
     const updateThreadItem = useChatStore(state => state.updateThreadItem);
 
-    const options: string[] = threadItem.answer?.object?.clarifyingQuestion?.options || [];
-    const question = threadItem.answer?.object?.clarifyingQuestion?.question || '';
-    const choiceType = threadItem.answer?.object?.clarifyingQuestion?.choiceType || 'multiple';
-    const isSubmitted = !!threadItem.answer?.object?.submittedQuery;
+    const options: string[] = threadItem.object?.clarifyingQuestion?.options || [];
+    const question = threadItem.object?.clarifyingQuestion?.question || '';
+    const choiceType = threadItem.object?.clarifyingQuestion?.choiceType || 'multiple';
+    const isSubmitted = !!threadItem.object?.clarifyingQuestion?.submittedQuery;
 
     const handleOptionChange = (value: string) => {
         setSelectedOption(value);
@@ -25,11 +25,8 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
     };
 
     const hasClarifyingQuestions = useMemo(() => {
-        return (
-            threadItem.answer?.object?.clarifyingQuestion &&
-            threadItem.answer?.objectType === 'clarifyingQuestions'
-        );
-    }, [threadItem.answer]);
+        return threadItem.object?.clarifyingQuestion;
+    }, [threadItem.object]);
 
     const renderRadioGroup = () => {
         return (
@@ -91,7 +88,7 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
                     <IconCheck size={14} strokeWidth={2} /> Submitted
                 </span>
                 <div className="flex flex-col">
-                    <p className="text-base">{threadItem.answer?.object?.submittedQuery}</p>
+                    <p className="text-base">{threadItem.object?.submittedQuery}</p>
                 </div>
             </div>
         );
@@ -141,8 +138,11 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
                         answer: {
                             ...threadItem.answer,
                             object: {
-                                ...threadItem.answer?.object,
-                                submittedQuery: query,
+                                ...threadItem.object,
+                                clarifyingQuestion: {
+                                    ...threadItem.object?.clarifyingQuestion,
+                                    submittedQuery: query,
+                                },
                             },
                         } as Answer,
                         status: 'COMPLETED',

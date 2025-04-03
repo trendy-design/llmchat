@@ -40,8 +40,7 @@ export type Source = {
 
 export type Answer = {
     text: string;
-    object?: any;
-    objectType?: string;
+    finalText?: string;
     status?: ItemStatus;
 };
 
@@ -78,6 +77,7 @@ export type ThreadItem = {
     suggestions?: string[];
     persistToDB?: boolean;
     sources?: Source[];
+    object?: Record<string, any>;
     imageAttachment?: string;
 };
 

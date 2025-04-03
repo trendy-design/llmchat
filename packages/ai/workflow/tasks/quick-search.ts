@@ -115,6 +115,7 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
             ...results.map((result: any, index: number) => ({
                 title: result.title,
                 link: result.link,
+                index: index + (prev?.length || 1),
             })),
         }));
 

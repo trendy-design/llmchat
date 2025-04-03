@@ -47,7 +47,7 @@ export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
                     title: result.title,
                     link: result.link,
                     snippet: result.snippet,
-                    index: index + existingSources.length,
+                    index: index + (existingSources?.length || 1),
                 }));
             return [...existingSources, ...newSources];
         });
