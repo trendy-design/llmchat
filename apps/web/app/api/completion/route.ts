@@ -61,6 +61,12 @@ export async function POST(request: NextRequest) {
 
         const stream = new ReadableStream({
             async start(controller) {
+                let heartbeatInterval: NodeJS.Timeout | null = null;
+
+                heartbeatInterval = setInterval(() => {
+                    controller.enqueue(encoder.encode(': heartbeat\n\n'));
+                }, 15000);
+
                 try {
                     await executeStream(controller, encoder, data, abortController, userId);
                 } catch (error) {
@@ -82,6 +88,11 @@ export async function POST(request: NextRequest) {
                             parentThreadItemId: data.parentThreadItemId,
                         });
                     }
+                } finally {
+                    if (heartbeatInterval) {
+                        clearInterval(heartbeatInterval);
+                    }
+                    await new Promise(resolve => setTimeout(resolve, 500));
                     controller.close();
                 }
             },

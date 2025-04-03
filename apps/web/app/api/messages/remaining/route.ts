@@ -1,29 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
-import { kv } from '@vercel/kv';
 import { NextRequest, NextResponse } from 'next/server';
-
-// Daily credit allowance
-const DAILY_CREDITS = 100;
-
-// Function to get remaining credits
-async function getRemainingCredits(userId: string | null): Promise<number> {
-    if (!userId) return 0;
-
-    const key = `credits:${userId}`;
-    const lastRefill = await kv.get(`${key}:lastRefill`);
-    const now = new Date().toISOString().split('T')[0]; // Current date YYYY-MM-DD
-
-    // If it's a new day, refill credits
-    if (lastRefill !== now) {
-        await kv.set(key, DAILY_CREDITS);
-        await kv.set(`${key}:lastRefill`, now);
-        return DAILY_CREDITS;
-    }
-
-    // Get remaining credits
-    const remaining = await kv.get<number>(key);
-    return remaining ?? 0;
-}
+import { DAILY_CREDITS, getRemainingCredits } from '../../completion/credit-service';
 
 export async function GET(request: NextRequest) {
     const session = await auth();
@@ -32,6 +9,8 @@ export async function GET(request: NextRequest) {
     try {
         // Get remaining credits for the user
         const remainingCredits = userId ? await getRemainingCredits(userId) : 0;
+
+        console.log('remainingCredits', remainingCredits);
 
         // Calculate when credits will reset (next day)
         const now = new Date();

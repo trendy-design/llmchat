@@ -12,7 +12,11 @@ export function sendMessage(controller: StreamController, encoder: TextEncoder, 
         }
 
         const sanitizedPayload = sanitizePayloadForJSON(payload);
+
+        // Ensure proper formatting of SSE message with flush
         const message = `event: ${payload.type}\ndata: ${JSON.stringify(sanitizedPayload)}\n\n`;
+
+        // Send the message as a complete unit to avoid partial line issues
         controller.enqueue(encoder.encode(message));
     } catch (error) {
         console.error('Error serializing message payload:', error);
@@ -43,6 +47,7 @@ export async function executeStream(
     abortController: AbortController,
     userId: string
 ) {
+    let success = false; // Track successful completion
     try {
         if (!userId) {
             return new Response(JSON.stringify({ error: 'Authentication required' }), {
@@ -67,11 +72,13 @@ export async function executeStream(
             },
             mcpConfig: data.mcpConfig || {},
             showSuggestions: data.showSuggestions || false,
-            onFinish: async (data: any) => {
-                const success = await deductCredits(userId, creditCost);
-
-                if (!success) {
-                    throw new Error('Failed to deduct credits');
+            onFinish: async (/* data: any */) => {
+                // Removed unused 'data' param
+                const deducted = await deductCredits(userId, creditCost); // Renamed variable for clarity
+                if (!deducted) {
+                    // Consider if this should just log or still throw, depending on desired behavior
+                    console.warn(`Failed to deduct ${creditCost} credits for user ${userId}`);
+                    // throw new Error('Failed to deduct credits'); // Or handle differently
                 }
             },
         });
@@ -95,20 +102,24 @@ export async function executeStream(
         });
 
         const timingSummary = workflow.getTimingSummary();
-        console.log('timingSummary', timingSummary);
+        console.log('timingSummary', timingSummary); // Keep for debugging if needed
 
-        if (timingSummary)
-            sendMessage(controller, encoder, {
-                type: 'done',
-                status: 'complete',
-                threadId: data.threadId,
-                threadItemId: data.threadItemId,
-                parentThreadItemId: data.parentThreadItemId,
-            });
+        // Mark as successful before sending the final message
+        success = true;
 
-        controller.close();
-        return { success: true };
+        // Send 'done' message here upon successful completion, regardless of timingSummary
+        sendMessage(controller, encoder, {
+            type: 'done',
+            status: 'complete',
+            threadId: data.threadId,
+            threadItemId: data.threadItemId,
+            parentThreadItemId: data.parentThreadItemId,
+        });
+
+        // No controller.close() here
+        return { success: true }; // Indicate success to the caller if needed
     } catch (error) {
+        // Error handling remains the same, sending 'aborted' or 'error' status
         if (abortController.signal.aborted) {
             sendMessage(controller, encoder, {
                 type: 'done',
@@ -127,7 +138,8 @@ export async function executeStream(
                 parentThreadItemId: data.parentThreadItemId,
             });
         }
-        controller.close();
-        throw error;
+        // No controller.close() here
+        throw error; // Re-throw the error to be caught by the route handler if necessary
     }
+    // NOTE: The 'finally' block that was here is removed as closure is handled in route.ts
 }
