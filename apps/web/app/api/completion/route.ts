@@ -71,6 +71,7 @@ export async function POST(request: NextRequest) {
                     await executeStream(controller, encoder, data, abortController, userId);
                 } catch (error) {
                     if (abortController.signal.aborted) {
+                        console.log('abortController.signal.aborted');
                         sendMessage(controller, encoder, {
                             type: 'done',
                             status: 'aborted',
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
                             parentThreadItemId: data.parentThreadItemId,
                         });
                     } else {
+                        console.log('sending error message');
                         sendMessage(controller, encoder, {
                             type: 'done',
                             status: 'error',
@@ -93,10 +95,12 @@ export async function POST(request: NextRequest) {
                         clearInterval(heartbeatInterval);
                     }
                     await new Promise(resolve => setTimeout(resolve, 500));
+                    console.log('closing stream');
                     controller.close();
                 }
             },
             cancel() {
+                console.log('cancelling stream');
                 abortController.abort();
             },
         });

@@ -16,6 +16,8 @@ export function sendMessage(controller: StreamController, encoder: TextEncoder, 
         // Ensure proper formatting of SSE message with flush
         const message = `event: ${payload.type}\ndata: ${JSON.stringify(sanitizedPayload)}\n\n`;
 
+        console.log('sending message', message);
+
         // Send the message as a complete unit to avoid partial line issues
         controller.enqueue(encoder.encode(message));
     } catch (error) {
@@ -97,9 +99,13 @@ export async function executeStream(
             });
         });
 
+        console.log('starting workflow');
+
         await workflow.start('router', {
             question: data.prompt,
         });
+
+        console.log('workflow completed');
 
         const timingSummary = workflow.getTimingSummary();
         console.log('timingSummary', timingSummary); // Keep for debugging if needed
@@ -121,6 +127,7 @@ export async function executeStream(
     } catch (error) {
         // Error handling remains the same, sending 'aborted' or 'error' status
         if (abortController.signal.aborted) {
+            console.log('abortController.signal.aborted');
             sendMessage(controller, encoder, {
                 type: 'done',
                 status: 'aborted',
@@ -129,6 +136,7 @@ export async function executeStream(
                 parentThreadItemId: data.parentThreadItemId,
             });
         } else {
+            console.log('sending error message');
             sendMessage(controller, encoder, {
                 type: 'done',
                 status: 'error',

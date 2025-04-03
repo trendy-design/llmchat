@@ -186,10 +186,10 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 const DB_UPDATE_INTERVAL = 1000;
 
                 while (true) {
-                    const { value, done } = await reader.read();
-                    if (done) break;
-
                     try {
+                        const { value, done } = await reader.read();
+                        if (done) break;
+
                         const chunk = decoder.decode(value);
                         const lines = chunk.split('\n');
                         let currentEvent = '';
@@ -220,6 +220,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                             lastDbUpdate = Date.now();
                                         }
                                     } else if (currentEvent === 'done' && data.type === 'done') {
+                                        console.log('done event received');
                                         setIsGenerating(false);
                                         setTimeout(fetchRemainingCredits, 1000);
                                         if (data.threadItemId) {
@@ -234,12 +235,15 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                 }
                             }
                         }
-                    } catch (chunkError) {
-                        console.warn('Skipping problematic chunk', chunkError);
+                    } catch (readError) {
+                        console.error('Error reading from stream:', readError);
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                        continue;
                     }
                 }
             } catch (streamError: any) {
                 console.error('Fatal stream error:', streamError);
+                setIsGenerating(false);
                 updateThreadItem(body.threadId, {
                     id: body.threadItemId,
                     status: 'ERROR',

@@ -44,18 +44,6 @@ ${s}
 - Analyze the research findings one by one and highlight the most important information which will be used to compose a comprehensive report.
 - Document your analysis in a structured format that will serve as the foundation for creating a comprehensive report.
 
-
-<citations>
- ## Citations and References:
-   - Based on provided references in each findings, you must cite the sources in the analysis.
-   - Use inline citations like [1] to reference the source
-   - For example: According to recent findings [1][3], progress in this area has accelerated
-   - When information appears in multiple findings, cite all relevant findings using multiple numbers
-   - Integrate citations naturally without disrupting reading flow
-   - must add a numbered reference list at the end with format:
-      [1] https://www.example.com
-      [2] https://www.another-source.com
-   </citations>
                 `;
 
         const text = await generateText({
