@@ -147,6 +147,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             const abortController = new AbortController();
             setAbortController(abortController);
             setIsGenerating(true);
+            const startTime = performance.now();
 
             abortController.signal.addEventListener('abort', () => {
                 console.info('Abort controller triggered');
@@ -184,6 +185,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 const decoder = new TextDecoder();
                 let lastDbUpdate = Date.now();
                 const DB_UPDATE_INTERVAL = 1000;
+                let eventCount = 0;
+                const streamStartTime = performance.now();
 
                 while (true) {
                     try {
@@ -198,6 +201,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                             if (line.startsWith('event: ')) {
                                 currentEvent = line.slice(7);
                             } else if (line.startsWith('data: ')) {
+                                eventCount++;
                                 const jsonData = line.slice(6);
                                 try {
                                     const data = JSON.parse(jsonData);
@@ -220,8 +224,13 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                             lastDbUpdate = Date.now();
                                         }
                                     } else if (currentEvent === 'done' && data.type === 'done') {
-                                        console.log('done event received');
                                         setIsGenerating(false);
+                                        const streamDuration = performance.now() - streamStartTime;
+                                        console.log(
+                                            'done event received',
+                                            eventCount,
+                                            `Stream duration: ${streamDuration.toFixed(2)}ms`
+                                        );
                                         setTimeout(fetchRemainingCredits, 1000);
                                         if (data.threadItemId) {
                                             threadItemMap.delete(data.threadItemId);
@@ -242,13 +251,21 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     }
                 }
             } catch (streamError: any) {
-                console.error('Fatal stream error:', streamError);
+                const totalTime = performance.now() - startTime;
+                console.error(
+                    'Fatal stream error:',
+                    streamError,
+                    `Total time: ${totalTime.toFixed(2)}ms`
+                );
                 setIsGenerating(false);
                 updateThreadItem(body.threadId, {
                     id: body.threadItemId,
                     status: 'ERROR',
                     error: 'Stream connection error: ' + streamError.message,
                 });
+            } finally {
+                const totalTime = performance.now() - startTime;
+                console.info(`Stream completed in ${totalTime.toFixed(2)}ms`);
             }
         },
         [

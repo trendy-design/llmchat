@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
 import {
+    ChunkBuffer,
     generateObject,
     generateText,
     getHumanizedDate,
@@ -202,6 +203,40 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
                 })),
             ]);
 
+            const reasoningBuffer = new ChunkBuffer({
+                threshold: 500,
+                breakOn: ['\n\n'],
+                onFlush: (chunk, fullText) => {
+                    events?.update('steps', current => ({
+                        ...current,
+                        1: {
+                            ...current?.[1],
+                            steps: {
+                                ...current?.[1]?.steps,
+                                reasoning: {
+                                    data: fullText,
+                                    status: 'COMPLETED',
+                                },
+                            },
+                            id: 1,
+                            status: 'PENDING' as const,
+                        },
+                    }));
+                },
+            });
+
+            const chunkBuffer = new ChunkBuffer({
+                threshold: 500,
+                breakOn: ['\n\n'],
+                onFlush: (chunk, fullText) => {
+                    events?.update('answer', current => ({
+                        ...current,
+                        text: chunk,
+                        status: 'PENDING' as const,
+                    }));
+                },
+            });
+
             // Step 4: Generate analysis
             let reasoning = '';
             try {
@@ -210,28 +245,10 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
                     model: ModelEnum.Deepseek_R1,
                     messages,
                     onReasoning: chunk => {
-                        events?.update('steps', current => ({
-                            ...current,
-                            1: {
-                                ...current?.[1],
-                                steps: {
-                                    ...current?.[1]?.steps,
-                                    reasoning: {
-                                        data: chunk,
-                                        status: 'COMPLETED',
-                                    },
-                                },
-                                id: 1,
-                                status: 'PENDING' as const,
-                            },
-                        }));
+                        reasoningBuffer.add(chunk);
                     },
                     onChunk: (chunk, fullText) => {
-                        events?.update('answer', current => ({
-                            ...current,
-                            text: chunk,
-                            status: 'PENDING' as const,
-                        }));
+                        chunkBuffer.add(chunk);
                     },
                 });
 
@@ -243,6 +260,9 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
                     `Failed to generate analysis: ${error instanceof Error ? error.message : String(error)}`
                 );
             }
+
+            reasoningBuffer.end();
+            chunkBuffer.end();
 
             // Update flow with completed reasoning
             events?.update('steps', current => ({

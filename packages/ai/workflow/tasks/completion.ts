@@ -51,9 +51,31 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
         Today is ${getHumanizedDate()}.
         `;
 
+        const reasoningBuffer = new ChunkBuffer({
+            threshold: 500,
+            breakOn: ['\n\n'],
+            onFlush: (_chunk: string, fullText: string) => {
+                events?.update('steps', prev => ({
+                    ...prev,
+                    0: {
+                        ...prev?.[0],
+                        id: 0,
+                        status: 'COMPLETED',
+                        steps: {
+                            ...prev?.[0]?.steps,
+                            reasoning: {
+                                data: fullText,
+                                status: 'COMPLETED',
+                            },
+                        },
+                    },
+                }));
+            },
+        });
+
         const chunkBuffer = new ChunkBuffer({
-            threshold: 100,
-            breakOn: ['\n\n', '.', '!', '?'],
+            threshold: 500,
+            breakOn: ['\n'],
             onFlush: (text: string) => {
                 events?.update('answer', current => ({
                     ...current,
@@ -74,22 +96,8 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                 // tools: {
                 //     ...(tools?.allTools || {}),
                 // },
-                onReasoning: reasoning => {
-                    events?.update('steps', prev => ({
-                        ...prev,
-                        0: {
-                            ...prev?.[0],
-                            id: 0,
-                            status: 'COMPLETED',
-                            steps: {
-                                ...prev?.[0]?.steps,
-                                reasoning: {
-                                    data: reasoning,
-                                    status: 'COMPLETED',
-                                },
-                            },
-                        },
-                    }));
+                onReasoning: (chunk, fullText) => {
+                    reasoningBuffer.add(chunk);
                 },
                 onToolCall: toolCall => {
                     toolCallsMap[toolCall.toolCallId] = toolCall;
@@ -110,7 +118,8 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                 },
             });
 
-            chunkBuffer.flush();
+            reasoningBuffer.end();
+            chunkBuffer.end();
 
             events?.update('answer', prev => ({
                 ...prev,

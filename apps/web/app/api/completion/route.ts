@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
         const creditCost = CHAT_MODE_CREDIT_COSTS[data.mode];
         const remainingCredits = await getRemainingCredits(userId);
 
-        if (remainingCredits < creditCost) {
+        if (remainingCredits < creditCost && process.env.NODE_ENV !== 'development') {
             return new Response(
                 'You have reached the daily limit of requests. Please try again tomorrow or Use your own API key.',
                 { status: 429, headers: { 'Content-Type': 'application/json' } }

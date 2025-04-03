@@ -15,26 +15,28 @@ import { generateErrorMessage } from './tasks/utils';
 export type ChunkBufferOptions = {
     threshold?: number;
     breakOn?: string[];
-    onFlush: (text: string) => void;
+    onFlush: (chunk: string, fullText: string) => void;
 };
 
 export class ChunkBuffer {
     private buffer = '';
-    private threshold: number;
+    private fullText = '';
+    private threshold?: number;
     private breakPatterns: string[];
-    private onFlush: (text: string) => void;
+    private onFlush: (chunk: string, fullText: string) => void;
 
     constructor(options: ChunkBufferOptions) {
-        this.threshold = options.threshold || 100;
+        this.threshold = options.threshold;
         this.breakPatterns = options.breakOn || ['\n\n', '.', '!', '?'];
         this.onFlush = options.onFlush;
     }
 
     add(chunk: string): void {
+        this.fullText += chunk;
         this.buffer += chunk;
 
         const shouldFlush =
-            this.buffer.length >= this.threshold ||
+            (this.threshold && this.buffer.length >= this.threshold) ||
             this.breakPatterns.some(pattern => chunk.includes(pattern) || chunk.endsWith(pattern));
 
         if (shouldFlush) {
@@ -44,9 +46,14 @@ export class ChunkBuffer {
 
     flush(): void {
         if (this.buffer.length > 0) {
-            this.onFlush(this.buffer);
+            this.onFlush(this.buffer, this.fullText);
             this.buffer = '';
         }
+    }
+
+    end(): void {
+        this.flush();
+        this.fullText = '';
     }
 }
 
@@ -67,7 +74,7 @@ export const generateText = async ({
     model: ModelEnum;
     onChunk?: (chunk: string, fullText: string) => void;
     messages?: CoreMessage[];
-    onReasoning?: (chunk: string) => void;
+    onReasoning?: (chunk: string, fullText: string) => void;
     tools?: ToolSet;
     onToolCall?: (toolCall: any) => void;
     onToolResult?: (toolResult: any) => void;
@@ -118,7 +125,7 @@ export const generateText = async ({
             }
             if (chunk.type === 'reasoning') {
                 reasoning += chunk.textDelta;
-                onReasoning?.(reasoning);
+                onReasoning?.(chunk.textDelta, reasoning);
             }
             if (chunk.type === 'tool-call') {
                 onToolCall?.(chunk);

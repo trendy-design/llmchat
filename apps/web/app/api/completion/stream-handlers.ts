@@ -76,6 +76,9 @@ export async function executeStream(
             mcpConfig: data.mcpConfig || {},
             showSuggestions: data.showSuggestions || false,
             onFinish: async (/* data: any */) => {
+                if (process.env.NODE_ENV === 'development') {
+                    return;
+                }
                 // Removed unused 'data' param
                 const deducted = await deductCredits(userId, creditCost); // Renamed variable for clarity
                 if (!deducted) {

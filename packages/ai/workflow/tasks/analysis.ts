@@ -1,7 +1,7 @@
 import { createTask } from '@repo/orchestrator';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { generateText, getHumanizedDate, handleError } from '../utils';
+import { ChunkBuffer, generateText, getHumanizedDate, handleError } from '../utils';
 
 export const analysisTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'analysis',
@@ -46,12 +46,9 @@ ${s}
 
                 `;
 
-        const text = await generateText({
-            prompt,
-            model: ModelEnum.Deepseek_R1,
-            messages: messages as any,
-            signal,
-            onReasoning: reasoning => {
+        const chunkBuffer = new ChunkBuffer({
+            breakOn: ['\n\n'],
+            onFlush: (chunk: string, fullText: string) => {
                 events?.update('steps', current => ({
                     ...current,
                     [nextStepId]: {
@@ -59,7 +56,7 @@ ${s}
                         steps: {
                             ...(current?.[nextStepId]?.steps || {}),
                             reasoning: {
-                                data: reasoning,
+                                data: fullText,
                                 status: 'PENDING' as const,
                             },
                         },
@@ -69,6 +66,18 @@ ${s}
                 }));
             },
         });
+
+        const text = await generateText({
+            prompt,
+            model: ModelEnum.Deepseek_R1,
+            messages: messages as any,
+            signal,
+            onReasoning: reasoning => {
+                chunkBuffer.add(reasoning);
+            },
+        });
+
+        chunkBuffer.flush();
 
         events?.update('steps', current => ({
             ...current,

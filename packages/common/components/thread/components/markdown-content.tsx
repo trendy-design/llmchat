@@ -126,13 +126,13 @@ export const MarkdownContent = memo(({ content, className }: MarkdownContentProp
 
     return (
         <div className={cn('', markdownStyles, className)}>
-            {previousContent.map(chunk => (
-                <ErrorBoundary fallback={<ErrorPlaceholder />}>
+            {previousContent.map((chunk, index) => (
+                <ErrorBoundary fallback={<ErrorPlaceholder />} key={`${index}-${chunk}`}>
                     <MemoizedMdxChunk key={chunk} chunk={chunk} />
                 </ErrorBoundary>
             ))}
             {currentContent && (
-                <ErrorBoundary fallback={<ErrorPlaceholder />}>
+                <ErrorBoundary fallback={<ErrorPlaceholder />} key={`currentChunk`}>
                     <MemoizedMdxChunk chunk={currentContent} />
                 </ErrorBoundary>
             )}
