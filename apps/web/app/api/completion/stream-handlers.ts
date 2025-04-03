@@ -16,8 +16,6 @@ export function sendMessage(controller: StreamController, encoder: TextEncoder, 
         // Ensure proper formatting of SSE message with flush
         const message = `event: ${payload.type}\ndata: ${JSON.stringify(sanitizedPayload)}\n\n`;
 
-        console.log('sending message', message);
-
         // Send the message as a complete unit to avoid partial line issues
         controller.enqueue(encoder.encode(message));
     } catch (error) {
