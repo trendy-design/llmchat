@@ -5,6 +5,8 @@ import { DAILY_CREDITS, getRemainingCredits } from './credit-service';
 import { executeStream, sendMessage } from './stream-handlers';
 import { completionRequestSchema, SSE_HEADERS } from './types';
 
+export const runtime = 'edge';
+
 export async function POST(request: NextRequest) {
     if (request.method === 'OPTIONS') {
         return new Response(null, { headers: SSE_HEADERS });

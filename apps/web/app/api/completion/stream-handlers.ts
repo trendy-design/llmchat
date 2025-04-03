@@ -18,6 +18,9 @@ export function sendMessage(controller: StreamController, encoder: TextEncoder, 
 
         // Send the message as a complete unit to avoid partial line issues
         controller.enqueue(encoder.encode(message));
+
+        // Add explicit flush to ensure data is sent immediately
+        controller.enqueue(new Uint8Array(0));
     } catch (error) {
         console.error('Error serializing message payload:', error);
         const errorMessage = `event: done\ndata: ${JSON.stringify({
