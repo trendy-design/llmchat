@@ -113,7 +113,8 @@ Your report should demonstrate subject matter expertise while remaining intellec
 
         events?.update('answer', current => ({
             ...current,
-            text: answer,
+            text: '',
+            finalText: answer,
             status: 'COMPLETED' as const,
         }));
 
