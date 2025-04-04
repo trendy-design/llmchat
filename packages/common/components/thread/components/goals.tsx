@@ -84,8 +84,11 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
             threadItem.status === 'ABORTED' ||
             threadItem.status === 'ERROR');
 
+    console.log('hasAnswer', hasAnswer);
+
     useEffect(() => {
         if (hasAnswer) {
+            console.log('dismissing side drawer');
             dismissSideDrawer();
         }
     }, [hasAnswer]);
@@ -118,6 +121,7 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
                         ))}
                     </div>
                 ),
+                badge: stepCounts,
                 title: () => renderTitle(),
             });
         }

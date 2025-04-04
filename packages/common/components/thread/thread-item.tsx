@@ -132,7 +132,7 @@ export const ThreadItem = memo(
         return (
             prevProps.threadItem.id === nextProps.threadItem.id &&
             nextProps.threadItem.status === 'COMPLETED' &&
-            nextProps.threadItem.answer === prevProps.threadItem.answer
+            nextProps.threadItem.answer?.text === prevProps.threadItem.answer?.text
         );
     }
 );

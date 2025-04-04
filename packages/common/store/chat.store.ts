@@ -7,6 +7,7 @@ import Dexie, { Table } from 'dexie';
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { useAppStore } from './app.store';
 
 class ThreadDatabase extends Dexie {
     threads!: Table<Thread>;
@@ -582,10 +583,12 @@ export const useChatStore = create(
                 state.context = context;
             }),
 
-        setIsGenerating: isGenerating =>
+        setIsGenerating: isGenerating => {
+            useAppStore.getState().dismissSideDrawer();
             set(state => {
                 state.isGenerating = isGenerating;
-            }),
+            });
+        },
 
         stopGeneration: () =>
             set(state => {
