@@ -201,23 +201,29 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 let eventCount = 0;
                 const streamStartTime = performance.now();
 
+                let buffer = '';
+
                 while (true) {
                     try {
                         const { value, done } = await reader.read();
                         if (done) break;
 
-                        const chunk = decoder.decode(value);
-                        const lines = chunk.split('\n');
-                        let currentEvent = '';
+                        buffer += decoder.decode(value, { stream: true });
+                        const messages = buffer.split('\n\n');
+                        buffer = messages.pop() || '';
 
-                        for (const line of lines) {
-                            if (line.startsWith('event: ')) {
-                                currentEvent = line.slice(7);
-                            } else if (line.startsWith('data: ')) {
+                        for (const message of messages) {
+                            if (!message.trim()) continue;
+
+                            const eventMatch = message.match(/^event: (.+)$/m);
+                            const dataMatch = message.match(/^data: (.+)$/m);
+
+                            if (eventMatch && dataMatch) {
+                                const currentEvent = eventMatch[1];
                                 eventCount++;
-                                const jsonData = line.slice(6);
+
                                 try {
-                                    const data = JSON.parse(jsonData);
+                                    const data = JSON.parse(dataMatch[1]);
                                     if (
                                         EVENT_TYPES.includes(currentEvent) &&
                                         data?.threadId &&
@@ -253,7 +259,11 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                         }
                                     }
                                 } catch (jsonError) {
-                                    console.warn('JSON parse error for data:', jsonData, jsonError);
+                                    console.warn(
+                                        'JSON parse error for data:',
+                                        dataMatch[1],
+                                        jsonError
+                                    );
                                 }
                             }
                         }
