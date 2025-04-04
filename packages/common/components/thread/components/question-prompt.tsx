@@ -1,6 +1,6 @@
 import { useAgentStream } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
-import { Answer, ThreadItem } from '@repo/shared/types';
+import { ThreadItem } from '@repo/shared/types';
 import { Button, RadioGroup, RadioGroupItem, Textarea } from '@repo/ui';
 import { IconCheck, IconQuestionMark, IconSquare } from '@tabler/icons-react';
 import { useMemo, useState } from 'react';
@@ -125,26 +125,22 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
                 onClick={async () => {
                     let query = '';
                     if (choiceType === 'single') {
-                        query = `${selectedOption} \n\n ${customOption}`;
+                        query = `${selectedOption ? `${selectedOption} \n\n` : ''}${customOption}`;
                     } else {
-                        query = `${selectedOptions.join(', ')} \n\n ${customOption}`;
+                        query = `${!!selectedOptions?.length ? `${selectedOptions.join(', ')} \n\n` : ''}${customOption}`;
                     }
                     const formData = new FormData();
                     formData.append('query', query);
                     const threadItems = await getThreadItems(threadItem.threadId);
                     updateThreadItem(threadItem.threadId, {
                         ...threadItem,
-                        query,
-                        answer: {
-                            ...threadItem.answer,
-                            object: {
-                                ...threadItem.object,
-                                clarifyingQuestion: {
-                                    ...threadItem.object?.clarifyingQuestion,
-                                    submittedQuery: query,
-                                },
+                        object: {
+                            ...threadItem.object,
+                            clarifyingQuestion: {
+                                ...threadItem.object?.clarifyingQuestion,
+                                submittedQuery: query,
                             },
-                        } as Answer,
+                        },
                         status: 'COMPLETED',
                     });
                     setTimeout(() => {
@@ -152,7 +148,7 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
                             formData,
                             messages: threadItems,
                         });
-                    }, 2000);
+                    }, 1000);
                 }}
             >
                 Submit
