@@ -708,15 +708,13 @@ export const useChatStore = create(
             if (!threadItem.id) return;
             if (!threadId) return;
 
-            const { threadItems } = get();
-
             try {
+                console.log('updateThreadItem', threadItem);
+
                 // Fetch the existing item
                 let existingItem: ThreadItem | undefined;
                 try {
-                    existingItem =
-                        threadItems.find(t => t.id === threadItem.id) ??
-                        (await db.threadItems.get(threadItem.id));
+                    existingItem = await db.threadItems.get(threadItem.id);
                 } catch (error) {
                     console.warn(`Couldn't fetch existing item ${threadItem.id}:`, error);
                 }
