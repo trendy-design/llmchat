@@ -7,9 +7,15 @@ import { useStickToBottom } from 'use-stick-to-bottom';
 
 const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
     const router = useRouter();
+    const isGenerating = useChatStore(state => state.isGenerating);
     const { scrollRef, contentRef } = useStickToBottom({
-        stiffness: 0,
+        stiffness: 1,
         damping: 0,
+        initial: {
+            damping: 0,
+            stiffness: 0,
+            mass: 0,
+        },
     });
     const switchThread = useChatStore(state => state.switchThread);
     const getThread = useChatStore(state => state.getThread);

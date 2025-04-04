@@ -47,6 +47,7 @@ ${s}
                 `;
 
         const chunkBuffer = new ChunkBuffer({
+            threshold: 200,
             breakOn: ['\n\n'],
             onFlush: (chunk: string, fullText: string) => {
                 events?.update('steps', current => ({

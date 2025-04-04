@@ -51,6 +51,7 @@ type MarkdownContentProps = {
     content: string;
     className?: string;
     shouldAnimate?: boolean;
+    isCompleted?: boolean;
 };
 
 type NestedChunk = {
@@ -93,13 +94,17 @@ function parseCitationsWithSourceTags(markdown: string): string {
     return result;
 }
 
-export const MarkdownContent = memo(({ content, className }: MarkdownContentProps) => {
+export const MarkdownContent = memo(({ content, className, isCompleted }: MarkdownContentProps) => {
     const [previousContent, setPreviousContent] = useState<string[]>([]);
     const [currentContent, setCurrentContent] = useState<string>('');
     const { chunkMdx } = useMdxChunker();
 
     useEffect(() => {
         if (!content) return;
+
+        if (isCompleted) {
+            return;
+        }
 
         (async () => {
             try {
@@ -119,6 +124,16 @@ export const MarkdownContent = memo(({ content, className }: MarkdownContentProp
             }
         })();
     }, [content]);
+
+    if (isCompleted) {
+        return (
+            <div className={cn('', markdownStyles, className)}>
+                <ErrorBoundary fallback={<ErrorPlaceholder />}>
+                    <MemoizedMdxChunk chunk={content} />
+                </ErrorBoundary>
+            </div>
+        );
+    }
 
     if (!previousContent && !currentContent) {
         return null;

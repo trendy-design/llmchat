@@ -204,7 +204,7 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             ]);
 
             const reasoningBuffer = new ChunkBuffer({
-                threshold: 500,
+                threshold: 200,
                 breakOn: ['\n\n'],
                 onFlush: (chunk, fullText) => {
                     events?.update('steps', current => ({
@@ -226,7 +226,7 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             });
 
             const chunkBuffer = new ChunkBuffer({
-                threshold: 500,
+                threshold: 200,
                 breakOn: ['\n\n'],
                 onFlush: (chunk, fullText) => {
                     events?.update('answer', current => ({

@@ -92,8 +92,6 @@ export const ChatInput = ({
 
     const renderChatInput = () => (
         <AnimatePresence>
-            <MessagesRemainingBadge key="remaining-messages" />
-
             <motion.div
                 className="w-full px-2"
                 initial={{ opacity: 0, y: 10 }}
@@ -178,6 +176,7 @@ export const ChatInput = ({
                     </ImageDropzoneRoot>
                 </Flex>
             </motion.div>
+            <MessagesRemainingBadge key="remaining-messages" />
         </AnimatePresence>
     );
 

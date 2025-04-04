@@ -21,21 +21,21 @@ export function MessagesRemainingBadge() {
     }
 
     return (
-        <div className="relative flex w-full items-center justify-center py-2">
+        <div className="relative flex w-full items-center justify-center px-2">
             <motion.div
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="border-hard bg-background absolute bottom-2 mx-auto  flex h-8 flex-row items-center gap-2 rounded-xl border px-3 font-medium shadow-md"
+                className="-mt-2 flex h-10 w-full flex-row  items-center gap-2 rounded-b-xl border-x border-b border-lime-700/20 bg-lime-700/5 px-3 pt-2 font-medium"
             >
-                <div className="text-muted-foreground text-xs">
+                <div className="text-xs text-emerald-700">
                     {creditLimit.remaining === 0
                         ? 'You have no credits left today.'
                         : `You have ${creditLimit.remaining} credits left today.`}{' '}
                     For continuous use,
                     <span
-                        className="inline-flex shrink-0 cursor-pointer flex-row items-center gap-1 pl-1 font-medium text-emerald-600 "
+                        className="inline-flex shrink-0 cursor-pointer flex-row items-center gap-1 pl-1 font-medium text-emerald-700 "
                         onClick={() => {
                             setIsSettingsOpen(true);
                             setSettingTab('api-keys');

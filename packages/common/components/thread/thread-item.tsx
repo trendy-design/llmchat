@@ -46,13 +46,13 @@ export const ThreadItem = memo(
 
         const hasResponse = useMemo(() => {
             return (
-                threadItem.steps ||
-                threadItem.answer ||
-                threadItem.object ||
-                threadItem.error ||
-                threadItem.status === 'COMPLETED' ||
-                threadItem.status === 'ABORTED' ||
-                threadItem.status === 'ERROR'
+                !!threadItem?.steps?.length ||
+                !!threadItem?.answer?.text ||
+                !!threadItem?.object ||
+                !!threadItem?.error ||
+                threadItem?.status === 'COMPLETED' ||
+                threadItem?.status === 'ABORTED' ||
+                threadItem?.status === 'ERROR'
             );
         }, [threadItem]);
         return (
@@ -94,6 +94,9 @@ export const ThreadItem = memo(
                                     <MarkdownContent
                                         content={threadItem.answer?.text || ''}
                                         key={`answer-${threadItem.id}`}
+                                        isCompleted={['COMPLETED', 'ERROR', 'ABORTED'].includes(
+                                            threadItem.status || ''
+                                        )}
                                         shouldAnimate={
                                             !['COMPLETED', 'ERROR', 'ABORTED'].includes(
                                                 threadItem.status || ''
