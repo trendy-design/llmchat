@@ -1,8 +1,8 @@
 import { PostHog } from 'posthog-node';
 import { v4 as uuidv4 } from 'uuid';
 
-const client = new PostHog(process.env.POSTHOG_API_KEY || '', {
-    host: process.env.POSTHOG_HOST || 'https://us.i.posthog.com',
+const client = new PostHog(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {
+    host: process.env.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com',
 });
 
 export enum EVENT_TYPES {
