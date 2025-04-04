@@ -1,28 +1,33 @@
 import { runWorkflow } from '@repo/ai/workflow';
 import { CHAT_MODE_CREDIT_COSTS } from '@repo/shared/config';
+import { logger } from '@repo/shared/logger';
+import { EVENT_TYPES, posthog } from '@repo/shared/posthog';
 import { deductCredits } from './credit-service';
 import { CompletionRequestType, StreamController } from './types';
 import { sanitizePayloadForJSON } from './utils';
 
-export function sendMessage(controller: StreamController, encoder: TextEncoder, payload: any) {
+export function sendMessage(
+    controller: StreamController,
+    encoder: TextEncoder,
+    payload: Record<string, any>
+) {
     try {
-        // Normalize markdown content if present
         if (payload.content && typeof payload.content === 'string') {
             payload.content = normalizeMarkdownContent(payload.content);
         }
 
         const sanitizedPayload = sanitizePayloadForJSON(payload);
-
-        // Ensure proper formatting of SSE message with flush
         const message = `event: ${payload.type}\ndata: ${JSON.stringify(sanitizedPayload)}\n\n`;
 
-        // Send the message as a complete unit to avoid partial line issues
         controller.enqueue(encoder.encode(message));
-
-        // Add explicit flush to ensure data is sent immediately
         controller.enqueue(new Uint8Array(0));
     } catch (error) {
-        console.error('Error serializing message payload:', error);
+        // This is critical - we should log errors in message serialization
+        logger.error('Error serializing message payload', error, {
+            payloadType: payload.type,
+            threadId: payload.threadId,
+        });
+
         const errorMessage = `event: done\ndata: ${JSON.stringify({
             type: 'done',
             status: 'error',
@@ -36,10 +41,7 @@ export function sendMessage(controller: StreamController, encoder: TextEncoder, 
 }
 
 export function normalizeMarkdownContent(content: string): string {
-    // Replace literal "\n" strings with actual line breaks
-    // This handles cases where the content contains escaped newlines
     const normalizedContent = content.replace(/\\n/g, '\n');
-
     return normalizedContent;
 }
 
@@ -49,10 +51,11 @@ export async function executeStream(
     data: CompletionRequestType,
     abortController: AbortController,
     userId: string
-) {
-    let success = false; // Track successful completion
+): Promise<{ success: boolean } | Response> {
     try {
         if (!userId) {
+            // Authentication failures are important
+            logger.warn('Authentication required for stream execution', { userId });
             return new Response(JSON.stringify({ error: 'Authentication required' }), {
                 status: 401,
                 headers: { 'Content-Type': 'application/json' },
@@ -75,16 +78,19 @@ export async function executeStream(
             },
             mcpConfig: data.mcpConfig || {},
             showSuggestions: data.showSuggestions || false,
-            onFinish: async (/* data: any */) => {
+            onFinish: async () => {
                 if (process.env.NODE_ENV === 'development') {
                     return;
                 }
-                // Removed unused 'data' param
-                const deducted = await deductCredits(userId, creditCost); // Renamed variable for clarity
+                const deducted = await deductCredits(userId, creditCost);
                 if (!deducted) {
-                    // Consider if this should just log or still throw, depending on desired behavior
-                    console.warn(`Failed to deduct ${creditCost} credits for user ${userId}`);
-                    // throw new Error('Failed to deduct credits'); // Or handle differently
+                    // Credit deduction failures are important
+                    logger.warn(`Failed to deduct credits`, {
+                        userId,
+                        creditCost,
+                        threadId: data.threadId,
+                        important: true,
+                    });
                 }
             },
         });
@@ -103,21 +109,38 @@ export async function executeStream(
             });
         });
 
-        console.log('starting workflow');
+        if (process.env.NODE_ENV === 'development') {
+            logger.debug('Starting workflow', { threadId: data.threadId });
+        }
 
         await workflow.start('router', {
             question: data.prompt,
         });
 
-        console.log('workflow completed');
+        if (process.env.NODE_ENV === 'development') {
+            logger.debug('Workflow completed', { threadId: data.threadId });
+        }
 
-        const timingSummary = workflow.getTimingSummary();
-        console.log('timingSummary', timingSummary); // Keep for debugging if needed
+        posthog.capture({
+            event: EVENT_TYPES.WORKFLOW_SUMMARY,
+            userId,
+            properties: {
+                userId,
+                query: data.prompt,
+                mode: data.mode,
+                webSearch: data.webSearch || false,
+                showSuggestions: data.showSuggestions || false,
+                threadId: data.threadId,
+                threadItemId: data.threadItemId,
+                parentThreadItemId: data.parentThreadItemId,
+                summary: workflow.getTimingSummary(),
+            },
+        });
 
-        // Mark as successful before sending the final message
-        success = true;
+        console.log('[WORKFLOW SUMMARY]', workflow.getTimingSummary());
 
-        // Send 'done' message here upon successful completion, regardless of timingSummary
+        posthog.flush();
+
         sendMessage(controller, encoder, {
             type: 'done',
             status: 'complete',
@@ -126,12 +149,14 @@ export async function executeStream(
             parentThreadItemId: data.parentThreadItemId,
         });
 
-        // No controller.close() here
-        return { success: true }; // Indicate success to the caller if needed
+        return { success: true };
     } catch (error) {
-        // Error handling remains the same, sending 'aborted' or 'error' status
         if (abortController.signal.aborted) {
-            console.log('abortController.signal.aborted');
+            // Aborts are normal user actions, not errors
+            if (process.env.NODE_ENV === 'development') {
+                logger.debug('Workflow aborted', { threadId: data.threadId });
+            }
+
             sendMessage(controller, encoder, {
                 type: 'done',
                 status: 'aborted',
@@ -140,7 +165,13 @@ export async function executeStream(
                 parentThreadItemId: data.parentThreadItemId,
             });
         } else {
-            console.log('sending error message');
+            // Actual errors during workflow execution are important
+            logger.error('Workflow execution error', error, {
+                userId,
+                threadId: data.threadId,
+                mode: data.mode,
+            });
+
             sendMessage(controller, encoder, {
                 type: 'done',
                 status: 'error',
@@ -150,8 +181,7 @@ export async function executeStream(
                 parentThreadItemId: data.parentThreadItemId,
             });
         }
-        // No controller.close() here
-        throw error; // Re-throw the error to be caught by the route handler if necessary
+
+        throw error;
     }
-    // NOTE: The 'finally' block that was here is removed as closure is handled in route.ts
 }

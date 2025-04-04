@@ -7,7 +7,6 @@ import { useStickToBottom } from 'use-stick-to-bottom';
 
 const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
     const router = useRouter();
-    const isGenerating = useChatStore(state => state.isGenerating);
     const { scrollRef, contentRef } = useStickToBottom({
         stiffness: 1,
         damping: 0,
@@ -39,7 +38,6 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
             className="no-scrollbar flex h-full w-full flex-col items-center overflow-y-auto px-8"
             ref={scrollRef}
         >
-            {/* <ThreadNavBar /> */}
             <div className="mx-auto w-full max-w-3xl px-4 pb-[200px] pt-2" ref={contentRef}>
                 <Thread />
             </div>

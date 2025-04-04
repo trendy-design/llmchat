@@ -48,20 +48,15 @@ ${webPageContent
 </research_findings>
 
 ## Report Requirements:
-1. Structure and Organization:
-   - Begin with a concise executive summary highlighting key developments
-   - Organize content thematically with clear progression between topics, Group related information into coherent categories
-   - Use a consistent hierarchical structure throughout
-   - Conclude with analytical insights identifying patterns, implications, and future directions
 
-2. Content and Analysis:
+1. Content and Analysis:
    - Provide specific details, data points, and technical information where relevant
    - Analyze the significance of key findings within the broader context
    - Make connections between related information across different sources
    - Maintain an objective, analytical tone throughout
 
 
-3. Formatting Standards:
+2. Formatting Standards:
    - Highlight key figures, critical statistics, and significant findings with bold text
    - Construct balanced continuous paragraphs (4-5 sentences per paragraph not more than that) with logical flow instead of shorter sentences.
    - Use headings strategically only for major thematic shifts depending on the question asked and content
@@ -69,7 +64,7 @@ ${webPageContent
    - Implement markdown tables for comparative data where appropriate
    - Ensure proper spacing between sections for optimal readability
 
-4. Citations:
+3. Citations:
    - Based on provided references in each findings, you must cite the sources in the report.
    - Use inline citations like [1] to reference the source
    - For example: According to recent findings [1][3], progress in this area has accelerated

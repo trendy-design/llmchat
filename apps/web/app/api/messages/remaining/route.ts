@@ -7,15 +7,8 @@ export async function GET(request: NextRequest) {
     const userId = session?.userId;
 
     try {
-        // Get remaining credits for the user
         const remainingCredits = userId ? await getRemainingCredits(userId) : 0;
-
-        console.log('remainingCredits', remainingCredits);
-
-        // Calculate when credits will reset (next day)
-        const now = new Date();
-        const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-        const resetTime = tomorrow.getTime();
+        const resetTime = getNextResetTime();
 
         return NextResponse.json(
             {
@@ -34,6 +27,15 @@ export async function GET(request: NextRequest) {
         );
     } catch (error) {
         console.error('Credit check error:', error);
+        if (error instanceof TypeError) {
+            return NextResponse.json({ error: 'Invalid request format' }, { status: 400 });
+        }
         return NextResponse.json({ error: 'Failed to fetch remaining credits' }, { status: 500 });
     }
+}
+
+function getNextResetTime(): number {
+    const now = new Date();
+    const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    return tomorrow.getTime();
 }

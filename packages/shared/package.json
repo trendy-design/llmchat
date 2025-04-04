@@ -6,7 +6,9 @@
         "./config": "./config/index.ts",
         "./db": "./db/index.ts",
         "./utils": "./utils/index.ts",
-        "./types": "./types.ts"
+        "./types": "./types.ts",
+        "./logger": "./logger.ts",
+        "./posthog": "./posthog.ts"
     },
     "scripts": {
         "lint": "eslint .",

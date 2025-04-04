@@ -10,16 +10,18 @@ import localFont from 'next/font/local';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: 'LLMChat - Your Ultimate AI Chat Experience',
-    description: 'Chat with top LLMs in a minimal, privacy-focused UI.',
+    title: 'deep.new - Go Deeper with AI-Powered Research & Agentic Workflows',
+    description:
+        'Experience deep, AI-powered research with agentic workflows and a wide variety of models for advanced productivity.',
     keywords: 'AI chat, LLM, language models, privacy, minimal UI, ollama, chatgpt',
     authors: [{ name: 'Trendy design', url: 'https://trendy.design' }],
     creator: 'Trendy design',
     publisher: 'Trendy design',
     openGraph: {
-        title: 'LLMChat - Your Ultimate AI Chat Experience',
+        title: 'deep.new - Go Deeper with AI-Powered Research & Agentic Workflows',
         siteName: 'llmchat.co',
-        description: 'Chat with top LLMs in a minimal, privacy-focused UI.',
+        description:
+            'Experience deep, AI-powered research with agentic workflows and a wide variety of models for advanced productivity.',
         url: 'https://llmchat.co',
         type: 'website',
         locale: 'en_US',
@@ -34,10 +36,11 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'LLMChat - Your Ultimate AI Chat Experience',
+        title: 'deep.new - Go Deeper with AI-Powered Research & Agentic Workflows',
         site: 'llmchat.co',
         creator: '@llmchat_co',
-        description: 'Chat with top LLMs in a minimal, privacy-focused UI.',
+        description:
+            'Experience deep, AI-powered research with agentic workflows and a wide variety of models for advanced productivity.',
         images: ['https://llmchat.co/twitter-image.jpg'],
     },
     robots: {

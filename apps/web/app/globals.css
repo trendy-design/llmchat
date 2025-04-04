@@ -36,14 +36,14 @@
         --popover: 25 12% 100%;
         --popover-foreground: 20 15% 10%;
 
-        --brand: 25 12% 10%;
-        --brand-foreground: 25 12% 96%;
+        --brand: 164 86% 16%;
+        --brand-foreground: 164 86% 66%;
+
+        --accent: 164 70% 33%;
+        --accent-foreground: 164 70% 96%;
 
         --muted: 60 12% 80%;
-        --muted-foreground: 60 4% 36%;
-
-        --accent: 40 15% 92%;
-        --accent-foreground: 20 15% 10%;
+        --muted-foreground: 60 12% 20%;
 
         --destructive: 0 84% 60%;
         --destructive-foreground: 40 30% 98%;

@@ -254,6 +254,74 @@ export class ExecutionContext {
 
         return summary;
     }
+
+    parseDurationToMs(duration: string): number {
+        const [value, unit] = duration.split(' ');
+        const multiplier = unit === 'ms' ? 1 : unit === 's' ? 1000 : 60000;
+        return parseFloat(value) * multiplier;
+    }
+
+    getMainTimingSummary(): {
+        totalRuns: number;
+        totalFailures: number;
+        totalDuration: string;
+        totalTasks: number;
+        completedTasks: number;
+        failedTasks: number;
+        averageTaskDuration: string;
+        slowestTask: string;
+        highestFailureTask: string;
+        status: 'success' | 'failed';
+    } {
+        const taskSummary = this.getTaskTimingSummary();
+        let totalRuns = 0;
+        let totalFailures = 0;
+        let totalDurationMs = 0;
+        let totalTasks = Object.keys(taskSummary).length;
+        let failedTasks = 0;
+        let slowestTask = { name: '', duration: 0 };
+        let highestFailureTask = { name: '', failures: 0 };
+
+        Object.entries(taskSummary).forEach(([taskName, stats]) => {
+            totalRuns += stats.attempts;
+            totalFailures += stats.failures;
+
+            // Parse the duration strings back to milliseconds
+            const durationMs = this.parseDurationToMs(stats.totalDuration);
+            totalDurationMs += durationMs;
+
+            if (stats.failures > 0) {
+                failedTasks++;
+            }
+
+            if (durationMs > slowestTask.duration) {
+                slowestTask = { name: taskName, duration: durationMs };
+            }
+
+            if (stats.failures > highestFailureTask.failures) {
+                highestFailureTask = { name: taskName, failures: stats.failures };
+            }
+        });
+
+        const formatDuration = (ms: number): string => {
+            if (ms < 1000) return `${ms}ms`;
+            if (ms < 60000) return `${(ms / 1000).toFixed(1)}s`;
+            return `${(ms / 60000).toFixed(1)}m`;
+        };
+
+        return {
+            totalRuns,
+            totalFailures,
+            totalDuration: formatDuration(totalDurationMs),
+            totalTasks,
+            completedTasks: totalTasks - failedTasks,
+            failedTasks,
+            averageTaskDuration: formatDuration(totalTasks > 0 ? totalDurationMs / totalTasks : 0),
+            slowestTask: slowestTask.name,
+            highestFailureTask: highestFailureTask.name,
+            status: this.isAborted() || failedTasks > 0 ? 'failed' : 'success',
+        };
+    }
 }
 
 export class WorkflowEngine<
@@ -623,6 +691,6 @@ export class WorkflowEngine<
     }
 
     getTimingSummary() {
-        return this.executionContext.getTaskTimingSummary();
+        return this.executionContext.getMainTimingSummary();
     }
 }

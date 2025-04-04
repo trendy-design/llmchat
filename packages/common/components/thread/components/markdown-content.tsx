@@ -5,11 +5,22 @@ import {
     useMdxChunker,
 } from '@repo/common/components';
 import { cn } from '@repo/ui';
+import { encode } from 'html-entities';
 import { MDXRemote } from 'next-mdx-remote';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote/rsc';
 import { serialize } from 'next-mdx-remote/serialize';
 import { memo, Suspense, useEffect, useState } from 'react';
 import remarkGfm from 'remark-gfm';
+
+// Replace your custom escaping functions with a more robust solution
+function safelyProcessMarkdown(markdown: string): string {
+    // First handle your citations
+    // Then encode potentially problematic HTML
+    return encode(markdown, {
+        mode: 'nonAsciiPrintable',
+        level: 'html5',
+    });
+}
 
 export const markdownStyles = {
     'animate-fade-in prose prose-sm min-w-full': true,
@@ -84,12 +95,19 @@ export const normalizeContent = (content: string) => {
 
 function parseCitationsWithSourceTags(markdown: string): string {
     // Regular expression to match citations like [1], [2], etc.
+    //cover case like [1,2] etc
+
     const citationRegex = /\[(\d+)\]/g;
     let result = markdown;
 
     // Replace each citation with the wrapped version
     result = result.replace(citationRegex, (match, p1) => {
         return `<Source>${p1}</Source>`;
+    });
+
+    const multipleCitationsRegex = /\[(\d+)(?:,\s*(\d+))*\]/g;
+    result = result.replace(multipleCitationsRegex, (match, p1, p2) => {
+        return `<Source>${p1}</Source> <Source>${p2}</Source>`;
     });
 
     return result;
@@ -107,12 +125,18 @@ export const MarkdownContent = memo(
             (async () => {
                 try {
                     const normalizedContent = normalizeContent(content);
-                    const cleanedContent = parseCitationsWithSourceTags(normalizedContent);
+                    // Update processing chain to escape brackets first, handle citations, then escape problematic HTML
+                    // const escapedContent = escapeMarkdownBrackets(normalizedContent);
+                    const safelyProcessed = safelyProcessMarkdown(normalizedContent);
+                    const contentWithCitations = parseCitationsWithSourceTags(safelyProcessed);
 
                     if (isCompleted) {
-                        setCurrentContent(cleanedContent);
+                        console.log('[CONTENT WITH CITATIONS]', safelyProcessed);
+
+                        setCurrentContent(contentWithCitations);
                     } else {
-                        const { chunks } = await chunkMdx(cleanedContent);
+                        console.log('[CONTENT WITH CITATIONS]', contentWithCitations);
+                        const { chunks } = await chunkMdx(contentWithCitations);
 
                         if (chunks.length > 0) {
                             if (chunks.length > 1) {
@@ -173,6 +197,7 @@ export const MemoizedMdxChunk = memo(({ chunk }: { chunk: string }) => {
                 const serialized = await serialize(chunk, {
                     mdxOptions: {
                         remarkPlugins: [remarkGfm],
+                        // rehypePlugins: [rehypeSanitize],
                     },
                 });
 

@@ -5,8 +5,6 @@ import { DAILY_CREDITS, getRemainingCredits } from './credit-service';
 import { executeStream, sendMessage } from './stream-handlers';
 import { completionRequestSchema, SSE_HEADERS } from './types';
 
-export const runtime = 'edge';
-
 export async function POST(request: NextRequest) {
     if (request.method === 'OPTIONS') {
         return new Response(null, { headers: SSE_HEADERS });
@@ -40,7 +38,11 @@ export async function POST(request: NextRequest) {
         const creditCost = CHAT_MODE_CREDIT_COSTS[data.mode];
         const remainingCredits = await getRemainingCredits(userId);
 
-        if (remainingCredits < creditCost && process.env.NODE_ENV !== 'development') {
+        if (
+            remainingCredits < creditCost &&
+            process.env.NODE_ENV !== 'development' &&
+            session.userId === ''
+        ) {
             return new Response(
                 'You have reached the daily limit of requests. Please try again tomorrow or Use your own API key.',
                 { status: 429, headers: { 'Content-Type': 'application/json' } }
@@ -61,51 +63,7 @@ export async function POST(request: NextRequest) {
             abortController.abort();
         });
 
-        const stream = new ReadableStream({
-            async start(controller) {
-                let heartbeatInterval: NodeJS.Timeout | null = null;
-
-                heartbeatInterval = setInterval(() => {
-                    controller.enqueue(encoder.encode(': heartbeat\n\n'));
-                }, 15000);
-
-                try {
-                    await executeStream(controller, encoder, data, abortController, userId);
-                } catch (error) {
-                    if (abortController.signal.aborted) {
-                        console.log('abortController.signal.aborted');
-                        sendMessage(controller, encoder, {
-                            type: 'done',
-                            status: 'aborted',
-                            threadId: data.threadId,
-                            threadItemId: data.threadItemId,
-                            parentThreadItemId: data.parentThreadItemId,
-                        });
-                    } else {
-                        console.log('sending error message');
-                        sendMessage(controller, encoder, {
-                            type: 'done',
-                            status: 'error',
-                            error: error instanceof Error ? error.message : String(error),
-                            threadId: data.threadId,
-                            threadItemId: data.threadItemId,
-                            parentThreadItemId: data.parentThreadItemId,
-                        });
-                    }
-                } finally {
-                    if (heartbeatInterval) {
-                        clearInterval(heartbeatInterval);
-                    }
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    console.log('closing stream');
-                    controller.close();
-                }
-            },
-            cancel() {
-                console.log('cancelling stream');
-                abortController.abort();
-            },
-        });
+        const stream = createCompletionStream(data, userId, abortController);
 
         return new Response(stream, { headers: enhancedHeaders });
     } catch (error) {
@@ -115,4 +73,52 @@ export async function POST(request: NextRequest) {
             { status: 500, headers: { 'Content-Type': 'application/json' } }
         );
     }
+}
+
+function createCompletionStream(data: any, userId: string, abortController: AbortController) {
+    const encoder = new TextEncoder();
+
+    return new ReadableStream({
+        async start(controller) {
+            let heartbeatInterval: NodeJS.Timeout | null = null;
+
+            heartbeatInterval = setInterval(() => {
+                controller.enqueue(encoder.encode(': heartbeat\n\n'));
+            }, 15000);
+
+            try {
+                await executeStream(controller, encoder, data, abortController, userId);
+            } catch (error) {
+                if (abortController.signal.aborted) {
+                    console.log('abortController.signal.aborted');
+                    sendMessage(controller, encoder, {
+                        type: 'done',
+                        status: 'aborted',
+                        threadId: data.threadId,
+                        threadItemId: data.threadItemId,
+                        parentThreadItemId: data.parentThreadItemId,
+                    });
+                } else {
+                    console.log('sending error message');
+                    sendMessage(controller, encoder, {
+                        type: 'done',
+                        status: 'error',
+                        error: error instanceof Error ? error.message : String(error),
+                        threadId: data.threadId,
+                        threadItemId: data.threadItemId,
+                        parentThreadItemId: data.parentThreadItemId,
+                    });
+                }
+            } finally {
+                if (heartbeatInterval) {
+                    clearInterval(heartbeatInterval);
+                }
+                controller.close();
+            }
+        },
+        cancel() {
+            console.log('cancelling stream');
+            abortController.abort();
+        },
+    });
 }
