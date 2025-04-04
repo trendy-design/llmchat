@@ -27,9 +27,9 @@ export function MessagesRemainingBadge() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="-mt-2 flex h-10 w-full flex-row  items-center gap-2 rounded-b-xl border-x border-b border-lime-700/20 bg-lime-700/5 px-3 pt-2 font-medium"
+                className="border-border bg-tertiary/50 -mt-2 flex h-10  w-full flex-row items-center gap-2 rounded-b-lg border-x border-b px-3 pt-2 font-medium"
             >
-                <div className="text-xs text-emerald-700">
+                <div className="text-muted-foreground text-xs">
                     {creditLimit.remaining === 0
                         ? 'You have no credits left today.'
                         : `You have ${creditLimit.remaining} credits left today.`}{' '}
@@ -41,7 +41,10 @@ export function MessagesRemainingBadge() {
                             setSettingTab('api-keys');
                         }}
                     >
-                        <span className="underline">Add your own API key</span> <BYOKIcon />
+                        <span className="inline-flex flex-row items-center gap-1 px-1 underline">
+                            Add your own API key
+                        </span>
+                        <BYOKIcon />
                     </span>
                 </div>
             </motion.div>
