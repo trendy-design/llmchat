@@ -52,6 +52,7 @@ type MarkdownContentProps = {
     className?: string;
     shouldAnimate?: boolean;
     isCompleted?: boolean;
+    isLast?: boolean;
 };
 
 type NestedChunk = {
@@ -94,66 +95,68 @@ function parseCitationsWithSourceTags(markdown: string): string {
     return result;
 }
 
-export const MarkdownContent = memo(({ content, className, isCompleted }: MarkdownContentProps) => {
-    const [previousContent, setPreviousContent] = useState<string[]>([]);
-    const [currentContent, setCurrentContent] = useState<string>('');
-    const { chunkMdx } = useMdxChunker();
+export const MarkdownContent = memo(
+    ({ content, className, isCompleted, isLast }: MarkdownContentProps) => {
+        const [previousContent, setPreviousContent] = useState<string[]>([]);
+        const [currentContent, setCurrentContent] = useState<string>('');
+        const { chunkMdx } = useMdxChunker();
 
-    useEffect(() => {
-        if (!content) return;
+        useEffect(() => {
+            if (!content) return;
 
-        if (isCompleted) {
-            return;
+            (async () => {
+                try {
+                    const normalizedContent = normalizeContent(content);
+                    const cleanedContent = parseCitationsWithSourceTags(normalizedContent);
+
+                    if (isCompleted) {
+                        setCurrentContent(cleanedContent);
+                    } else {
+                        const { chunks } = await chunkMdx(cleanedContent);
+
+                        if (chunks.length > 0) {
+                            if (chunks.length > 1) {
+                                setPreviousContent(chunks.slice(0, -1));
+                            }
+                            setCurrentContent(chunks[chunks.length - 1] || '');
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error processing MDX chunks:', error);
+                }
+            })();
+        }, [content, isCompleted]);
+
+        if (isCompleted && !isLast) {
+            return (
+                <div className={cn('', markdownStyles, className)}>
+                    <ErrorBoundary fallback={<ErrorPlaceholder />}>
+                        <MemoizedMdxChunk chunk={currentContent} />
+                    </ErrorBoundary>
+                </div>
+            );
         }
 
-        (async () => {
-            try {
-                const normalizedContent = normalizeContent(content);
-                const cleanedContent = parseCitationsWithSourceTags(normalizedContent);
-                const { chunks } = await chunkMdx(cleanedContent);
-                if (chunks.length > 0) {
-                    // Everything except the last chunk becomes previous content
-                    if (chunks.length > 1) {
-                        setPreviousContent(chunks.slice(0, -1));
-                    }
-                    // Last chunk is current content
-                    setCurrentContent(chunks[chunks.length - 1] || '');
-                }
-            } catch (error) {
-                console.error('Error processing MDX chunks:', error);
-            }
-        })();
-    }, [content]);
+        if (!previousContent && !currentContent) {
+            return null;
+        }
 
-    if (isCompleted) {
         return (
             <div className={cn('', markdownStyles, className)}>
-                <ErrorBoundary fallback={<ErrorPlaceholder />}>
-                    <MemoizedMdxChunk chunk={content} />
-                </ErrorBoundary>
+                {previousContent.map((chunk, index) => (
+                    <ErrorBoundary fallback={<ErrorPlaceholder />} key={`${index}-${chunk}`}>
+                        <MemoizedMdxChunk key={chunk} chunk={chunk} />
+                    </ErrorBoundary>
+                ))}
+                {currentContent && (
+                    <ErrorBoundary fallback={<ErrorPlaceholder />} key={`currentChunk`}>
+                        <MemoizedMdxChunk chunk={currentContent} />
+                    </ErrorBoundary>
+                )}
             </div>
         );
     }
-
-    if (!previousContent && !currentContent) {
-        return null;
-    }
-
-    return (
-        <div className={cn('', markdownStyles, className)}>
-            {previousContent.map((chunk, index) => (
-                <ErrorBoundary fallback={<ErrorPlaceholder />} key={`${index}-${chunk}`}>
-                    <MemoizedMdxChunk key={chunk} chunk={chunk} />
-                </ErrorBoundary>
-            ))}
-            {currentContent && (
-                <ErrorBoundary fallback={<ErrorPlaceholder />} key={`currentChunk`}>
-                    <MemoizedMdxChunk chunk={currentContent} />
-                </ErrorBoundary>
-            )}
-        </div>
-    );
-});
+);
 
 MarkdownContent.displayName = 'MarkdownContent';
 

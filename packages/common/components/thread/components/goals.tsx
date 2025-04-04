@@ -2,7 +2,7 @@ import { StepRenderer, StepStatus, ToolCallStep, ToolResultStep } from '@repo/co
 import { useAppStore } from '@repo/common/store';
 import { ChatMode } from '@repo/shared/config';
 import { Step, ThreadItem, ToolCall, ToolResult } from '@repo/shared/types';
-import { Badge, Button } from '@repo/ui';
+import { Badge } from '@repo/ui';
 import {
     IconAtom,
     IconChecklist,
@@ -26,20 +26,20 @@ const getTitle = (threadItem: ThreadItem) => {
 
 const getIcon = (threadItem: ThreadItem) => {
     if (threadItem.mode === ChatMode.Deep) {
-        return <IconAtom size={14} strokeWidth={2} />;
+        return <IconAtom size={16} strokeWidth={2} className="text-emerald-800" />;
     }
     if (threadItem.mode === ChatMode.Pro) {
-        return <IconNorthStar size={14} strokeWidth={2} />;
+        return <IconNorthStar size={16} strokeWidth={2} className="text-emerald-800" />;
     }
-    return <IconChecklist size={14} strokeWidth={2} />;
+    return <IconChecklist size={16} strokeWidth={2} className="text-emerald-800" />;
 };
 
 const getNote = (threadItem: ThreadItem) => {
     if (threadItem.mode === ChatMode.Deep) {
-        return 'This process takes approximately 15 minutes. Please keep the page open during this time.';
+        return 'This process takes approximately 15 minutes. Please keep the tab open during this time.';
     }
     if (threadItem.mode === ChatMode.Pro) {
-        return 'This process takes approximately 5 minutes. Please keep the page open during this time.';
+        return 'This process takes approximately 5 minutes. Please keep the tab open during this time.';
     }
     return '';
 };
@@ -122,7 +122,7 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
                     </div>
                 ),
                 badge: stepCounts,
-                title: () => renderTitle(),
+                title: () => renderTitle(false),
             });
         }
     }, [steps, threadItem?.status]);
@@ -132,7 +132,7 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
 
         openSideDrawer({
             badge: stepCounts,
-            title: renderTitle,
+            title: () => renderTitle(false),
             renderContent: () => (
                 <div className="flex w-full flex-1 flex-col px-2 py-4">
                     {steps.map((step, index) => (
@@ -146,16 +146,27 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
         });
     };
 
-    const renderTitle = () => {
+    const renderTitle = (useNote = true) => {
         return (
-            <span className="flex flex-row items-center gap-2">
-                {isLoading ? (
-                    <IconLoader2 size={14} strokeWidth={2} className=" animate-spin" />
-                ) : (
-                    getIcon(threadItem)
-                )}
-                <p className="text-sm font-medium">{getTitle(threadItem)}</p>
-            </span>
+            <div className="flex flex-row items-start gap-2">
+                <div className="mt-0.5">
+                    {isLoading ? (
+                        <IconLoader2
+                            size={16}
+                            strokeWidth={2}
+                            className=" animate-spin text-emerald-800"
+                        />
+                    ) : (
+                        getIcon(threadItem)
+                    )}
+                </div>
+                <div className="flex flex-col">
+                    <p className="text-sm font-medium">{getTitle(threadItem)}</p>
+                    {useNote && !hasAnswer && (
+                        <p className="text-muted-foreground text-xs">{getNote(threadItem)}</p>
+                    )}
+                </div>
+            </div>
         );
     };
 
@@ -165,21 +176,20 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
 
     return (
         <>
-            <Button
-                variant="secondary"
-                size="sm"
-                className="flex flex-row items-center gap-2"
+            <div
+                className="bg-tertiary hover:bg-quaternary flex w-full cursor-pointer flex-row items-center gap-2 rounded-md px-3 py-2.5"
                 onClick={() => {
                     handleClick();
                 }}
             >
                 {renderTitle()}
+                <div className="flex-1" />
 
                 <Badge variant="default" size="sm">
                     {stepCounts} {stepCounts === 1 ? 'Step' : 'Steps'}
                 </Badge>
                 <IconChevronRight size={14} strokeWidth={2} />
-            </Button>
+            </div>
         </>
     );
 };

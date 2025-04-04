@@ -1,5 +1,6 @@
 import {
     CitationProvider,
+    FollowupSuggestions,
     MarkdownContent,
     Message,
     MessageActions,
@@ -7,6 +8,7 @@ import {
     SourceGrid,
     Steps,
 } from '@repo/common/components';
+import { useAnimatedText } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
 import { ThreadItem as ThreadItemType } from '@repo/shared/types';
 import { Alert, AlertDescription, cn, Skeleton } from '@repo/ui';
@@ -25,6 +27,10 @@ export const ThreadItem = memo(
         isGenerating: boolean;
         isLast: boolean;
     }) => {
+        const { isAnimationComplete, text: animatedText } = useAnimatedText(
+            threadItem.answer?.text || '',
+            isLast && isGenerating
+        );
         const setCurrentSources = useChatStore(state => state.setCurrentSources);
         const messageRef = useRef<HTMLDivElement>(null);
 
@@ -95,7 +101,7 @@ export const ThreadItem = memo(
                                     <SourceGrid sources={threadItem.sources || []} />
 
                                     <MarkdownContent
-                                        content={threadItem.answer?.text || ''}
+                                        content={animatedText || ''}
                                         key={`answer-${threadItem.id}`}
                                         isCompleted={['COMPLETED', 'ERROR', 'ABORTED'].includes(
                                             threadItem.status || ''
@@ -105,6 +111,7 @@ export const ThreadItem = memo(
                                                 threadItem.status || ''
                                             )
                                         }
+                                        isLast={isLast}
                                     />
                                 </div>
                             )}
@@ -129,15 +136,19 @@ export const ThreadItem = memo(
                             </Alert>
                         )}
 
-                        {(threadItem.status === 'COMPLETED' ||
-                            threadItem.status === 'ABORTED' ||
-                            threadItem.status === 'ERROR' ||
-                            !isGenerating) && (
-                            <MessageActions
-                                threadItem={threadItem}
-                                ref={messageRef}
-                                isLast={isLast}
-                            />
+                        {isAnimationComplete &&
+                            (threadItem.status === 'COMPLETED' ||
+                                threadItem.status === 'ABORTED' ||
+                                threadItem.status === 'ERROR' ||
+                                !isGenerating) && (
+                                <MessageActions
+                                    threadItem={threadItem}
+                                    ref={messageRef}
+                                    isLast={isLast}
+                                />
+                            )}
+                        {isAnimationComplete && isLast && (
+                            <FollowupSuggestions suggestions={threadItem.suggestions || []} />
                         )}
                     </div>
                 </>
@@ -145,11 +156,7 @@ export const ThreadItem = memo(
         );
     },
     (prevProps, nextProps) => {
-        return (
-            prevProps.threadItem.id === nextProps.threadItem.id &&
-            nextProps.threadItem.status === 'COMPLETED' &&
-            nextProps.threadItem.answer?.text === prevProps.threadItem.answer?.text
-        );
+        return JSON.stringify(prevProps.threadItem) === JSON.stringify(nextProps.threadItem);
     }
 );
 
