@@ -133,9 +133,9 @@ export const getChatModeMaxTokens = (mode: ChatMode) => {
     }
 };
 
-const estimateTokensByWordCount = (text: string): number => {
+export const estimateTokensByWordCount = (text: string): number => {
     // Simple word splitting by whitespace
-    const words = text.trim().split(/\s+/);
+    const words = text?.trim().split(/\s+/);
 
     // Using a multiplier of 1.35 tokens per word for English text
     const estimatedTokens = Math.ceil(words.length * 1.35);
@@ -143,9 +143,22 @@ const estimateTokensByWordCount = (text: string): number => {
     return estimatedTokens;
 };
 
-export const estimateTokens = (messages: CoreMessage[]): number => {
-    const allContent = messages.map(message => message.content as string).join('\n');
-    return estimateTokensByWordCount(allContent);
+export const estimateTokensForMessages = (messages: CoreMessage[]): number => {
+    let totalTokens = 0;
+
+    for (const message of messages) {
+        if (typeof message.content === 'string') {
+            totalTokens += estimateTokensByWordCount(message.content);
+        } else if (Array.isArray(message.content)) {
+            for (const part of message.content) {
+                if (part.type === 'text') {
+                    totalTokens += estimateTokensByWordCount(part.text);
+                }
+            }
+        }
+    }
+
+    return totalTokens;
 };
 
 export const trimMessageHistoryEstimated = (messages: CoreMessage[], chatMode: ChatMode) => {
@@ -153,19 +166,41 @@ export const trimMessageHistoryEstimated = (messages: CoreMessage[], chatMode: C
     let trimmedMessages = [...messages];
 
     if (trimmedMessages.length <= 1) {
-        const tokenCount = estimateTokens(trimmedMessages);
+        const tokenCount = estimateTokensForMessages(trimmedMessages);
         return { trimmedMessages, tokenCount };
     }
 
     const latestMessage = trimmedMessages.pop()!;
 
     const messageSizes = trimmedMessages.map(msg => {
-        const tokens = estimateTokensByWordCount(msg.content as string);
+        const tokens =
+            typeof msg.content === 'string'
+                ? estimateTokensByWordCount(msg.content)
+                : Array.isArray(msg.content)
+                  ? msg.content.reduce(
+                        (sum, part) =>
+                            part.type === 'text' ? sum + estimateTokensByWordCount(part.text) : sum,
+                        0
+                    )
+                  : 0;
         return { message: msg, tokens };
     });
 
     let totalTokens = messageSizes.reduce((sum, item) => sum + item.tokens, 0);
-    totalTokens += estimateTokensByWordCount(latestMessage.content as string);
+
+    // Count tokens for the latest message
+    const latestMessageTokens =
+        typeof latestMessage.content === 'string'
+            ? estimateTokensByWordCount(latestMessage.content)
+            : Array.isArray(latestMessage.content)
+              ? latestMessage.content.reduce(
+                    (sum, part) =>
+                        part.type === 'text' ? sum + estimateTokensByWordCount(part.text) : sum,
+                    0
+                )
+              : 0;
+
+    totalTokens += latestMessageTokens;
 
     while (totalTokens > maxTokens && messageSizes.length > 0) {
         const removed = messageSizes.shift();

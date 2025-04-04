@@ -7,11 +7,15 @@ import { Paragraph } from '@tiptap/extension-paragraph';
 import { Placeholder } from '@tiptap/extension-placeholder';
 import { Text } from '@tiptap/extension-text';
 
-import { useEditor } from '@tiptap/react';
+import { Editor, useEditor } from '@tiptap/react';
 import { useEffect } from 'react';
 import { useChatStore } from '../store';
 
-export const useChatEditor = (editorProps: { defaultContent?: string }) => {
+export const useChatEditor = (editorProps: {
+    defaultContent?: string;
+    onInit?: (props: { editor: Editor }) => void;
+    onUpdate?: (props: { editor: Editor }) => void;
+}) => {
     const setEditor = useChatStore(state => state.setEditor);
     const editor = useEditor({
         extensions: [
@@ -36,6 +40,7 @@ export const useChatEditor = (editorProps: { defaultContent?: string }) => {
         immediatelyRender: false,
         content: '',
         autofocus: true,
+
         onTransaction(props) {
             const { editor } = props;
             const text = editor.getText();
@@ -60,6 +65,15 @@ export const useChatEditor = (editorProps: { defaultContent?: string }) => {
                 props.editor.commands.setContent(editorProps?.defaultContent || '', true, {
                     preserveWhitespace: true,
                 });
+            }
+            if (editorProps?.onInit) {
+                editorProps.onInit({ editor: props.editor });
+            }
+        },
+        onUpdate(props) {
+            const { editor } = props;
+            if (editorProps?.onUpdate) {
+                editorProps.onUpdate({ editor });
             }
         },
 

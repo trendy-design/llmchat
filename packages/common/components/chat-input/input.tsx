@@ -1,5 +1,5 @@
 'use client';
-import { useAuth, useClerk, useUser } from '@clerk/nextjs';
+import { useAuth, useClerk } from '@clerk/nextjs';
 import {
     ImageAttachment,
     ImageDropzoneRoot,
@@ -29,9 +29,22 @@ export const ChatInput = ({
     isFollowUp?: boolean;
 }) => {
     const { threadId: currentThreadId } = useParams();
-    const { editor } = useChatEditor({});
-    const { user } = useUser();
-    const { actor, isSignedIn } = useAuth();
+    const { editor } = useChatEditor({
+        onInit: ({ editor }) => {
+            if (typeof window !== 'undefined' && !isFollowUp) {
+                const draftMessage = window.localStorage.getItem('draft-message');
+                if (draftMessage) {
+                    editor.commands.setContent(draftMessage, true, { preserveWhitespace: true });
+                }
+            }
+        },
+        onUpdate: ({ editor }) => {
+            if (typeof window !== 'undefined' && !isFollowUp) {
+                window.localStorage.setItem('draft-message', editor.getText());
+            }
+        },
+    });
+    const { isSignedIn } = useAuth();
     const { openSignIn } = useClerk();
     const getThreadItems = useChatStore(state => state.getThreadItems);
     const threadItemsLength = useChatStore(useShallow(state => state.threadItems.length));
@@ -46,6 +59,7 @@ export const ChatInput = ({
     const hasTextInput = !!editor?.getText();
     const { dropzonProps, handleImageUpload } = useImageAttachment();
     const router = useRouter();
+
     const sendMessage = async () => {
         if (!isSignedIn) {
             openSignIn();

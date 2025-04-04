@@ -1,6 +1,6 @@
 import { createTask } from '@repo/orchestrator';
 import { z } from 'zod';
-import { estimateTokens, ModelEnum } from '../../models';
+import { estimateTokensByWordCount, ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
 import { generateObject, getHumanizedDate, handleError } from '../utils';
 
@@ -16,12 +16,7 @@ export const suggestionsTask = createTask<WorkflowEventSchema, WorkflowContextSc
         const question = context?.get('question') || '';
         const answer = context?.get('answer') || '';
 
-        const tokens = estimateTokens([
-            {
-                role: 'user',
-                content: question,
-            },
-        ]);
+        const tokens = estimateTokensByWordCount(question);
 
         if (tokens > MAX_ALLOWED_TOKENS) {
             return {
