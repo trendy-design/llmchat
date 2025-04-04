@@ -46,7 +46,7 @@ export const ThreadItem = memo(
 
         const hasResponse = useMemo(() => {
             return (
-                !!threadItem?.steps?.length ||
+                !!threadItem?.steps ||
                 !!threadItem?.answer?.text ||
                 !!threadItem?.object ||
                 !!threadItem?.error ||
@@ -73,6 +73,13 @@ export const ThreadItem = memo(
                             Answer
                         </div>
 
+                        {threadItem.steps && (
+                            <Steps
+                                steps={Object.values(threadItem?.steps || {})}
+                                threadItem={threadItem}
+                            />
+                        )}
+
                         {!hasResponse && (
                             <div className="flex w-full flex-col items-start gap-2 opacity-10">
                                 <MotionSkeleton className="bg-muted-foreground/40 mb-2 h-4 !w-[100px] rounded-sm" />
@@ -81,10 +88,6 @@ export const ThreadItem = memo(
                                 <MotionSkeleton className="w-[50%] bg-gradient-to-r" />
                             </div>
                         )}
-                        <Steps
-                            steps={Object.values(threadItem?.steps || {})}
-                            threadItem={threadItem}
-                        />
 
                         <div ref={messageRef} className="w-full">
                             {hasAnswer && threadItem.answer?.text && (
@@ -116,6 +119,16 @@ export const ThreadItem = memo(
                                 </AlertDescription>
                             </Alert>
                         )}
+
+                        {threadItem.status === 'ABORTED' && (
+                            <Alert variant="warning">
+                                <AlertDescription>
+                                    <IconAlertCircle className="mt-0.5 size-3.5" />
+                                    {threadItem.error ?? 'Generation stopped'}
+                                </AlertDescription>
+                            </Alert>
+                        )}
+
                         {(threadItem.status === 'COMPLETED' ||
                             threadItem.status === 'ABORTED' ||
                             threadItem.status === 'ERROR' ||

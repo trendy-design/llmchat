@@ -83,12 +83,14 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
 
     if (isSubmitted) {
         return (
-            <div className="border-border bg-background mt-2 flex w-full flex-col flex-col items-start gap-4 rounded-2xl border p-4">
-                <span className="flex flex-row items-center gap-1 text-xs font-medium text-emerald-600">
+            <div className="border-border bg-background mt-2 flex w-full flex-col flex-col items-start gap-4 rounded-lg border p-4">
+                <span className="flex flex-row items-center gap-1 text-xs font-medium text-yellow-700">
                     <IconCheck size={14} strokeWidth={2} /> Submitted
                 </span>
                 <div className="flex flex-col">
-                    <p className="text-base">{threadItem.object?.submittedQuery}</p>
+                    <p className="text-base">
+                        {threadItem.object?.clarifyingQuestion?.submittedQuery}
+                    </p>
                 </div>
             </div>
         );
@@ -99,10 +101,10 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
     }
 
     return (
-        <div className="border-border bg-background mt-2 flex w-full flex-col items-start gap-4 rounded-2xl border p-4">
+        <div className="border-border bg-background mt-2 flex w-full flex-col items-start gap-4 rounded-lg border p-4">
             <div className="flex flex-row items-center gap-1">
                 <IconQuestionMark size={16} strokeWidth={2} className="text-brand" />
-                <p className="text-muted-foreground text-sm">Follow up Question</p>
+                <p className="text-sm text-yellow-700">Follow-up Question</p>
             </div>
 
             <p className="text-base">{question}</p>
@@ -113,7 +115,7 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
                 <Textarea
                     value={customOption}
                     onChange={e => setCustomOption(e.target.value)}
-                    placeholder="Enter additional feedback"
+                    placeholder="Add your response here..."
                     className="!border-border h-[100px] w-full rounded-lg !border px-3 py-2"
                 />
             </div>

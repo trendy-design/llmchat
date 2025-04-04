@@ -590,10 +590,12 @@ export const useChatStore = create(
             });
         },
 
-        stopGeneration: () =>
+        stopGeneration: () => {
             set(state => {
+                state.isGenerating = false;
                 state.abortController?.abort();
-            }),
+            });
+        },
 
         setAbortController: abortController =>
             set(state => {

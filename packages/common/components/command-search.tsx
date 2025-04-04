@@ -132,7 +132,7 @@ export const CommandSearch = () => {
 
     return (
         <CommandDialog open={isCommandSearchOpen} onOpenChange={setIsCommandSearchOpen}>
-            <div className="flex w-full flex-row items-center gap-2 p-1">
+            <div className="flex w-full flex-row items-center gap-2 p-0.5">
                 <CommandInput placeholder="Search..." className="w-full" />
                 <div className="flex shrink-0 items-center gap-1 px-2">
                     <Kbd className="h-5 w-5">
@@ -141,16 +141,16 @@ export const CommandSearch = () => {
                     <Kbd className="h-5 w-5">K</Kbd>
                 </div>
             </div>
-            <div className="w-full px-3">
-                <div className="border-border/50 h-[1px] w-full border-b" />
+            <div className="w-full">
+                <div className="border-border h-[1px] w-full border-b" />
             </div>
-            <CommandList className="max-h-[470px] overflow-y-auto p-0.5 pt-1.5">
+            <CommandList className="max-h-[420px] overflow-y-auto p-0.5 pt-1.5">
                 <CommandEmpty>No results found.</CommandEmpty>
                 <CommandGroup>
                     {actions.map(action => (
                         <CommandItem
                             key={action.name}
-                            className="gap-3"
+                            className="gap-"
                             value={action.name}
                             onSelect={action.action}
                         >
