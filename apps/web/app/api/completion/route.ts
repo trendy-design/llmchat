@@ -39,6 +39,11 @@ export async function POST(request: NextRequest) {
         const creditCost = CHAT_MODE_CREDIT_COSTS[data.mode];
         const remainingCredits = await getRemainingCredits(userId);
 
+        console.log('remainingCredits', remainingCredits);
+        console.log('creditCost', creditCost);
+        console.log('NODE_ENV', process.env.NODE_ENV);
+        console.log('session.userId', session.userId);
+
         if (
             remainingCredits < creditCost &&
             process.env.NODE_ENV !== 'development' &&
