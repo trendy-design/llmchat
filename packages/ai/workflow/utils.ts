@@ -468,13 +468,13 @@ export const processWebPages = async (
     }
 };
 
-export const executeWebSearch = async (queries: string[], signal?: AbortSignal) => {
+export const executeWebSearch = async (queries: string[], signal?: AbortSignal, gl?: Geo) => {
     if (signal?.aborted) {
         throw new Error('Operation aborted');
     }
 
     const flatQueries = queries.flat();
-    const results = await getSERPResults(flatQueries);
+    const results = await getSERPResults(flatQueries, gl);
     const uniqueResults = results.filter(
         (result: { link: string }, index: number, self: { link: string }[]) =>
             index === self.findIndex((t: { link: string }) => t.link === result.link)

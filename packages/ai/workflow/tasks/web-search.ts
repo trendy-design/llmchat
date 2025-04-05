@@ -14,7 +14,8 @@ export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
     execute: async ({ data, trace, events, context, signal }) => {
         const queries = data?.queries;
         const stepId = data?.stepId;
-        const results = await executeWebSearch(queries, signal);
+        const gl = context?.get('gl');
+        const results = await executeWebSearch(queries, signal, gl);
         events?.update('steps', current => {
             return {
                 ...current,
@@ -64,6 +65,7 @@ export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
 Role: You are a Research Information Processor. Your task is to clean and format web search results without summarizing or condensing the information.
 
 The current date and time is: **${getHumanizedDate()}**.
+${gl?.country ? `You are in ${gl?.country}.` : ''}
 
 <user_question>
 ${question}

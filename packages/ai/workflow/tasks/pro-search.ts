@@ -97,7 +97,10 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             let query;
             try {
                 query = await generateObject({
-                    prompt: `Today is ${getHumanizedDate()}. Generate a query to search the web for information make sure query is not too broad and be specific for recent information`,
+                    prompt: `Today is ${getHumanizedDate()}.
+                    ${context?.get('gl')?.country ? `You are in ${context?.get('gl')?.country}\n\n` : ''}
+                    
+                    Generate a query to search the web for information make sure query is not too broad and be specific for recent information`,
                     model: ModelEnum.GPT_4o_Mini,
                     messages,
                     schema: z.object({

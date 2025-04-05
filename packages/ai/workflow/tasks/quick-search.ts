@@ -56,10 +56,12 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
                 ) || [];
 
         const chatMode = context?.get('mode');
+        const gl = context?.get('gl');
         const model = getModelFromChatMode(chatMode);
 
         const query = await generateObject({
-            prompt: `Today is ${getHumanizedDate()}. Generate a query to search the web for information make sure query is not too broad and be specific for recent information`,
+            prompt: `Today is ${getHumanizedDate()}.${gl?.country ? `You are in ${gl?.country}\n\n` : ''}
+ Generate a query to search the web for information make sure query is not too broad and be specific for recent information`,
             model: ModelEnum.GPT_4o_Mini,
             messages,
             schema: z.object({
@@ -70,7 +72,7 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
         if (!query.query) {
             throw new Error('No query generated');
         }
-        const results = await getSERPResults([query.query]);
+        const results = await getSERPResults([query.query], gl);
 
         if (!results || results.length === 0) {
             throw new Error('No results found');
