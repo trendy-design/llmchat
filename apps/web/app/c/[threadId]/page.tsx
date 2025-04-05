@@ -1,23 +1,31 @@
 'use client';
-import { ChatInput, Thread } from '@repo/common/components';
+import { ChatInput, TableOfMessages, Thread } from '@repo/common/components';
 import { useChatStore } from '@repo/common/store';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useStickToBottom } from 'use-stick-to-bottom';
 
 const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
     const router = useRouter();
+    const isGenerating = useChatStore(state => state.isGenerating);
+    const [shouldScroll, setShouldScroll] = useState(isGenerating);
     const { scrollRef, contentRef } = useStickToBottom({
         stiffness: 1,
         damping: 0,
-        initial: {
-            damping: 0,
-            stiffness: 0,
-            mass: 0,
-        },
     });
     const switchThread = useChatStore(state => state.switchThread);
     const getThread = useChatStore(state => state.getThread);
+
+    useEffect(() => {
+        if (isGenerating) {
+            setShouldScroll(true);
+        } else {
+            const timer = setTimeout(() => {
+                setShouldScroll(false);
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+    }, [isGenerating]);
 
     useEffect(() => {
         const { threadId } = params;
@@ -36,7 +44,7 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
     return (
         <div
             className="no-scrollbar flex h-full w-full flex-col items-center overflow-y-auto px-8"
-            ref={scrollRef}
+            ref={shouldScroll ? scrollRef : undefined}
         >
             <div className="mx-auto w-full max-w-3xl px-4 pb-[200px] pt-2" ref={contentRef}>
                 <Thread />
@@ -45,6 +53,7 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
             <div className="bg-secondary absolute bottom-0 z-[30] mx-auto flex w-full max-w-3xl flex-col">
                 <ChatInput showGreeting={false} showBottomBar={false} isFollowUp={true} />
             </div>
+            <TableOfMessages />
         </div>
     );
 };

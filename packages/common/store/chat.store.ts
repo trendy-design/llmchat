@@ -68,6 +68,7 @@ type State = {
     threads: Thread[];
     threadItems: ThreadItem[];
     currentThreadId: string | null;
+    activeThreadItemView: string | null;
     currentThread: Thread | null;
     currentThreadItem: ThreadItem | null;
     messageGroups: MessageGroup[];
@@ -102,6 +103,7 @@ type Actions = {
     createThreadItem: (threadItem: ThreadItem) => Promise<void>;
     updateThreadItem: (threadId: string, threadItem: Partial<ThreadItem>) => Promise<void>;
     switchThread: (threadId: string) => void;
+    setActiveThreadItemView: (threadItemId: string) => void;
 
     deleteThreadItem: (threadItemId: string) => Promise<void>;
     deleteThread: (threadId: string) => Promise<void>;
@@ -437,6 +439,7 @@ export const useChatStore = create(
         threadItems: [],
         useWebSearch: false,
         currentThreadId: null,
+        activeThreadItemView: null,
         currentThread: null,
         currentThreadItem: null,
         imageAttachment: { base64: undefined, file: undefined },
@@ -463,6 +466,12 @@ export const useChatStore = create(
         clearImageAttachment: () => {
             set(state => {
                 state.imageAttachment = { base64: undefined, file: undefined };
+            });
+        },
+
+        setActiveThreadItemView: (threadItemId: string) => {
+            set(state => {
+                state.activeThreadItemView = threadItemId;
             });
         },
 

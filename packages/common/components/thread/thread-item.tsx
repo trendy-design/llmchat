@@ -15,6 +15,7 @@ import { Alert, AlertDescription, cn, Skeleton } from '@repo/ui';
 import { IconAlertCircle, IconBook } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { memo, useEffect, useMemo, useRef } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 export const ThreadItem = memo(
     ({
@@ -33,6 +34,14 @@ export const ThreadItem = memo(
         );
         const setCurrentSources = useChatStore(state => state.setCurrentSources);
         const messageRef = useRef<HTMLDivElement>(null);
+
+        const { ref: inViewRef, inView } = useInView({});
+
+        useEffect(() => {
+            if (inView && threadItem.id) {
+                useChatStore.getState().setActiveThreadItemView(threadItem.id);
+            }
+        }, [inView, threadItem.id]);
 
         useEffect(() => {
             const sources =
@@ -63,8 +72,7 @@ export const ThreadItem = memo(
         }, [threadItem]);
         return (
             <CitationProvider sources={threadItem.sources || []}>
-                <>
-                    {/* <CodeBlock code={JSON.stringify(threadItem, null, 2)} lang="json" /> */}
+                <div className="w-full" ref={inViewRef} id={`thread-item-${threadItem.id}`}>
                     <div className={cn('flex w-full flex-col items-start gap-3 pt-4')}>
                         {threadItem.query && (
                             <Message
@@ -152,7 +160,7 @@ export const ThreadItem = memo(
                             <FollowupSuggestions suggestions={threadItem.suggestions || []} />
                         )}
                     </div>
-                </>
+                </div>
             </CitationProvider>
         );
     },
