@@ -1,0 +1,14 @@
+{
+    "extends": "@repo/typescript-config",
+    "compilerOptions": {
+        "target": "ES2020",
+        "module": "CommonJS",
+        "lib": ["ES2020", "WebWorker"],
+        "types": ["@cloudflare/workers-types"],
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "declaration": true
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["node_modules", "dist"]
+}

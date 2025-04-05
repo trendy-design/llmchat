@@ -1,0 +1,15 @@
+name = "workflow-orchestrator"
+main = "src/worker.ts"
+compatibility_date = "2023-05-18"
+
+[build]
+command = "npm run build"
+
+[durable_objects]
+bindings = [
+  { name = "WORKFLOW_DURABLE_OBJECT", class_name = "WorkflowDurableObject" }
+]
+
+[[migrations]]
+tag = "v1"
+new_classes = ["WorkflowDurableObject"] 

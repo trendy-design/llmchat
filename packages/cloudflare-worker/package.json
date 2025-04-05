@@ -1,0 +1,25 @@
+{
+    "name": "@repo/cloudflare-worker",
+    "version": "0.1.0",
+    "private": true,
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "wrangler dev src/worker.ts",
+        "publish": "wrangler publish",
+        "lint": "eslint . --max-warnings 0",
+        "type-check": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@repo/orchestrator": "*",
+        "@types/node": "^22.14.0"
+    },
+    "devDependencies": {
+        "@cloudflare/workers-types": "^4.20230821.0",
+        "@repo/typescript-config": "*",
+        "eslint": "^8.56.0",
+        "typescript": "^5.3.3",
+        "wrangler": "^3.10.0"
+    }
+}
