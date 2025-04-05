@@ -54,7 +54,7 @@ export const TableOfMessages = () => {
                     {isHovering && (
                         <PopoverContent
                             asChild
-                            sideOffset={-30}
+                            sideOffset={-40}
                             side="right"
                             align="center"
                             className="relative z-[10] max-w-[260px] p-0"
@@ -77,12 +77,9 @@ export const TableOfMessages = () => {
                                                         const element = document.getElementById(
                                                             `thread-item-${item.id}`
                                                         );
-                                                        console.log('element', element);
-                                                        setTimeout(() => {
-                                                            element?.scrollIntoView({
-                                                                behavior: 'smooth',
-                                                            });
-                                                        }, 100);
+                                                        element?.scrollIntoView({
+                                                            behavior: 'instant',
+                                                        });
                                                     }
                                                 }}
                                                 variant="ghost"
