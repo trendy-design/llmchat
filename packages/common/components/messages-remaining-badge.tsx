@@ -27,7 +27,7 @@ export function MessagesRemainingBadge() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.25, ease: 'easeOut' }}
-                className="border-border bg-tertiary/50 -mt-2 flex h-10  w-full flex-row items-center gap-2 rounded-b-lg border-x border-b px-3 pt-2 font-medium"
+                className="border-border bg-tertiary/50 -mt-2 flex h-10  w-full flex-row items-center gap-2 rounded-b-xl border-x border-b px-3 pt-2 font-medium"
             >
                 <div className="text-muted-foreground text-xs">
                     {creditLimit.remaining === 0

@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import { useChatStore } from '../store';
 
 export const useChatEditor = (editorProps: {
+    placeholder?: string;
     defaultContent?: string;
     onInit?: (props: { editor: Editor }) => void;
     onUpdate?: (props: { editor: Editor }) => void;
@@ -23,7 +24,7 @@ export const useChatEditor = (editorProps: {
             Paragraph,
             Text,
             Placeholder.configure({
-                placeholder: 'Ask anything',
+                placeholder: editorProps?.placeholder || 'Ask anything',
             }),
             CharacterCount.configure({
                 limit: 400000,

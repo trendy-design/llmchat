@@ -32,6 +32,7 @@ export const ChatInput = ({
 
     const { threadId: currentThreadId } = useParams();
     const { editor } = useChatEditor({
+        placeholder: isFollowUp ? 'Ask follow up' : 'Ask anything',
         onInit: ({ editor }) => {
             if (typeof window !== 'undefined' && !isFollowUp && !isSignedIn) {
                 const draftMessage = window.localStorage.getItem('draft-message');
@@ -117,7 +118,7 @@ export const ChatInput = ({
             >
                 <Flex
                     direction="col"
-                    className="bg-background border-hard relative z-10 w-full rounded-lg border  shadow-sm"
+                    className="bg-background border-hard relative z-10 w-full rounded-xl border"
                 >
                     <ImageDropzoneRoot dropzoneProps={dropzonProps}>
                         <motion.div

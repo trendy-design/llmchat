@@ -43,6 +43,10 @@ return 1
 export async function getRemainingCredits(userId: string | null): Promise<number> {
     if (!userId) return 0;
 
+    if (DAILY_CREDITS === 0) {
+        return 0;
+    }
+
     try {
         const key = `credits:${userId}`;
         const lastRefillKey = `${key}:lastRefill`;

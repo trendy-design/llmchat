@@ -6,8 +6,12 @@ export async function GET(request: NextRequest) {
     const session = await auth();
     const userId = session?.userId;
 
+    if (!userId) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
-        const remainingCredits = userId ? await getRemainingCredits(userId) : 0;
+        const remainingCredits = await getRemainingCredits(userId);
         const resetTime = getNextResetTime();
 
         return NextResponse.json(

@@ -5,33 +5,11 @@ import {
     useMdxChunker,
 } from '@repo/common/components';
 import { cn } from '@repo/ui';
-import { encode } from 'html-entities';
 import { MDXRemote } from 'next-mdx-remote';
 import { MDXRemoteSerializeResult } from 'next-mdx-remote/rsc';
 import { serialize } from 'next-mdx-remote/serialize';
 import { memo, Suspense, useEffect, useState } from 'react';
 import remarkGfm from 'remark-gfm';
-
-// Replace your custom escaping functions with a more robust solution
-function safelyProcessMarkdown(markdown: string): string {
-    // Split content by code blocks, encode only non-code parts
-    const codeBlockRegex = /(```[\s\S]*?```)/g;
-    const parts = markdown.split(codeBlockRegex);
-
-    return parts
-        .map((part, index) => {
-            // Even indices are non-code blocks, odd indices are code blocks
-            if (index % 2 === 0) {
-                return encode(part, {
-                    mode: 'nonAsciiPrintable',
-                    level: 'html5',
-                });
-            }
-            // Don't encode code blocks
-            return part;
-        })
-        .join('');
-}
 
 export const markdownStyles = {
     'animate-fade-in prose prose-sm min-w-full': true,
@@ -136,8 +114,7 @@ export const MarkdownContent = memo(
             (async () => {
                 try {
                     const normalizedContent = normalizeContent(content);
-                    const safelyProcessed = safelyProcessMarkdown(normalizedContent);
-                    const contentWithCitations = parseCitationsWithSourceTags(safelyProcessed);
+                    const contentWithCitations = parseCitationsWithSourceTags(normalizedContent);
 
                     if (isCompleted) {
                         setPreviousContent([]);

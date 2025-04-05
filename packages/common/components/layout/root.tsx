@@ -113,7 +113,7 @@ export const SideDrawer = () => {
                     }}
                     className="flex min-h-[99dvh] w-[500px] shrink-0 flex-col overflow-hidden py-1.5 pr-1.5"
                 >
-                    <div className="bg-background border-border flex h-full w-full flex-col overflow-hidden rounded-md border shadow-sm">
+                    <div className="bg-background border-border flex h-full w-full flex-col overflow-hidden rounded-md border">
                         <div className="border-border flex flex-row items-center justify-between gap-2 border-b py-1.5 pl-4 pr-2">
                             <div className="text-sm font-medium">
                                 {typeof sideDrawer.title === 'function'

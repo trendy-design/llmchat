@@ -8,11 +8,13 @@ export type TChatEditor = {
     editor: Editor | null;
     maxHeight?: string;
     className?: string;
+    placeholder?: string;
 };
 
 export const ChatEditor: FC<TChatEditor> = ({
     sendMessage,
     editor,
+    placeholder,
     maxHeight = '200px',
     className,
 }) => {
@@ -21,7 +23,7 @@ export const ChatEditor: FC<TChatEditor> = ({
     if (!editor) return null;
 
     const editorContainerClass =
-        'no-scrollbar [&>*]:no-scrollbar wysiwyg min-h-[50px] w-full cursor-text overflow-y-auto p-1 text-base outline-none focus:outline-none [&>*]:leading-6 [&>*]:outline-none [&>*]:break-all [&>*]:word-break-break-word [&>*]:whitespace-pre-wrap';
+        'no-scrollbar [&>*]:no-scrollbar wysiwyg min-h-[60px] w-full cursor-text overflow-y-auto p-1 text-base outline-none focus:outline-none [&>*]:leading-6 [&>*]:outline-none [&>*]:break-all [&>*]:word-break-break-word [&>*]:whitespace-pre-wrap';
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (isGenerating) return;

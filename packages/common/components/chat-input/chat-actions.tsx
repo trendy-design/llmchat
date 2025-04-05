@@ -123,7 +123,7 @@ export const ChatModeButton = () => {
     return (
         <DropdownMenu open={isChatModeOpen} onOpenChange={setIsChatModeOpen}>
             <DropdownMenuTrigger asChild>
-                <Button variant={isChatModeOpen ? 'secondary' : 'ghost'} size="sm" rounded="full">
+                <Button variant={'secondary'} size="sm" rounded="full" className="bg-tertiary">
                     {selectedOption?.icon}
                     {selectedOption?.label}
                     <IconChevronDown size={16} strokeWidth={2} />
