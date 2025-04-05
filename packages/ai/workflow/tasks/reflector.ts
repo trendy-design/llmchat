@@ -62,6 +62,13 @@ Current date: ${getHumanizedDate()}
 - "When should I use async await in JavaScript?"
 - "Why is remote work increasing productivity?"
 
+## Examples of When to Return Null for Queries:
+- When all aspects of the research question have been comprehensively addressed
+- When additional queries would only yield redundant information
+- When the search has reached diminishing returns with sufficient information gathered
+- When all reasonable angles of the question have been explored
+- When the findings provide a complete answer despite minor details missing
+
 **Important**:
 - Use current date and time for the queries unless speciffically asked for a different time period
 
@@ -71,7 +78,23 @@ Current date: ${getHumanizedDate()}
   "queries": ["direct search term 1", "direct search term 2"] // Return null if research is sufficient or if no non-redundant queries can be formulated
 }
 
-CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genuinely new angles to explore that would yield different information, return null for queries.
+## Example Outputs
+
+### When Additional Queries Are Needed:
+
+{
+  "reasoning": "The current findings provide substantial information about Tesla Model 3 performance metrics and owner satisfaction, but lack specific data on battery degradation rates over time. This gap is critical as battery longevity directly impacts the vehicle's long-term value proposition and maintenance costs.",
+  "queries": ["tesla model 3 battery degradation rates ${currentYear}"]
+}
+
+
+### When Research Is Complete:
+{
+  "reasoning": "The research question 'What are the benefits of intermittent fasting?' has been comprehensively addressed. The findings cover metabolic effects, weight management outcomes, cellular repair mechanisms, and potential risks for different populations. Additional research angles would likely yield redundant information or explore tangential topics beyond the scope of the original question.",
+  "queries": null
+}
+
+**CRITICAL: Your primary goal is to avoid redundancy. If you cannot identify genuinely new angles to explore that would yield different information, return null for queries.**
 `;
 
         const object = await generateObject({

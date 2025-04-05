@@ -166,7 +166,7 @@ ${processedResults
     onError: handleError,
     route: ({ context }) => {
         const allQueries = context?.get('queries') || [];
-        if (allQueries?.length < 6) {
+        if (allQueries?.length < 8) {
             return 'reflector';
         }
 
