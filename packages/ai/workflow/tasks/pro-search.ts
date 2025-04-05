@@ -113,7 +113,9 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             // Step 2: Get search results
             let searchResults: SearchResult[] = [];
             try {
-                searchResults = await getSERPResults([query.query]);
+                const gl = context?.get('gl');
+                console.log('gl', gl);
+                searchResults = await getSERPResults([query.query], gl);
                 if (!searchResults || searchResults.length === 0) {
                     throw new Error('No search results found');
                 }

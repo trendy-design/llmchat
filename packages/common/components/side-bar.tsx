@@ -138,7 +138,7 @@ export const Sidebar = () => {
                             !isSidebarOpen && 'justify-center px-0'
                         )}
                     >
-                        <Logo className="size-4 text-emerald-900" />
+                        <Logo className="size-6 text-emerald-900" />
                         {isSidebarOpen && (
                             <p className="font-clash text-lg font-bold tracking-wide text-emerald-900">
                                 deep.new

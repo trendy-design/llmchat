@@ -37,14 +37,14 @@ export const markdownStyles = {
     'animate-fade-in prose prose-sm min-w-full': true,
 
     // Text styles
-    'prose-p:font-normal prose-p:text-base prose-p:text-muted-foreground': true,
+    'prose-p:font-normal prose-p:text-base prose-p:leading-[1.65rem]': true,
     'prose-headings:text-base prose-headings:font-medium ': true,
-    'prose-h1:text-lg prose-h1:font-medium ': true,
-    'prose-h2:text-lg prose-h2:font-medium ': true,
+    'prose-h1:text-2xl prose-h1:font-medium ': true,
+    'prose-h2:text-2xl prose-h2:font-medium ': true,
     'prose-h3:text-lg prose-h3:font-medium ': true,
     'prose-strong:font-medium prose-th:font-medium': true,
 
-    'prose-li:text-muted-foreground prose-li:font-normal': true,
+    'prose-li:text-muted-foreground prose-li:font-normal prose-li:leading-[1.65rem]': true,
 
     // Code styles
     'prose-code:font-mono prose-code:text-sm prose-code:font-normal': true,

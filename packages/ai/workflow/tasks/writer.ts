@@ -50,7 +50,7 @@ ${analysis}
 3. Formatting Standards:
    - Highlight key figures, critical statistics, and significant findings with bold text
    - Construct balanced continuous paragraphs (4-5 sentences per paragraph not more than that) with logical flow instead of shorter sentences.
-   - Use headings strategically only for major thematic shifts depending on the question asked and content
+   - Use headings strategically only for thematic shifts depending on the question asked and content
    - Use lists, tables, links, images when appropriate
    - Implement markdown tables for comparative data where appropriate
    - Ensure proper spacing between sections for optimal readability

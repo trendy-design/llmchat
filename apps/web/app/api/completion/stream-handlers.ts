@@ -2,6 +2,7 @@ import { runWorkflow } from '@repo/ai/workflow';
 import { CHAT_MODE_CREDIT_COSTS } from '@repo/shared/config';
 import { logger } from '@repo/shared/logger';
 import { EVENT_TYPES, posthog } from '@repo/shared/posthog';
+import { Geo } from '@vercel/functions';
 import { deductCredits } from './credit-service';
 import { CompletionRequestType, StreamController } from './types';
 import { sanitizePayloadForJSON } from './utils';
@@ -50,7 +51,8 @@ export async function executeStream(
     encoder: TextEncoder,
     data: CompletionRequestType,
     abortController: AbortController,
-    userId: string
+    userId: string,
+    gl?: Geo
 ): Promise<{ success: boolean } | Response> {
     try {
         if (!userId) {
@@ -76,6 +78,7 @@ export async function executeStream(
                 maxIterations: data.maxIterations || 3,
                 signal,
             },
+            gl,
             mcpConfig: data.mcpConfig || {},
             showSuggestions: data.showSuggestions || false,
             onFinish: async () => {

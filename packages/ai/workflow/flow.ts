@@ -5,6 +5,7 @@ import {
     WorkflowConfig,
 } from '@repo/orchestrator';
 import { ChatMode } from '@repo/shared/config';
+import { Geo } from '@vercel/functions';
 import { CoreMessage } from 'ai';
 import { Langfuse } from 'langfuse';
 import {
@@ -91,6 +92,7 @@ export type WorkflowContextSchema = {
     webSearch: boolean;
     queries: string[];
     summaries: string[];
+    gl?: Geo;
     sources: {
         index: number;
         title: string;
@@ -115,6 +117,7 @@ export const runWorkflow = ({
     webSearch = false,
     showSuggestions = false,
     onFinish,
+    gl,
 }: {
     mcpConfig: Record<string, string>;
     mode: ChatMode;
@@ -127,6 +130,7 @@ export const runWorkflow = ({
     webSearch?: boolean;
     showSuggestions?: boolean;
     onFinish: (data: any) => void;
+    gl?: Geo;
 }) => {
     const langfuse = new Langfuse();
     const trace = langfuse.trace({
@@ -170,6 +174,7 @@ export const runWorkflow = ({
         goals: [],
         queries: [],
         steps: [],
+        gl,
         sources: [],
         summaries: [],
         answer: undefined,

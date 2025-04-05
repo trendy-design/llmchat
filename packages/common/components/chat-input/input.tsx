@@ -239,7 +239,7 @@ export const ChatInput = ({
                             transition={{ duration: 0.3, delay: 0.2 }}
                             className="font-clash text-foreground flex flex-row items-center gap-2 text-[32px] font-semibold !text-emerald-900"
                         >
-                            How can i help you today?
+                            What do you want to know?
                         </motion.h1>
                     </motion.div>
                 )}

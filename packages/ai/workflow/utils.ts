@@ -1,4 +1,5 @@
 import { TaskParams } from '@repo/orchestrator';
+import { Geo } from '@vercel/functions';
 import {
     CoreMessage,
     extractReasoningMiddleware,
@@ -270,7 +271,7 @@ export const getHumanizedDate = () => {
     return format(new Date(), 'MMMM dd, yyyy, h:mm a');
 };
 
-export const getSERPResults = async (queries: string[]) => {
+export const getSERPResults = async (queries: string[], gl?: Geo) => {
     const myHeaders = new Headers();
     const apiKey = process.env.SERPER_API_KEY || (self as any).SERPER_API_KEY || '';
 
@@ -284,8 +285,12 @@ export const getSERPResults = async (queries: string[]) => {
     const raw = JSON.stringify(
         queries.slice(0, 3).map(query => ({
             q: query,
+            gl: gl?.country,
+            location: gl?.city,
         }))
     );
+
+    console.log('raw', raw);
 
     try {
         const controller = new AbortController();

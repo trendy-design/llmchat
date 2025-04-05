@@ -25,6 +25,7 @@
   ],
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^8.25.0",
+    "@vercel/functions": "^2.0.0",
     "ai": "^2.2.0",
     "date-fns": "^4.1.0",
     "remark-slug": "^8.0.0"

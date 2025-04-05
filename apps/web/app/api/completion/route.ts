@@ -1,5 +1,6 @@
 import { auth } from '@clerk/nextjs/server';
 import { CHAT_MODE_CREDIT_COSTS } from '@repo/shared/config';
+import { Geo, geolocation } from '@vercel/functions';
 import { NextRequest } from 'next/server';
 import { DAILY_CREDITS, getRemainingCredits } from './credit-service';
 import { executeStream, sendMessage } from './stream-handlers';
@@ -63,7 +64,11 @@ export async function POST(request: NextRequest) {
             abortController.abort();
         });
 
-        const stream = createCompletionStream(data, userId, abortController);
+        const gl = geolocation(request);
+
+        console.log('gl', gl);
+
+        const stream = createCompletionStream(data, userId, abortController, gl);
 
         return new Response(stream, { headers: enhancedHeaders });
     } catch (error) {
@@ -75,7 +80,12 @@ export async function POST(request: NextRequest) {
     }
 }
 
-function createCompletionStream(data: any, userId: string, abortController: AbortController) {
+function createCompletionStream(
+    data: any,
+    userId: string,
+    abortController: AbortController,
+    gl: Geo
+) {
     const encoder = new TextEncoder();
 
     return new ReadableStream({
@@ -87,7 +97,7 @@ function createCompletionStream(data: any, userId: string, abortController: Abor
             }, 15000);
 
             try {
-                await executeStream(controller, encoder, data, abortController, userId);
+                await executeStream(controller, encoder, data, abortController, userId, gl);
             } catch (error) {
                 if (abortController.signal.aborted) {
                     console.log('abortController.signal.aborted');
