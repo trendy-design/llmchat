@@ -52,6 +52,7 @@ ${analysis}
    - Construct balanced continuous paragraphs (4-5 sentences per paragraph not more than that) with logical flow instead of shorter sentences.
    - Use headings strategically only for thematic shifts depending on the question asked and content
    - Use lists, tables, links, images when appropriate
+   - use bold text for key points
    - Implement markdown tables for comparative data where appropriate
    - Ensure proper spacing between sections for optimal readability
 
