@@ -2,6 +2,7 @@ import { EventEmitter } from 'events';
 import { LangfuseTraceClient } from 'langfuse';
 import { Context, ContextSchemaDefinition } from './context';
 import { EventSchemaDefinition, TypedEventEmitter } from './events';
+import { PersistenceLayer } from './persistence';
 import { TaskErrorHandler } from './task';
 
 export type WorkflowConfig = {
@@ -104,6 +105,7 @@ export class ExecutionContext {
     private gracefulShutdown: boolean;
     private taskExecutionCounts: Map<string, number>;
     private eventEmitter: EventEmitter;
+
     private taskTimings: Map<string, TaskTiming[]>;
 
     constructor(eventEmitter: EventEmitter) {
@@ -328,6 +330,7 @@ export class WorkflowEngine<
     TEvent extends EventSchemaDefinition = any,
     TContext extends ContextSchemaDefinition = any,
 > {
+    private id: string;
     private tasks: Map<string, TaskConfig<TEvent, TContext>>;
     private eventEmitter: EventEmitter;
     private executionContext: ExecutionContext;
@@ -335,23 +338,29 @@ export class WorkflowEngine<
     private events?: TypedEventEmitter<TEvent>;
     private context?: Context<TContext>;
     private config?: WorkflowConfig;
+    private persistence?: PersistenceLayer<TEvent, TContext>;
     private signal?: AbortSignal;
 
     constructor({
+        id,
         trace,
         initialEventState,
         events,
         context,
         config,
         signal,
+        persistence,
     }: {
+        id: string;
         trace?: LangfuseTraceClient;
         initialEventState?: EventPayload;
         events?: TypedEventEmitter<TEvent>;
         context?: Context<TContext>;
         config?: WorkflowConfig;
         signal?: AbortSignal;
+        persistence?: PersistenceLayer<TEvent, TContext>;
     }) {
+        this.id = id;
         this.tasks = new Map();
         this.eventEmitter = new EventEmitter();
         this.executionContext = new ExecutionContext(this.eventEmitter);
@@ -360,6 +369,13 @@ export class WorkflowEngine<
         this.context = context;
         this.config = config;
         this.signal = signal;
+        this.persistence = persistence;
+    }
+
+    persistState() {
+        if (this.persistence) {
+            this.persistence.saveWorkflow(this.id, this);
+        }
     }
 
     on<T extends string>(event: T, callback: (data: any) => void) {
@@ -500,7 +516,9 @@ export class WorkflowEngine<
                 }
 
                 this.executionContext.markTaskComplete(taskName, result);
-
+                if (this.persistence) {
+                    await this.persistence.saveWorkflow(this.id, this);
+                }
                 // Emit an event with the updated execution count
                 const executionCount = this.executionContext.getTaskExecutionCount(taskName);
                 this.executionContext.emitTaskExecutionEvent(taskName, executionCount);
@@ -539,6 +557,9 @@ export class WorkflowEngine<
                 // Check for special "end" route value
                 if (nextTasks === 'end') {
                     console.log(`🏁 Workflow ended after task "${taskName}".`);
+                    if (this.persistence) {
+                        await this.persistence.saveWorkflow(this.id, this);
+                    }
                     return result;
                 }
 
@@ -570,6 +591,9 @@ export class WorkflowEngine<
                         await this.executeTask(nextTasks as string, result);
                     }
                 }
+                if (this.persistence) {
+                    await this.persistence.saveWorkflow(this.id, this);
+                }
                 return result;
             } catch (error) {
                 this.executionContext.endTaskTiming(taskName, error as Error);
@@ -598,6 +622,9 @@ export class WorkflowEngine<
 
                         if (errorResult.result !== undefined) {
                             this.executionContext.markTaskComplete(taskName, errorResult.result);
+                            if (this.persistence) {
+                                await this.persistence.saveWorkflow(this.id, this);
+                            }
 
                             if (errorResult.next) {
                                 if (Array.isArray(errorResult.next)) {
@@ -671,6 +698,9 @@ export class WorkflowEngine<
 
     abort(graceful: boolean = false) {
         this.executionContext.abortWorkflow(graceful);
+        if (this.persistence) {
+            this.persistence.saveWorkflow(this.id, this);
+        }
     }
 
     getTaskRunCount(taskName: string): number {

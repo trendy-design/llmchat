@@ -2,6 +2,7 @@ import { LangfuseTraceClient } from 'langfuse';
 import { Context, ContextSchemaDefinition } from './context';
 import { WorkflowConfig, WorkflowEngine } from './engine';
 import { EventSchemaDefinition, TypedEventEmitter } from './events';
+import { PersistenceLayer } from './persistence';
 import { TaskDefinition } from './task';
 
 export type WorkflowBuilderOptions<
@@ -14,6 +15,7 @@ export type WorkflowBuilderOptions<
     context?: Context<TContext>;
     config?: WorkflowConfig;
     signal?: AbortSignal;
+    persistence?: PersistenceLayer<TEvent, TContext>;
 };
 
 export class WorkflowBuilder<
@@ -23,8 +25,9 @@ export class WorkflowBuilder<
     private tasks: TaskDefinition<TEvent, TContext>[] = [];
     private options: WorkflowBuilderOptions<TEvent, TContext>;
     private workflowInstance?: WorkflowEngine<TEvent, TContext>;
-
-    constructor(options: WorkflowBuilderOptions<TEvent, TContext> = {}) {
+    private workflowId: string;
+    constructor(workflowId: string, options: WorkflowBuilderOptions<TEvent, TContext> = {}) {
+        this.workflowId = workflowId;
         this.options = options;
     }
 
@@ -40,12 +43,14 @@ export class WorkflowBuilder<
 
     build(): WorkflowEngine<TEvent, TContext> {
         this.workflowInstance = new WorkflowEngine<TEvent, TContext>({
+            id: this.workflowId,
             trace: this.options.trace,
             initialEventState: this.options.initialEventState,
             events: this.options.events,
             context: this.options.context,
             config: this.options.config,
             signal: this.options.signal,
+            persistence: this.options.persistence,
         });
 
         for (const taskDef of this.tasks) {

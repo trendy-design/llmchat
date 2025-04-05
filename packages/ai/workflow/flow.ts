@@ -180,7 +180,7 @@ export const runWorkflow = ({
     });
 
     // Use the typed builder
-    const builder = new WorkflowBuilder({
+    const builder = new WorkflowBuilder(threadId, {
         trace,
         initialEventState: events.getAllState(),
         events,

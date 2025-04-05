@@ -14,12 +14,23 @@ import remarkGfm from 'remark-gfm';
 
 // Replace your custom escaping functions with a more robust solution
 function safelyProcessMarkdown(markdown: string): string {
-    // First handle your citations
-    // Then encode potentially problematic HTML
-    return encode(markdown, {
-        mode: 'nonAsciiPrintable',
-        level: 'html5',
-    });
+    // Split content by code blocks, encode only non-code parts
+    const codeBlockRegex = /(```[\s\S]*?```)/g;
+    const parts = markdown.split(codeBlockRegex);
+
+    return parts
+        .map((part, index) => {
+            // Even indices are non-code blocks, odd indices are code blocks
+            if (index % 2 === 0) {
+                return encode(part, {
+                    mode: 'nonAsciiPrintable',
+                    level: 'html5',
+                });
+            }
+            // Don't encode code blocks
+            return part;
+        })
+        .join('');
 }
 
 export const markdownStyles = {
