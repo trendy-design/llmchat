@@ -28,10 +28,12 @@ export const ChatInput = ({
     showBottomBar?: boolean;
     isFollowUp?: boolean;
 }) => {
+    const { isSignedIn } = useAuth();
+
     const { threadId: currentThreadId } = useParams();
     const { editor } = useChatEditor({
         onInit: ({ editor }) => {
-            if (typeof window !== 'undefined' && !isFollowUp) {
+            if (typeof window !== 'undefined' && !isFollowUp && !isSignedIn) {
                 const draftMessage = window.localStorage.getItem('draft-message');
                 if (draftMessage) {
                     editor.commands.setContent(draftMessage, true, { preserveWhitespace: true });
@@ -44,7 +46,6 @@ export const ChatInput = ({
             }
         },
     });
-    const { isSignedIn } = useAuth();
     const { openSignIn } = useClerk();
     const getThreadItems = useChatStore(state => state.getThreadItems);
     const threadItemsLength = useChatStore(useShallow(state => state.threadItems.length));
@@ -97,6 +98,7 @@ export const ChatInput = ({
             ),
             useWebSearch,
         });
+        window.localStorage.removeItem('draft-message');
         editor.commands.clearContent();
         clearImageAttachment();
         if (currentThreadId !== threadId) {

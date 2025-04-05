@@ -136,22 +136,20 @@ export const MarkdownContent = memo(
             (async () => {
                 try {
                     const normalizedContent = normalizeContent(content);
-                    // Update processing chain to escape brackets first, handle citations, then escape problematic HTML
-                    // const escapedContent = escapeMarkdownBrackets(normalizedContent);
                     const safelyProcessed = safelyProcessMarkdown(normalizedContent);
                     const contentWithCitations = parseCitationsWithSourceTags(safelyProcessed);
 
                     if (isCompleted) {
-                        console.log('[CONTENT WITH CITATIONS]', safelyProcessed);
-
+                        setPreviousContent([]);
                         setCurrentContent(contentWithCitations);
                     } else {
-                        console.log('[CONTENT WITH CITATIONS]', contentWithCitations);
                         const { chunks } = await chunkMdx(contentWithCitations);
 
                         if (chunks.length > 0) {
                             if (chunks.length > 1) {
                                 setPreviousContent(chunks.slice(0, -1));
+                            } else {
+                                setPreviousContent([]);
                             }
                             setCurrentContent(chunks[chunks.length - 1] || '');
                         }
@@ -172,19 +170,16 @@ export const MarkdownContent = memo(
             );
         }
 
-        if (!previousContent && !currentContent) {
-            return null;
-        }
-
         return (
             <div className={cn('', markdownStyles, className)}>
-                {previousContent.map((chunk, index) => (
-                    <ErrorBoundary fallback={<ErrorPlaceholder />} key={`${index}-${chunk}`}>
-                        <MemoizedMdxChunk key={chunk} chunk={chunk} />
-                    </ErrorBoundary>
-                ))}
+                {previousContent.length > 0 &&
+                    previousContent.map((chunk, index) => (
+                        <ErrorBoundary fallback={<ErrorPlaceholder />} key={`prev-${index}`}>
+                            <MemoizedMdxChunk chunk={chunk} />
+                        </ErrorBoundary>
+                    ))}
                 {currentContent && (
-                    <ErrorBoundary fallback={<ErrorPlaceholder />} key={`currentChunk`}>
+                    <ErrorBoundary fallback={<ErrorPlaceholder />} key="current-chunk">
                         <MemoizedMdxChunk chunk={currentContent} />
                     </ErrorBoundary>
                 )}
