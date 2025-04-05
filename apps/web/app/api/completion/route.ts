@@ -44,11 +44,7 @@ export async function POST(request: NextRequest) {
         console.log('NODE_ENV', process.env.NODE_ENV);
         console.log('session.userId', session.userId);
 
-        if (
-            remainingCredits < creditCost &&
-            process.env.NODE_ENV !== 'development' &&
-            session.userId === ''
-        ) {
+        if (remainingCredits < creditCost && process.env.NODE_ENV !== 'development') {
             return new Response(
                 'You have reached the daily limit of requests. Please try again tomorrow or Use your own API key.',
                 { status: 429, headers: { 'Content-Type': 'application/json' } }
