@@ -1,8 +1,16 @@
 'use client';
 import { ChatInput, Footer } from '@repo/common/components';
 import { Flex } from '@repo/ui';
+import { usePostHog } from 'posthog-js/react';
+import { useEffect } from 'react';
 
 const ChatPage = () => {
+    const posthog = usePostHog();
+
+    useEffect(() => {
+        posthog.capture('$pageview');
+    }, []);
+
     return (
         <div className="flex w-full flex-1 flex-col overflow-hidden">
             <Flex

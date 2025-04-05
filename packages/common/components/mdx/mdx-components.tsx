@@ -24,7 +24,7 @@ export const mdxComponents: ComponentProps<typeof MDXRemote>['components'] = {
 
         return (
             <LinkPreviewPopover source={source}>
-                <div className="group mx-0.5 inline-flex size-4 flex-row items-center justify-center gap-1 rounded-sm bg-emerald-600/20 text-[10px] font-medium text-emerald-700">
+                <div className="rounded-xs group mx-0.5 inline-flex size-4 flex-row items-center justify-center gap-1 bg-emerald-600/20 text-[10px] font-medium text-emerald-700">
                     {source?.index}
                 </div>
             </LinkPreviewPopover>
