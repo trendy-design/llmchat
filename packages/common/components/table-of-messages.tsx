@@ -20,13 +20,13 @@ export const TableOfMessages = () => {
 
     return (
         <div
-            className="absolute left-4 top-1/2 z-[10] flex -translate-y-1/2 flex-col items-end gap-1.5 pl-2"
+            className="absolute left-4 top-1/2 z-[10] flex -translate-y-1/2 flex-col items-end gap-1.5"
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
         >
             <Popover open={isHovering} onOpenChange={setIsHovering}>
                 <PopoverTrigger asChild>
-                    <div className="flex h-12 w-8 flex-col items-start justify-center gap-1.5 p-2">
+                    <div className="flex h-12 w-8 flex-col items-start justify-center gap-1.5">
                         {allItems.map((item, index) => {
                             const isActive = activeItemId === item?.id;
                             return (
@@ -57,7 +57,7 @@ export const TableOfMessages = () => {
                             sideOffset={-30}
                             side="right"
                             align="center"
-                            className="relative z-[10] w-[260px] p-0"
+                            className="relative z-[10] max-w-[260px] p-0"
                         >
                             <motion.div
                                 initial={{ opacity: 0, x: -10 }}
