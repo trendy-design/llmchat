@@ -5,7 +5,7 @@ import { useChatStore } from '@repo/common/store';
 import { ChatMode, getChatModeName } from '@repo/shared/config';
 import { ThreadItem } from '@repo/shared/types';
 import { Button, DropdownMenu, DropdownMenuTrigger } from '@repo/ui';
-import { IconCheck, IconCopy, IconRefresh, IconTrash } from '@tabler/icons-react';
+import { IconCheck, IconCopy, IconMarkdown, IconRefresh, IconTrash } from '@tabler/icons-react';
 import { forwardRef, useState } from 'react';
 type MessageActionsProps = {
     threadItem: ThreadItem;
@@ -19,13 +19,13 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
         const getThreadItems = useChatStore(state => state.getThreadItems);
         const useWebSearch = useChatStore(state => state.useWebSearch);
         const [chatMode, setChatMode] = useState<ChatMode>(threadItem.mode);
-        const { copyToClipboard, status } = useCopyText();
+        const { copyToClipboard, status, copyMarkdown, markdownCopyStatus } = useCopyText();
         return (
             <div className="flex flex-row items-center gap-1 py-2">
                 {threadItem?.answer?.text && (
                     <Button
                         variant="secondary"
-                        size="xs"
+                        size="icon-sm"
                         rounded="full"
                         onClick={() => {
                             if (ref && 'current' in ref && ref.current) {
@@ -39,15 +39,40 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                         ) : (
                             <IconCopy size={16} strokeWidth={2} />
                         )}
-                        {status === 'copied' ? 'Copied' : 'Copy'}
+                    </Button>
+                )}
+
+                {threadItem?.answer?.text && (
+                    <Button
+                        variant="secondary"
+                        size="icon-sm"
+                        rounded="full"
+                        onClick={() => {
+                            copyMarkdown(
+                                `${threadItem?.answer?.text}\n\n## References\n${threadItem?.sources
+                                    ?.map(source => `[${source.index}] ${source.link}`)
+                                    .join('\n')}`
+                            );
+                        }}
+                        tooltip="Copy Markdown"
+                    >
+                        {markdownCopyStatus === 'copied' ? (
+                            <IconCheck size={16} strokeWidth={2} />
+                        ) : (
+                            <IconMarkdown size={16} strokeWidth={2} />
+                        )}
                     </Button>
                 )}
                 {threadItem.status !== 'ERROR' && threadItem.answer?.status !== 'HUMAN_REVIEW' && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="secondary" size="xs" rounded="full" tooltip="Rewrite">
+                            <Button
+                                variant="secondary"
+                                size="icon-sm"
+                                rounded="full"
+                                tooltip="Rewrite"
+                            >
                                 <IconRefresh size={16} strokeWidth={2} />
-                                Rewrite
                             </Button>
                         </DropdownMenuTrigger>
                         <ChatModeOptions

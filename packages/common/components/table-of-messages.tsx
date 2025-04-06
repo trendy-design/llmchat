@@ -18,6 +18,10 @@ export const TableOfMessages = () => {
     const activeItemId = useChatStore(state => state.activeThreadItemView);
     const allItems = [...previousThreadItems, currentThreadItem].filter(Boolean);
 
+    if (allItems?.length <= 1) {
+        return null;
+    }
+
     return (
         <div
             className="absolute left-4 top-1/2 z-[10] flex -translate-y-1/2 flex-col items-end gap-1.5"

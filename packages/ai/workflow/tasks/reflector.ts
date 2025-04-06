@@ -6,7 +6,7 @@ import { generateObject, getHumanizedDate, handleError } from '../utils';
 
 export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'reflector',
-    execute: async ({ trace, data, events, context, signal }) => {
+    execute: async ({ trace, data, events, context, signal, redirectTo }) => {
         const question = context?.get('question') || '';
         const messages = context?.get('messages') || [];
         const prevQueries = context?.get('queries') || [];
@@ -102,7 +102,7 @@ Current date: ${getHumanizedDate()}
             model: ModelEnum.GPT_4o_Mini,
             schema: z.object({
                 reasoning: z.string(),
-                queries: z.array(z.string()).optional(),
+                queries: z.array(z.string()).optional().nullable(),
             }),
 
             messages: messages as any,
@@ -113,23 +113,33 @@ Current date: ${getHumanizedDate()}
 
         context?.update('queries', current => [...(current ?? []), ...(object?.queries ?? [])]);
 
-        events?.update('steps', current => {
-            return {
-                ...current,
-                [newStepId]: {
-                    text: object.reasoning,
-                    steps: {
-                        ...(current?.[newStepId]?.steps || {}),
-                        search: {
-                            data: object.queries,
-                            status: 'COMPLETED' as const,
+        if (!!object?.reasoning) {
+            events?.update('steps', current => {
+                return {
+                    ...current,
+                    [newStepId]: {
+                        text: object?.reasoning,
+                        steps: {
+                            ...(current?.[newStepId]?.steps || {}),
+                            ...(object?.queries
+                                ? {
+                                      search: {
+                                          data: object?.queries,
+                                          status: 'COMPLETED' as const,
+                                      },
+                                  }
+                                : {}),
                         },
+                        status: 'PENDING' as const,
+                        id: newStepId,
                     },
-                    status: 'PENDING' as const,
-                    id: newStepId,
-                },
-            };
-        });
+                };
+            });
+        }
+
+        if (!object?.queries?.length || !object?.reasoning) {
+            redirectTo('analysis');
+        }
 
         trace?.span({
             name: 'reflector',

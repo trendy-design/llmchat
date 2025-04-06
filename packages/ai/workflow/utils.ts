@@ -436,8 +436,12 @@ export const processWebPages = async (
     timeoutSignal.addEventListener('abort', () => combinedSignal.abort());
 
     try {
+        const startTime = Date.now();
+
         for (let i = 0; i < results.length; i += options.batchSize) {
             if (processedResults.length >= options.maxPages) break;
+            if (combinedSignal.signal.aborted) break;
+            if (Date.now() - startTime > options.timeout) break;
 
             const batch = results.slice(i, i + options.batchSize);
             const batchPromises = batch.map(result =>
@@ -453,18 +457,16 @@ export const processWebPages = async (
             const batchResults = await Promise.all(batchPromises);
             const validResults = batchResults.filter((r): r is NonNullable<typeof r> => r !== null);
             processedResults.push(...validResults);
-
-            if (combinedSignal.signal.aborted) {
-                break;
-            }
         }
 
         return processedResults.slice(0, options.maxPages);
     } catch (error) {
-        if (error instanceof Error && error.name === 'TimeoutError') {
-            return processedResults.slice(0, options.maxPages);
-        }
-        throw error;
+        console.error('Error in processWebPages:', error);
+        return processedResults.slice(0, options.maxPages);
+    } finally {
+        // Clean up event listeners to prevent memory leaks
+        signal?.removeEventListener('abort', () => combinedSignal.abort());
+        timeoutSignal.removeEventListener('abort', () => combinedSignal.abort());
     }
 };
 

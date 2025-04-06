@@ -83,7 +83,7 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
 
     if (isSubmitted) {
         return (
-            <div className="border-border bg-background mt-2 flex w-full flex-col flex-col items-start gap-4 rounded-lg border p-4">
+            <div className="border-border bg-background mt-2 flex w-full flex-col items-start gap-4 rounded-lg border p-4">
                 <span className="flex flex-row items-center gap-1 text-xs font-medium text-yellow-700">
                     <IconCheck size={14} strokeWidth={2} /> Submitted
                 </span>
@@ -125,12 +125,19 @@ export const QuestionPrompt = ({ threadItem }: { threadItem: ThreadItem }) => {
                 size="sm"
                 rounded="full"
                 onClick={async () => {
-                    let query = '';
+                    const originalQuery = threadItem.query || '';
+                    let clarifyingResponse = '';
+
                     if (choiceType === 'single') {
-                        query = `${selectedOption ? `${selectedOption} \n\n` : ''}${customOption}`;
+                        clarifyingResponse = `${selectedOption ? `${selectedOption} \n\n` : ''}${customOption}`;
                     } else {
-                        query = `${!!selectedOptions?.length ? `${selectedOptions.join(', ')} \n\n` : ''}${customOption}`;
+                        clarifyingResponse = `${!!selectedOptions?.length ? `${selectedOptions.join(', ')} \n\n` : ''}${customOption}`;
                     }
+
+                    const query = originalQuery
+                        ? `${originalQuery}\n\nAdditional context: ${clarifyingResponse}`
+                        : clarifyingResponse;
+
                     const formData = new FormData();
                     formData.append('query', query);
                     const threadItems = await getThreadItems(threadItem.threadId);
