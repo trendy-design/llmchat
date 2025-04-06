@@ -30,7 +30,7 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
         <Dialog {...props}>
             <DialogOverlay className="!bg-transparent backdrop-blur-0" />
             <DialogContent
-                className="overflow-hidden border border-transparent p-0 md:w-[700px]"
+                className="top-[40%] w-[700px] overflow-hidden p-0"
                 ariaTitle="Command Search"
             >
                 <Command className="[&_[cmdk-group-heading]]:text-muted-foreground bg-background pb-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-1 [&_[cmdk-input-wrapper]_svg]:h-4 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">

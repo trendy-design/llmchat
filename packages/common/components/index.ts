@@ -5,6 +5,7 @@ export * from './command-search';
 export * from './error-boundary';
 export * from './error-placeholder';
 export * from './exmaple-prompts';
+export * from './feedback-widget';
 export * from './footer';
 export * from './full-page-loader';
 export * from './history/history-item';

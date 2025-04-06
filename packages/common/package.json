@@ -16,6 +16,7 @@
         "@repo/ai": "*",
         "@repo/shared": "*",
         "@repo/ui": "*",
+        "@repo/actions": "*",
         "@tiptap/extension-character-count": "^2.11.7"
     },
     "devDependencies": {

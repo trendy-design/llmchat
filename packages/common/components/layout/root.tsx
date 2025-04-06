@@ -1,6 +1,6 @@
 'use client';
 import { SignIn } from '@clerk/nextjs';
-import { CommandSearch, SettingsModal, Sidebar } from '@repo/common/components';
+import { CommandSearch, FeedbackWidget, SettingsModal, Sidebar } from '@repo/common/components';
 import { useRootContext } from '@repo/common/context';
 import { AgentProvider } from '@repo/common/hooks';
 import { useAppStore } from '@repo/common/store';
@@ -76,6 +76,7 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
                                 </div>
                             </div>
                             <SideDrawer />
+                            <FeedbackWidget />
                         </div>
                     </AgentProvider>
                 </motion.div>

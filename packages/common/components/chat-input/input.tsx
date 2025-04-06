@@ -9,6 +9,7 @@ import { useImageAttachment } from '@repo/common/hooks';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
+import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useShallow } from 'zustand/react/shallow';
 import { useAgentStream } from '../../hooks/agent-provider';
@@ -226,22 +227,9 @@ export const ChatInput = ({
                         transition={{ duration: 0.3, ease: 'easeOut' }}
                         className="mb-6 flex w-full flex-col items-center gap-1"
                     >
-                        {/* <motion.h1
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 0.5 }}
-                            transition={{ duration: 0.3, delay: 0.1 }}
-                            className="text-foreground/70 text-3xl font-medium tracking-tight"
-                        >
-                            {`Good morning`}
-                        </motion.h1> */}
-                        <motion.h1
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.3, delay: 0.2 }}
-                            className="font-clash text-foreground flex flex-row items-center gap-2 text-[32px] font-semibold !text-emerald-900"
-                        >
-                            What do you want to know?
-                        </motion.h1>
+                        <AnimatedTitles
+                            titles={['Ask me anything...', 'What would you like to explore today?']}
+                        />
                     </motion.div>
                 )}
 
@@ -251,5 +239,44 @@ export const ChatInput = ({
                 {/* <ChatFooter /> */}
             </Flex>
         </div>
+    );
+};
+
+type AnimatedTitlesProps = {
+    titles: string[];
+};
+
+const AnimatedTitles = ({ titles }: AnimatedTitlesProps) => {
+    const [titleIndex, setTitleIndex] = React.useState(0);
+
+    React.useEffect(() => {
+        const interval = setInterval(() => {
+            setTitleIndex(prevIndex => (prevIndex + 1) % titles.length);
+        }, 10000); // Slightly faster rotation for better engagement
+
+        return () => clearInterval(interval);
+    }, [titles.length]);
+
+    return (
+        <Flex
+            direction="col"
+            className="relative h-[60px] w-full items-center justify-center overflow-hidden"
+        >
+            <AnimatePresence mode="wait">
+                <motion.h1
+                    key={titleIndex}
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                    transition={{
+                        duration: 0.8,
+                        ease: 'easeInOut',
+                    }}
+                    className="font-clash text-foreground text-center text-[32px] font-semibold !text-emerald-900"
+                >
+                    {titles[titleIndex]}
+                </motion.h1>
+            </AnimatePresence>
+        </Flex>
     );
 };
