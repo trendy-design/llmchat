@@ -7,7 +7,8 @@
     "scripts": {
         "db:generate": "prisma generate",
         "db:push": "prisma db push --skip-generate",
-        "db:migrate": "prisma migrate dev"
+        "db:migrate": "prisma migrate dev",
+        "postinstall": "prisma generate"
     },
     "dependencies": {
         "@prisma/client": "^5.10.0"
