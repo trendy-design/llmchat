@@ -1,34 +1,37 @@
 {
-  "private": true,
-  "scripts": {
-    "build": "turbo run build",
-    "dev": "turbo run dev",
-    "lint": "turbo run lint",
-    "clean": "turbo run clean && rm -rf node_modules",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
-    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\""
-  },
-  "devDependencies": {
-    "@typescript-eslint/parser": "^8.25.0",
-    "eslint": "^9.21.0",
-    "eslint-plugin-prettier": "^5.2.3",
-    "globals": "^16.0.0",
-    "prettier": "^3.2.5",
-    "prettier-plugin-tailwindcss": "^0.5.12",
-    "tsconfig-paths-webpack-plugin": "^4.2.0",
-    "turbo": "latest"
-  },
-  "packageManager": "bun@1.1.19",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "dependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.25.0",
-    "@vercel/functions": "^2.0.0",
-    "ai": "^2.2.0",
-    "date-fns": "^4.1.0",
-    "react-intersection-observer": "^9.16.0",
-    "remark-slug": "^8.0.0"
-  }
+    "private": true,
+    "scripts": {
+        "build": "turbo run build",
+        "dev": "turbo run dev",
+        "lint": "turbo run lint",
+        "clean": "turbo run clean && rm -rf node_modules",
+        "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+        "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\""
+    },
+    "devDependencies": {
+        "@typescript-eslint/parser": "^8.25.0",
+        "eslint": "^9.21.0",
+        "eslint-plugin-prettier": "^5.2.3",
+        "globals": "^16.0.0",
+        "prettier": "^3.2.5",
+        "prettier-plugin-tailwindcss": "^0.5.12",
+        "tsconfig-paths-webpack-plugin": "^4.2.0",
+        "turbo": "latest"
+    },
+    "packageManager": "bun@1.1.19",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "dependencies": {
+        "@mozilla/readability": "^0.6.0",
+        "@typescript-eslint/eslint-plugin": "^8.25.0",
+        "@vercel/functions": "^2.0.0",
+        "ai": "^2.2.0",
+        "date-fns": "^4.1.0",
+        "node-html-parser": "^7.0.1",
+        "react-intersection-observer": "^9.16.0",
+        "remark-slug": "^8.0.0",
+        "turndown": "^7.2.0"
+    }
 }

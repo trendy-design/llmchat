@@ -2,6 +2,7 @@ import { createTask } from '@repo/orchestrator';
 import { z } from 'zod';
 import { getModelFromChatMode, ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
+import { readWebPagesWithTimeout, TReaderResult } from '../reader';
 import {
     generateObject,
     generateText,
@@ -10,42 +11,68 @@ import {
     handleError,
 } from '../utils';
 
-const buildWebSearchPrompt = (results: any[]): string => {
+const buildWebSearchPrompt = (results: TReaderResult[]): string => {
     const today = new Date().toLocaleDateString();
 
     let prompt = `You are a helpful assistant that can answer questions and help with tasks.
 Today is ${today}.
+
 
 ${results
     .map(
         (result, index) => `
 <result>
     \n\n
-    ## [${index + 1}] ${result.link}
+    ## [${index + 1}] ${result.url}
     \n\n
     ### Title: ${result.title}
     \n\n
-    ### Snippet: ${result.snippet}
+    ### Snippet: ${result.markdown}
 </result>
 `
     )
     .join('\n')}
 
-**Must use citations for the findings**\n\n
-<citation-method>
-    - Use numbered citations like [1], [2], etc. for referencing findings
-    - Example: According to recent findings [1][3], progress in this area has accelerated
-    - When information appears in multiple findings, cite all relevant findings using multiple numbers
-    - Integrate citations naturally without disrupting reading flow
-    - Don't add citations to the end of the report, just use them in the report
-</citation-method>`;
+## Output Requirements:
+
+1. Content Organization:
+   - Organize information in a highly scannable format with clear headings and subheadings
+   - Use bullet points for key facts and findings
+   - Bold important data points, statistics, and conclusions
+   - Group related information from different sources together
+
+2. Information Hierarchy:
+   - Start with the most relevant and important findings first
+   - Include specific details, numbers, and technical information when available
+   - Highlight contradictory information or different perspectives on the same topic
+   - Ensure each point adds unique value without unnecessary repetition
+
+3. Context & Relevance:
+   - Maintain focus on directly answering the user's question
+   - Provide enough context for each point to be understood independently
+   - Include temporal information (dates, timelines) when relevant
+   - Summarize complex concepts in accessible language
+
+4. Citations:
+   - Use inline citations like [1] to reference sources
+   - When information appears in multiple findings, cite all relevant sources: [1][3]
+   - Make it clear when different sources have conflicting information
+
+5. Visual Structure:
+   - Use clear visual separation between different sections
+   - Keep paragraphs short (3-4 lines maximum)
+   - Include a brief "Key Takeaways" section at the beginning for ultra-quick consumption
+   - End with any important context or limitations of the findings
+
+Your goal is to help the user quickly understand and extract value from these search results without missing any important details.
+`;
 
     return prompt;
 };
 
 export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'quickSearch',
-    execute: async ({ events, context, signal }) => {
+    execute: async ({ events, context, signal, trace }) => {
         const messages =
             context
                 ?.get('messages')
@@ -112,23 +139,26 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
             },
         }));
 
-        events?.update('sources', prev => ({
-            ...prev,
-            ...results.map((result: any, index: number) => ({
+        events?.update('sources', prev =>
+            results.map((result: any, index: number) => ({
                 title: result.title,
                 link: result.link,
+                snippet: result.snippet,
                 index: index + (prev?.length || 1),
-            })),
-        }));
+            }))
+        );
 
-        const searchContent = results.reduce((acc: string, result: any) => {
-            return acc + `\n${result.title}\n${result.snippet}\n${result.link}`;
-        }, '');
+        const webpageReader = await readWebPagesWithTimeout(
+            results.map((result: any) => result?.link),
+            30000
+        );
+
+        const prompt = buildWebSearchPrompt(webpageReader);
 
         const response = await generateText({
             model,
-            messages: [...messages, { role: 'user', content: searchContent }],
-            prompt: buildWebSearchPrompt(results),
+            messages: [...messages],
+            prompt,
             onChunk: (chunk, fullText) => {
                 events?.update('answer', current => ({
                     ...current,
@@ -140,7 +170,7 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
 
         events?.update('answer', prev => ({
             ...prev,
-            text: undefined,
+            text: '',
             fullText: response,
             status: 'COMPLETED',
         }));
