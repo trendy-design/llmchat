@@ -11,8 +11,10 @@ import {
     Input,
 } from '@repo/ui';
 import { MoreHorizontal } from 'lucide-react';
+import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+
 export const HistoryItem = ({
     thread,
     dismiss,
@@ -28,9 +30,9 @@ export const HistoryItem = ({
     pinThread: (threadId: string) => void;
     unpinThread: (threadId: string) => void;
 }) => {
+    const { push } = useRouter();
     const { threadId: currentThreadId } = useParams();
     const updateThread = useChatStore(state => state.updateThread);
-    const { push } = useRouter();
     const [isEditing, setIsEditing] = useState(false);
     const [title, setTitle] = useState(thread.title);
     const deleteThread = useChatStore(state => state.deleteThread);
@@ -66,15 +68,8 @@ export const HistoryItem = ({
         }
     };
 
-    const handleOnClick = () => {
-        if (!isEditing) {
-            push(`/chat/${thread.id}`);
-            switchThread(thread.id);
-        }
-    };
-
     const containerClasses = cn(
-        'gap-2 w-full group w-full relative cursor-pointer flex flex-row items-center h-7 py-0.5 pl-2 pr-1 rounded-sm hover:bg-quaternary',
+        'gap-2 w-full group w-full relative flex flex-row items-center h-7 py-0.5 pl-2 pr-1 rounded-sm hover:bg-quaternary',
         isActive || isEditing ? 'bg-tertiary' : ''
     );
 
@@ -93,7 +88,7 @@ export const HistoryItem = ({
     };
 
     return (
-        <div key={thread.id} className={containerClasses} onClick={handleOnClick}>
+        <div key={thread.id} className={containerClasses}>
             {isEditing ? (
                 <Input
                     variant="ghost"
@@ -105,7 +100,11 @@ export const HistoryItem = ({
                     onBlur={handleInputBlur}
                 />
             ) : (
-                <>
+                <Link
+                    href={`/chat/${thread.id}`}
+                    className="flex flex-1 items-center"
+                    onClick={() => switchThread(thread.id)}
+                >
                     <Flex
                         direction="col"
                         items="start"
@@ -116,7 +115,7 @@ export const HistoryItem = ({
                             {thread.title}
                         </p>
                     </Flex>
-                </>
+                </Link>
             )}
             <DropdownMenu open={openOptions} onOpenChange={setOpenOptions}>
                 <DropdownMenuTrigger asChild>

@@ -28,6 +28,7 @@ import {
 } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import moment from 'moment';
+import Link from 'next/link';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 
 export const Sidebar = () => {
@@ -128,23 +129,24 @@ export const Sidebar = () => {
         >
             <Flex direction="col" className="w-full flex-1 items-center overflow-hidden">
                 <div className="mb-3 flex w-full flex-row items-center justify-between">
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3, delay: 0.2 }}
-                        onClick={() => push('/chat')}
-                        className={cn(
-                            'flex h-8  w-full cursor-pointer items-center justify-start gap-1.5 px-4',
-                            !isSidebarOpen && 'justify-center px-0'
-                        )}
-                    >
-                        <Logo className="size-6 text-emerald-900" />
-                        {isSidebarOpen && (
-                            <p className="font-clash text-lg font-bold tracking-wide text-emerald-900">
-                                deep.new
-                            </p>
-                        )}
-                    </motion.div>
+                    <Link href="/chat" className="w-full">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3, delay: 0.2 }}
+                            className={cn(
+                                'flex h-8 w-full cursor-pointer items-center justify-start gap-1.5 px-4',
+                                !isSidebarOpen && 'justify-center px-0'
+                            )}
+                        >
+                            <Logo className="size-6 text-emerald-900" />
+                            {isSidebarOpen && (
+                                <p className="font-clash text-lg font-bold tracking-wide text-emerald-900">
+                                    deep.new
+                                </p>
+                            )}
+                        </motion.div>
+                    </Link>
                     {isSidebarOpen && (
                         <Button
                             variant="ghost"
@@ -166,26 +168,41 @@ export const Sidebar = () => {
                     )}
                     gap="sm"
                 >
-                    <Button
-                        size={isSidebarOpen ? 'xs' : 'icon-sm'}
-                        variant="secondary"
-                        rounded="lg"
-                        tooltip={isSidebarOpen ? undefined : 'New Thread'}
-                        tooltipSide="right"
-                        className={cn(
-                            isSidebarOpen && 'relative w-full',
-                            'justify-center'
-                            // 'text-background border border-emerald-800 bg-emerald-700'
-                        )}
-                        onClick={() => !isChatPage && push('/chat')}
-                    >
-                        <IconPlus
-                            size={16}
-                            strokeWidth={2}
-                            className={cn(isSidebarOpen && 'absolute left-2')}
-                        />
-                        {isSidebarOpen && 'New'}
-                    </Button>
+                    {!isChatPage ? (
+                        <Link href="/chat" className={isSidebarOpen ? 'w-full' : ''}>
+                            <Button
+                                size={isSidebarOpen ? 'xs' : 'icon-sm'}
+                                variant="secondary"
+                                rounded="lg"
+                                tooltip={isSidebarOpen ? undefined : 'New Thread'}
+                                tooltipSide="right"
+                                className={cn(isSidebarOpen && 'relative w-full', 'justify-center')}
+                            >
+                                <IconPlus
+                                    size={16}
+                                    strokeWidth={2}
+                                    className={cn(isSidebarOpen && 'absolute left-2')}
+                                />
+                                {isSidebarOpen && 'New'}
+                            </Button>
+                        </Link>
+                    ) : (
+                        <Button
+                            size={isSidebarOpen ? 'xs' : 'icon-sm'}
+                            variant="secondary"
+                            rounded="lg"
+                            tooltip={isSidebarOpen ? undefined : 'New Thread'}
+                            tooltipSide="right"
+                            className={cn(isSidebarOpen && 'relative w-full', 'justify-center')}
+                        >
+                            <IconPlus
+                                size={16}
+                                strokeWidth={2}
+                                className={cn(isSidebarOpen && 'absolute left-2')}
+                            />
+                            {isSidebarOpen && 'New'}
+                        </Button>
+                    )}
                     <Button
                         size={isSidebarOpen ? 'xs' : 'icon-sm'}
                         variant="bordered"
@@ -211,23 +228,24 @@ export const Sidebar = () => {
                         !isSidebarOpen && 'items-center justify-center px-0'
                     )}
                 >
-                    <Button
-                        size={isSidebarOpen ? 'xs' : 'icon-sm'}
-                        variant="secondary"
-                        rounded="lg"
-                        tooltip={isSidebarOpen ? undefined : 'Recent'}
-                        tooltipSide="right"
-                        className={cn(
-                            'text-muted-foreground w-full justify-start',
-                            !isSidebarOpen && 'w-auto justify-center'
-                        )}
-                        onClick={() => push('/recent')}
-                    >
-                        <IconHistory size={14} strokeWidth={2} />
-                        {isSidebarOpen && 'Recent'}
-                        {isSidebarOpen && <span className="inline-flex flex-1" />}
-                        {isSidebarOpen && <IconChevronRight size={14} strokeWidth={2} />}
-                    </Button>
+                    <Link href="/recent" className={isSidebarOpen ? 'w-full' : ''}>
+                        <Button
+                            size={isSidebarOpen ? 'xs' : 'icon-sm'}
+                            variant="secondary"
+                            rounded="lg"
+                            tooltip={isSidebarOpen ? undefined : 'Recent'}
+                            tooltipSide="right"
+                            className={cn(
+                                'text-muted-foreground w-full justify-start',
+                                !isSidebarOpen && 'w-auto justify-center'
+                            )}
+                        >
+                            <IconHistory size={14} strokeWidth={2} />
+                            {isSidebarOpen && 'Recent'}
+                            {isSidebarOpen && <span className="inline-flex flex-1" />}
+                            {isSidebarOpen && <IconChevronRight size={14} strokeWidth={2} />}
+                        </Button>
+                    </Link>
                 </Flex>
 
                 {false ? (
