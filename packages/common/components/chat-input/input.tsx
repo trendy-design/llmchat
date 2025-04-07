@@ -9,7 +9,7 @@ import { useImageAttachment } from '@repo/common/hooks';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useShallow } from 'zustand/react/shallow';
 import { useAgentStream } from '../../hooks/agent-provider';
@@ -203,6 +203,10 @@ export const ChatInput = ({
             {renderChatInput()}
         </>
     );
+
+    useEffect(() => {
+        editor?.commands.focus('end');
+    }, [currentThreadId]);
 
     return (
         <div

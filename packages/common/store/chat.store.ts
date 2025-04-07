@@ -38,9 +38,9 @@ const loadInitialData = async () => {
               model: models[0].id,
               useWebSearch: false,
               showSuggestions: true,
-              chatMode: ChatMode.GPT_4o_Mini,
+              chatMode: ChatMode.GEMINI_2_FLASH,
           };
-    const chatMode = config.chatMode || ChatMode.GPT_4o_Mini;
+    const chatMode = config.chatMode || ChatMode.GEMINI_2_FLASH;
     const useWebSearch = typeof config.useWebSearch === 'boolean' ? config.useWebSearch : false;
 
     const initialThreads = threads.length ? threads : [];

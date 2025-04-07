@@ -127,7 +127,7 @@ export const Sidebar = () => {
                 isSidebarOpen ? 'top-0 h-full w-[230px]' : 'w-[50px]'
             )}
         >
-            <Flex direction="col" className="w-full flex-1 items-center overflow-hidden">
+            <Flex direction="col" className="w-full flex-1 items-start overflow-hidden">
                 <div className="mb-3 flex w-full flex-row items-center justify-between">
                     <Link href="/chat" className="w-full">
                         <motion.div
@@ -139,7 +139,7 @@ export const Sidebar = () => {
                                 !isSidebarOpen && 'justify-center px-0'
                             )}
                         >
-                            <Logo className="size-6 text-emerald-900" />
+                            <Logo className="size-5 text-emerald-900" />
                             {isSidebarOpen && (
                                 <p className="font-clash text-lg font-bold tracking-wide text-emerald-900">
                                     deep.new

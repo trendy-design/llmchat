@@ -10,6 +10,7 @@ export * from './footer';
 export * from './full-page-loader';
 export * from './history/history-item';
 export * from './icons';
+export * from './intro-dialog';
 export * from './layout/root';
 export * from './link-favicon';
 export * from './link-preview';
