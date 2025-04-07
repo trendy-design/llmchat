@@ -239,7 +239,10 @@ export const ChatInput = ({
                             <AnimatedTitles
                                 titles={[
                                     'Ask me anything...',
-                                    'What would you like to explore today?',
+                                    'Curious? Ask away',
+                                    "Let's dive deeper",
+                                    'Unlock deeper insights',
+                                    'Deep thinking starts here',
                                 ]}
                             />
                         </motion.div>

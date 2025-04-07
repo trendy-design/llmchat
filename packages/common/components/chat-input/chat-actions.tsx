@@ -45,6 +45,13 @@ export const chatOptions = [
 
 export const modelOptions = [
     {
+        label: 'Llama 4 Scout',
+        value: ChatMode.LLAMA_4_SCOUT,
+        // webSearch: true,
+        icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.LLAMA_4_SCOUT],
+    },
+    {
         label: 'Gemini Flash 2.0',
         value: ChatMode.GEMINI_2_FLASH,
         // webSearch: true,

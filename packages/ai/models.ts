@@ -5,6 +5,7 @@ import { ProviderEnumType } from './providers';
 export enum ModelEnum {
     GPT_4o_Mini = 'gpt-4o-mini',
     GPT_4o = 'gpt-4o',
+    LLAMA_4_SCOUT = 'accounts/fireworks/models/llama4-scout-instruct-basic',
     Deepseek_R1_Distill_Qwen_14B = 'deepseek-r1-distill-qwen-14b',
     Claude_3_5_Sonnet = 'claude-3-5-sonnet-20240620',
     O3_Mini = 'o3-mini',
@@ -89,6 +90,13 @@ export const models: Model[] = [
     {
         id: ModelEnum.QWQ_32B,
         name: 'QWQ 32B',
+        provider: 'fireworks',
+        maxTokens: 16384,
+        contextWindow: 16384,
+    },
+    {
+        id: ModelEnum.LLAMA_4_SCOUT,
+        name: 'Llama 4 Scout',
         provider: 'fireworks',
         maxTokens: 16384,
         contextWindow: 16384,

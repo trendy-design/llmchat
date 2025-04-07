@@ -2,6 +2,7 @@ export enum ChatMode {
     Pro = 'pro',
     Deep = 'deep',
     O3_Mini = 'o3-mini',
+    LLAMA_4_SCOUT = 'llama-4-scout',
     GPT_4o_Mini = 'gpt-4o-mini',
     GEMINI_2_FLASH = 'gemini-flash-2.0',
     DEEPSEEK_R1 = 'deepseek-r1',
@@ -19,6 +20,12 @@ export const ChatModeConfig = {
         webSearch: false,
         imageUpload: false,
         retry: false,
+    },
+    [ChatMode.LLAMA_4_SCOUT]: {
+        webSearch: true,
+        imageUpload: true,
+        retry: true,
+        isNew: true,
     },
     [ChatMode.O3_Mini]: {
         webSearch: true,
@@ -55,6 +62,7 @@ export const ChatModeConfig = {
 export const CHAT_MODE_CREDIT_COSTS = {
     [ChatMode.Deep]: 10,
     [ChatMode.Pro]: 5,
+    [ChatMode.LLAMA_4_SCOUT]: 1,
     [ChatMode.GPT_4o_Mini]: 1,
     [ChatMode.O3_Mini]: 5,
     [ChatMode.CLAUDE_3_5_SONNET]: 5,
@@ -69,6 +77,8 @@ export const getChatModeName = (mode: ChatMode) => {
             return 'Deep Research';
         case ChatMode.Pro:
             return 'Pro Search';
+        case ChatMode.LLAMA_4_SCOUT:
+            return 'Llama 4 Scout';
         case ChatMode.GPT_4o_Mini:
             return 'GPT 4o Mini';
         case ChatMode.CLAUDE_3_5_SONNET:
