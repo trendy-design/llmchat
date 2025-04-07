@@ -384,8 +384,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     apiKeys: apiKeys(),
                 });
             } else {
-                // Fallback to remote agent
-                await runAgent({
+                runAgent({
                     mode: newChatMode || chatMode,
                     prompt: query,
                     threadId,

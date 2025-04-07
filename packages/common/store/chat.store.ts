@@ -642,7 +642,7 @@ export const useChatStore = create(
                 pinned: false,
                 pinnedAt: new Date(),
             };
-            await db.threads.add(newThread);
+            db.threads.add(newThread);
             set(state => {
                 state.threads.push(newThread);
                 state.currentThreadId = newThread.id;
@@ -696,7 +696,7 @@ export const useChatStore = create(
             const threadId = get().currentThreadId;
             if (!threadId) return;
             try {
-                await db.threadItems.put(threadItem);
+                db.threadItems.put(threadItem);
                 set(state => {
                     if (state.threadItems.find(t => t.id === threadItem.id)) {
                         state.threadItems = state.threadItems.map(t =>
@@ -725,13 +725,15 @@ export const useChatStore = create(
             try {
                 console.log('updateThreadItem', threadItem);
 
-                // Fetch the existing item
-                let existingItem: ThreadItem | undefined;
-                try {
-                    existingItem = await db.threadItems.get(threadItem.id);
-                } catch (error) {
-                    console.warn(`Couldn't fetch existing item ${threadItem.id}:`, error);
-                }
+                // // Fetch the existing item
+                // let existingItem: ThreadItem | undefined;
+                // try {
+                //     db.threadItems.get(threadItem.id);
+                // } catch (error) {
+                //     console.warn(`Couldn't fetch existing item ${threadItem.id}:`, error);
+                // }
+
+                const existingItem = get().threadItems.find(t => t.id === threadItem.id);
 
                 // Create or update the item
                 const updatedItem = existingItem
@@ -823,7 +825,7 @@ export const useChatStore = create(
                 state.currentThreadId = threadId;
                 state.currentThread = thread || null;
             });
-            await get().loadThreadItems(threadId);
+            get().loadThreadItems(threadId);
         },
 
         deleteThreadItem: async threadItemId => {

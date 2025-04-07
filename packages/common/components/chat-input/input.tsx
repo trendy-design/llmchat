@@ -77,11 +77,11 @@ export const ChatInput = ({
 
         if (!threadId) {
             const optimisticId = uuidv4();
-            router.prefetch(`/c/${optimisticId}`);
-            const newThread = await createThread(optimisticId, {
+            router.push(`/c/${optimisticId}`);
+            createThread(optimisticId, {
                 title: editor?.getText(),
             });
-            threadId = newThread.id;
+            threadId = optimisticId;
         }
 
         // First submit the message
@@ -103,9 +103,6 @@ export const ChatInput = ({
         window.localStorage.removeItem('draft-message');
         editor.commands.clearContent();
         clearImageAttachment();
-        if (currentThreadId !== threadId) {
-            router.push(`/c/${threadId}`);
-        }
     };
 
     const renderChatInput = () => (
