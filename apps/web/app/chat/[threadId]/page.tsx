@@ -1,5 +1,5 @@
 'use client';
-import { ChatInput, TableOfMessages, Thread } from '@repo/common/components';
+import { TableOfMessages, Thread } from '@repo/common/components';
 import { useChatStore } from '@repo/common/store';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -43,16 +43,13 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
 
     return (
         <div
-            className="no-scrollbar flex h-full w-full flex-col items-center overflow-y-auto px-8"
+            className="no-scrollbar flex w-full flex-1 flex-col items-center overflow-y-auto px-8"
             ref={shouldScroll ? scrollRef : undefined}
         >
             <div className="mx-auto w-full max-w-3xl px-4 pb-[200px] pt-2" ref={contentRef}>
                 <Thread />
             </div>
 
-            <div className="bg-secondary absolute bottom-0 z-[30] mx-auto flex w-full max-w-3xl flex-col">
-                <ChatInput showGreeting={false} showBottomBar={false} isFollowUp={true} />
-            </div>
             <TableOfMessages />
         </div>
     );

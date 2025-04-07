@@ -16,6 +16,7 @@ export * from './link-preview';
 export * from './logo';
 export * from './mdx';
 export * from './messages-remaining-badge';
+export * from './motion-skeleton';
 export * from './popover-confirm';
 export * from './recent-threads';
 export * from './search-results';

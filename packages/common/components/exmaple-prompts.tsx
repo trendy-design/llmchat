@@ -80,6 +80,7 @@ const categoryIcons = {
 export const ExamplePrompts = () => {
     const editor: Editor | undefined = useChatStore(state => state.editor);
     const handleCategoryClick = (category: keyof typeof examplePrompts) => {
+        console.log('editor', editor);
         if (!editor) return;
         const randomPrompt = getRandomPrompt(category);
         editor.commands.clearContent();

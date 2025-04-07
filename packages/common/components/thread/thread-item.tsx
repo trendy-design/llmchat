@@ -4,6 +4,7 @@ import {
     MarkdownContent,
     Message,
     MessageActions,
+    MotionSkeleton,
     QuestionPrompt,
     SourceGrid,
     Steps,
@@ -11,9 +12,8 @@ import {
 import { useAnimatedText } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
 import { ThreadItem as ThreadItemType } from '@repo/shared/types';
-import { Alert, AlertDescription, cn, Skeleton } from '@repo/ui';
+import { Alert, AlertDescription, cn } from '@repo/ui';
 import { IconAlertCircle, IconBook } from '@tabler/icons-react';
-import { motion } from 'framer-motion';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
 
@@ -170,21 +170,3 @@ export const ThreadItem = memo(
 );
 
 ThreadItem.displayName = 'ThreadItem';
-
-export const MotionSkeleton = ({ className }: { className?: string }) => {
-    return (
-        <motion.div
-            initial={{ opacity: 0, width: '0%' }}
-            animate={{ opacity: 1, width: '100%' }}
-            exit={{ opacity: 0, width: '0%' }}
-            transition={{ duration: 2, ease: 'easeInOut', damping: 50, stiffness: 20 }}
-        >
-            <Skeleton
-                className={cn(
-                    'from-muted-foreground/70 via-muted-foreground/50 to-muted-foreground/10 h-5 w-full rounded-sm bg-gradient-to-r',
-                    className
-                )}
-            />
-        </motion.div>
-    );
-};

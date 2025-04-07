@@ -69,7 +69,7 @@ export default function ThreadsPage() {
     };
 
     const handleThreadClick = (threadId: string) => {
-        push(`/c/${threadId}`);
+        push(`/chat/${threadId}`);
         switchThread(threadId);
     };
 

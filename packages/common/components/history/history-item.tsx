@@ -68,7 +68,7 @@ export const HistoryItem = ({
 
     const handleOnClick = () => {
         if (!isEditing) {
-            push(`/c/${thread.id}`);
+            push(`/chat/${thread.id}`);
             switchThread(thread.id);
         }
     };

@@ -13,7 +13,7 @@ export const RecentThreads = () => {
 
     useEffect(() => {
         threads.forEach(thread => {
-            router.prefetch(`/c/${thread.id}`);
+            router.prefetch(`/chat/${thread.id}`);
         });
     }, [threads]);
 
@@ -42,7 +42,7 @@ export const RecentThreads = () => {
                         <div
                             key={thread.id}
                             className="bg-background border-border flex cursor-pointer flex-col gap-1 rounded-2xl border p-4 text-sm transition-all duration-200 hover:border-yellow-900/20 hover:bg-yellow-700/5 hover:shadow-sm"
-                            onClick={() => router.push(`/c/${thread.id}`)}
+                            onClick={() => router.push(`/chat/${thread.id}`)}
                         >
                             <IconMessageCircleFilled
                                 size={16}

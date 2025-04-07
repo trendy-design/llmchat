@@ -177,7 +177,7 @@ export const CommandSearch = () => {
                                         className={cn('w-full gap-3')}
                                         onSelect={() => {
                                             switchThread(thread.id);
-                                            router.push(`/c/${thread.id}`);
+                                            router.push(`/chat/${thread.id}`);
                                             onClose();
                                         }}
                                     >

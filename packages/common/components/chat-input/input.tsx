@@ -77,7 +77,7 @@ export const ChatInput = ({
 
         if (!threadId) {
             const optimisticId = uuidv4();
-            router.push(`/c/${optimisticId}`);
+            router.push(`/chat/${optimisticId}`);
             createThread(optimisticId, {
                 title: editor?.getText(),
             });
@@ -207,34 +207,46 @@ export const ChatInput = ({
     return (
         <div
             className={cn(
-                'flex w-full flex-col items-start',
-                !threadItemsLength && 'justify-start'
+                ' w-full ',
+                currentThreadId
+                    ? 'absolute bottom-0'
+                    : 'absolute inset-0 flex h-full w-full flex-col items-center justify-center'
             )}
         >
-            <Flex
-                items="start"
-                justify="start"
-                direction="col"
-                className={cn('w-full pb-4', threadItemsLength > 0 ? 'mb-0' : 'h-full')}
-            >
-                {showGreeting && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className="mb-6 flex w-full flex-col items-center gap-1"
-                    >
-                        <AnimatedTitles
-                            titles={['Ask me anything...', 'What would you like to explore today?']}
-                        />
-                    </motion.div>
+            <div
+                className={cn(
+                    'mx-auto flex w-full max-w-3xl flex-col items-start',
+                    !threadItemsLength && 'justify-start'
                 )}
+            >
+                <Flex
+                    items="start"
+                    justify="start"
+                    direction="col"
+                    className={cn('w-full pb-4', threadItemsLength > 0 ? 'mb-0' : 'h-full')}
+                >
+                    {!currentThreadId && showGreeting && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 0.3, ease: 'easeOut' }}
+                            className="mb-6 flex w-full flex-col items-center gap-1"
+                        >
+                            <AnimatedTitles
+                                titles={[
+                                    'Ask me anything...',
+                                    'What would you like to explore today?',
+                                ]}
+                            />
+                        </motion.div>
+                    )}
 
-                {renderChatBottom()}
-                {showGreeting && <ExamplePrompts />}
+                    {renderChatBottom()}
+                    {!currentThreadId && showGreeting && <ExamplePrompts />}
 
-                {/* <ChatFooter /> */}
-            </Flex>
+                    {/* <ChatFooter /> */}
+                </Flex>
+            </div>
         </div>
     );
 };

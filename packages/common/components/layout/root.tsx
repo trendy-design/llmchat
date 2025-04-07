@@ -97,7 +97,7 @@ export const SideDrawer = () => {
         stiffness: 1,
         damping: 0,
     });
-    const isThreadPage = pathname.startsWith('/c/');
+    const isThreadPage = pathname.startsWith('/chat/');
 
     return (
         <AnimatePresence>

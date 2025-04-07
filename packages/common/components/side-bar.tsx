@@ -35,7 +35,7 @@ export const Sidebar = () => {
     const pathname = usePathname();
     const { setIsCommandSearchOpen } = useRootContext();
     const { push } = useRouter();
-    const isChatPage = pathname.startsWith('/chat');
+    const isChatPage = pathname === '/chat';
     const threads = useChatStore(state => state.threads);
     const pinThread = useChatStore(state => state.pinThread);
     const unpinThread = useChatStore(state => state.unpinThread);
