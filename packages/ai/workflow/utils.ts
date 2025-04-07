@@ -1,4 +1,4 @@
-import { TaskParams } from '@repo/orchestrator';
+import { TaskParams, TypedEventEmitter } from '@repo/orchestrator';
 import { Geo } from '@vercel/functions';
 import {
     CoreMessage,
@@ -11,6 +11,7 @@ import { format } from 'date-fns';
 import { ZodSchema } from 'zod';
 import { ModelEnum } from '../models';
 import { getLanguageModel } from '../providers';
+import { WorkflowEventSchema } from './flow';
 import { generateErrorMessage } from './tasks/utils';
 
 export type ChunkBufferOptions = {
@@ -518,4 +519,89 @@ export const handleError = (error: Error, { context, events }: TaskParams) => {
         retry: false,
         result: 'error',
     });
+};
+
+export const sendEvents = (events?: TypedEventEmitter<WorkflowEventSchema>) => {
+    const nextStepId = () => Object.keys(events?.getState('steps') || {}).length;
+
+    const updateStep = (params: {
+        stepId: number;
+        text?: string;
+        stepStatus: 'PENDING' | 'COMPLETED';
+        subSteps: Record<string, { status: 'PENDING' | 'COMPLETED'; data?: any }>;
+    }) => {
+        const { stepId, text, stepStatus, subSteps } = params;
+        events?.update('steps', prev => ({
+            ...prev,
+            [stepId]: {
+                ...prev?.[stepId],
+                id: stepId,
+                text: text || prev?.[stepId]?.text,
+                status: stepStatus,
+                steps: {
+                    ...prev?.[stepId]?.steps,
+                    ...Object.entries(subSteps).reduce((acc, [key, value]) => {
+                        return {
+                            ...acc,
+                            [key]: {
+                                ...prev?.[stepId]?.steps?.[key],
+                                ...value,
+                                data: Array.isArray(value?.data)
+                                    ? [...(prev?.[stepId]?.steps?.[key]?.data || []), ...value.data]
+                                    : typeof value?.data === 'object'
+                                      ? {
+                                            ...(prev?.[stepId]?.steps?.[key]?.data || {}),
+                                            ...value.data,
+                                        }
+                                      : !!value?.data
+                                        ? value.data
+                                        : prev?.[stepId]?.steps?.[key]?.data,
+                            },
+                        };
+                    }, {}),
+                },
+            },
+        }));
+    };
+
+    const addSources = (sources: any[]) => {
+        events?.update('sources', prev => {
+            const newSources = sources
+                ?.filter((result: any) => !prev?.some(source => source.link === result.link))
+                .map((result: any, index: number) => ({
+                    title: result?.title,
+                    link: result?.link,
+                    snippet: result?.snippet,
+                    index: index + (prev?.length || 1),
+                }));
+            return [...(prev || []), ...newSources];
+        });
+    };
+
+    const updateAnswer = ({
+        text,
+        finalText,
+        status,
+    }: {
+        text?: string;
+        finalText?: string;
+        status?: 'PENDING' | 'COMPLETED';
+    }) => {
+        events?.update('answer', prev => ({
+            ...prev,
+            text: text || prev?.text,
+            finalText: finalText || prev?.finalText,
+            status: status || prev?.status,
+        }));
+    };
+
+    const updateStatus = (status: 'PENDING' | 'COMPLETED' | 'ERROR') => {
+        events?.update('status', prev => status);
+    };
+
+    const updateObject = (object: any) => {
+        events?.update('object', prev => object);
+    };
+
+    return { updateStep, addSources, updateAnswer, nextStepId, updateStatus, updateObject };
 };

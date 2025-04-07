@@ -2,7 +2,7 @@ import { createTask } from '@repo/orchestrator';
 import { format } from 'date-fns';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { ChunkBuffer, generateText, handleError } from '../utils';
+import { ChunkBuffer, generateText, handleError, sendEvents } from '../utils';
 
 export const writerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'writer',
@@ -12,7 +12,8 @@ export const writerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>
         const question = context?.get('question') || '';
         const summaries = context?.get('summaries') || [];
         const messages = context?.get('messages') || [];
-        const stepId = data?.stepId;
+        const { updateStep, nextStepId, updateAnswer, updateStatus } = sendEvents(events);
+        const stepId = nextStepId();
 
         const currentDate = new Date();
         const humanizedDate = format(currentDate, 'MMMM dd, yyyy, h:mm a');
@@ -70,39 +71,29 @@ Your report should demonstrate subject matter expertise while remaining intellec
     `;
 
         if (stepId) {
-            const nextStepId = stepId + 1;
-            events?.update('steps', current => ({
-                ...current,
-
-                [nextStepId]: {
-                    ...(current?.[nextStepId] || {}),
-                    steps: {
-                        ...(current?.[nextStepId]?.steps || {}),
-                        wrapup: {
-                            status: 'COMPLETED' as const,
-                        },
-                    },
-                    id: nextStepId,
-                    status: 'COMPLETED' as const,
+            updateStep({
+                stepId: stepId + 1,
+                stepStatus: 'COMPLETED',
+                subSteps: {
+                    wrapup: { status: 'COMPLETED' },
                 },
-            }));
+            });
         }
-
         const chunkBuffer = new ChunkBuffer({
             threshold: 150,
             breakOn: ['\n\n', '.', '!', '?'],
             onFlush: (text: string) => {
-                events?.update('answer', current => ({
-                    ...current,
+                updateAnswer({
                     text,
-                    status: 'PENDING' as const,
-                }));
+                    status: 'PENDING',
+                });
             },
         });
 
         const answer = await generateText({
             prompt,
             model: ModelEnum.Claude_3_7_Sonnet,
+            messages,
             signal,
             onChunk: (chunk, fullText) => {
                 chunkBuffer.add(chunk);
@@ -112,12 +103,11 @@ Your report should demonstrate subject matter expertise while remaining intellec
         // Make sure to flush any remaining content
         chunkBuffer.flush();
 
-        events?.update('answer', current => ({
-            ...current,
+        updateAnswer({
             text: '',
             finalText: answer,
-            status: 'COMPLETED' as const,
-        }));
+            status: 'COMPLETED',
+        });
 
         context?.get('onFinish')?.({
             answer,
@@ -125,7 +115,7 @@ Your report should demonstrate subject matter expertise while remaining intellec
             threadItemId: context?.get('threadItemId'),
         });
 
-        events?.update('status', prev => 'COMPLETED');
+        updateStatus('COMPLETED');
 
         trace?.span({
             name: 'writer',

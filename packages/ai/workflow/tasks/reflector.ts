@@ -2,7 +2,7 @@ import { createTask } from '@repo/orchestrator';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { generateObject, getHumanizedDate, handleError } from '../utils';
+import { generateObject, getHumanizedDate, handleError, sendEvents } from '../utils';
 
 export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'reflector',
@@ -13,6 +13,7 @@ export const reflectorTask = createTask<WorkflowEventSchema, WorkflowContextSche
         const stepId = data?.stepId;
         const prevSummaries = context?.get('summaries') || [];
         const currentYear = new Date().getFullYear();
+        const { updateStep } = sendEvents(events);
 
         const prompt = `
 You are a research progress evaluator analyzing how effectively a research question has been addressed. Your primary responsibility is to identify remaining knowledge gaps and determine if additional targeted queries are necessary.
@@ -47,14 +48,6 @@ Current date: ${getHumanizedDate()}
 - DO NOT start queries with "how", "what", "when", "where", "why", or "who"
 - Use concise keyword phrases instead of full sentences
 - Maximum 8 words per query
-
-
-
-## Examples of Good Queries:
-- "tesla model 3 battery lifespan data ${currentYear}"
-- "climate change economic impact statistic ${currentYear}"
-- "javascript async await performance benchmarks"
-- "remote work productivity research findings"
 
 ## Examples of Bad Queries:
 - "How long does a Tesla Model 3 battery last?"
@@ -114,26 +107,13 @@ Current date: ${getHumanizedDate()}
         context?.update('queries', current => [...(current ?? []), ...(object?.queries ?? [])]);
 
         if (!!object?.reasoning) {
-            events?.update('steps', current => {
-                return {
-                    ...current,
-                    [newStepId]: {
-                        text: object?.reasoning,
-                        steps: {
-                            ...(current?.[newStepId]?.steps || {}),
-                            ...(object?.queries
-                                ? {
-                                      search: {
-                                          data: object?.queries,
-                                          status: 'COMPLETED' as const,
-                                      },
-                                  }
-                                : {}),
-                        },
-                        status: 'PENDING' as const,
-                        id: newStepId,
-                    },
-                };
+            updateStep({
+                stepId: newStepId,
+                stepStatus: 'PENDING',
+                text: object?.reasoning,
+                subSteps: {
+                    search: { status: 'COMPLETED', data: object?.queries },
+                },
             });
         }
 

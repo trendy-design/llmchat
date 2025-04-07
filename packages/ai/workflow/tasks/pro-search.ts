@@ -10,6 +10,7 @@ import {
     getSERPResults,
     handleError,
     processWebPages,
+    sendEvents,
 } from '../utils';
 
 type SearchResult = {
@@ -64,16 +65,21 @@ ${webPageContent
    - Include temporal information (dates, timelines) when relevant
    - Summarize complex concepts in accessible language
 
-4. Citations:
-   - Use inline citations like [1] to reference sources
-   - When information appears in multiple findings, cite all relevant sources: [1][3]
-   - Make it clear when different sources have conflicting information
 
-5. Visual Structure:
+4. Visual Structure:
    - Use clear visual separation between different sections
    - Keep paragraphs short (3-4 lines maximum)
    - Include a brief "Key Takeaways" section at the beginning for ultra-quick consumption
    - End with any important context or limitations of the findings
+
+5. Citations:
+   - Based on provided references in each findings, you must cite the sources in the report.
+   - Use inline citations like [1] to reference the source
+   - For example: According to recent findings [1][3], progress in this area has accelerated
+   - When information appears in multiple findings, cite all relevant findings using multiple numbers
+   - Integrate citations naturally without disrupting reading flow
+
+Note: **Reference list at the end is not required.**
 
 Your goal is to help the user quickly understand and extract value from these search results without missing any important details.
 `;
@@ -84,6 +90,7 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
     execute: async ({ events, context, signal }) => {
         try {
             const question = context?.get('question');
+            const { updateStatus, updateAnswer, updateStep, addSources } = sendEvents(events);
             if (!question) {
                 throw new Error('No question provided for search');
             }
@@ -132,29 +139,30 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
                 );
             }
 
-            // Update event with search results
-            events?.update('steps', prev => ({
-                ...prev,
-                0: {
-                    ...prev?.[0],
-                    id: 0,
-                    status: 'PENDING',
-                    steps: {
-                        search: {
-                            data: [query.query],
-                            status: 'COMPLETED',
-                        },
-                        read: {
-                            data: searchResults.map(result => ({
-                                title: result.title,
-                                link: result.link,
-                                snippet: result.snippet,
-                            })),
-                            status: 'PENDING',
-                        },
+            updateStep({
+                stepId: 0,
+                stepStatus: 'PENDING',
+                subSteps: {
+                    search: { status: 'COMPLETED', data: [query.query] },
+                },
+            });
+
+            const searchResultsData = searchResults.map(result => ({
+                title: result.title,
+                link: result.link,
+                snippet: result.snippet,
+            }));
+
+            updateStep({
+                stepId: 0,
+                stepStatus: 'PENDING',
+                subSteps: {
+                    read: {
+                        status: 'PENDING',
+                        data: searchResultsData,
                     },
                 },
-            }));
+            });
 
             // Step 3: Process web pages
             let webPageContent: SearchResult[] = [];
@@ -180,52 +188,28 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             }
 
             // Update event with read status
-            events?.update('steps', prev => ({
-                ...prev,
-                0: {
-                    ...prev?.[0],
-                    status: 'COMPLETED',
-                    id: 0,
-                    steps: {
-                        ...prev?.[0].steps,
-                        read: {
-                            ...prev?.[0].steps?.read,
-                            status: 'COMPLETED',
-                        },
-                    },
-                },
-            }));
 
-            // Update flow with sources
-            events?.update('sources', current => [
-                ...(current || []),
-                ...searchResults?.map((result: SearchResult, index: number) => ({
-                    title: result.title,
-                    link: result.link,
-                    snippet: result.snippet,
-                    index: index + (current?.length || 1),
-                })),
-            ]);
+            updateStep({
+                stepId: 0,
+                stepStatus: 'COMPLETED',
+                subSteps: {
+                    read: { status: 'COMPLETED' },
+                },
+            });
+
+            addSources(searchResultsData);
 
             const reasoningBuffer = new ChunkBuffer({
                 threshold: 200,
                 breakOn: ['\n\n'],
                 onFlush: (chunk, fullText) => {
-                    events?.update('steps', current => ({
-                        ...current,
-                        1: {
-                            ...current?.[1],
-                            steps: {
-                                ...current?.[1]?.steps,
-                                reasoning: {
-                                    data: fullText,
-                                    status: 'COMPLETED',
-                                },
-                            },
-                            id: 1,
-                            status: 'PENDING' as const,
+                    updateStep({
+                        stepId: 1,
+                        stepStatus: 'PENDING',
+                        subSteps: {
+                            reasoning: { status: 'COMPLETED', data: fullText },
                         },
-                    }));
+                    });
                 },
             });
 
@@ -233,11 +217,10 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
                 threshold: 200,
                 breakOn: ['\n\n'],
                 onFlush: (chunk, fullText) => {
-                    events?.update('answer', current => ({
-                        ...current,
+                    updateAnswer({
                         text: chunk,
-                        status: 'PENDING' as const,
-                    }));
+                        status: 'PENDING',
+                    });
                 },
             });
 
@@ -269,42 +252,23 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             chunkBuffer.end();
 
             // Update flow with completed reasoning
-            events?.update('steps', current => ({
-                ...current,
-                1: {
-                    ...current?.[1],
-                    steps: {
-                        ...current?.[1]?.steps,
-                        reasoning: {
-                            ...current?.[1]?.steps?.reasoning,
-                            status: 'COMPLETED',
-                        },
-                    },
-                    id: 1,
-                    status: 'COMPLETED' as const,
+            updateStep({
+                stepId: 1,
+                stepStatus: 'COMPLETED',
+                subSteps: {
+                    reasoning: { status: 'COMPLETED' },
+                    wrapup: { status: 'COMPLETED' },
                 },
-                2: {
-                    ...current?.[2],
-                    steps: {
-                        ...current?.[2]?.steps,
-                        wrapup: {
-                            status: 'COMPLETED' as const,
-                        },
-                    },
-                    id: 2,
-                    status: 'COMPLETED' as const,
-                },
-            }));
+            });
 
             // Update flow with completed answer
-            events?.update('answer', prev => ({
-                ...prev,
+            updateAnswer({
                 text: '',
-                fullText: reasoning,
+                finalText: reasoning,
                 status: 'COMPLETED',
-            }));
+            });
 
-            events?.update('status', current => 'COMPLETED');
+            updateStatus('COMPLETED');
 
             context?.update('answer', _ => reasoning);
 

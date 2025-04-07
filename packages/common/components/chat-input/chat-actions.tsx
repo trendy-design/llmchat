@@ -200,7 +200,11 @@ export const ChatModeOptions = ({
     const isChatPage = usePathname().startsWith('/chat');
 
     return (
-        <DropdownMenuContent align="start" side="bottom" className="w-[320px]">
+        <DropdownMenuContent
+            align="start"
+            side="bottom"
+            className="no-scrollbar max-h-[300px] w-[320px] overflow-y-auto"
+        >
             {isChatPage && (
                 <DropdownMenuGroup>
                     <DropdownMenuLabel>Advanced Mode</DropdownMenuLabel>

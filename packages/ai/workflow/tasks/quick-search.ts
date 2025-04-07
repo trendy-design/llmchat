@@ -9,6 +9,7 @@ import {
     getHumanizedDate,
     getSERPResults,
     handleError,
+    sendEvents,
 } from '../utils';
 
 const buildWebSearchPrompt = (results: TReaderResult[]): string => {
@@ -74,24 +75,9 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
     name: 'quickSearch',
     execute: async ({ events, context, signal, trace }) => {
         // Helper function to update step status
-        const updateStepStatus = (
-            stepId: number,
-            stepStatus: 'PENDING' | 'COMPLETED',
-            subSteps: Record<string, { status: 'PENDING' | 'COMPLETED'; data?: any }>
-        ) => {
-            events?.update('steps', prev => ({
-                ...prev,
-                [stepId]: {
-                    ...prev?.[stepId],
-                    id: stepId,
-                    status: stepStatus,
-                    steps: {
-                        ...prev?.[stepId]?.steps,
-                        ...subSteps,
-                    },
-                },
-            }));
-        };
+
+        const { updateStep, updateStatus, addSources, updateAnswer, nextStepId } =
+            sendEvents(events);
 
         const messages =
             context
@@ -105,11 +91,6 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
         const chatMode = context?.get('mode');
         const gl = context?.get('gl');
         const model = getModelFromChatMode(chatMode);
-
-        // Set initial PENDING status for steps
-        updateStepStatus(0, 'PENDING', {
-            search: { status: 'PENDING' },
-        });
 
         const query = await generateObject({
             prompt: `Today is ${getHumanizedDate()}.${gl?.country ? `You are in ${gl?.country}\n\n` : ''}
@@ -126,9 +107,13 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
         }
 
         // Update search step with query and PENDING status
-        updateStepStatus(0, 'COMPLETED', {
-            search: { status: 'COMPLETED', data: [query.query] },
-            read: { status: 'PENDING', data: [] },
+        updateStep({
+            stepId: 0,
+            stepStatus: 'PENDING',
+            subSteps: {
+                search: { status: 'COMPLETED', data: [query.query] },
+                read: { status: 'PENDING', data: [] },
+            },
         });
 
         const results = await getSERPResults([query.query], gl);
@@ -143,17 +128,20 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
             link: result.link,
         }));
 
-        updateStepStatus(0, 'COMPLETED', {
-            search: { status: 'COMPLETED', data: [query.query] },
-            read: { status: 'PENDING', data: resultsData },
+        updateStep({
+            stepId: 0,
+            stepStatus: 'PENDING',
+            subSteps: {
+                search: { status: 'COMPLETED' },
+                read: { status: 'PENDING', data: resultsData },
+            },
         });
 
-        events?.update('sources', prev =>
+        addSources(
             results.map((result: any, index: number) => ({
                 title: result.title,
                 link: result.link,
                 snippet: result.snippet,
-                index: index + (prev?.length || 1),
             }))
         );
 
@@ -163,40 +151,50 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
         );
 
         // Mark read as COMPLETED and wrapup as PENDING
-        updateStepStatus(0, 'COMPLETED', {
-            read: { status: 'COMPLETED', data: resultsData },
+        updateStep({
+            stepId: 0,
+            stepStatus: 'COMPLETED',
+            subSteps: {
+                read: { status: 'COMPLETED' },
+            },
         });
 
-        updateStepStatus(1, 'COMPLETED', {
-            wrapup: { status: 'COMPLETED' },
+        const stepId = nextStepId();
+
+        console.log('stepId', stepId);
+
+        updateStep({
+            stepId,
+            stepStatus: 'COMPLETED',
+            subSteps: {
+                wrapup: { status: 'COMPLETED' },
+            },
         });
 
         const prompt = buildWebSearchPrompt(webpageReader);
 
-        events?.update('answer', current => ({
-            ...current,
+        updateAnswer({
+            text: '',
             status: 'PENDING',
-        }));
+        });
 
         const response = await generateText({
             model,
             messages: [...messages],
             prompt,
             onChunk: (chunk, fullText) => {
-                events?.update('answer', current => ({
-                    ...current,
+                updateAnswer({
                     text: chunk,
-                    status: 'PENDING' as const,
-                }));
+                    status: 'PENDING',
+                });
             },
         });
 
-        events?.update('answer', prev => ({
-            ...prev,
+        updateAnswer({
             text: '',
-            fullText: response,
+            finalText: response,
             status: 'COMPLETED',
-        }));
+        });
 
         context?.update('answer', _ => response);
 
@@ -209,7 +207,7 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
             });
         }
 
-        events?.update('status', prev => 'COMPLETED');
+        updateStatus('COMPLETED');
 
         return {
             retry: false,

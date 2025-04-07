@@ -7,6 +7,7 @@ import {
     getHumanizedDate,
     handleError,
     processWebPages,
+    sendEvents,
 } from '../utils';
 
 export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
@@ -15,27 +16,24 @@ export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
         const queries = data?.queries;
         const stepId = data?.stepId;
         const gl = context?.get('gl');
+        const { updateStep } = sendEvents(events);
         const results = await executeWebSearch(queries, signal, gl);
-        events?.update('steps', current => {
-            return {
-                ...current,
-                [stepId]: {
-                    ...(current?.[stepId] || {}),
-                    steps: {
-                        ...(current?.[stepId]?.steps || {}),
-                        read: {
-                            data: results?.map((result: any) => ({
-                                title: result.title,
-                                link: result.link,
-                                snippet: result.snippet,
-                            })),
-                            status: 'PENDING' as const,
-                        },
-                    },
-                    id: stepId,
-                    status: 'PENDING' as const,
+
+        const searchResultsData = results?.map((result: any) => ({
+            title: result.title,
+            link: result.link,
+            snippet: result.snippet,
+        }));
+
+        updateStep({
+            stepId,
+            stepStatus: 'PENDING',
+            subSteps: {
+                read: {
+                    status: 'PENDING',
+                    data: searchResultsData,
                 },
-            };
+            },
         });
 
         context?.update('sources', current => {
@@ -53,7 +51,11 @@ export const webSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             return [...existingSources, ...newSources];
         });
 
-        const processedResults = await processWebPages(results, signal);
+        const processedResults = await processWebPages(results, signal, {
+            timeout: 50000,
+            batchSize: 5,
+            maxPages: 10,
+        });
 
         if (!processedResults || processedResults.length === 0) {
             throw new Error('No results found');
@@ -119,26 +121,14 @@ ${processedResults
             prompt,
         });
 
-        events?.update('steps', current => {
-            return {
-                ...current,
-                [stepId]: {
-                    ...(current?.[stepId] || {}),
-                    steps: {
-                        ...(current?.[stepId]?.steps || {}),
-                        read: {
-                            data: results?.map((result: any) => ({
-                                title: result.title,
-                                link: result.link,
-                                snippet: result.snippet,
-                            })),
-                            status: 'COMPLETED' as const,
-                        },
-                    },
-
-                    status: 'COMPLETED' as const,
+        updateStep({
+            stepId,
+            stepStatus: 'COMPLETED',
+            subSteps: {
+                read: {
+                    status: 'COMPLETED',
                 },
-            };
+            },
         });
 
         trace?.span({
@@ -166,7 +156,7 @@ ${processedResults
     onError: handleError,
     route: ({ context }) => {
         const allQueries = context?.get('queries') || [];
-        if (allQueries?.length < 8) {
+        if (allQueries?.length < 6) {
             return 'reflector';
         }
 

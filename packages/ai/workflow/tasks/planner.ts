@@ -2,7 +2,7 @@ import { createTask } from '@repo/orchestrator';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { generateObject, getHumanizedDate, handleError } from '../utils';
+import { generateObject, getHumanizedDate, handleError, sendEvents } from '../utils';
 
 export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'planner',
@@ -10,6 +10,9 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
         const messages = context?.get('messages') || [];
         const question = context?.get('question') || '';
         const currentYear = new Date().getFullYear();
+        const { updateStep, nextStepId } = sendEvents(events);
+
+        const stepId = nextStepId();
 
         const prompt = `
                         You're a strategic research planner. Your job is to analyze research questions and develop an initial approach to find accurate information through web searches.
@@ -31,25 +34,18 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
                 
                         ## Query Generation Rules
 
-- DO NOT suggest queries similar to previous ones - review each previous query carefully
 - DO NOT broaden the scope beyond the original research question
 - DO NOT suggest queries that would likely yield redundant information
-- ONLY suggest queries that address identified information gaps
-- Each query must explore a distinct aspect not covered by previous searches
+- Each query must explore a distinct aspect
 - Limit to 1-2 highly targeted queries maximum
 - Format queries as direct search terms, NOT as questions
 - DO NOT start queries with "how", "what", "when", "where", "why", or "who"
 - Use concise keyword phrases instead of full sentences
+- Use time period in queries when needed
 - Maximum 8 words per query
+- If user question is clear and concise, you can use it as one of the queries
 
 **Current date and time: **${getHumanizedDate()}**
-
-
-## Examples of Good Queries:
-- "tesla model 3 battery lifespan data ${currentYear}"
-- "climate change economic impact statistic ${currentYear}"
-- "javascript async await performance benchmarks"
-- "remote work productivity research findings"
 
 ## Examples of Bad Queries:
 - "How long does a Tesla Model 3 battery last?"
@@ -76,27 +72,19 @@ export const plannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema
             signal,
         });
 
-        const stepId = Object.keys(events?.getState('steps')?.data || {}).length;
-
         context?.update('queries', current => [...(current ?? []), ...(object?.queries || [])]);
         // Update flow event with initial goal
-        events?.update('steps', current => {
-            return {
-                ...current,
 
-                [stepId]: {
-                    text: object.reasoning,
-                    steps: {
-                        ...(current?.[stepId]?.steps || {}),
-                        search: {
-                            data: object.queries,
-                            status: 'COMPLETED' as const,
-                        },
-                    },
-                    status: 'PENDING' as const,
-                    id: stepId,
+        updateStep({
+            stepId,
+            text: object.reasoning,
+            stepStatus: 'PENDING',
+            subSteps: {
+                search: {
+                    status: 'COMPLETED',
+                    data: object.queries,
                 },
-            };
+            },
         });
 
         trace?.span({

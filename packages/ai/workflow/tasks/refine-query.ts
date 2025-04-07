@@ -2,7 +2,7 @@ import { createTask } from '@repo/orchestrator';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { generateObject, getHumanizedDate, handleError } from '../utils';
+import { generateObject, getHumanizedDate, handleError, sendEvents } from '../utils';
 
 const ClarificationResponseSchema = z.object({
     needsClarification: z.boolean(),
@@ -22,6 +22,7 @@ export const refineQueryTask = createTask<WorkflowEventSchema, WorkflowContextSc
     execute: async ({ trace, events, context, data, signal }) => {
         const messages = context?.get('messages') || [];
         const question = context?.get('question') || '';
+        const { updateStatus, updateAnswer, updateObject } = sendEvents(events);
 
         const prompt = `You are a professional research assistant tasked with refining user queries for deep research.
 
@@ -58,22 +59,17 @@ export const refineQueryTask = createTask<WorkflowEventSchema, WorkflowContextSc
         });
 
         if (object?.needsClarification) {
-            events?.update('answer', current => {
-                return {
-                    ...current,
-                    text: object.reasoning,
-                    finalText: object.reasoning,
-                    status: 'COMPLETED',
-                };
+            updateAnswer({
+                text: object.reasoning,
+                finalText: object.reasoning,
+                status: 'COMPLETED',
             });
             object?.clarifyingQuestion &&
-                events?.update('object', current => {
-                    return {
-                        clarifyingQuestion: object?.clarifyingQuestion,
-                    };
+                updateObject({
+                    clarifyingQuestion: object?.clarifyingQuestion,
                 });
 
-            events?.update('status', prev => 'COMPLETED');
+            updateStatus('COMPLETED');
         } else {
             context?.update('question', current => object?.refinedQuery || question);
         }

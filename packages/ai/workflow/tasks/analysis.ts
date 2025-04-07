@@ -1,7 +1,7 @@
 import { createTask } from '@repo/orchestrator';
 import { ModelEnum } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { ChunkBuffer, generateText, getHumanizedDate, handleError } from '../utils';
+import { ChunkBuffer, generateText, getHumanizedDate, handleError, sendEvents } from '../utils';
 
 export const analysisTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'analysis',
@@ -9,7 +9,9 @@ export const analysisTask = createTask<WorkflowEventSchema, WorkflowContextSchem
         const messages = context?.get('messages') || [];
         const question = context?.get('question') || '';
         const prevSummaries = context?.get('summaries') || [];
-        const nextStepId = Object.keys(events?.getState('steps') || {}).length;
+        const { updateStep, nextStepId, addSources } = sendEvents(events);
+
+        const stepId = nextStepId();
 
         const prompt = `
           
@@ -50,21 +52,14 @@ ${s}
             threshold: 200,
             breakOn: ['\n\n'],
             onFlush: (chunk: string, fullText: string) => {
-                events?.update('steps', current => ({
-                    ...current,
-                    [nextStepId]: {
-                        ...(current?.[nextStepId] || {}),
-                        steps: {
-                            ...(current?.[nextStepId]?.steps || {}),
-                            reasoning: {
-                                data: fullText,
-                                status: 'PENDING' as const,
-                            },
-                        },
-                        id: nextStepId,
-                        status: 'PENDING' as const,
+                updateStep({
+                    stepId,
+                    stepStatus: 'PENDING',
+                    text: chunk,
+                    subSteps: {
+                        reasoning: { status: 'PENDING', data: fullText },
                     },
-                }));
+                });
             },
         });
 
@@ -80,26 +75,15 @@ ${s}
 
         chunkBuffer.flush();
 
-        events?.update('steps', current => ({
-            ...current,
-
-            [nextStepId]: {
-                ...(current?.[nextStepId] || {}),
-                steps: {
-                    ...(current?.[nextStepId]?.steps || {}),
-                    reasoning: {
-                        ...current?.[nextStepId]?.steps?.reasoning,
-                        status: 'COMPLETED' as const,
-                    },
-                },
-                id: nextStepId,
-                status: 'COMPLETED' as const,
+        updateStep({
+            stepId,
+            stepStatus: 'COMPLETED',
+            subSteps: {
+                reasoning: { status: 'COMPLETED' },
             },
-        }));
-
-        events?.update('sources', current => {
-            return [...(current || []), ...(context?.get('sources') || [])];
         });
+
+        addSources(context?.get('sources') || []);
 
         trace?.span({
             name: 'analysis',
@@ -114,7 +98,7 @@ ${s}
         return {
             queries: [],
             analysis: text,
-            stepId: nextStepId,
+            stepId,
         };
     },
     onError: handleError,
