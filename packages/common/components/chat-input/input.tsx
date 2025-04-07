@@ -207,7 +207,7 @@ export const ChatInput = ({
     return (
         <div
             className={cn(
-                ' w-full ',
+                'bg-secondary w-full',
                 currentThreadId
                     ? 'absolute bottom-0'
                     : 'absolute inset-0 flex h-full w-full flex-col items-center justify-center'
