@@ -1,0 +1,16 @@
+.git
+.next
+node_modules
+dist
+build
+coverage
+.turbo
+*.log
+.DS_Store
+.env*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+*.min.js
+*.d.ts
+bun.lockb 

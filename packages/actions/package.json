@@ -1,0 +1,17 @@
+{
+    "name": "@repo/actions",
+    "version": "0.1.0",
+    "private": true,
+    "main": "./index.ts",
+    "exports": {
+        ".": "./index.ts"
+    },
+    "dependencies": {
+        "@repo/prisma": "workspace:*"
+    },
+    "devDependencies": {
+        "@repo/typescript-config": "*",
+        "eslint": "^8.56.0",
+        "typescript": "^5.3.3"
+    }
+}

@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes fade458 {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0.25;
+    }
+}
+
+@layer base {
+    :root {
+        --vaul-overlay-background: 255, 255, 255;
+        --vaul-overlay-background-start: transparent;
+        --vaul-overlay-background-end: rgba(0, 0, 0, 0.4);
+
+        --background: 25 12% 100%;
+        --foreground: 25 12% 2%;
+
+        --secondary: 25 12% 98%;
+        --secondary-foreground: 25 12% 4%;
+
+        --tertiary: 25 12% 92%;
+        --tertiary-foreground: 25 12% 8%;
+
+        --card: 40 30% 98%;
+        --card-foreground: 20 15% 10%;
+
+        --popover: 25 12% 100%;
+        --popover-foreground: 20 15% 10%;
+
+        --brand: 25 12% 10%;
+        --brand-foreground: 25 12% 96%;
+
+        --muted: 40 15% 92%;
+        --muted-foreground: 20 10% 45%;
+
+        --accent: 40 15% 92%;
+        --accent-foreground: 20 15% 10%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 40 30% 98%;
+
+        --border: 25 12% 86%;
+        --soft: 25 12% 92%;
+        --hard: 25 12% 85%;
+        --input: 25 12% 85%;
+        --ring: 20 15% 10%;
+
+        --radius: 0.5rem;
+    }
+
+    /**
+  .dark {
+    --background: 0 0% 7.8%;
+    --foreground: 60 1% 90%;
+
+    --secondary: 0 0% 9.8%;
+    --secondary-foreground: 60 1% 80%;
+
+    --tertiary: 0 0% 15%;
+    --tertiary-foreground: 60 1% 90%;
+
+    --card: 60 1% 19%;
+    --card-foreground: 60 1% 90%;
+
+    --popover: 60 1% 10%;
+    --popover-foreground: 60 1% 90%;
+
+    --brand: 0 0% 100%;
+    --brand-foreground: 0 0% 7.8%;
+
+    -brand: 287 69% 83%;
+    --brand-foreground: 282 41% 23%;
+ 
+    --brand: 200 48% 76%;
+    --brand-foreground: 198 43% 25%;
+
+    
+
+    --muted: 60 1% 15%;
+    --muted-foreground: 60 1% 65%;
+
+    --accent: 60 1% 15%;
+    --accent-foreground: 60 1% 90%;
+
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 60 1% 90%;
+
+    --border: 0 0% 15%;
+    --input: 60 1% 15%;
+    --ring: 60 1% 83%;
+  } 
+
+  **/
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground font-sans font-light;
+    }
+
+    strong {
+        @apply font-medium;
+    }
+}
+
+html.dark .shiki,
+html.dark .shiki span {
+    color: var(--shiki-dark) !important;
+    background-color: var(--background) !important;
+    /* Optional, if you also want font styles */
+    font-style: var(--shiki-dark-font-style) !important;
+    font-weight: var(--shiki-dark-font-weight) !important;
+    text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+@layer utilities {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        /* IE and Edge */
+        scrollbar-width: none;
+        /* Firefox */
+    }
+}
+
+mark.prompt-highlight {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    padding: 0.1rem 0.2rem;
+    font-weight: 500;
+    border: 1px solid hsl(var(--border));
+    border-radius: 4px;
+}
+
+.dark mark.prompt-highlight {
+    background-color: hsl(var(--brand) / 0.2);
+    color: hsl(var(--brand));
+    padding: 0.1rem 0.2rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.tiptap .is-editor-empty:first-child::before {
+    color: hsl(var(--muted-foreground));
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+}
+
+.dark .tiptap .is-editor-empty:first-child::before {
+    color: hsl(var(--muted-foreground));
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+}
+
+.greeting-bubble::before {
+    content: '';
+    position: absolute;
+    z-index: 0;
+    bottom: 0;
+    left: -7px;
+    /* Tailwind doesn't support very specific pixel values like -7px */
+    height: 20px;
+    width: 20px;
+    background: hsl(var(--muted));
+    border-bottom-right-radius: 15px;
+}
+
+.greeting-bubble::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    bottom: 0;
+    left: -10px;
+    width: 10px;
+    height: 20px;
+    background: hsl(var(--background));
+    border-bottom-right-radius: 10px;
+}

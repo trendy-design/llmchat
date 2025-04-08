@@ -1,9 +1,6 @@
-
   <div style="margin: 10px;">
     <img width="1500" alt="Screenshot 2024-09-25 at 8 52 53 AM" src="https://github.com/user-attachments/assets/d558b8f2-37ea-4a6d-b6ec-969d56cad103">
   </div><br>
-
-
 
 <p align="center">
   <img width="160" alt="LLMChat logo" src="https://github.com/user-attachments/assets/ea0535c8-37ee-4d5f-8db2-e15d5bc1decb">
@@ -56,12 +53,14 @@ To get the project running locally:
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/your-repo/llmchat.git
    cd llmchat
    ```
 
 2. Install dependencies:
+
    ```bash
    yarn install
    # or
@@ -69,6 +68,7 @@ To get the project running locally:
    ```
 
 3. Start the development server:
+
    ```bash
    yarn dev
    # or
@@ -79,8 +79,6 @@ To get the project running locally:
 
 ![og_6x](https://github.com/user-attachments/assets/4813a6b5-3294-4056-88bb-c536a45c220c)
 
-
 ## Deployment
 
 Instructions for deploying the project will be added soon.
-
