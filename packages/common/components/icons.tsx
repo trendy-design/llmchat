@@ -31,6 +31,14 @@ export const BYOKIcon = () => {
     );
 };
 
+export const NewIcon = () => {
+    return (
+        <div className="flex-inline flex h-5 items-center justify-center gap-1 rounded-md bg-purple-500/20 p-0.5 px-1 font-mono text-xs font-medium text-purple-500">
+            New
+        </div>
+    );
+};
+
 export const CreditIcon = ({
     credits,
     variant = 'default',

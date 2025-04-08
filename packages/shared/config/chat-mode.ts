@@ -10,7 +10,10 @@ export enum ChatMode {
     CLAUDE_3_7_SONNET = 'claude-3-7-sonnet',
 }
 
-export const ChatModeConfig = {
+export const ChatModeConfig: Record<
+    ChatMode,
+    { webSearch: boolean; imageUpload: boolean; retry: boolean; isNew?: boolean }
+> = {
     [ChatMode.Deep]: {
         webSearch: false,
         imageUpload: false,
@@ -29,7 +32,7 @@ export const ChatModeConfig = {
     },
     [ChatMode.O3_Mini]: {
         webSearch: true,
-        imageUpload: true,
+        imageUpload: false,
         retry: true,
     },
     [ChatMode.GPT_4o_Mini]: {
@@ -54,7 +57,7 @@ export const ChatModeConfig = {
     },
     [ChatMode.DEEPSEEK_R1]: {
         webSearch: true,
-        imageUpload: true,
+        imageUpload: false,
         retry: true,
     },
 };

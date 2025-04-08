@@ -25,7 +25,7 @@ import {
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-import { BYOKIcon, CreditIcon } from '../icons';
+import { BYOKIcon, CreditIcon, NewIcon } from '../icons';
 export const chatOptions = [
     {
         label: 'Deep Research',
@@ -228,6 +228,7 @@ export const ChatModeOptions = ({
                                     )}
                                 </div>
                                 <div className="flex-1" />
+                                {ChatModeConfig[option.value]?.isNew && <NewIcon />}
 
                                 <CreditIcon credits={option.creditCost ?? 0} variant="muted" />
                             </div>
@@ -250,6 +251,8 @@ export const ChatModeOptions = ({
                                 {<p className="text-sm font-medium">{option.label}</p>}
                             </div>
                             <div className="flex-1" />
+                            {ChatModeConfig[option.value]?.isNew && <NewIcon />}
+
                             {hasApiKeyForChatMode(option.value) ? (
                                 <BYOKIcon />
                             ) : (
