@@ -20,8 +20,12 @@ export default clerkMiddleware(async (auth, req) => {
         // Let the route handler handle the credit check and deduction
         return NextResponse.next();
     }
+    return NextResponse.next();
 });
 
 export const config = {
-    matcher: ['/api/:path*'],
+    matcher: [
+        '/api/:path*',
+        '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    ],
 };
