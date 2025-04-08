@@ -1,14 +1,11 @@
 'use client';
-import { usePostHog } from 'posthog-js/react';
+import { plausible } from '@repo/shared/utils';
 import { useEffect } from 'react';
 
 const ChatPage = () => {
-    const posthog = usePostHog();
-
     useEffect(() => {
-        posthog.capture('$pageview');
+        plausible.trackPageview();
     }, []);
-
     return <></>;
 };
 

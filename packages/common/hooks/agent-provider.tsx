@@ -2,11 +2,12 @@ import { useAuth, useUser } from '@clerk/nextjs';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { ChatMode } from '@repo/shared/config';
 import { ThreadItem } from '@repo/shared/types';
-import { buildCoreMessagesFromThreadItems } from '@repo/shared/utils';
+import { buildCoreMessagesFromThreadItems, plausible } from '@repo/shared/utils';
 import { nanoid } from 'nanoid';
 import { useParams } from 'next/navigation';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo } from 'react';
 import { useApiKeysStore, useAppStore, useChatStore, useMcpToolsStore } from '../store';
+
 export type AgentContextType = {
     runAgent: (body: any) => Promise<void>;
     handleSubmit: (args: {
@@ -353,6 +354,12 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             setCurrentThreadItem(aiThreadItem);
             setIsGenerating(true);
             setCurrentSources([]);
+
+            plausible.trackEvent('send_message', {
+                props: {
+                    mode,
+                },
+            });
 
             // Build core messages array
             const coreMessages = buildCoreMessagesFromThreadItems({
