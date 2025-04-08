@@ -141,7 +141,7 @@ export const Sidebar = () => {
                             <Logo className="size-5 text-emerald-900" />
                             {isSidebarOpen && (
                                 <p className="font-clash text-lg font-bold tracking-wide text-emerald-900">
-                                    deep.new
+                                    llmchat.co
                                 </p>
                             )}
                         </motion.div>

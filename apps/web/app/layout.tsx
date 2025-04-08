@@ -10,7 +10,7 @@ import localFont from 'next/font/local';
 import './globals.css';
 
 export const metadata: Metadata = {
-    title: 'deep.new - Go Deeper with AI-Powered Research & Agentic Workflows',
+    title: 'llmchat.co - Go Deeper with AI-Powered Research & Agentic Workflows',
     description:
         'Experience deep, AI-powered research with agentic workflows and a wide variety of models for advanced productivity.',
     keywords: 'AI chat, LLM, language models, privacy, minimal UI, ollama, chatgpt',
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     creator: 'Trendy design',
     publisher: 'Trendy design',
     openGraph: {
-        title: 'deep.new - Go Deeper with AI-Powered Research & Agentic Workflows',
+        title: 'llmchat.co - Go Deeper with AI-Powered Research & Agentic Workflows',
         siteName: 'llmchat.co',
         description:
             'Experience deep, AI-powered research with agentic workflows and a wide variety of models for advanced productivity.',
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: 'summary_large_image',
-        title: 'deep.new - Go Deeper with AI-Powered Research & Agentic Workflows',
+        title: 'llmchat.co - Go Deeper with AI-Powered Research & Agentic Workflows',
         site: 'llmchat.co',
         creator: '@llmchat_co',
         description:

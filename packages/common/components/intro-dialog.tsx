@@ -84,7 +84,7 @@ export const IntroDialog = () => {
                         >
                             <DarkLogo className="size-6 text-white" />
                             <p className="font-clash text-lg font-bold tracking-wide text-white">
-                                deep.new
+                                llmchat.co
                             </p>
                         </div>
                     </div>
