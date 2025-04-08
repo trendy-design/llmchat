@@ -9,13 +9,15 @@ import {
 import { useRootContext } from '@repo/common/context';
 import { AgentProvider } from '@repo/common/hooks';
 import { useAppStore } from '@repo/common/store';
+import { plausible } from '@repo/shared/utils';
 import { Badge, Button, Flex, Toaster } from '@repo/ui';
 import { IconMoodSadDizzy, IconX } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { useStickToBottom } from 'use-stick-to-bottom';
 import { Drawer } from 'vaul';
+
 export type TRootLayout = {
     children: React.ReactNode;
 };
@@ -26,6 +28,10 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
 
     const containerClass =
         'relative flex flex-1 flex-row h-[calc(99dvh)] border border-border rounded-sm bg-secondary w-full overflow-hidden shadow-sm';
+
+    useEffect(() => {
+        plausible.trackPageview();
+    }, []);
 
     return (
         <div className="bg-tertiary flex h-[100dvh] w-full flex-row overflow-hidden">
