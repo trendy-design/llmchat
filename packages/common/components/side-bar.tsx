@@ -29,13 +29,12 @@ import {
 import { motion } from 'framer-motion';
 import moment from 'moment';
 import Link from 'next/link';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 
 export const Sidebar = () => {
     const { threadId: currentThreadId } = useParams();
     const pathname = usePathname();
     const { setIsCommandSearchOpen } = useRootContext();
-    const { push } = useRouter();
     const isChatPage = pathname === '/chat';
     const threads = useChatStore(state => state.threads);
     const pinThread = useChatStore(state => state.pinThread);
@@ -45,7 +44,7 @@ export const Sidebar = () => {
     };
 
     const { isSignedIn, user } = useUser();
-    const { openUserProfile, signOut, openSignIn } = useClerk();
+    const { openUserProfile, signOut, redirectToSignIn } = useClerk();
     const clearAllThreads = useChatStore(state => state.clearAllThreads);
     const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
     const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
@@ -354,7 +353,7 @@ export const Sidebar = () => {
                                 Settings
                             </DropdownMenuItem>
                             {!isSignedIn && (
-                                <DropdownMenuItem onClick={() => openSignIn()}>
+                                <DropdownMenuItem onClick={() => redirectToSignIn()}>
                                     <IconUser size={16} strokeWidth={2} />
                                     Log in
                                 </DropdownMenuItem>

@@ -1,5 +1,4 @@
 'use client';
-import { SignIn } from '@clerk/nextjs';
 import {
     CommandSearch,
     FeedbackWidget,
@@ -24,18 +23,9 @@ export type TRootLayout = {
 export const RootLayout: FC<TRootLayout> = ({ children }) => {
     const { isSidebarOpen, isMobileSidebarOpen, setIsMobileSidebarOpen } = useRootContext();
     const setIsSettingOpen = useAppStore(state => state.setIsSettingsOpen);
-    const showSignInModal = useAppStore(state => state.showSignInModal);
 
     const containerClass =
         'relative flex flex-1 flex-row h-[calc(99dvh)] border border-border rounded-sm bg-secondary w-full overflow-hidden shadow-sm';
-
-    if (showSignInModal) {
-        return (
-            <div className="bg-secondary flex min-h-[96dvh] w-full flex-row overflow-hidden">
-                <SignIn />
-            </div>
-        );
-    }
 
     return (
         <div className="bg-tertiary flex h-[100dvh] w-full flex-row overflow-hidden">
