@@ -73,6 +73,7 @@ module.exports = {
                 mono: ['var(--font-geist-mono)', ...fontFamily.mono],
                 clash: ['var(--font-clash)', ...fontFamily.sans],
                 sans: ['var(--font-inter)', ...fontFamily.sans],
+                bricolage: ['var(--font-bricolage)', ...fontFamily.sans],
             },
             fontSize: {
                 xs: ['0.725rem', { lineHeight: '1.2rem', letterSpacing: '0.01em' }],

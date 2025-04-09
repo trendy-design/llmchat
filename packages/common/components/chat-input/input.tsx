@@ -1,5 +1,5 @@
 'use client';
-import { useAuth, useClerk } from '@clerk/nextjs';
+import { useAuth } from '@clerk/nextjs';
 import {
     ImageAttachment,
     ImageDropzoneRoot,
@@ -48,7 +48,7 @@ export const ChatInput = ({
             }
         },
     });
-    const { openSignIn } = useClerk();
+    const size = currentThreadId ? 'base' : 'sm';
     const getThreadItems = useChatStore(state => state.getThreadItems);
     const threadItemsLength = useChatStore(useShallow(state => state.threadItems.length));
     const { handleSubmit } = useAgentStream();
@@ -61,11 +61,11 @@ export const ChatInput = ({
     const stopGeneration = useChatStore(state => state.stopGeneration);
     const hasTextInput = !!editor?.getText();
     const { dropzonProps, handleImageUpload } = useImageAttachment();
-    const router = useRouter();
-
+    const { push } = useRouter();
     const sendMessage = async () => {
         if (!isSignedIn) {
-            openSignIn();
+            push('/sign-in');
+
             return;
         }
 
@@ -77,7 +77,7 @@ export const ChatInput = ({
 
         if (!threadId) {
             const optimisticId = uuidv4();
-            router.push(`/chat/${optimisticId}`);
+            push(`/chat/${optimisticId}`);
             createThread(optimisticId, {
                 title: editor?.getText(),
             });
@@ -220,7 +220,9 @@ export const ChatInput = ({
             <div
                 className={cn(
                     'mx-auto flex w-full max-w-3xl flex-col items-start',
-                    !threadItemsLength && 'justify-start'
+                    !threadItemsLength && 'justify-start',
+                    size === 'sm' && 'max-w-2xl',
+                    size === 'base' && 'max-w-3xl'
                 )}
             >
                 <Flex

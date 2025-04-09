@@ -4,7 +4,7 @@ import { ChatMode } from '@repo/shared/config';
 import { ThreadItem } from '@repo/shared/types';
 import { buildCoreMessagesFromThreadItems, plausible } from '@repo/shared/utils';
 import { nanoid } from 'nanoid';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo } from 'react';
 import { useApiKeysStore, useAppStore, useChatStore, useMcpToolsStore } from '../store';
 
@@ -50,6 +50,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         chatMode: state.chatMode,
         fetchRemainingCredits: state.fetchRemainingCredits,
     }));
+    const { push } = useRouter();
 
     const getSelectedMCP = useMcpToolsStore(state => state.getSelectedMCP);
     const apiKeys = useApiKeysStore(state => state.getAllKeys);
@@ -325,7 +326,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         }) => {
             const mode = (newChatMode || chatMode) as ChatMode;
             if (!isSignedIn) {
-                setShowSignInModal(true);
+                push('/sign-in');
+
                 return;
             }
 

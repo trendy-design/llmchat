@@ -35,4 +35,4 @@ export * from './tooltip';
 export * from './use-confirm-popover';
 export * from './use-toast';
 
-
+export * from './input-otp';

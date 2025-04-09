@@ -6,7 +6,6 @@ import {
     IconChartBar,
     IconPencil,
     IconQuestionMark,
-    IconSchool,
 } from '@tabler/icons-react';
 import { Editor } from '@tiptap/react';
 
@@ -45,13 +44,6 @@ export const examplePrompts = {
         'Examine the pros and cons of various renewable energy sources.',
         'Analyze how social media has transformed communication in the past decade.',
     ],
-
-    learning: [
-        'What are effective techniques for learning a new language as an adult?',
-        'How can I develop critical thinking skills?',
-        'What resources would you recommend for learning about astronomy?',
-        'What are the key principles of effective time management?',
-    ],
 };
 
 export const getRandomPrompt = (category?: keyof typeof examplePrompts) => {
@@ -74,7 +66,6 @@ const categoryIcons = {
     creative: { name: 'Creative', icon: IconPencil, color: '!text-green-700' },
     advice: { name: 'Advice', icon: IconBook, color: '!text-purple-700' },
     analysis: { name: 'Analysis', icon: IconChartBar, color: '!text-red-700' },
-    learning: { name: 'Learning', icon: IconSchool, color: '!text-emerald-700' },
 };
 
 export const ExamplePrompts = () => {

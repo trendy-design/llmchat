@@ -12,7 +12,7 @@ const buttonVariants = cva(
             variant: {
                 default:
                     'bg-emerald-700 border border-emerald-800 text-background [&>svg]:text-background font-semibold hover:opacity-90',
-                brand: 'bg-brand text-brand-foreground font-semibold hover:opacity-90',
+                brand: 'bg-emerald-950 text-lime-100 font-semibold hover:opacity-90 [&>svg]:text-lime-100',
                 'brand-secondary':
                     'bg-brand-secondary text-brand-secondary-foreground font-semibold hover:opacity-90',
                 accent: 'text-emerald-600 bg-emerald-600/10 hover:bg-emerald-600/20',
@@ -31,7 +31,7 @@ const buttonVariants = cva(
                 sm: 'h-8 px-3 text-xs md:text-xs rounded-xl',
                 xs: 'h-7 px-2 text-xs md:text-xs',
                 md: 'h-9 px-4 text-xs md:text-sm font-semibold',
-                lg: 'h-12 md:h-14  px-8 text-xs md:text-base font-semibold',
+                lg: 'h-11 md:h-11  px-8 text-xs md:text-base font-semibold',
                 icon: 'h-8 min-w-8 text-xs md:text-sm',
                 'icon-sm': 'h-7 min-w-7 text-xs md:text-sm',
                 'icon-xs': 'h-6 min-w-6 text-xs md:text-sm',

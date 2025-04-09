@@ -29,7 +29,7 @@ import {
 import { motion } from 'framer-motion';
 import moment from 'moment';
 import Link from 'next/link';
-import { useParams, usePathname } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 
 export const Sidebar = () => {
     const { threadId: currentThreadId } = useParams();
@@ -49,7 +49,7 @@ export const Sidebar = () => {
     const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
     const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
     const setIsSettingsOpen = useAppStore(state => state.setIsSettingsOpen);
-
+    const { push } = useRouter();
     const groupedThreads: Record<string, Thread[]> = {
         today: [],
         yesterday: [],
@@ -353,7 +353,7 @@ export const Sidebar = () => {
                                 Settings
                             </DropdownMenuItem>
                             {!isSignedIn && (
-                                <DropdownMenuItem onClick={() => redirectToSignIn()}>
+                                <DropdownMenuItem onClick={() => push('/sign-in')}>
                                     <IconUser size={16} strokeWidth={2} />
                                     Log in
                                 </DropdownMenuItem>

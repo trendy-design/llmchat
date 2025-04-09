@@ -1,42 +1,28 @@
 'use client';
 
-import { useSignIn } from '@clerk/nextjs';
-import { OAuthStrategy } from '@clerk/types';
-import { Button } from '@repo/ui';
+import { useAuth, useSignIn } from '@clerk/nextjs';
+import { CustomSignIn } from '@repo/common/components';
+import { useRouter } from 'next/navigation';
 
 export default function OauthSignIn() {
     const { signIn } = useSignIn();
-
+    const { isSignedIn, isLoaded } = useAuth();
+    const router = useRouter();
     if (!signIn) return null;
 
-    const signInWith = (strategy: OAuthStrategy) => {
-        return signIn
-            .authenticateWithRedirect({
-                strategy,
-                redirectUrl: '/sign-in/sso-callback',
-                redirectUrlComplete: '/',
-            })
-            .then(res => {
-                console.log(res);
-            })
-            .catch((err: any) => {
-                // See https://clerk.com/docs/custom-flows/error-handling
-                // for more info on error handling
-                console.log(err.errors);
-                console.error(err, null, 2);
-            });
-    };
+    if (isSignedIn) {
+        router.push('/chat');
+    }
 
-    // Render a button for each supported OAuth provider
-    // you want to add to your app. This example uses only Google.
+    if (!isLoaded) return null;
+
     return (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-2">
-            <div className="flex flex-col items-center gap-2">
-                <p className="text-sm text-gray-500">Sign in with</p>
-                <Button onClick={() => signInWith('oauth_google')} rounded="full">
-                    Sign in with Google
-                </Button>
-            </div>
+        <div className="bg-secondary/95 fixed inset-0 z-[100] flex h-full w-full flex-col items-center justify-center gap-2 backdrop-blur-sm">
+            <CustomSignIn
+                onClose={() => {
+                    router.push('/chat');
+                }}
+            />
         </div>
     );
 }
