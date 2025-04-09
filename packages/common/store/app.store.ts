@@ -39,7 +39,7 @@ type Actions = {
 
 export const useAppStore = create(
     immer<State & Actions>((set, get) => ({
-        isSidebarOpen: false,
+        isSidebarOpen: true,
         isSourcesOpen: false,
         isSettingsOpen: false,
         settingTab: 'api-keys',

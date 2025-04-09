@@ -92,7 +92,7 @@ export const Sidebar = () => {
         if (threads.length === 0 && !renderEmptyState) return null;
         return (
             <Flex gap="xs" direction="col" items="start" className="w-full">
-                <div className="text-muted-foreground flex flex-row items-center gap-1 px-2 py-1 text-xs font-medium opacity-70">
+                <div className="text-muted-foreground/70 flex flex-row items-center gap-1 px-2 py-1 text-xs font-medium opacity-70">
                     {groupIcon}
                     {title}
                 </div>
