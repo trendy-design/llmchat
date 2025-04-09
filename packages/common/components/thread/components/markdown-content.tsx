@@ -83,9 +83,7 @@ export const normalizeContent = (content: string) => {
 };
 
 function parseCitationsWithSourceTags(markdown: string): string {
-    // Regular expression to match citations like [1], [2], etc.
-    //cover case like [1,2] etc
-
+    // Basic single citation regex
     const citationRegex = /\[(\d+)\]/g;
     let result = markdown;
 
@@ -94,9 +92,13 @@ function parseCitationsWithSourceTags(markdown: string): string {
         return `<Source>${p1}</Source>`;
     });
 
-    const multipleCitationsRegex = /\[(\d+)(?:,\s*(\d+))*\]/g;
-    result = result.replace(multipleCitationsRegex, (match, p1, p2) => {
-        return `<Source>${p1}</Source> <Source>${p2}</Source>`;
+    // This regex and replacement logic needs to be fixed
+    const multipleCitationsRegex = /\[(\d+(?:,\s*\d+)+)\]/g;
+    result = result.replace(multipleCitationsRegex, match => {
+        // Extract all numbers from the citation
+        const numbers = match.match(/\d+/g) || [];
+        // Create Source tags for each number
+        return numbers.map(num => `<Source>${num}</Source>`).join(' ');
     });
 
     return result;
