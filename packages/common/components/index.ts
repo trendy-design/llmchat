@@ -23,6 +23,7 @@ export * from './recent-threads';
 export * from './search-results';
 export * from './settings-modal';
 export * from './side-bar';
+export * from './sign-in';
 export * from './sources-stack';
 export * from './table-of-messages';
 export * from './text-shimmer';

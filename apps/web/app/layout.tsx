@@ -5,7 +5,13 @@ import { TooltipProvider, cn } from '@repo/ui';
 import { GeistMono } from 'geist/font/mono';
 import type { Viewport } from 'next';
 import { Metadata } from 'next';
+import { Bricolage_Grotesque } from 'next/font/google';
 import localFont from 'next/font/local';
+
+const bricolage = Bricolage_Grotesque({
+    subsets: ['latin'],
+    variable: '--font-bricolage',
+});
 
 import './globals.css';
 
@@ -84,7 +90,7 @@ export default function ParentLayout({
     return (
         <html
             lang="en"
-            className={cn(GeistMono.variable, inter.variable, clash.variable)}
+            className={cn(GeistMono.variable, inter.variable, clash.variable, bricolage.variable)}
             suppressHydrationWarning
         >
             <head>

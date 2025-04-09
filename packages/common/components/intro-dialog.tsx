@@ -1,12 +1,11 @@
-import { useClerk, useUser } from '@clerk/nextjs';
-import { Button, cn, Dialog, DialogContent } from '@repo/ui';
-import { IconArrowRight, IconCircleCheckFilled } from '@tabler/icons-react';
+import { useUser } from '@clerk/nextjs';
+import { cn, Dialog, DialogContent } from '@repo/ui';
+import { IconCircleCheckFilled } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { DarkLogo } from './logo';
 export const IntroDialog = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const { openSignIn } = useClerk();
     const { isSignedIn } = useUser();
 
     useEffect(() => {
@@ -128,25 +127,6 @@ export const IntroDialog = () => {
                                 </div>
                             ))}
                         </div>
-                    </div>
-
-                    <div className="flex flex-col items-start">
-                        <p className="text-sm font-medium">
-                            Sign up to enjoy free credits every day.
-                        </p>
-                        <p className="text-muted-foreground text-sm">
-                            Your privacy is always our priority.
-                        </p>
-                        <Button
-                            rounded="full"
-                            onClick={() => {
-                                handleClose();
-                                openSignIn();
-                            }}
-                            className="mt-4"
-                        >
-                            Sign Up <IconArrowRight className="size-4" />
-                        </Button>
                     </div>
                 </div>
             </DialogContent>
