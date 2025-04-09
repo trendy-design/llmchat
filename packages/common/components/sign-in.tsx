@@ -267,13 +267,15 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
     if (verifying) {
         return (
             <div className="flex w-[300px] flex-col items-center gap-4">
-                <h2 className="font-clash text-foreground text-center text-[24px] font-semibold leading-tight !text-emerald-900">
-                    Check your email
-                </h2>
-                <p className="text-center">
-                    We've sent a code to your email. Please check your inbox and enter the code to
-                    continue.
-                </p>
+                <div className="flex flex-col items-center gap-1">
+                    <h2 className="font-clash text-foreground text-center text-[24px] font-semibold leading-tight !text-emerald-900">
+                        Check your email
+                    </h2>
+                    <p className="text-muted-foreground text-center text-sm">
+                        We've sent a code to your email. Please check your inbox and enter the code
+                        to continue.
+                    </p>
+                </div>
                 <InputOTP
                     maxLength={6}
                     autoFocus
@@ -381,7 +383,7 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
                         {isLoading === 'email' ? (
                             <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent"></div>
                         ) : null}
-                        {isLoading === 'email' ? 'Sending link...' : 'Continue with email'}
+                        {isLoading === 'email' ? 'Sending code...' : 'Continue with email'}
                     </Button>
                 </div>
             </div>
