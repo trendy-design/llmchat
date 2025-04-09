@@ -1,6 +1,6 @@
 import { useAuth, useUser } from '@clerk/nextjs';
 import { useWorkflowWorker } from '@repo/ai/worker';
-import { ChatMode } from '@repo/shared/config';
+import { ChatMode, ChatModeConfig } from '@repo/shared/config';
 import { ThreadItem } from '@repo/shared/types';
 import { buildCoreMessagesFromThreadItems, plausible } from '@repo/shared/utils';
 import { nanoid } from 'nanoid';
@@ -180,7 +180,18 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 });
 
                 if (!response.ok) {
-                    const errorText = await response.text();
+                    let errorText = await response.text();
+
+                    if (response.status === 429 && isSignedIn) {
+                        errorText =
+                            'You have reached the daily limit of requests. Please try again tomorrow or Use your own API key.';
+                    }
+
+                    if (response.status === 429 && !isSignedIn) {
+                        errorText =
+                            'You have reached the daily limit of requests. Please sign in to enjoy more requests.';
+                    }
+
                     setIsGenerating(false);
                     updateThreadItem(body.threadId, {
                         id: body.threadItemId,
@@ -325,7 +336,10 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             showSuggestions?: boolean;
         }) => {
             const mode = (newChatMode || chatMode) as ChatMode;
-            if (!isSignedIn) {
+            if (
+                !isSignedIn &&
+                !!ChatModeConfig[mode as keyof typeof ChatModeConfig]?.isAuthRequired
+            ) {
                 push('/sign-in');
 
                 return;

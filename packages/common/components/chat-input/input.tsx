@@ -6,6 +6,7 @@ import {
     MessagesRemainingBadge,
 } from '@repo/common/components';
 import { useImageAttachment } from '@repo/common/hooks';
+import { ChatModeConfig } from '@repo/shared/config';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -62,10 +63,13 @@ export const ChatInput = ({
     const hasTextInput = !!editor?.getText();
     const { dropzonProps, handleImageUpload } = useImageAttachment();
     const { push } = useRouter();
+    const chatMode = useChatStore(state => state.chatMode);
     const sendMessage = async () => {
-        if (!isSignedIn) {
+        if (
+            !isSignedIn &&
+            !!ChatModeConfig[chatMode as keyof typeof ChatModeConfig]?.isAuthRequired
+        ) {
             push('/sign-in');
-
             return;
         }
 
@@ -116,7 +120,7 @@ export const ChatInput = ({
             >
                 <Flex
                     direction="col"
-                    className="bg-background border-hard relative z-10 w-full rounded-xl border"
+                    className="bg-background border-hard/80 relative z-10 w-full rounded-xl border"
                 >
                     <ImageDropzoneRoot dropzoneProps={dropzonProps}>
                         <motion.div
@@ -221,8 +225,7 @@ export const ChatInput = ({
                 className={cn(
                     'mx-auto flex w-full max-w-3xl flex-col items-start',
                     !threadItemsLength && 'justify-start',
-                    size === 'sm' && 'max-w-2xl',
-                    size === 'base' && 'max-w-3xl'
+                    size === 'sm' && 'px-'
                 )}
             >
                 <Flex
@@ -236,7 +239,7 @@ export const ChatInput = ({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3, ease: 'easeOut' }}
-                            className="mb-6 flex w-full flex-col items-center gap-1"
+                            className="mb-4 flex w-full flex-col items-center gap-1"
                         >
                             <AnimatedTitles
                                 titles={[

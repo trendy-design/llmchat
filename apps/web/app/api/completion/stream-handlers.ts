@@ -3,7 +3,6 @@ import { CHAT_MODE_CREDIT_COSTS } from '@repo/shared/config';
 import { logger } from '@repo/shared/logger';
 import { EVENT_TYPES, posthog } from '@repo/shared/posthog';
 import { Geo } from '@vercel/functions';
-import { deductCredits } from './credit-service';
 import { CompletionRequestType, StreamController } from './types';
 import { sanitizePayloadForJSON } from './utils';
 
@@ -46,23 +45,24 @@ export function normalizeMarkdownContent(content: string): string {
     return normalizedContent;
 }
 
-export async function executeStream(
-    controller: StreamController,
-    encoder: TextEncoder,
-    data: CompletionRequestType,
-    abortController: AbortController,
-    userId: string,
-    gl?: Geo
-): Promise<{ success: boolean } | Response> {
+export async function executeStream({
+    controller,
+    encoder,
+    data,
+    abortController,
+    gl,
+    userId,
+    onFinish,
+}: {
+    controller: StreamController;
+    encoder: TextEncoder;
+    data: CompletionRequestType;
+    abortController: AbortController;
+    userId?: string;
+    gl?: Geo;
+    onFinish?: () => Promise<void>;
+}): Promise<{ success: boolean } | Response> {
     try {
-        if (!userId) {
-            // Authentication failures are important
-            logger.warn('Authentication required for stream execution', { userId });
-            return new Response(JSON.stringify({ error: 'Authentication required' }), {
-                status: 401,
-                headers: { 'Content-Type': 'application/json' },
-            });
-        }
         const creditCost = CHAT_MODE_CREDIT_COSTS[data.mode];
 
         const { signal } = abortController;
@@ -81,21 +81,7 @@ export async function executeStream(
             gl,
             mcpConfig: data.mcpConfig || {},
             showSuggestions: data.showSuggestions || false,
-            onFinish: async () => {
-                if (process.env.NODE_ENV === 'development') {
-                    return;
-                }
-                const deducted = await deductCredits(userId, creditCost);
-                if (!deducted) {
-                    // Credit deduction failures are important
-                    logger.warn(`Failed to deduct credits`, {
-                        userId,
-                        creditCost,
-                        threadId: data.threadId,
-                        important: true,
-                    });
-                }
-            },
+            onFinish: onFinish,
         });
 
         workflow.onAll((event, payload) => {
@@ -124,21 +110,22 @@ export async function executeStream(
             logger.debug('Workflow completed', { threadId: data.threadId });
         }
 
-        posthog.capture({
-            event: EVENT_TYPES.WORKFLOW_SUMMARY,
-            userId,
-            properties: {
+        userId &&
+            posthog.capture({
+                event: EVENT_TYPES.WORKFLOW_SUMMARY,
                 userId,
-                query: data.prompt,
-                mode: data.mode,
-                webSearch: data.webSearch || false,
-                showSuggestions: data.showSuggestions || false,
-                threadId: data.threadId,
-                threadItemId: data.threadItemId,
-                parentThreadItemId: data.parentThreadItemId,
-                summary: workflow.getTimingSummary(),
-            },
-        });
+                properties: {
+                    userId,
+                    query: data.prompt,
+                    mode: data.mode,
+                    webSearch: data.webSearch || false,
+                    showSuggestions: data.showSuggestions || false,
+                    threadId: data.threadId,
+                    threadItemId: data.threadItemId,
+                    parentThreadItemId: data.parentThreadItemId,
+                    summary: workflow.getTimingSummary(),
+                },
+            });
 
         console.log('[WORKFLOW SUMMARY]', workflow.getTimingSummary());
 

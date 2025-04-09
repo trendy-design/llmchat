@@ -12,53 +12,68 @@ export enum ChatMode {
 
 export const ChatModeConfig: Record<
     ChatMode,
-    { webSearch: boolean; imageUpload: boolean; retry: boolean; isNew?: boolean }
+    {
+        webSearch: boolean;
+        imageUpload: boolean;
+        retry: boolean;
+        isNew?: boolean;
+        isAuthRequired?: boolean;
+    }
 > = {
     [ChatMode.Deep]: {
         webSearch: false,
         imageUpload: false,
         retry: false,
+        isAuthRequired: true,
     },
     [ChatMode.Pro]: {
         webSearch: false,
         imageUpload: false,
         retry: false,
+        isAuthRequired: true,
     },
     [ChatMode.LLAMA_4_SCOUT]: {
         webSearch: true,
         imageUpload: true,
         retry: true,
         isNew: true,
+        isAuthRequired: false,
     },
     [ChatMode.O3_Mini]: {
         webSearch: true,
         imageUpload: false,
         retry: true,
+        isAuthRequired: true,
     },
     [ChatMode.GPT_4o_Mini]: {
         webSearch: true,
         imageUpload: true,
         retry: true,
+        isAuthRequired: false,
     },
     [ChatMode.CLAUDE_3_5_SONNET]: {
         webSearch: true,
         imageUpload: true,
         retry: true,
+        isAuthRequired: true,
     },
     [ChatMode.CLAUDE_3_7_SONNET]: {
         webSearch: true,
         imageUpload: true,
         retry: true,
+        isAuthRequired: true,
     },
     [ChatMode.GEMINI_2_FLASH]: {
         webSearch: true,
         imageUpload: true,
         retry: true,
+        isAuthRequired: false,
     },
     [ChatMode.DEEPSEEK_R1]: {
         webSearch: true,
         imageUpload: false,
         retry: true,
+        isAuthRequired: true,
     },
 };
 

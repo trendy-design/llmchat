@@ -1,4 +1,5 @@
 'use client';
+import { useUser } from '@clerk/nextjs';
 import { DotSpinner } from '@repo/common/components';
 import { useApiKeysStore, useChatStore } from '@repo/common/store';
 import { CHAT_MODE_CREDIT_COSTS, ChatMode, ChatModeConfig } from '@repo/shared/config';
@@ -23,9 +24,9 @@ import {
     IconWorld,
 } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { BYOKIcon, CreditIcon, NewIcon } from '../icons';
+import { BYOKIcon, NewIcon } from '../icons';
 export const chatOptions = [
     {
         label: 'Deep Research',
@@ -192,13 +193,16 @@ export const GeneratingStatus = () => {
 export const ChatModeOptions = ({
     chatMode,
     setChatMode,
+    isRetry = false,
 }: {
     chatMode: ChatMode;
     setChatMode: (chatMode: ChatMode) => void;
+    isRetry?: boolean;
 }) => {
+    const { isSignedIn } = useUser();
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
     const isChatPage = usePathname().startsWith('/chat');
-
+    const { push } = useRouter();
     return (
         <DropdownMenuContent
             align="start"
@@ -212,6 +216,10 @@ export const ChatModeOptions = ({
                         <DropdownMenuItem
                             key={option.label}
                             onSelect={() => {
+                                if (ChatModeConfig[option.value]?.isAuthRequired && !isSignedIn) {
+                                    push('/sign-in');
+                                    return;
+                                }
                                 setChatMode(option.value);
                             }}
                             className="h-auto"
@@ -229,8 +237,6 @@ export const ChatModeOptions = ({
                                 </div>
                                 <div className="flex-1" />
                                 {ChatModeConfig[option.value]?.isNew && <NewIcon />}
-
-                                <CreditIcon credits={option.creditCost ?? 0} variant="muted" />
                             </div>
                         </DropdownMenuItem>
                     ))}
@@ -242,6 +248,10 @@ export const ChatModeOptions = ({
                     <DropdownMenuItem
                         key={option.label}
                         onSelect={() => {
+                            if (ChatModeConfig[option.value]?.isAuthRequired && !isSignedIn) {
+                                push('/sign-in');
+                                return;
+                            }
                             setChatMode(option.value);
                         }}
                         className="h-auto"
@@ -253,11 +263,7 @@ export const ChatModeOptions = ({
                             <div className="flex-1" />
                             {ChatModeConfig[option.value]?.isNew && <NewIcon />}
 
-                            {hasApiKeyForChatMode(option.value) ? (
-                                <BYOKIcon />
-                            ) : (
-                                <CreditIcon credits={option.creditCost ?? 0} variant="muted" />
-                            )}
+                            {hasApiKeyForChatMode(option.value) && <BYOKIcon />}
                         </div>
                     </DropdownMenuItem>
                 ))}

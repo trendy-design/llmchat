@@ -129,7 +129,7 @@ export const runWorkflow = ({
     signal?: AbortSignal;
     webSearch?: boolean;
     showSuggestions?: boolean;
-    onFinish: (data: any) => void;
+    onFinish?: (data: any) => void;
     gl?: Geo;
 }) => {
     const langfuse = new Langfuse();
