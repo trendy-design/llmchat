@@ -19,9 +19,9 @@ const buttonVariants = cva(
                 outlined: 'bg-background text-foreground outline outline-border hover:bg-secondary',
                 destructive: 'bg-destructive text-destructive-foreground hover:opacity-90',
                 bordered:
-                    'border border-border bg-background text-foreground opacity-100 hover:opacity-80',
+                    'border border-hard bg-background text-foreground opacity-100 hover:opacity-80',
                 secondary:
-                    'bg-quaternary text-emerald-900 opacity-100 hover:opacity-80 [&>svg]:text-emerald-900 font-semibold',
+                    'bg-quaternary border border-border text-emerald-900 opacity-100 hover:opacity-80 [&>svg]:text-emerald-900 font-semibold',
                 ghost: 'hover:bg-quaternary text-foreground opacity-100 hover:opacity-80',
                 link: 'text-muted-foreground underline-offset-4 hover:underline h-auto decoration-border',
                 text: 'p-0 text-xs',
