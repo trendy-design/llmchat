@@ -4,7 +4,7 @@ import { Button, Input, InputOTP, InputOTPGroup, InputOTPSlot } from '@repo/ui';
 import { IconX } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { FaApple, FaGithub, FaGoogle } from 'react-icons/fa';
+import { FaGithub, FaGoogle } from 'react-icons/fa';
 type CustomSignInProps = {
     redirectUrl?: string;
     onClose?: () => void;
@@ -36,7 +36,6 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
                 code,
             });
 
-            console.log(result);
             if (result.status === 'complete') {
                 setActive({ session: result.createdSessionId });
                 router.push('/chat');
@@ -359,21 +358,6 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
                             <FaGithub className=" size-4" />
                         )}
                         {isLoading === 'github' ? 'Authenticating...' : 'Continue with GitHub'}
-                    </Button>
-
-                    <Button
-                        onClick={handleAppleAuth}
-                        disabled={isLoading === 'apple'}
-                        rounded="full"
-                        size="lg"
-                        variant="brand"
-                    >
-                        {isLoading === 'apple' ? (
-                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                        ) : (
-                            <FaApple className=" size-5" />
-                        )}
-                        {isLoading === 'apple' ? 'Authenticating...' : 'Continue with Apple'}
                     </Button>
                 </div>
                 <div className="border-border flex w-full flex-col items-center gap-2 border-t border-dashed py-4">
