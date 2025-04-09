@@ -15,13 +15,13 @@ const buttonVariants = cva(
                 brand: 'bg-emerald-950 text-lime-100 font-semibold hover:opacity-90 [&>svg]:text-lime-100',
                 'brand-secondary':
                     'bg-brand-secondary text-brand-secondary-foreground font-semibold hover:opacity-90',
-                accent: 'text-emerald-600 bg-emerald-600/10 hover:bg-emerald-600/20',
+                accent: 'text-emerald-900 bg-yellow-100 hover:bg-yellow-200 font-semibold',
                 outlined: 'bg-background text-foreground outline outline-border hover:bg-secondary',
                 destructive: 'bg-destructive text-destructive-foreground hover:opacity-90',
                 bordered:
                     'border border-border bg-background text-foreground opacity-100 hover:opacity-80',
                 secondary:
-                    'bg-quaternary text-emerald-900 opacity-100 hover:opacity-80 [&>svg]:text-emerald-900',
+                    'bg-quaternary text-emerald-900 opacity-100 hover:opacity-80 [&>svg]:text-emerald-900 font-semibold',
                 ghost: 'hover:bg-quaternary text-foreground opacity-100 hover:opacity-80',
                 link: 'text-muted-foreground underline-offset-4 hover:underline h-auto decoration-border',
                 text: 'p-0 text-xs',

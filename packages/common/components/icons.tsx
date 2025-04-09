@@ -25,7 +25,7 @@ export const DeepResearchIcon = () => {
 
 export const BYOKIcon = () => {
     return (
-        <div className="flex-inline flex h-5 items-center justify-center gap-1 rounded-md bg-emerald-500/20 p-0.5 px-1 font-mono text-xs font-medium text-emerald-600">
+        <div className="flex-inline flex h-5 items-center justify-center gap-1 rounded-md bg-purple-500/20 p-0.5 px-1 font-mono text-xs font-medium text-purple-600">
             BYOK
         </div>
     );

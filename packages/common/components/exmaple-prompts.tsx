@@ -86,12 +86,12 @@ export const ExamplePrompts = () => {
                 <Button
                     key={index}
                     variant="bordered"
-                    rounded="xl"
+                    rounded="full"
                     size="sm"
-                    className="border-hard"
+                    className="border-border"
                     onClick={() => handleCategoryClick(category as keyof typeof examplePrompts)}
                 >
-                    <value.icon size={16} className={'text-muted-foreground'} />
+                    <value.icon size={16} className={'text-muted-foreground/50'} />
                     {value.name}
                 </Button>
             ))}

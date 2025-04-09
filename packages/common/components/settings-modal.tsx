@@ -344,7 +344,7 @@ export const ApiKeySettings = () => {
                             href={apiKey.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-yellow-700 underline-offset-2 hover:underline"
+                            className="text-sm text-emerald-700 underline-offset-2 hover:underline"
                         >
                             (Get API key here)
                         </a>
@@ -418,10 +418,10 @@ export const CreditsSettings = () => {
             title: 'Credits',
             value: (
                 <div className="flex h-7 flex-row items-center gap-1 rounded-full py-1">
-                    <IconBoltFilled size={14} strokeWidth={2} className="text-yellow-600" />
-                    <span className="text-sm font-medium text-yellow-600">{remainingCredits}</span>
-                    <span className="text-sm text-yellow-800 opacity-50">/</span>
-                    <span className="text-sm text-yellow-800 opacity-50">{maxLimit}</span>
+                    <IconBoltFilled size={14} strokeWidth={2} className="text-emerald-600" />
+                    <span className="text-sm font-medium text-emerald-600">{remainingCredits}</span>
+                    <span className="text-sm text-emerald-800 opacity-50">/</span>
+                    <span className="text-sm text-emerald-800 opacity-50">{maxLimit}</span>
                 </div>
             ),
         },
