@@ -1,10 +1,10 @@
 import { WorkflowConfig } from './engine';
 
-type PersistentStorageAdapter = {
-    save(key: string, data: any): Promise<void>;
-    load(key: string): Promise<any | null>;
-    delete(key: string): Promise<void>;
-    exists(key: string): Promise<boolean>;
+type PersistentStorageAdapter<TEvent, TContext> = {
+    save(id: string, data: WorkflowPersistenceData<TEvent, TContext>): Promise<void>;
+    load(id: string): Promise<WorkflowPersistenceData<TEvent, TContext> | null>;
+    delete(id: string): Promise<void>;
+    exists(id: string): Promise<boolean>;
 };
 
 type WorkflowPersistenceData<TEvent, TContext> = {
@@ -19,9 +19,9 @@ type WorkflowPersistenceData<TEvent, TContext> = {
 };
 
 export class PersistenceLayer<TEvent, TContext> {
-    private storage: PersistentStorageAdapter;
+    private storage: PersistentStorageAdapter<TEvent, TContext>;
 
-    constructor(storage: PersistentStorageAdapter) {
+    constructor(storage: PersistentStorageAdapter<TEvent, TContext>) {
         this.storage = storage;
     }
 
@@ -29,16 +29,24 @@ export class PersistenceLayer<TEvent, TContext> {
         const executionContext = engine.executionContext;
         const events = engine.getEvents();
         const context = engine.getContext();
+        const config = engine.getConfig() || {};
+
+        // Create a sanitized version of the workflow config
+        // that doesn't include functions
+        const sanitizedConfig = this.sanitizeForSerialization(config);
+
         const data: WorkflowPersistenceData<TEvent, TContext> = {
             id,
-            workflowState: executionContext.state,
-            eventState: events?.getAllState() || {},
-            contextState: context?.getAll() || {},
+            workflowState: this.sanitizeForSerialization(executionContext.state),
+            eventState: events?.getAllState()
+                ? this.sanitizeForSerialization(events.getAllState())
+                : {},
+            contextState: context?.getAll() ? this.sanitizeForSerialization(context.getAll()) : {},
             taskTimings: executionContext.taskTimings
-                ? Object.fromEntries(executionContext.taskTimings)
+                ? this.sanitizeForSerialization(Object.fromEntries(executionContext.taskTimings))
                 : {},
             executionCounts: executionContext.getAllTaskRunCounts(),
-            workflowConfig: engine.getConfig() || {},
+            workflowConfig: sanitizedConfig,
             lastUpdated: new Date().toISOString(),
         };
         await this.storage.save(this.getStorageKey(id), data);
@@ -83,5 +91,30 @@ export class PersistenceLayer<TEvent, TContext> {
                 events.emit(key, value);
             });
         }
+    }
+
+    // Add a new helper method to sanitize objects before serialization
+    private sanitizeForSerialization(obj: any): any {
+        if (obj === null || obj === undefined) {
+            return obj;
+        }
+
+        if (Array.isArray(obj)) {
+            return obj.map(item => this.sanitizeForSerialization(item));
+        }
+
+        if (typeof obj === 'object') {
+            const result: Record<string, any> = {};
+            for (const [key, value] of Object.entries(obj)) {
+                // Skip functions
+                if (typeof value !== 'function') {
+                    result[key] = this.sanitizeForSerialization(value);
+                }
+            }
+            return result;
+        }
+
+        // Return primitive values as is
+        return obj;
     }
 }

@@ -1,9 +1,11 @@
 import {
     createContext,
     createTypedEventEmitter,
+    PersistenceLayer,
     WorkflowBuilder,
     WorkflowConfig,
 } from '@repo/orchestrator';
+import { prisma } from '@repo/prisma';
 import { ChatMode } from '@repo/shared/config';
 import { Geo } from '@vercel/functions';
 import { CoreMessage } from 'ai';
@@ -21,7 +23,6 @@ import {
     webSearchTask,
     writerTask,
 } from './tasks';
-
 type Status = 'PENDING' | 'COMPLETED' | 'ERROR' | 'HUMAN_REVIEW';
 
 // Define the workflow schema type
@@ -151,7 +152,6 @@ export const runWorkflow = ({
         toolResults: [],
         answer: {
             text: '',
-
             status: 'PENDING',
         },
         sources: [],
@@ -184,6 +184,41 @@ export const runWorkflow = ({
         onFinish: onFinish as any,
     });
 
+    const persistence = new PersistenceLayer<WorkflowEventSchema, WorkflowContextSchema>({
+        save: async (key, data) => {
+            await prisma.workflow.upsert({
+                where: { id: key },
+                update: {
+                    ...data,
+                    id: key,
+                    workflowConfig: JSON.stringify(data.workflowConfig),
+                },
+                create: {
+                    ...data,
+                    id: key,
+                    workflowConfig: JSON.stringify(data.workflowConfig),
+                },
+            });
+        },
+        load: async key => {
+            const workflow = await prisma.workflow.findUnique({
+                where: { id: key },
+            });
+            return workflow as any;
+        },
+        delete: async key => {
+            await prisma.workflow.delete({
+                where: { id: key },
+            });
+        },
+        exists: async key => {
+            const workflow = await prisma.workflow.findUnique({
+                where: { id: key },
+            });
+            return !!workflow;
+        },
+    });
+
     // Use the typed builder
     const builder = new WorkflowBuilder(threadId, {
         trace,
@@ -192,6 +227,7 @@ export const runWorkflow = ({
         context,
         config: workflowConfig,
         signal,
+        persistence,
     });
 
     builder.addTasks([
