@@ -56,6 +56,18 @@ export class TypedEventEmitter<T extends EventSchemaDefinition> {
         return this.state[key];
     }
 
+    setState<K extends keyof T>(key: K, value: T[K]) {
+        this.state[key] = value;
+        return this;
+    }
+
+    setAllState(state: { [K in keyof T]?: T[K] }) {
+        Object.entries(state).forEach(([key, value]) => {
+            this.state[key as keyof T] = value;
+        });
+        return this;
+    }
+
     getAllState(): { [K in keyof T]?: T[K] } {
         return { ...this.state };
     }

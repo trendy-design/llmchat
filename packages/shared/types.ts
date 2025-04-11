@@ -1,3 +1,4 @@
+import { CoreMessage as AICoreMessage } from 'ai';
 import { ChatMode } from './config';
 
 export type Project = {
@@ -38,12 +39,6 @@ export type Source = {
     snippet?: string;
 };
 
-export type Answer = {
-    text: string;
-    finalText?: string;
-    status?: ItemStatus;
-};
-
 export type ToolCall = {
     type: 'tool-call';
     toolCallId: string;
@@ -55,14 +50,42 @@ export type ToolResult = {
     type: 'tool-result';
     toolCallId: string;
     toolName: string;
-    args: any;
     result: any;
+};
+
+export type AnswerObject = {
+    id: string;
+    type: 'object';
+    object: Record<string, any>;
+};
+
+export type AnswerText = {
+    id: string;
+    type: 'text';
+    text: string;
+};
+
+export type AnswerToolResult = ToolResult & {
+    id: string;
+    approvalStatus?: 'APPROVED' | 'REJECTED' | 'PENDING';
+};
+
+export type AnswerToolCall = ToolCall & {
+    id: string;
+    approvalStatus?: 'APPROVED' | 'REJECTED' | 'PENDING';
+};
+
+export type AnswerMessage = AnswerObject | AnswerText | AnswerToolCall | AnswerToolResult;
+
+export type Answer = {
+    text: string;
+    finalText?: string;
+    messages?: Array<AnswerMessage>;
+    status?: ItemStatus;
 };
 
 export type ThreadItem = {
     query: string;
-    toolCalls?: Record<string, ToolCall>;
-    toolResults?: Record<string, ToolResult>;
     steps?: Record<string, Step>;
     answer?: Answer;
     status?: ItemStatus;
@@ -78,6 +101,10 @@ export type ThreadItem = {
     persistToDB?: boolean;
     sources?: Source[];
     object?: Record<string, any>;
+    breakpoint?: {
+        id?: string;
+        data?: any;
+    };
     imageAttachment?: string;
 };
 
@@ -85,3 +112,5 @@ export type MessageGroup = {
     userMessage: ThreadItem;
     assistantMessages: ThreadItem[];
 };
+
+export type CoreMessage = AICoreMessage;

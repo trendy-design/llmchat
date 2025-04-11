@@ -642,9 +642,22 @@ export const useChatStore = create(
                 pinned: false,
                 pinnedAt: new Date(),
             };
-            db.threads.add(newThread);
+
+            // Check if thread exists and update it or add a new one
+            await db.threads.put(newThread);
+
             set(state => {
-                state.threads.push(newThread);
+                // Find existing thread index
+                const existingIndex = state.threads.findIndex(t => t.id === threadId);
+
+                if (existingIndex !== -1) {
+                    // Replace existing thread
+                    state.threads[existingIndex] = newThread;
+                } else {
+                    // Add new thread
+                    state.threads.push(newThread);
+                }
+
                 state.currentThreadId = newThread.id;
                 state.currentThread = newThread;
             });
@@ -696,13 +709,22 @@ export const useChatStore = create(
             const threadId = get().currentThreadId;
             if (!threadId) return;
             try {
-                db.threadItems.put(threadItem);
+                // Always use put to overwrite if exists
+                await db.threadItems.put({ ...threadItem, threadId });
+
                 set(state => {
-                    if (state.threadItems.find(t => t.id === threadItem.id)) {
-                        state.threadItems = state.threadItems.map(t =>
-                            t.id === threadItem.id ? threadItem : t
-                        );
+                    // Find existing thread item index
+                    const existingIndex = state.threadItems.findIndex(t => t.id === threadItem.id);
+
+                    if (existingIndex !== -1) {
+                        // Replace existing thread item
+                        state.threadItems[existingIndex] = {
+                            ...state.threadItems[existingIndex],
+                            ...threadItem,
+                            threadId,
+                        };
                     } else {
+                        // Add new thread item
                         state.threadItems.push({ ...threadItem, threadId });
                     }
                 });

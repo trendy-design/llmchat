@@ -1,31 +1,16 @@
 import { EventEmitter } from 'events';
 import { LangfuseTraceClient } from 'langfuse';
+import { v4 as uuidv4 } from 'uuid';
 import { Context, ContextSchemaDefinition } from './context';
 import { EventSchemaDefinition, TypedEventEmitter } from './events';
 import { PersistenceLayer } from './persistence';
-import { TaskErrorHandler } from './task';
-
+import { TaskErrorHandler, TaskParams } from './task';
 export type WorkflowConfig = {
     maxIterations?: number;
     maxRetries?: number;
     timeoutMs?: number;
     retryDelayMs?: number;
     retryDelayMultiplier?: number;
-    signal?: AbortSignal;
-};
-
-type TaskParams<
-    TEvent extends EventSchemaDefinition = any,
-    TContext extends ContextSchemaDefinition = any,
-> = {
-    data?: any;
-    executionContext: ExecutionContext;
-    abort: (graceful: boolean) => void;
-    trace?: LangfuseTraceClient;
-    events?: TypedEventEmitter<TEvent>;
-    context?: Context<TContext>;
-    config?: WorkflowConfig;
-    redirectTo: (nextTask: string | string[] | ParallelTaskRoute[]) => void;
     signal?: AbortSignal;
 };
 
@@ -76,6 +61,9 @@ export type WorkflowState = {
     completedTasks: Set<string>;
     runningTasks: Set<string>;
     taskData: Map<string, any>;
+    breakpointId?: string;
+    breakpointData?: Record<string, any>;
+    breakpointTask?: string;
 };
 
 export type TaskOptions = {
@@ -113,6 +101,9 @@ export class ExecutionContext {
             completedTasks: new Set(),
             runningTasks: new Set(),
             taskData: new Map(),
+            breakpointId: undefined,
+            breakpointData: undefined,
+            breakpointTask: undefined,
         };
         this.aborted = false;
         this.gracefulShutdown = false;
@@ -147,6 +138,10 @@ export class ExecutionContext {
 
     getTaskExecutionCount(taskName: string): number {
         return this.taskExecutionCounts.get(taskName) || 0;
+    }
+
+    setTaskExecutionCount(taskName: string, count: number): void {
+        this.taskExecutionCounts.set(taskName, count);
     }
 
     isTaskComplete(taskName: string) {
@@ -378,6 +373,27 @@ export class WorkflowEngine<
         }
     }
 
+    createBreakpoint(task: string, data: any) {
+        console.log('🔴 Creating breakpoint for task:', task);
+        if (this.tasks.has(task)) {
+            this.executionContext.setState(state => ({
+                ...state,
+                breakpointId: uuidv4(),
+                breakpointData: data,
+                breakpointTask: task,
+            }));
+
+            // Make sure we persist state immediately
+            if (this.persistence) {
+                this.persistence.saveWorkflow(this.id, this);
+            }
+
+            console.log(`🔴 Breakpoint created for task "${task}" with data:`, data);
+        } else {
+            throw new Error(`Task "${task}" not found.`);
+        }
+    }
+
     on<T extends string>(event: T, callback: (data: any) => void) {
         this.events?.on(event, callback);
     }
@@ -401,6 +417,93 @@ export class WorkflowEngine<
         await this.executeTask(initialTask, initialData);
     }
 
+    async resume(workflowId: string, breakpointId: string) {
+        if (this.persistence) {
+            const savedWorkflow: any = await this.persistence.loadWorkflow(workflowId);
+            if (savedWorkflow) {
+                console.log('🔴 Resuming workflow', savedWorkflow);
+
+                // Properly deserialize the workflow state
+                const deserializedState = this.deserializeState(savedWorkflow.workflowState);
+
+                this.executionContext.setState((state: any) => ({
+                    ...state,
+                    ...deserializedState,
+                    // Ensure these are properly converted back to Sets and Maps
+                    runningTasks: deserializedState.runningTasks,
+                    completedTasks: deserializedState.completedTasks,
+                    taskData: deserializedState.taskData,
+                }));
+
+                // Restore event state
+                if (this.events) {
+                    this.events.setAllState(
+                        this.deserializeState(JSON.parse(savedWorkflow.eventState))
+                    );
+                }
+
+                // Restore context state
+                if (this.context) {
+                    this.context.merge(
+                        this.deserializeState(JSON.parse(savedWorkflow.contextState))
+                    );
+                }
+
+                // Restore task execution counts if available
+                if (savedWorkflow.executionCounts) {
+                    for (const [taskName, count] of Object.entries(savedWorkflow.executionCounts)) {
+                        this.executionContext.setTaskExecutionCount(taskName, count as number);
+                    }
+                }
+
+                if (this.tasks.has(savedWorkflow.workflowState.breakpointTask)) {
+                    await this.executeTask(
+                        savedWorkflow.workflowState.breakpointTask,
+                        savedWorkflow.workflowState.breakpointData
+                    );
+                } else {
+                    throw new Error(
+                        `Task "${savedWorkflow.workflowState.breakpointTask}" not found.`
+                    );
+                }
+            }
+        }
+    }
+
+    // Add a deserializer method to handle the serialized data
+    private deserializeState(data: any): any {
+        if (data === null || data === undefined) {
+            return data;
+        }
+
+        // Handle serialized Set
+        if (data && typeof data === 'object' && data.type === 'Set' && Array.isArray(data.value)) {
+            return new Set(data.value);
+        }
+
+        // Handle serialized Map
+        if (data && typeof data === 'object' && data.type === 'Map' && data.value) {
+            return new Map(Object.entries(data.value));
+        }
+
+        // Handle arrays
+        if (Array.isArray(data)) {
+            return data.map(item => this.deserializeState(item));
+        }
+
+        // Handle objects
+        if (typeof data === 'object') {
+            const result: Record<string, any> = {};
+            for (const [key, value] of Object.entries(data)) {
+                result[key] = this.deserializeState(value);
+            }
+            return result;
+        }
+
+        // Return primitive values as is
+        return data;
+    }
+
     async executeTaskWithTimeout(
         task: (params: TaskParams<TEvent, TContext>) => Promise<any>,
         data: any,
@@ -416,7 +519,10 @@ export class WorkflowEngine<
                 context: this.context,
                 config: this.config,
                 signal: this.signal,
-                redirectTo: () => {}, // This will be overridden by the actual function
+                redirectTo: () => {},
+                interrupt: (data: any) => {
+                    console.log('🚨 Task interrupted:', data);
+                },
             }),
             new Promise((_, reject) =>
                 setTimeout(() => reject(new Error('⏳ Task timeout exceeded')), timeoutMs)
@@ -496,6 +602,13 @@ export class WorkflowEngine<
                           config: this.config,
                           signal: this.signal,
                           redirectTo,
+                          interrupt: (data: any) => {
+                              console.log('🚨 Task interrupted:', data, taskName);
+                              // Complete the current task before creating the breakpoint
+                              this.executionContext.markTaskComplete(taskName, data);
+                              this.createBreakpoint(taskName, data);
+                              throw new BreakpointError('Breakpoint created');
+                          },
                       });
 
                 // Add this line to end timing for successful execution
@@ -551,6 +664,11 @@ export class WorkflowEngine<
                         context: this.context,
                         config: this.config,
                         redirectTo,
+                        interrupt: (data: any) => {
+                            console.log('🚨 Task interrupted:', data);
+                            this.createBreakpoint(taskName, data);
+                            throw new BreakpointError('Breakpoint created');
+                        },
                     });
                 }
 
@@ -600,6 +718,11 @@ export class WorkflowEngine<
                 attempt++;
                 console.error(`❌ Error in task "${taskName}" (Attempt ${attempt}):`, error);
 
+                if (error instanceof BreakpointError) {
+                    console.log(`🔴 Breakpoint hit for task "${taskName}".`);
+                    return;
+                }
+
                 if (config.onError) {
                     try {
                         const errorResult = await config.onError(error as Error, {
@@ -612,6 +735,7 @@ export class WorkflowEngine<
                             config: this.config,
                             redirectTo: () => {},
                             signal: this.signal,
+                            interrupt: () => {},
                         });
 
                         if (errorResult.retry) {
@@ -722,5 +846,12 @@ export class WorkflowEngine<
 
     getTimingSummary() {
         return this.executionContext.getMainTimingSummary();
+    }
+}
+
+export class BreakpointError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = 'BreakpointError';
     }
 }

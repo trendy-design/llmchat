@@ -1,5 +1,6 @@
 import {
     CitationProvider,
+    CodeBlock,
     FollowupSuggestions,
     MarkdownContent,
     Message,
@@ -8,11 +9,12 @@ import {
     QuestionPrompt,
     SourceGrid,
     Steps,
+    ToolCallIcon,
 } from '@repo/common/components';
-import { useAnimatedText } from '@repo/common/hooks';
+import { useAgentStream, useAnimatedText } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
-import { ThreadItem as ThreadItemType } from '@repo/shared/types';
-import { Alert, AlertDescription, cn } from '@repo/ui';
+import { AnswerMessage, ThreadItem as ThreadItemType } from '@repo/shared/types';
+import { Alert, AlertDescription, Button, cn } from '@repo/ui';
 import { IconAlertCircle, IconBook } from '@tabler/icons-react';
 import { memo, useEffect, useMemo, useRef } from 'react';
 import { useInView } from 'react-intersection-observer';
@@ -94,14 +96,10 @@ export const ThreadItem = memo(
                             />
                         )}
 
-                        {!hasResponse && (
-                            <div className="flex w-full flex-col items-start gap-2 opacity-10">
-                                <MotionSkeleton className="bg-muted-foreground/40 mb-2 h-4 !w-[100px] rounded-sm" />
-                                <MotionSkeleton className="w-full bg-gradient-to-r" />
-                                <MotionSkeleton className="w-[70%] bg-gradient-to-r" />
-                                <MotionSkeleton className="w-[50%] bg-gradient-to-r" />
-                            </div>
-                        )}
+                        <ToolCallUI
+                            message={threadItem.answer?.messages || []}
+                            threadItem={threadItem}
+                        />
 
                         <div ref={messageRef} className="w-full">
                             {hasAnswer && threadItem.answer?.text && (
@@ -144,6 +142,14 @@ export const ThreadItem = memo(
                                 </AlertDescription>
                             </Alert>
                         )}
+                        {!hasResponse && (
+                            <div className="flex w-full flex-col items-start gap-2 opacity-10">
+                                <MotionSkeleton className="bg-muted-foreground/40 mb-2 h-4 !w-[100px] rounded-sm" />
+                                <MotionSkeleton className="w-full bg-gradient-to-r" />
+                                <MotionSkeleton className="w-[70%] bg-gradient-to-r" />
+                                <MotionSkeleton className="w-[50%] bg-gradient-to-r" />
+                            </div>
+                        )}
 
                         {isAnimationComplete &&
                             (threadItem.status === 'COMPLETED' ||
@@ -170,3 +176,149 @@ export const ThreadItem = memo(
 );
 
 ThreadItem.displayName = 'ThreadItem';
+
+export const ToolCallUI = ({
+    message,
+    threadItem,
+}: {
+    message: AnswerMessage[];
+    threadItem: ThreadItemType;
+}) => {
+    const { handleSubmit } = useAgentStream();
+    const getThreadItems = useChatStore(state => state.getThreadItems);
+    const useWebSearch = useChatStore(state => state.useWebSearch);
+
+    // Group messages by toolCallId
+    const groupedMessages = useMemo(() => {
+        const grouped: Record<
+            string,
+            {
+                toolCall?: AnswerMessage & { type: 'tool-call' };
+                toolResult?: AnswerMessage & { type: 'tool-result' };
+            }
+        > = {};
+
+        message.forEach(m => {
+            if (m.type === 'tool-call' || m.type === 'tool-result') {
+                const id = m.toolCallId;
+                if (!grouped[id]) {
+                    grouped[id] = {};
+                }
+
+                if (m.type === 'tool-call') {
+                    grouped[id].toolCall = m as AnswerMessage & { type: 'tool-call' };
+                } else {
+                    grouped[id].toolResult = m as AnswerMessage & { type: 'tool-result' };
+                }
+            }
+        });
+
+        return grouped;
+    }, [message]);
+
+    const textMessages = useMemo(() => {
+        return message.filter(m => m.type === 'text');
+    }, [message]);
+
+    return (
+        <div className="flex w-full flex-col gap-2">
+            {/* Render grouped tool calls and results */}
+            {Object.entries(groupedMessages).map(([toolCallId, group]) => {
+                if (!group.toolCall) return null;
+
+                return (
+                    <div
+                        key={toolCallId}
+                        className="bg-tertiary border-hard flex w-full flex-col gap-1 rounded-xl border p-1"
+                    >
+                        <div className="flex flex-row items-center justify-between px-2">
+                            <div className="flex flex-row items-center gap-2">
+                                <ToolCallIcon />
+
+                                <div className="flex flex-row items-center gap-1">
+                                    <p className="flex flex-row items-center gap-1 text-sm font-medium">
+                                        {group.toolCall.toolName}
+                                    </p>
+                                    <p className="text-muted-foreground/50 text-[10px]">
+                                        {toolCallId}
+                                    </p>
+                                </div>
+                            </div>
+                            {group.toolCall.approvalStatus === 'PENDING' && (
+                                <div className="flex flex-row gap-1">
+                                    <Button
+                                        variant="bordered"
+                                        size="xs"
+                                        onClick={() => {
+                                            console.log('reject');
+                                        }}
+                                    >
+                                        Reject
+                                    </Button>
+                                    <Button
+                                        variant="default"
+                                        size="xs"
+                                        onClick={async () => {
+                                            const formData = new FormData();
+                                            formData.append('query', threadItem.query || '');
+                                            const threadItems = await getThreadItems(
+                                                threadItem.threadId
+                                            );
+                                            handleSubmit({
+                                                formData,
+                                                existingThreadItemId: threadItem.id,
+                                                newChatMode: threadItem.mode as any,
+                                                messages: threadItems,
+                                                useWebSearch: useWebSearch,
+                                                breakpointId: threadItem.id,
+                                                breakpointData: {},
+                                            });
+                                        }}
+                                    >
+                                        Approve
+                                    </Button>
+                                </div>
+                            )}
+                            {group.toolCall.approvalStatus === 'APPROVED' && (
+                                <div className="flex flex-row items-center gap-1.5 text-xs font-medium text-emerald-800 ">
+                                    Approved
+                                </div>
+                            )}
+                        </div>
+                        <CodeBlock
+                            code={JSON.stringify(group.toolCall.args, null, 2)}
+                            lang="json"
+                            showHeader={false}
+                            className="my-0"
+                        />
+
+                        {/* Show tool result directly below if it exists */}
+                        {group.toolResult && (
+                            <CodeBlock
+                                code={JSON.stringify(group.toolResult.result, null, 2)}
+                                lang="json"
+                                showHeader={false}
+                                className="my-0"
+                            />
+                        )}
+                    </div>
+                );
+            })}
+
+            {/* Render text messages */}
+            {textMessages.map((m, index) => (
+                <MarkdownContent
+                    key={`text-${threadItem.id}-${index}`}
+                    content={m.text || ''}
+                    isCompleted={['COMPLETED', 'ERROR', 'ABORTED'].includes(
+                        threadItem.status || ''
+                    )}
+                    shouldAnimate={
+                        !['COMPLETED', 'ERROR', 'ABORTED'].includes(threadItem.status || '')
+                    }
+                    isLast={false}
+                />
+            ))}
+        </div>
+    );
+};

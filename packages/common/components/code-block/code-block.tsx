@@ -83,7 +83,8 @@ export const CodeBlock = ({
             className={cn(
                 'not-prose bg-tertiary  relative my-4 w-full overflow-hidden rounded-xl border px-1 pb-1',
                 variant === 'secondary' && 'bg-secondary',
-                className
+                className,
+                !showHeader && 'rounded-none border-none bg-transparent p-0'
             )}
         >
             {showHeader && (

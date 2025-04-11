@@ -18,6 +18,8 @@ export type AgentContextType = {
         messages?: ThreadItem[];
         useWebSearch?: boolean;
         showSuggestions?: boolean;
+        breakpointId?: string;
+        breakpointData?: any;
     }) => Promise<void>;
     updateContext: (threadId: string, data: any) => void;
 };
@@ -76,6 +78,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         'toolCalls',
         'toolResults',
         'object',
+        'breakpoint',
     ];
 
     // Helper: Update in-memory and store thread item
@@ -84,18 +87,13 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             threadId: string,
             threadItemId: string,
             eventType: string,
-            eventData: any,
+            eventData: ThreadItem,
             parentThreadItemId?: string,
             shouldPersistToDB: boolean = true
         ) => {
-            console.log(
-                'handleThreadItemUpdate',
-                threadItemId,
-                eventType,
-                eventData,
-                shouldPersistToDB
-            );
+            console.log('eventData', eventData);
             const prevItem = threadItemMap.get(threadItemId) || ({} as ThreadItem);
+
             const updatedItem: ThreadItem = {
                 ...prevItem,
                 query: eventData?.query || prevItem.query || '',
@@ -106,14 +104,43 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 object: eventData?.object || prevItem.object,
                 createdAt: prevItem.createdAt || new Date(),
                 updatedAt: new Date(),
+                breakpoint: eventData?.breakpoint || prevItem.breakpoint,
                 ...(eventType === 'answer'
                     ? {
                           answer: {
                               ...eventData.answer,
-                              text: (prevItem.answer?.text || '') + eventData.answer.text,
+                              text: (prevItem.answer?.text || '') + eventData.answer?.text,
+                              messages: [
+                                  ...(prevItem.answer?.messages?.filter(m => {
+                                      // Keep all messages that aren't being updated
+                                      return !eventData.answer?.messages?.some(
+                                          em => em.id === m.id && em.type === m.type
+                                      );
+                                  }) || []),
+                                  ...(eventData.answer?.messages?.map(newMessage => {
+                                      const existingMessage = prevItem.answer?.messages?.find(
+                                          m => m.id === newMessage.id && m.type === newMessage.type
+                                      );
+
+                                      if (
+                                          existingMessage &&
+                                          newMessage.type === 'text' &&
+                                          existingMessage.type === 'text'
+                                      ) {
+                                          return {
+                                              ...newMessage,
+                                              text:
+                                                  (existingMessage.text || '') +
+                                                  (newMessage.text || ''),
+                                          };
+                                      }
+
+                                      return newMessage;
+                                  }) || []),
+                              ],
                           },
                       }
-                    : { [eventType]: eventData[eventType] }),
+                    : { [eventType]: eventData[eventType as keyof ThreadItem] }),
             };
 
             threadItemMap.set(threadItemId, updatedItem);
@@ -326,6 +353,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             messages,
             useWebSearch,
             showSuggestions,
+            breakpointId,
+            breakpointData,
         }: {
             formData: FormData;
             newThreadId?: string;
@@ -334,6 +363,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             messages?: ThreadItem[];
             useWebSearch?: boolean;
             showSuggestions?: boolean;
+            breakpointId?: string;
+            breakpointData?: any;
         }) => {
             const mode = (newChatMode || chatMode) as ChatMode;
             if (
@@ -417,6 +448,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     parentThreadItemId: '',
                     webSearch: useWebSearch,
                     showSuggestions: showSuggestions ?? true,
+                    breakpointId,
+                    breakpointData,
                 });
             }
         },

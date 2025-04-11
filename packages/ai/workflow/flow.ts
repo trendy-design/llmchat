@@ -7,10 +7,12 @@ import {
 } from '@repo/orchestrator';
 import { prisma } from '@repo/prisma';
 import { ChatMode } from '@repo/shared/config';
+import { Answer } from '@repo/shared/types';
 import { Geo } from '@vercel/functions';
 import { CoreMessage } from 'ai';
 import { Langfuse } from 'langfuse';
 import {
+    agenticTask,
     analysisTask,
     completionTask,
     modeRoutingTask,
@@ -42,16 +44,7 @@ export type WorkflowEventSchema = {
             status: Status;
         }
     >;
-    toolCalls?: any[];
-    toolResults?: any[];
-
-    answer: {
-        text?: string;
-        object?: any;
-        objectType?: string;
-        finalText?: string;
-        status: Status;
-    };
+    answer: Answer;
     sources?: {
         index: number;
         title: string;
@@ -63,8 +56,11 @@ export type WorkflowEventSchema = {
         status: Status;
     };
     status: Status;
-
     suggestions?: string[];
+    breakpoint?: {
+        id?: string;
+        data?: any;
+    };
 };
 
 // Define the context schema type
@@ -74,6 +70,7 @@ export type WorkflowContextSchema = {
     search_queries: string[];
     messages: CoreMessage[];
     mode: ChatMode;
+    interupted: boolean;
     goals: {
         id: number;
         text: string;
@@ -99,11 +96,13 @@ export type WorkflowContextSchema = {
         title: string;
         link: string;
     }[];
-    answer: string | undefined;
+    answer: Answer | undefined;
     threadId: string;
     threadItemId: string;
     showSuggestions: boolean;
     onFinish: (data: any) => void;
+    waitForApproval: boolean;
+    waitForApprovalMetadata: any;
 };
 
 export const runWorkflow = ({
@@ -148,11 +147,10 @@ export const runWorkflow = ({
     // Create typed event emitter with the proper type
     const events = createTypedEventEmitter<WorkflowEventSchema>({
         steps: {},
-        toolCalls: [],
-        toolResults: [],
         answer: {
             text: '',
             status: 'PENDING',
+            messages: [],
         },
         sources: [],
         suggestions: [],
@@ -169,6 +167,7 @@ export const runWorkflow = ({
         question,
         mode,
         webSearch,
+        interupted: false,
         search_queries: [],
         messages: messages as any,
         goals: [],
@@ -182,6 +181,8 @@ export const runWorkflow = ({
         threadItemId,
         showSuggestions,
         onFinish: onFinish as any,
+        waitForApproval: false,
+        waitForApprovalMetadata: undefined,
     });
 
     const persistence = new PersistenceLayer<WorkflowEventSchema, WorkflowContextSchema>({
@@ -192,11 +193,15 @@ export const runWorkflow = ({
                     ...data,
                     id: key,
                     workflowConfig: JSON.stringify(data.workflowConfig),
+                    contextState: JSON.stringify(data.contextState),
+                    eventState: JSON.stringify(data.eventState),
                 },
                 create: {
                     ...data,
                     id: key,
                     workflowConfig: JSON.stringify(data.workflowConfig),
+                    contextState: JSON.stringify(data.contextState),
+                    eventState: JSON.stringify(data.eventState),
                 },
             });
         },
@@ -242,6 +247,7 @@ export const runWorkflow = ({
         suggestionsTask,
         quickSearchTask,
         proSearchTask,
+        agenticTask,
     ]);
 
     return builder.build();

@@ -9,6 +9,9 @@ export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSc
         const mode = context?.get('mode') || ChatMode.GEMINI_2_FLASH;
         const { updateStatus } = sendEvents(events);
 
+        const hasWebSearch = context?.get('webSearch') || false;
+        const hasMcpConfig = Object.keys(context?.get('mcpConfig') || {}).length > 0;
+
         const messageHistory = context?.get('messages') || [];
         const trimmedMessageHistory = trimMessageHistoryEstimated(messageHistory, mode);
         context?.set('messages', trimmedMessageHistory.trimmedMessages ?? []);
@@ -23,6 +26,10 @@ export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSc
             redirectTo('refine-query');
         } else if (mode === ChatMode.Pro) {
             redirectTo('pro-search');
+        } else if (hasWebSearch) {
+            redirectTo('quickSearch');
+        } else if (hasMcpConfig) {
+            redirectTo('agentic');
         } else {
             redirectTo('completion');
         }

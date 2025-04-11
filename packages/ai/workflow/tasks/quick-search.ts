@@ -196,7 +196,13 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
             status: 'COMPLETED',
         });
 
-        context?.update('answer', _ => response);
+        context?.update('answer', _ => {
+            return {
+                text: response,
+                finalText: response,
+                status: 'COMPLETED' as const,
+            };
+        });
 
         const onFinish = context?.get('onFinish');
         if (onFinish) {

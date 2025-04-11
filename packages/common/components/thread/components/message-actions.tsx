@@ -22,6 +22,30 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
         const { copyToClipboard, status, copyMarkdown, markdownCopyStatus } = useCopyText();
         return (
             <div className="flex flex-row items-center gap-1 py-2">
+                {threadItem?.breakpoint && (
+                    <Button
+                        variant="secondary"
+                        size="icon-sm"
+                        rounded="full"
+                        tooltip="Approve"
+                        onClick={async () => {
+                            const formData = new FormData();
+                            formData.append('query', threadItem.query || '');
+                            const threadItems = await getThreadItems(threadItem.threadId);
+                            handleSubmit({
+                                formData,
+                                existingThreadItemId: threadItem.id,
+                                newChatMode: threadItem.mode as any,
+                                messages: threadItems,
+                                useWebSearch: useWebSearch,
+                                breakpointId: threadItem.breakpoint?.id,
+                                breakpointData: threadItem.breakpoint?.data,
+                            });
+                        }}
+                    >
+                        <IconCheck size={16} strokeWidth={2} />
+                    </Button>
+                )}
                 {threadItem?.answer?.text && (
                     <Button
                         variant="secondary"

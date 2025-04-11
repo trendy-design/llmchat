@@ -10,8 +10,8 @@ type PersistentStorageAdapter<TEvent, TContext> = {
 type WorkflowPersistenceData<TEvent, TContext> = {
     id: string;
     workflowState: any;
-    eventState: any;
-    contextState: any;
+    eventState: TEvent;
+    contextState: TContext;
     taskTimings: Record<string, any[]>;
     executionCounts: Record<string, number>;
     workflowConfig: WorkflowConfig;
@@ -52,15 +52,12 @@ export class PersistenceLayer<TEvent, TContext> {
         await this.storage.save(this.getStorageKey(id), data);
     }
 
-    async loadWorkflow(id: string, builderFactory: () => any): Promise<any> {
+    async loadWorkflow(id: string): Promise<WorkflowPersistenceData<TEvent, TContext> | null> {
         const exists = await this.storage.exists(this.getStorageKey(id));
         if (!exists) return null;
         const data = await this.storage.load(this.getStorageKey(id));
         if (!data) return null;
-        const builder = builderFactory();
-        const engine = builder.build();
-        this.restoreEngineState(engine, data);
-        return engine;
+        return data;
     }
 
     async deleteWorkflow(id: string): Promise<void> {
@@ -75,28 +72,18 @@ export class PersistenceLayer<TEvent, TContext> {
         return `workflow:${id}`;
     }
 
-    private restoreEngineState(engine: any, data: any) {
-        engine.executionContext.state = data.workflowState;
-        engine.executionContext.taskExecutionCounts = new Map(Object.entries(data.executionCounts));
-        if (data.taskTimings) {
-            engine.executionContext.taskTimings = new Map(Object.entries(data.taskTimings));
-        }
-        const context = engine.getContext();
-        if (context && data.contextState) {
-            context.merge(data.contextState);
-        }
-        const events = engine.getEvents();
-        if (events && data.eventState) {
-            Object.entries(data.eventState).forEach(([key, value]) => {
-                events.emit(key, value);
-            });
-        }
-    }
-
     // Add a new helper method to sanitize objects before serialization
     private sanitizeForSerialization(obj: any): any {
         if (obj === null || obj === undefined) {
             return obj;
+        }
+
+        if (obj instanceof Set) {
+            return { type: 'Set', value: Array.from(obj) };
+        }
+
+        if (obj instanceof Map) {
+            return { type: 'Map', value: Object.fromEntries(obj) };
         }
 
         if (Array.isArray(obj)) {

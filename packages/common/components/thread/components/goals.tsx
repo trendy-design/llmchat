@@ -10,7 +10,7 @@ import {
     IconLoader2,
     IconNorthStar,
 } from '@tabler/icons-react';
-import { memo, useEffect, useMemo } from 'react';
+import { memo, useEffect } from 'react';
 const getTitle = (threadItem: ThreadItem) => {
     if (threadItem.mode === ChatMode.Deep) {
         return 'Research';
@@ -99,16 +99,6 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
         }
     }, [steps[0]]);
 
-    const toolCallAndResults = useMemo(() => {
-        return Object.entries(threadItem?.toolCalls || {}).map(([key, toolCall]) => {
-            const toolResult = threadItem?.toolResults?.[key];
-            return {
-                toolCall,
-                toolResult,
-            };
-        });
-    }, [threadItem?.toolCalls, threadItem?.toolResults]);
-
     const stepCounts = steps.length;
 
     useEffect(() => {
@@ -170,7 +160,7 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
         );
     };
 
-    if (steps.length === 0 && !toolCallAndResults.length) {
+    if (steps.length === 0) {
         return null;
     }
 

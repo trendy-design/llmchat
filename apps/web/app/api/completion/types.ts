@@ -12,6 +12,8 @@ export const completionRequestSchema = z.object({
     mcpConfig: z.record(z.string(), z.string()).optional(),
     webSearch: z.boolean().optional(),
     showSuggestions: z.boolean().optional(),
+    breakpointId: z.string().optional().nullable(),
+    breakpointData: z.any().optional().nullable(),
 });
 
 export type CompletionRequestType = z.infer<typeof completionRequestSchema>;

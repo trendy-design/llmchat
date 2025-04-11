@@ -1,4 +1,5 @@
 import { TaskParams, TypedEventEmitter } from '@repo/orchestrator';
+import { AnswerMessage, ToolCall, ToolResult } from '@repo/shared/types';
 import { Geo } from '@vercel/functions';
 import {
     CoreMessage,
@@ -78,8 +79,8 @@ export const generateText = async ({
     messages?: CoreMessage[];
     onReasoning?: (chunk: string, fullText: string) => void;
     tools?: ToolSet;
-    onToolCall?: (toolCall: any) => void;
-    onToolResult?: (toolResult: any) => void;
+    onToolCall?: (toolCall: ToolCall) => void;
+    onToolResult?: (toolResult: ToolResult) => void;
     signal?: AbortSignal;
     toolChoice?: 'auto' | 'none' | 'required';
     maxSteps?: number;
@@ -133,7 +134,7 @@ export const generateText = async ({
                 onToolCall?.(chunk);
             }
             if (chunk.type === ('tool-result' as any)) {
-                onToolResult?.(chunk);
+                onToolResult?.(chunk as unknown as ToolResult);
             }
 
             if (chunk.type === 'error') {
@@ -581,10 +582,12 @@ export const sendEvents = (events?: TypedEventEmitter<WorkflowEventSchema>) => {
     const updateAnswer = ({
         text,
         finalText,
+        message,
         status,
     }: {
         text?: string;
         finalText?: string;
+        message?: Array<AnswerMessage>;
         status?: 'PENDING' | 'COMPLETED';
     }) => {
         events?.update('answer', prev => ({
@@ -592,6 +595,14 @@ export const sendEvents = (events?: TypedEventEmitter<WorkflowEventSchema>) => {
             text: text || prev?.text,
             finalText: finalText || prev?.finalText,
             status: status || prev?.status,
+            messages: message || prev?.messages,
+        }));
+    };
+
+    const addAnswerMessage = (message: AnswerMessage) => {
+        events?.update('answer', prev => ({
+            ...prev,
+            messages: [...(prev?.messages || []), message],
         }));
     };
 
@@ -603,5 +614,13 @@ export const sendEvents = (events?: TypedEventEmitter<WorkflowEventSchema>) => {
         events?.update('object', prev => object);
     };
 
-    return { updateStep, addSources, updateAnswer, nextStepId, updateStatus, updateObject };
+    return {
+        updateStep,
+        addSources,
+        updateAnswer,
+        nextStepId,
+        updateStatus,
+        updateObject,
+        addAnswerMessage,
+    };
 };

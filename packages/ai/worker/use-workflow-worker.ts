@@ -1,5 +1,5 @@
 import { ChatMode } from '@repo/shared/config';
-import { CoreAssistantMessage, CoreUserMessage } from 'ai';
+import { Answer, CoreMessage } from '@repo/shared/types';
 import { useEffect, useRef, useState } from 'react';
 
 export type WorkflowConfig = {
@@ -40,20 +40,12 @@ export type WorkflowEventSchema = {
                 }[];
             }
         >;
-        toolCalls?: any[];
-        toolResults?: any[];
         reasoning?: {
             text: string;
             final: boolean;
             status?: 'PENDING' | 'COMPLETED' | 'FAILED';
         };
-        answer: {
-            text: string;
-            object?: any;
-            objectType?: string;
-            final: boolean;
-            status?: 'PENDING' | 'COMPLETED' | 'FAILED';
-        };
+        answer: Answer;
         final: boolean;
     };
 };
@@ -115,7 +107,7 @@ export function useWorkflowWorker(onMessage?: (data: any) => void, onAbort?: () 
         threadId: string;
         threadItemId: string;
         parentThreadItemId: string;
-        messages: (CoreUserMessage | CoreAssistantMessage)[];
+        messages: CoreMessage[];
         config?: WorkflowConfig;
         apiKeys?: Record<string, string>;
         mcpConfig?: Record<string, string>;

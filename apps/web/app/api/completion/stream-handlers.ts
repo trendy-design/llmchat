@@ -85,6 +85,7 @@ export async function executeStream({
         });
 
         workflow.onAll((event, payload) => {
+            console.log('event', event, payload);
             sendMessage(controller, encoder, {
                 type: event,
                 threadId: data.threadId,
@@ -102,9 +103,13 @@ export async function executeStream({
             logger.debug('Starting workflow', { threadId: data.threadId });
         }
 
-        await workflow.start('router', {
-            question: data.prompt,
-        });
+        if (data.breakpointId) {
+            await workflow.resume(data.threadId, data.breakpointId);
+        } else {
+            await workflow.start('router', {
+                question: data.prompt,
+            });
+        }
 
         if (process.env.NODE_ENV === 'development') {
             logger.debug('Workflow completed', { threadId: data.threadId });

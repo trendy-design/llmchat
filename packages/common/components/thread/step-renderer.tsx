@@ -26,7 +26,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
     };
 
     const renderSearchStep = () => {
-        if (step?.steps && 'search' in step.steps) {
+        if (step?.steps && 'search' in step?.steps) {
             return (
                 <motion.div
                     className="flex flex-col gap-1"
@@ -46,19 +46,20 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                         </div>
 
                         <div className="flex flex-row flex-wrap gap-1">
-                            {step.steps?.search?.data?.map((query: string, index: number) => (
-                                <motion.div
-                                    key={index}
-                                    initial={{ opacity: 0, y: 5 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    transition={{ duration: 0.2, delay: 0.1 + index * 0.05 }}
-                                >
-                                    <Badge>
-                                        <IconSearch size={12} className="opacity-50" />
-                                        {query}
-                                    </Badge>
-                                </motion.div>
-                            ))}
+                            {Array.isArray(step.steps?.search?.data) &&
+                                step.steps?.search?.data?.map((query: string, index: number) => (
+                                    <motion.div
+                                        key={index}
+                                        initial={{ opacity: 0, y: 5 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.2, delay: 0.1 + index * 0.05 }}
+                                    >
+                                        <Badge>
+                                            <IconSearch size={12} className="opacity-50" />
+                                            {query}
+                                        </Badge>
+                                    </motion.div>
+                                ))}
                         </div>
                     </div>
                 </motion.div>
@@ -111,7 +112,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                     <p className="text-muted-foreground text-sm">
                         {step.steps?.reasoning?.data
                             ?.split('\n\n')
-                            .map((line: string, index: number) => (
+                            ?.map((line: string, index: number) => (
                                 <>
                                     <span key={index}>{line}</span>
                                     <br />

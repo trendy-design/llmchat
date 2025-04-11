@@ -270,7 +270,14 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
 
             updateStatus('COMPLETED');
 
-            context?.update('answer', _ => reasoning);
+            context?.update('answer', current => {
+                return {
+                    ...current,
+                    text: reasoning,
+                    finalText: reasoning,
+                    status: 'COMPLETED' as const,
+                };
+            });
 
             // Call onFinish callback if provided
             const onFinish = context?.get('onFinish');

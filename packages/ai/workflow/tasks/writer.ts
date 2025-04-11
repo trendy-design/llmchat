@@ -123,7 +123,14 @@ Your report should demonstrate subject matter expertise while remaining intellec
             output: answer,
             metadata: context?.getAll(),
         });
-        context?.update('answer', _ => answer);
+        context?.update('answer', current => {
+            return {
+                ...current,
+                text: answer,
+                finalText: answer,
+                status: 'COMPLETED' as const,
+            };
+        });
 
         return answer;
     },

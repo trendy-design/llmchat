@@ -1,3 +1,4 @@
+export * from './agentic';
 export * from './analysis';
 export * from './chat-mode-router';
 export * from './completion';
