@@ -15,6 +15,7 @@
         "check-types": "tsc --noEmit"
     },
     "dependencies": {
+        "ai": "^4.1.40",
         "@langchain/core": "^0.1.62",
         "@tiptap/react": "^2.4.0",
         "@types/pdfkit": "^0.13.9",
