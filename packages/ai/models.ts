@@ -13,6 +13,8 @@ export enum ModelEnum {
     QWQ_32B = 'accounts/fireworks/models/qwq-32b',
     Deepseek_R1 = 'accounts/fireworks/models/deepseek-r1',
     Claude_3_7_Sonnet = 'claude-3-7-sonnet-20250219',
+    Grok_3 = 'grok-3-beta',
+    Grok_3_Mini = 'grok-3-mini-beta',
 }
 
 export type Model = {
@@ -21,6 +23,8 @@ export type Model = {
     provider: ProviderEnumType;
     maxTokens: number;
     contextWindow: number;
+    hasReasoningCapability?: boolean;
+    reasoningTagName?: string;
 };
 
 export const models: Model[] = [
@@ -29,6 +33,7 @@ export const models: Model[] = [
         name: 'GPT-4o Mini',
         provider: 'openai',
         maxTokens: 16384,
+        hasReasoningCapability: false,
         contextWindow: 16384,
     },
     {
@@ -37,6 +42,7 @@ export const models: Model[] = [
         provider: 'openai',
         maxTokens: 16384,
         contextWindow: 16384,
+        hasReasoningCapability: false,
     },
     {
         id: ModelEnum.O3_Mini,
@@ -44,6 +50,7 @@ export const models: Model[] = [
         provider: 'openai',
         maxTokens: 16384,
         contextWindow: 16384,
+        hasReasoningCapability: false,
     },
     {
         id: ModelEnum.GPT_4o_Mini,
@@ -51,6 +58,7 @@ export const models: Model[] = [
         provider: 'openai',
         maxTokens: 16384,
         contextWindow: 16384,
+        hasReasoningCapability: true,
     },
     {
         id: ModelEnum.Deepseek_R1_Distill_Qwen_14B,
@@ -58,6 +66,8 @@ export const models: Model[] = [
         provider: 'together',
         maxTokens: 16384,
         contextWindow: 16384,
+        hasReasoningCapability: true,
+        reasoningTagName: 'think',
     },
     {
         id: ModelEnum.Deepseek_R1,
@@ -65,6 +75,8 @@ export const models: Model[] = [
         provider: 'fireworks',
         maxTokens: 16384,
         contextWindow: 16384,
+        hasReasoningCapability: true,
+        reasoningTagName: 'think',
     },
     {
         id: ModelEnum.Claude_3_5_Sonnet,
@@ -72,6 +84,7 @@ export const models: Model[] = [
         provider: 'anthropic',
         maxTokens: 16384,
         contextWindow: 16384,
+        hasReasoningCapability: false,
     },
     {
         id: ModelEnum.Claude_3_7_Sonnet,
@@ -79,6 +92,7 @@ export const models: Model[] = [
         provider: 'anthropic',
         maxTokens: 16384,
         contextWindow: 16384,
+        hasReasoningCapability: false,
     },
     {
         id: ModelEnum.GEMINI_2_FLASH,
@@ -86,6 +100,7 @@ export const models: Model[] = [
         provider: 'google',
         maxTokens: 200000,
         contextWindow: 200000,
+        hasReasoningCapability: false,
     },
     {
         id: ModelEnum.QWQ_32B,
@@ -93,6 +108,7 @@ export const models: Model[] = [
         provider: 'fireworks',
         maxTokens: 16384,
         contextWindow: 16384,
+        hasReasoningCapability: false,
     },
     {
         id: ModelEnum.LLAMA_4_SCOUT,
@@ -100,6 +116,23 @@ export const models: Model[] = [
         provider: 'fireworks',
         maxTokens: 16384,
         contextWindow: 16384,
+        hasReasoningCapability: false,
+    },
+    {
+        id: ModelEnum.Grok_3,
+        name: 'Grok 3',
+        provider: 'xai',
+        maxTokens: 16384,
+        contextWindow: 16384,
+        hasReasoningCapability: true,
+    },
+    {
+        id: ModelEnum.Grok_3_Mini,
+        name: 'Grok 3 Mini',
+        provider: 'xai',
+        maxTokens: 16384,
+        contextWindow: 16384,
+        hasReasoningCapability: true,
     },
 ];
 

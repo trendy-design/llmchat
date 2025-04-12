@@ -22,9 +22,6 @@ Today is ${getHumanizedDate()}.
 
 You are a Research Analyst tasked with thoroughly analyzing findings related to "${question}" before composing a comprehensive report. 
 
-You gonna perform pre-writing analysis of the research findings.
-
-
 ## Research Materials
 
 <research_findings>
@@ -43,8 +40,8 @@ ${s}
 
 
 ## Analysis Instructions
-- Analyze the research findings one by one and highlight the most important information which will be used to compose a comprehensive report.
-- Document your analysis in a structured format that will serve as the foundation for creating a comprehensive report.
+- Analyze the research findings one by one and highlight the most important information in depth which will be used to compose a comprehensive report.
+- Document your analysis in a indepth comprehensive structured format that will serve as the foundation for creating a comprehensive report.
 
                 `;
 

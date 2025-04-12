@@ -92,7 +92,7 @@ Your report should demonstrate subject matter expertise while remaining intellec
 
         const answer = await generateText({
             prompt,
-            model: ModelEnum.Claude_3_7_Sonnet,
+            model: ModelEnum.Grok_3,
             messages,
             signal,
             onChunk: (chunk, fullText) => {

@@ -39,7 +39,8 @@ Current date: ${getHumanizedDate()}
 ## Query Generation Rules
 
 - DO NOT suggest queries similar to previous ones - review each previous query carefully
-- DO NOT broaden the scope beyond the original research question
+
+- MUST NOT broaden the scope beyond the original research question need to focus on the depth of the research
 - DO NOT suggest queries that would likely yield redundant information
 - ONLY suggest queries that address identified information gaps
 - Each query must explore a distinct aspect not covered by previous searches

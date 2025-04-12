@@ -4,6 +4,7 @@ import { createGoogleGenerativeAI } from '@ai-sdk/google';
 import { createOpenAI } from '@ai-sdk/openai';
 import { LanguageModelV1 } from '@ai-sdk/provider';
 import { createTogetherAI } from '@ai-sdk/togetherai';
+import { createXai } from '@ai-sdk/xai';
 import { LanguageModelV1Middleware, wrapLanguageModel } from 'ai';
 import { ModelEnum, models } from './models';
 
@@ -13,6 +14,7 @@ export const Providers = {
     TOGETHER: 'together',
     GOOGLE: 'google',
     FIREWORKS: 'fireworks',
+    XAI: 'xai',
 } as const;
 
 export type ProviderEnumType = (typeof Providers)[keyof typeof Providers];
@@ -48,6 +50,9 @@ const getApiKey = (provider: ProviderEnumType): string => {
                 break;
             case Providers.FIREWORKS:
                 if (process.env.FIREWORKS_API_KEY) return process.env.FIREWORKS_API_KEY;
+                break;
+            case Providers.XAI:
+                if (process.env.XAI_API_KEY) return process.env.XAI_API_KEY;
                 break;
         }
     }
@@ -93,6 +98,10 @@ export const getProviderInstance = (provider: ProviderEnumType) => {
             return createFireworks({
                 apiKey: getApiKey(Providers.FIREWORKS),
             });
+        case 'xai':
+            return createXai({
+                apiKey: getApiKey(Providers.XAI),
+            });
         default:
             return createOpenAI({
                 apiKey: getApiKey(Providers.OPENAI),
@@ -103,11 +112,12 @@ export const getProviderInstance = (provider: ProviderEnumType) => {
 export const getLanguageModel = (m: ModelEnum, middleware?: LanguageModelV1Middleware) => {
     const model = models.find(model => model.id === m);
     const instance = getProviderInstance(model?.provider as ProviderEnumType);
-    const selectedModel = instance(model?.id || 'gpt-4o-mini', {
-        parallelToolCalls: false,
-    });
+    const selectedModel = instance(model?.id || 'gpt-4o-mini');
     if (middleware) {
-        return wrapLanguageModel({ model: selectedModel, middleware }) as LanguageModelV1;
+        return wrapLanguageModel({
+            model: selectedModel as LanguageModelV1,
+            middleware,
+        }) as LanguageModelV1;
     }
     return selectedModel as LanguageModelV1;
 };
