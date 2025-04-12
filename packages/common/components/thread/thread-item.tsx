@@ -216,109 +216,122 @@ export const ToolCallUI = ({
         return grouped;
     }, [message]);
 
-    const textMessages = useMemo(() => {
-        return message.filter(m => m.type === 'text');
-    }, [message]);
-
     return (
         <div className="flex w-full flex-col gap-2">
-            {/* Render grouped tool calls and results */}
-            {Object.entries(groupedMessages).map(([toolCallId, group]) => {
-                if (!group.toolCall) return null;
-
-                return (
-                    <div
-                        key={toolCallId}
-                        className="bg-tertiary border-hard flex w-full flex-col gap-1 rounded-xl border p-1"
-                    >
-                        <div className="flex flex-row items-center justify-between px-2">
-                            <div className="flex flex-row items-center gap-2">
-                                <ToolCallIcon />
-
-                                <div className="flex flex-row items-center gap-1">
-                                    <p className="flex flex-row items-center gap-1 text-sm font-medium">
-                                        {group.toolCall.toolName}
-                                    </p>
-                                    <p className="text-muted-foreground/50 text-[10px]">
-                                        {toolCallId}
-                                    </p>
-                                </div>
-                            </div>
-                            {group.toolCall.approvalStatus === 'PENDING' && (
-                                <div className="flex flex-row gap-1">
-                                    <Button
-                                        variant="bordered"
-                                        size="xs"
-                                        onClick={() => {
-                                            console.log('reject');
-                                        }}
-                                    >
-                                        Reject
-                                    </Button>
-                                    <Button
-                                        variant="default"
-                                        size="xs"
-                                        onClick={async () => {
-                                            const formData = new FormData();
-                                            formData.append('query', threadItem.query || '');
-                                            const threadItems = await getThreadItems(
-                                                threadItem.threadId
-                                            );
-                                            handleSubmit({
-                                                formData,
-                                                existingThreadItemId: threadItem.id,
-                                                newChatMode: threadItem.mode as any,
-                                                messages: threadItems,
-                                                useWebSearch: useWebSearch,
-                                                breakpointId: threadItem.id,
-                                                breakpointData: {},
-                                            });
-                                        }}
-                                    >
-                                        Approve
-                                    </Button>
-                                </div>
+            {/* Render messages in their original order, keeping tool calls and results together */}
+            {message.map((msg, index) => {
+                if (msg.type === 'text') {
+                    return (
+                        <MarkdownContent
+                            key={`text-${threadItem.id}-${index}`}
+                            content={msg.text || ''}
+                            isCompleted={['COMPLETED', 'ERROR', 'ABORTED'].includes(
+                                threadItem.status || ''
                             )}
-                            {group.toolCall.approvalStatus === 'APPROVED' && (
-                                <div className="flex flex-row items-center gap-1.5 text-xs font-medium text-emerald-800 ">
-                                    Approved
-                                </div>
-                            )}
-                        </div>
-                        <CodeBlock
-                            code={JSON.stringify(group.toolCall.args, null, 2)}
-                            lang="json"
-                            showHeader={false}
-                            className="my-0"
+                            shouldAnimate={
+                                !['COMPLETED', 'ERROR', 'ABORTED'].includes(threadItem.status || '')
+                            }
+                            isLast={false}
                         />
+                    );
+                } else if (msg.type === 'tool-call') {
+                    const toolCallId = msg.toolCallId;
+                    const group = groupedMessages[toolCallId];
 
-                        {/* Show tool result directly below if it exists */}
-                        {group.toolResult && (
+                    const previousMessage = message[index - 1];
+
+                    // Skip if we've already rendered this tool call (with its result)
+                    if (
+                        index > 0 &&
+                        previousMessage.type === 'tool-result' &&
+                        'toolCallId' in previousMessage &&
+                        previousMessage.toolCallId === toolCallId
+                    ) {
+                        return null;
+                    }
+
+                    return (
+                        <div
+                            key={`tool-${toolCallId}-${index}`}
+                            className="bg-tertiary border-hard flex w-full flex-col gap-1 rounded-xl border p-1"
+                        >
+                            <div className="flex flex-row items-center justify-between px-2">
+                                <div className="flex flex-row items-center gap-2">
+                                    <ToolCallIcon />
+
+                                    <div className="flex flex-row items-center gap-1">
+                                        <p className="flex flex-row items-center gap-1 text-sm font-medium">
+                                            {group.toolCall?.toolName}
+                                        </p>
+                                        <p className="text-muted-foreground/50 text-[10px]">
+                                            {toolCallId}
+                                        </p>
+                                    </div>
+                                </div>
+                                {group.toolCall?.approvalStatus === 'PENDING' && (
+                                    <div className="flex flex-row gap-1">
+                                        <Button
+                                            variant="bordered"
+                                            size="xs"
+                                            onClick={() => {
+                                                console.log('reject');
+                                            }}
+                                        >
+                                            Reject
+                                        </Button>
+                                        <Button
+                                            variant="default"
+                                            size="xs"
+                                            onClick={async () => {
+                                                const formData = new FormData();
+                                                formData.append('query', threadItem.query || '');
+                                                const threadItems = await getThreadItems(
+                                                    threadItem.threadId
+                                                );
+                                                handleSubmit({
+                                                    formData,
+                                                    existingThreadItemId: threadItem.id,
+                                                    newChatMode: threadItem.mode as any,
+                                                    messages: threadItems,
+                                                    useWebSearch: useWebSearch,
+                                                    breakpointId: threadItem.id,
+                                                    breakpointData: {},
+                                                });
+                                            }}
+                                        >
+                                            Approve
+                                        </Button>
+                                    </div>
+                                )}
+                                {group.toolCall?.approvalStatus === 'APPROVED' && (
+                                    <div className="flex flex-row items-center gap-1.5 text-xs font-medium text-emerald-800 ">
+                                        Approved
+                                    </div>
+                                )}
+                            </div>
                             <CodeBlock
-                                code={JSON.stringify(group.toolResult.result, null, 2)}
+                                code={JSON.stringify(group.toolCall?.args, null, 2)}
                                 lang="json"
                                 showHeader={false}
                                 className="my-0"
                             />
-                        )}
-                    </div>
-                );
-            })}
 
-            {/* Render text messages */}
-            {textMessages.map((m, index) => (
-                <MarkdownContent
-                    key={`text-${threadItem.id}-${index}`}
-                    content={m.text || ''}
-                    isCompleted={['COMPLETED', 'ERROR', 'ABORTED'].includes(
-                        threadItem.status || ''
-                    )}
-                    shouldAnimate={
-                        !['COMPLETED', 'ERROR', 'ABORTED'].includes(threadItem.status || '')
-                    }
-                    isLast={false}
-                />
-            ))}
+                            {/* Show tool result directly below if it exists */}
+                            {group.toolResult && (
+                                <CodeBlock
+                                    code={JSON.stringify(group.toolResult.result, null, 2)}
+                                    lang="json"
+                                    showHeader={false}
+                                    className="my-0"
+                                />
+                            )}
+                        </div>
+                    );
+                }
+
+                // Skip tool-result entries as they're handled along with their tool-calls
+                return null;
+            })}
         </div>
     );
 };
