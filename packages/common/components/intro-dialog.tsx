@@ -72,28 +72,22 @@ export const IntroDialog = () => {
         >
             <DialogContent
                 ariaTitle="Introduction"
+                closeButtonClassName="text-white"
                 className="flex max-w-[420px] flex-col gap-0 overflow-hidden p-0"
             >
-                <div className="relative h-[100px] w-full bg-emerald-700">
+                <div className="relative h-[100px] w-full bg-emerald-950">
                     <div className="absolute inset-0 z-10 flex h-full flex-col justify-end gap-2 p-4">
                         <div
                             className={cn(
-                                'flex h-8 w-full cursor-pointer items-center justify-start gap-1.5'
+                                'flex h-8 w-full cursor-pointer items-center justify-start gap-1.5 '
                             )}
                         >
-                            <DarkLogo className="size-6 text-white" />
-                            <p className="font-clash text-lg font-bold tracking-wide text-white">
+                            <DarkLogo className="size-6 text-purple-200" />
+                            <p className="font-clash text-lg font-bold tracking-wide text-purple-200">
                                 llmchat.co
                             </p>
                         </div>
                     </div>
-                    <div
-                        style={{
-                            backgroundImage: 'url(/icons/image.png)',
-                            backgroundSize: 'cover',
-                        }}
-                        className="z-1 absolute inset-0 flex h-full w-full bg-emerald-500/70 bg-cover bg-center bg-no-repeat bg-blend-hard-light"
-                    />
                 </div>
                 <div className="flex flex-col gap-8 p-5">
                     <p className="text-base font-semibold">

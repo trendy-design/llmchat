@@ -329,7 +329,7 @@ export const CustomSignIn = ({
             >
                 <IconX className="h-4 w-4" />
             </Button>
-            <div className="flex w-[300px] flex-col items-center gap-4">
+            <div className="flex w-[300px] flex-col items-center gap-6">
                 <h2 className="font-clash text-foreground text-center text-[24px] font-semibold leading-tight !text-emerald-900">
                     Sign in or sign up to enjoy <br /> the full capabilities
                 </h2>
@@ -373,7 +373,6 @@ export const CustomSignIn = ({
                         onChange={e => setEmail(e.target.value)}
                         type="email"
                     />
-                    <div id="clerk-captcha"></div>
 
                     <Button
                         variant="secondary"
@@ -388,6 +387,7 @@ export const CustomSignIn = ({
                         ) : null}
                         {isLoading === 'email' ? 'Sending code...' : 'Continue with email'}
                     </Button>
+                    <div id="clerk-captcha"></div>
                 </div>
             </div>
         </>

@@ -2,9 +2,9 @@
 
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import * as VisuallyHidden from '@radix-ui/react-visually-hidden';
+import { IconX } from '@tabler/icons-react';
 import { AnimatePresence } from 'framer-motion'; // Add this import
 import * as React from 'react';
-
 import { cn } from '../lib/utils';
 
 const Dialog = ({ children, ...props }: DialogPrimitive.DialogProps) => (
@@ -38,8 +38,9 @@ const DialogContent = React.forwardRef<
     React.ElementRef<typeof DialogPrimitive.Content>,
     React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
         ariaTitle: string;
+        closeButtonClassName?: string;
     }
->(({ className, children, ariaTitle, ...props }, ref) => (
+>(({ className, children, ariaTitle, closeButtonClassName, ...props }, ref) => (
     <DialogPortal>
         <DialogOverlay />
         <DialogPrimitive.Content
@@ -54,10 +55,15 @@ const DialogContent = React.forwardRef<
                 <DialogTitle>{ariaTitle}</DialogTitle>
             </VisuallyHidden.Root>
             {children}
-            {/* <DialogPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:bg-muted absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2">
-        <X size={16} strokeWidth={2.5} />
-        <span className="sr-only">Close</span>
-      </DialogPrimitive.Close> */}
+            <DialogPrimitive.Close
+                className={cn(
+                    'ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:bg-foreground/10 absolute right-4 top-4 z-[50] flex h-6 w-6 items-center justify-center rounded-full opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2',
+                    closeButtonClassName
+                )}
+            >
+                <IconX size={16} strokeWidth={2.5} />
+                <span className="sr-only">Close</span>
+            </DialogPrimitive.Close>
         </DialogPrimitive.Content>
     </DialogPortal>
 ));
