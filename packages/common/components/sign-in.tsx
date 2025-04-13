@@ -10,7 +10,10 @@ type CustomSignInProps = {
     onClose?: () => void;
 };
 
-export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) => {
+export const CustomSignIn = ({
+    redirectUrl = '/sign-in/sso-callback',
+    onClose,
+}: CustomSignInProps) => {
     const [isLoading, setIsLoading] = useState<string | null>(null);
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
