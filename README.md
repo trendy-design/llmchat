@@ -1,10 +1,6 @@
-  <div style="margin: 10px;">
-    <img width="1500" alt="Screenshot 2024-09-25 at 8 52 53 AM" src="https://github.com/user-attachments/assets/d558b8f2-37ea-4a6d-b6ec-969d56cad103">
-  </div><br>
 
-<p align="center">
-  <img width="160" alt="LLMChat logo" src="https://github.com/user-attachments/assets/ea0535c8-37ee-4d5f-8db2-e15d5bc1decb">
-</p>
+<img width="1512" alt="Screenshot 2025-04-13 at 2 49 34 PM" src="https://github.com/user-attachments/assets/00e4ff9b-81db-4abb-8096-dc6d1acf80d8" />
+
 
 <p align="center">Most intuitive All-in-one AI chat interface.</p>
 
