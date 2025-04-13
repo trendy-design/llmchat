@@ -120,7 +120,9 @@ export const ChatInput = ({
             >
                 <Flex
                     direction="col"
-                    className="bg-background/50 border-hard relative z-10 w-full rounded-2xl border shadow-sm"
+                    className={cn(
+                        'bg-background/50 border-hard shadow-foreground/5 relative z-10 w-full rounded-2xl border shadow-sm'
+                    )}
                 >
                     <ImageDropzoneRoot dropzoneProps={dropzonProps}>
                         <motion.div
@@ -225,7 +227,7 @@ export const ChatInput = ({
                 className={cn(
                     'mx-auto flex w-full max-w-3xl flex-col items-start',
                     !threadItemsLength && 'justify-start',
-                    size === 'sm' && 'px-4'
+                    size === 'sm' && 'px-8'
                 )}
             >
                 <Flex

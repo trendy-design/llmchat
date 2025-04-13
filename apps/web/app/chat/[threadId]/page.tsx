@@ -43,7 +43,7 @@ const ChatSessionPage = ({ params }: { params: { threadId: string } }) => {
 
     return (
         <div
-            className="no-scrollbar flex w-full flex-1 flex-col items-center overflow-y-auto px-8"
+            className="no-scrollbar flex w-full flex-1 flex-col items-center overflow-y-auto px-16"
             ref={shouldScroll ? scrollRef : undefined}
         >
             <div className="mx-auto w-full max-w-3xl px-4 pb-[200px] pt-2" ref={contentRef}>
