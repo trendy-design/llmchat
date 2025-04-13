@@ -23,6 +23,16 @@ export default function OauthSignIn() {
                     router.push('/chat');
                 }}
             />
+
+            <div className="text-muted-foreground/50 mt-4 text-xs">
+                <a href="/terms" className="hover:text-foreground">
+                    Terms of Service
+                </a>{' '}
+                ·{' '}
+                <a href="/privacy" className="hover:text-foreground">
+                    Privacy Policy
+                </a>
+            </div>
         </div>
     );
 }
