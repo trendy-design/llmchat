@@ -44,8 +44,8 @@ export const Sidebar = () => {
         return [...threads].sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
     };
 
-    const { isSignedIn, user } = useUser();
-    const { openUserProfile, signOut, redirectToSignIn } = useClerk();
+    const { isSignedIn, user, isLoaded } = useUser();
+    const { openUserProfile, signOut, redirectToSignIn, addListener } = useClerk();
     const clearAllThreads = useChatStore(state => state.clearAllThreads);
     const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
     const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
@@ -58,6 +58,12 @@ export const Sidebar = () => {
         last30Days: [],
         previousMonths: [],
     };
+
+    addListener(async event => {
+        console.log({
+            event,
+        });
+    });
 
     sortThreads(threads, 'createdAt')?.forEach(thread => {
         const createdAt = moment(thread.createdAt);
@@ -76,6 +82,10 @@ export const Sidebar = () => {
         }
 
         //TODO: Paginate these threads
+    });
+
+    console.log({
+        groupedThreads,
     });
 
     const renderGroup = ({
