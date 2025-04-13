@@ -78,6 +78,7 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
                 strategy: 'oauth_google',
                 redirectUrl,
                 redirectUrlComplete: redirectUrl,
+                continueSignUp: true,
             });
         } catch (error) {
             console.error('Google authentication error:', error);
@@ -95,6 +96,7 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
                 strategy: 'oauth_github',
                 redirectUrl,
                 redirectUrlComplete: redirectUrl,
+                continueSignUp: true,
             });
         } catch (error) {
             console.error('GitHub authentication error:', error);
