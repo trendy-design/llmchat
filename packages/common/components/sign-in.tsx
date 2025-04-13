@@ -74,12 +74,16 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
 
         try {
             if (!isLoaded || !signIn) return;
-            await signIn.authenticateWithRedirect({
-                strategy: 'oauth_google',
-                redirectUrl,
-                redirectUrlComplete: redirectUrl,
-                continueSignUp: true,
-            });
+            await signIn
+                .authenticateWithRedirect({
+                    strategy: 'oauth_google',
+                    redirectUrlComplete: '/sign-in/sso-callback',
+                    redirectUrl: '/sign-in/sso-callback',
+                    continueSignUp: true,
+                })
+                .catch(error => {
+                    console.error('Google authentication error:', error);
+                });
         } catch (error) {
             console.error('Google authentication error:', error);
         } finally {
