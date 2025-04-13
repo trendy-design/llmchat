@@ -16,8 +16,6 @@ import {
 import {
     IconArrowBarLeft,
     IconArrowBarRight,
-    IconChevronRight,
-    IconHistory,
     IconLogout,
     IconPinned,
     IconPlus,
@@ -171,7 +169,7 @@ export const Sidebar = () => {
                     {!isChatPage ? (
                         <Link href="/chat" className={isSidebarOpen ? 'w-full' : ''}>
                             <Button
-                                size={isSidebarOpen ? 'xs' : 'icon-sm'}
+                                size={isSidebarOpen ? 'sm' : 'icon-sm'}
                                 variant="secondary"
                                 rounded="lg"
                                 tooltip={isSidebarOpen ? undefined : 'New Thread'}
@@ -188,7 +186,7 @@ export const Sidebar = () => {
                         </Link>
                     ) : (
                         <Button
-                            size={isSidebarOpen ? 'xs' : 'icon-sm'}
+                            size={isSidebarOpen ? 'sm' : 'icon-sm'}
                             variant="secondary"
                             rounded="lg"
                             tooltip={isSidebarOpen ? undefined : 'New Thread'}
@@ -204,7 +202,7 @@ export const Sidebar = () => {
                         </Button>
                     )}
                     <Button
-                        size={isSidebarOpen ? 'xs' : 'icon-sm'}
+                        size={isSidebarOpen ? 'sm' : 'icon-sm'}
                         variant="bordered"
                         rounded="lg"
                         tooltip={isSidebarOpen ? undefined : 'Search'}
@@ -228,7 +226,7 @@ export const Sidebar = () => {
                         !isSidebarOpen && 'items-center justify-center px-0'
                     )}
                 >
-                    <Link href="/recent" className={isSidebarOpen ? 'w-full' : ''}>
+                    {/* <Link href="/recent" className={isSidebarOpen ? 'w-full' : ''}>
                         <Button
                             size={isSidebarOpen ? 'xs' : 'icon-sm'}
                             variant="secondary"
@@ -245,7 +243,7 @@ export const Sidebar = () => {
                             {isSidebarOpen && <span className="inline-flex flex-1" />}
                             {isSidebarOpen && <IconChevronRight size={14} strokeWidth={2} />}
                         </Button>
-                    </Link>
+                    </Link> */}
                 </Flex>
 
                 {false ? (
