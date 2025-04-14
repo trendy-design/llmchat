@@ -5,6 +5,9 @@ import { ProviderEnumType } from './providers';
 export enum ModelEnum {
     GPT_4o_Mini = 'gpt-4o-mini',
     GPT_4o = 'gpt-4o',
+    GPT_4_1_Mini = 'gpt-4.1-mini',
+    GPT_4_1_Nano = 'gpt-4.1-nano',
+    GPT_4_1 = 'gpt-4.1',
     LLAMA_4_SCOUT = 'accounts/fireworks/models/llama4-scout-instruct-basic',
     Deepseek_R1_Distill_Qwen_14B = 'deepseek-r1-distill-qwen-14b',
     Claude_3_5_Sonnet = 'claude-3-5-sonnet-20240620',
@@ -27,6 +30,27 @@ export const models: Model[] = [
     {
         id: ModelEnum.GPT_4o_Mini,
         name: 'GPT-4o Mini',
+        provider: 'openai',
+        maxTokens: 16384,
+        contextWindow: 16384,
+    },
+    {
+        id: ModelEnum.GPT_4_1_Mini,
+        name: 'GPT-4.1 Mini',
+        provider: 'openai',
+        maxTokens: 16384,
+        contextWindow: 16384,
+    },
+    {
+        id: ModelEnum.GPT_4_1_Nano,
+        name: 'GPT-4.1 Nano',
+        provider: 'openai',
+        maxTokens: 16384,
+        contextWindow: 16384,
+    },
+    {
+        id: ModelEnum.GPT_4_1,
+        name: 'GPT-4.1',
         provider: 'openai',
         maxTokens: 16384,
         contextWindow: 16384,

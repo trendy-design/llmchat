@@ -53,6 +53,27 @@ export const modelOptions = [
         creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.LLAMA_4_SCOUT],
     },
     {
+        label: 'GPT 4.1',
+        value: ChatMode.GPT_4_1,
+        // webSearch: true,
+        icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.GPT_4_1],
+    },
+    {
+        label: 'GPT 4.1 Mini',
+        value: ChatMode.GPT_4_1_Mini,
+        // webSearch: true,
+        icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.GPT_4_1_Mini],
+    },
+    {
+        label: 'GPT 4.1 Nano',
+        value: ChatMode.GPT_4_1_Nano,
+        // webSearch: true,
+        icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.GPT_4_1_Nano],
+    },
+    {
         label: 'Gemini Flash 2.0',
         value: ChatMode.GEMINI_2_FLASH,
         // webSearch: true,

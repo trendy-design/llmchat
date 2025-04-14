@@ -162,12 +162,8 @@ const config: any = {
                 },
             }),
             boxShadow: {
-                layered:
-                    'rgba(0, 0, 0, 0.05) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.05) 0px 1px 1px -1.5px, rgba(0, 0, 0, 0.05) 0px 1px 1px -3px, rgba(0, 0, 0, 0.05) 0px 2px 2px -6px, rgba(0, 0, 0, 0.1) 0px 0px 0px 1px',
-                'subtle-xs':
-                    'rgba(0, 0, 0, 0.04) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.08) 0px 2px 2px -1px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px',
-                'subtle-sm':
-                    'rgba(0, 0, 0, 0.03) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.06) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.06) 0px 2px 2px -1px, rgba(0, 0, 0, 0.05) 0px 0px 0px 0.5px',
+                'subtle-xs': 'var(--shadow-subtle-xs)',
+                'subtle-sm': 'var(--shadow-subtle-sm)',
             },
         },
     },

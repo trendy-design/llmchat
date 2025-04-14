@@ -19,22 +19,22 @@
         --vaul-overlay-background-end: rgba(0, 0, 0, 0.4);
 
         --background: 180 0% 100%;
-        --foreground: 60 12% 2%;
+        --foreground: 180 0% 2%;
 
         --secondary: 180 0% 98%;
-        --secondary-foreground: 60 12% 4%;
+        --secondary-foreground: 180 0% 4%;
 
         --tertiary: 180 0% 94%;
-        --tertiary-foreground: 60 12% 8%;
+        --tertiary-foreground: 180 0% 6%;
 
         --quaternary: 180 0% 90%;
-        --quaternary-foreground: 60 12% 8%;
+        --quaternary-foreground: 180 0% 10%;
 
         --card: 40 30% 98%;
         --card-foreground: 20 15% 10%;
 
-        --popover: 25 12% 100%;
-        --popover-foreground: 20 15% 10%;
+        --popover: 180 0% 98%;
+        --popover-foreground: 180 0% 2%;
 
         --brand: 14 93% 63%;
         --brand-foreground: 164 86% 66%;
@@ -42,8 +42,8 @@
         --accent: 164 70% 33%;
         --accent-foreground: 164 70% 96%;
 
-        --muted: 60 12% 80%;
-        --muted-foreground: 60 12% 20%;
+        --muted: 180 0% 90%;
+        --muted-foreground: 180 0% 10%;
 
         --destructive: 0 84% 60%;
         --destructive-foreground: 40 30% 98%;
@@ -55,51 +55,65 @@
         --ring: 20 15% 10%;
 
         --radius: 0.5rem;
+
+        --shadow-subtle-xs:
+            rgba(0, 0, 0, 0.04) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.08) 0px 2px 2px -1px,
+            rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+        --shadow-subtle-sm:
+            rgba(0, 0, 0, 0.03) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.06) 0px 1px 1px -0.5px,
+            rgba(0, 0, 0, 0.06) 0px 2px 2px -1px, rgba(0, 0, 0, 0.05) 0px 0px 0px 0.5px;
     }
 
-    /**
-  .dark {
-    --background: 0 0% 7.8%;
-    --foreground: 60 1% 90%;
+    .dark {
+        --vaul-overlay-background: 255, 255, 255;
+        --vaul-overlay-background-start: transparent;
+        --vaul-overlay-background-end: rgba(0, 0, 0, 0.4);
 
-    --secondary: 0 0% 9.8%;
-    --secondary-foreground: 60 1% 80%;
+        --background: 180 0% 10%;
+        --foreground: 180 0% 98%;
 
-    --tertiary: 0 0% 15%;
-    --tertiary-foreground: 60 1% 90%;
+        --secondary: 180 0% 8%;
+        --secondary-foreground: 180 0% 98%;
 
-    --card: 60 1% 19%;
-    --card-foreground: 60 1% 90%;
+        --tertiary: 180 0% 6%;
+        --tertiary-foreground: 180 0% 98%;
 
-    --popover: 60 1% 10%;
-    --popover-foreground: 60 1% 90%;
+        --quaternary: 180 0% 2%;
+        --quaternary-foreground: 180 0% 98%;
 
-    --brand: 0 0% 100%;
-    --brand-foreground: 0 0% 7.8%;
+        --card: 40 30% 98%;
+        --card-foreground: 20 15% 10%;
 
-    -brand: 287 69% 83%;
-    --brand-foreground: 282 41% 23%;
- 
-    --brand: 200 48% 76%;
-    --brand-foreground: 198 43% 25%;
+        --popover: 180 0% 4%;
+        --popover-foreground: 180 0% 96%;
 
-    
+        --brand: 14 93% 63%;
+        --brand-foreground: 164 86% 66%;
 
-    --muted: 60 1% 15%;
-    --muted-foreground: 60 1% 65%;
+        --accent: 164 70% 33%;
+        --accent-foreground: 164 70% 96%;
 
-    --accent: 60 1% 15%;
-    --accent-foreground: 60 1% 90%;
+        --muted: 180 0% 20%;
+        --muted-foreground: 180 0% 70%;
 
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 60 1% 90%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 40 30% 98%;
 
-    --border: 0 0% 15%;
-    --input: 60 1% 15%;
-    --ring: 60 1% 83%;
-  } 
+        --border: 180 0% 16%;
+        --soft: 180 0% 8%;
+        --hard: 180 0% 22%;
+        --input: 180 0% 16%;
+        --ring: 20 15% 10%;
 
-  **/
+        --radius: 0.5rem;
+
+        --shadow-subtle-xs:
+            rgba(0, 0, 0, 0.04) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.08) 0px 2px 2px -1px,
+            rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+        --shadow-subtle-sm:
+            rgba(0, 0, 0, 0.03) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.06) 0px 1px 1px -0.5px,
+            rgba(0, 0, 0, 0.06) 0px 2px 2px -1px, rgba(0, 0, 0, 0.05) 0px 0px 0px 0.5px;
+    }
 }
 
 @layer base {
