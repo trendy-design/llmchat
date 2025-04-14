@@ -38,7 +38,7 @@ export const FormLabel = ({
                     <Link
                         href={link}
                         target="_blank"
-                        className="py-0.5 text-sm font-medium text-violet-500 underline decoration-emerald-500/20 underline-offset-4 hover:opacity-90"
+                        className="decoration-brand/20 py-0.5 text-sm font-medium text-violet-500 underline underline-offset-4 hover:opacity-90"
                     >
                         {linkText}
                     </Link>

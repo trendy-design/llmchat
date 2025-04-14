@@ -75,7 +75,7 @@ export const IntroDialog = () => {
                 closeButtonClassName="text-white"
                 className="flex max-w-[420px] flex-col gap-0 overflow-hidden p-0"
             >
-                <div className="relative h-[100px] w-full bg-emerald-950">
+                <div className="bg-brand relative h-[100px] w-full">
                     <div className="absolute inset-0 z-10 flex h-full flex-col justify-end gap-2 p-4">
                         <div
                             className={cn(

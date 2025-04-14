@@ -57,7 +57,7 @@ const DialogContent = React.forwardRef<
             {children}
             <DialogPrimitive.Close
                 className={cn(
-                    'ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:bg-foreground/10 absolute right-4 top-4 z-[50] flex h-6 w-6 items-center justify-center rounded-full opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2',
+                    'ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground hover:bg-foreground/10 absolute right-4 top-4 z-[50] flex h-7 w-7 items-center justify-center rounded-lg opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-offset-2',
                     closeButtonClassName
                 )}
             >

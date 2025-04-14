@@ -26,12 +26,12 @@ const getTitle = (threadItem: ThreadItem) => {
 
 const getIcon = (threadItem: ThreadItem) => {
     if (threadItem.mode === ChatMode.Deep) {
-        return <IconAtom size={16} strokeWidth={2} className="text-emerald-800" />;
+        return <IconAtom size={16} strokeWidth={2} className="text-muted-foreground" />;
     }
     if (threadItem.mode === ChatMode.Pro) {
-        return <IconNorthStar size={16} strokeWidth={2} className="text-emerald-800" />;
+        return <IconNorthStar size={16} strokeWidth={2} className="text-muted-foreground" />;
     }
-    return <IconChecklist size={16} strokeWidth={2} className="text-emerald-800" />;
+    return <IconChecklist size={16} strokeWidth={2} className="text-muted-foreground" />;
 };
 
 const getNote = (threadItem: ThreadItem) => {
@@ -154,7 +154,7 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
                         <IconLoader2
                             size={16}
                             strokeWidth={2}
-                            className=" animate-spin text-emerald-800"
+                            className=" text-muted-foreground animate-spin"
                         />
                     ) : (
                         getIcon(threadItem)
@@ -163,7 +163,7 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
                 <div className="flex flex-col">
                     <p className="text-sm font-medium">{getTitle(threadItem)}</p>
                     {useNote && !hasAnswer && (
-                        <p className="text-muted-foreground text-xs">{getNote(threadItem)}</p>
+                        <p className="text-muted-foreground/70 text-xs">{getNote(threadItem)}</p>
                     )}
                 </div>
             </div>
@@ -177,7 +177,7 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
     return (
         <>
             <div
-                className="bg-tertiary hover:bg-quaternary flex w-full cursor-pointer flex-row items-center gap-2 rounded-md px-3 py-2.5"
+                className="bg-background shadow-subtle-xs hover:bg-secondary flex w-full cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-2.5"
                 onClick={() => {
                     handleClick();
                 }}

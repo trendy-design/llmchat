@@ -11,18 +11,20 @@ const buttonVariants = cva(
         variants: {
             variant: {
                 default:
-                    'bg-emerald-700 border border-emerald-800 text-background [&>svg]:text-background font-semibold hover:opacity-90',
-                brand: 'bg-emerald-950 text-lime-100 font-semibold hover:opacity-90 [&>svg]:text-lime-100',
+                    'bg-foreground shadow-subtle-xs border-sky-600 text-background font-semibold hover:opacity-90 [&>svg]:text-background',
+                brand: 'bg-brand text-background font-semibold hover:opacity-90 [&>svg]:text-background',
                 'brand-secondary':
                     'bg-brand-secondary text-brand-secondary-foreground font-semibold hover:opacity-90',
-                accent: 'text-emerald-900 bg-yellow-100 hover:bg-yellow-200 font-semibold',
+                accent: 'text-brand bg-yellow-100 hover:bg-yellow-200 font-semibold',
                 outlined: 'bg-background text-foreground outline outline-border hover:bg-secondary',
                 destructive: 'bg-destructive text-destructive-foreground hover:opacity-90',
                 bordered:
-                    'border border-hard bg-background text-foreground opacity-100 hover:opacity-80',
+                    'bg-background shadow-subtle-xs text-foreground opacity-100 hover:opacity-80 [&>svg]:text-foreground font-semibold',
                 secondary:
-                    'bg-quaternary border border-border text-emerald-950 opacity-100 hover:opacity-80 [&>svg]:text-emerald-700 font-semibold',
-                ghost: 'hover:bg-quaternary text-foreground opacity-100 hover:opacity-80',
+                    'bg-tertiary text-muted-foreground opacity-100 hover:opacity-80 [&>svg]:text-muted-foreground font-semibold',
+                ghost: 'hover:bg-quaternary text-muted-foreground opacity-100 hover:text-foreground',
+                'ghost-bordered':
+                    'hover:bg-background hover:shadow-subtle-xs text-muted-foreground opacity-100 hover:text-foreground',
                 link: 'text-muted-foreground underline-offset-4 hover:underline h-auto decoration-border',
                 text: 'p-0 text-xs',
             },
@@ -40,9 +42,9 @@ const buttonVariants = cva(
             },
             rounded: {
                 default: 'rounded-sm',
-                lg: 'rounded-md',
+                lg: 'rounded-lg',
                 xl: 'rounded-xl',
-                full: 'rounded-lg',
+                full: 'rounded-full',
             },
         },
         defaultVariants: {

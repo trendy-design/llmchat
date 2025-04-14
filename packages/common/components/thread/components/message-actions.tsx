@@ -24,9 +24,8 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
             <div className="flex flex-row items-center gap-1 py-2">
                 {threadItem?.answer?.text && (
                     <Button
-                        variant="secondary"
+                        variant="ghost-bordered"
                         size="icon-sm"
-                        rounded="full"
                         onClick={() => {
                             if (ref && 'current' in ref && ref.current) {
                                 copyToClipboard(ref.current || '');
@@ -44,9 +43,8 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
 
                 {threadItem?.answer?.text && (
                     <Button
-                        variant="secondary"
+                        variant="ghost-bordered"
                         size="icon-sm"
-                        rounded="full"
                         onClick={() => {
                             copyMarkdown(
                                 `${threadItem?.answer?.text}\n\n## References\n${threadItem?.sources
@@ -66,12 +64,7 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                 {threadItem.status !== 'ERROR' && threadItem.answer?.status !== 'HUMAN_REVIEW' && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button
-                                variant="secondary"
-                                size="icon-sm"
-                                rounded="full"
-                                tooltip="Rewrite"
-                            >
+                            <Button variant="ghost-bordered" size="icon-sm" tooltip="Rewrite">
                                 <IconRefresh size={16} strokeWidth={2} />
                             </Button>
                         </DropdownMenuTrigger>
@@ -96,9 +89,8 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
 
                 {isLast && (
                     <Button
-                        variant="secondary"
+                        variant="ghost-bordered"
                         size="icon-sm"
-                        rounded="full"
                         onClick={() => {
                             removeThreadItem(threadItem.id);
                         }}

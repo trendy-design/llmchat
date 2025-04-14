@@ -112,7 +112,7 @@ export const ChatInput = ({
     const renderChatInput = () => (
         <AnimatePresence>
             <motion.div
-                className="w-full px-2"
+                className="w-full px-3"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 key={`chat-input`}
@@ -121,7 +121,7 @@ export const ChatInput = ({
                 <Flex
                     direction="col"
                     className={cn(
-                        'bg-background/50 border-hard shadow-foreground/5 relative z-10 w-full rounded-2xl border shadow-sm'
+                        'bg-background border-hard/50 shadow-subtle-sm relative z-10 w-full rounded-xl border'
                     )}
                 >
                     <ImageDropzoneRoot dropzoneProps={dropzonProps}>
@@ -143,12 +143,12 @@ export const ChatInput = ({
                                         <ChatEditor
                                             sendMessage={sendMessage}
                                             editor={editor}
-                                            className="px-4 pt-4"
+                                            className="px-3 pt-3"
                                         />
                                     </Flex>
 
                                     <Flex
-                                        className="w-full gap-0 px-2 py-2"
+                                        className="border-border w-full gap-0 border-t border-dashed px-2 py-2"
                                         gap="none"
                                         items="center"
                                         justify="between"
@@ -243,7 +243,7 @@ export const ChatInput = ({
                             transition={{ duration: 0.3, ease: 'easeOut' }}
                             className="mb-4 flex w-full flex-col items-center gap-1"
                         >
-                            <AnimatedTitles titles={['Ask me anything']} />
+                            <AnimatedTitles titles={['Good morning']} />
                         </motion.div>
                     )}
 
@@ -287,7 +287,7 @@ const AnimatedTitles = ({ titles }: AnimatedTitlesProps) => {
                         duration: 0.8,
                         ease: 'easeInOut',
                     }}
-                    className="font-clash text-foreground text-center text-[32px] font-semibold !text-emerald-900"
+                    className="text-muted-foreground/50 text-center text-[32px] font-semibold tracking-tight"
                 >
                     {titles[titleIndex]}
                 </motion.h1>
