@@ -243,7 +243,7 @@ export const ChatInput = ({
                             transition={{ duration: 0.3, ease: 'easeOut' }}
                             className="mb-4 flex w-full flex-col items-center gap-1"
                         >
-                            <AnimatedTitles titles={['Good morning']} />
+                            <AnimatedTitles />
                         </motion.div>
                     )}
 
@@ -258,19 +258,37 @@ export const ChatInput = ({
 };
 
 type AnimatedTitlesProps = {
-    titles: string[];
+    titles?: string[];
 };
 
-const AnimatedTitles = ({ titles }: AnimatedTitlesProps) => {
-    const [titleIndex, setTitleIndex] = React.useState(0);
+const AnimatedTitles = ({ titles = [] }: AnimatedTitlesProps) => {
+    const [greeting, setGreeting] = React.useState<string>('');
 
     React.useEffect(() => {
+        const getTimeBasedGreeting = () => {
+            const hour = new Date().getHours();
+
+            if (hour >= 5 && hour < 12) {
+                return 'Good morning';
+            } else if (hour >= 12 && hour < 18) {
+                return 'Good afternoon';
+            } else {
+                return 'Good evening';
+            }
+        };
+
+        setGreeting(getTimeBasedGreeting());
+
+        // Update the greeting if the component is mounted during a time transition
         const interval = setInterval(() => {
-            setTitleIndex(prevIndex => (prevIndex + 1) % titles.length);
-        }, 10000); // Slightly faster rotation for better engagement
+            const newGreeting = getTimeBasedGreeting();
+            if (newGreeting !== greeting) {
+                setGreeting(newGreeting);
+            }
+        }, 60000); // Check every minute
 
         return () => clearInterval(interval);
-    }, [titles.length]);
+    }, [greeting]);
 
     return (
         <Flex
@@ -279,7 +297,7 @@ const AnimatedTitles = ({ titles }: AnimatedTitlesProps) => {
         >
             <AnimatePresence mode="wait">
                 <motion.h1
-                    key={titleIndex}
+                    key={greeting}
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 5 }}
@@ -289,7 +307,7 @@ const AnimatedTitles = ({ titles }: AnimatedTitlesProps) => {
                     }}
                     className="text-muted-foreground/50 text-center text-[32px] font-semibold tracking-tight"
                 >
-                    {titles[titleIndex]}
+                    {greeting}
                 </motion.h1>
             </AnimatePresence>
         </Flex>
