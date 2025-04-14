@@ -53,7 +53,7 @@ export const SourcesStack = ({ urls }: { urls: string[] }) => {
                     return null;
                 })}
             </div>{' '}
-            <div className="px-1 text-xs text-emerald-500">{urls.length} sources</div>
+            <div className="text-brand px-1 text-xs">{urls.length} sources</div>
         </div>
     );
 };

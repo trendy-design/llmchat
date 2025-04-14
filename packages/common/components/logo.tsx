@@ -10,7 +10,7 @@ export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
         preserveAspectRatio="xMidYMid meet"
         {...props}
     >
-        <rect width="62" height="62" rx="31" fill="#007647" />
+        <rect width="62" height="62" rx="31" fill="currentColor" />
         <rect
             x="0.5"
             y="0.5"
@@ -26,7 +26,7 @@ export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
             width="59"
             height="59"
             rx="29.5"
-            fill="#007647"
+            fill="currentColor"
             stroke="url(#paint0_linear_85_14)"
         />
         <path
@@ -44,8 +44,8 @@ export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
                 y2="61"
                 gradientUnits="userSpaceOnUse"
             >
-                <stop stopColor="#059259" />
-                <stop offset="1" stopColor="#03603B" />
+                <stop stopColor="currentColor" />
+                <stop offset="1" stopColor="currentColor" />
             </linearGradient>
         </defs>
     </svg>

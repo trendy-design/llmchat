@@ -30,7 +30,7 @@ export const LinkPreviewPopover = memo(({ source, children }: LinkPreviewType) =
                 }}
             >
                 <IconExternalLink
-                    className="text-muted-foreground absolute right-3 top-3 group-hover:text-emerald-500"
+                    className="text-muted-foreground group-hover:text-brand absolute right-3 top-3"
                     size={14}
                 />
                 <LinkPreview source={source} />

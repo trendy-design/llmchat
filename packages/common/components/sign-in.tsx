@@ -271,7 +271,7 @@ export const CustomSignIn = ({
         return (
             <div className="flex w-[300px] flex-col items-center gap-4">
                 <div className="flex flex-col items-center gap-1">
-                    <h2 className="font-clash text-foreground text-center text-[24px] font-semibold leading-tight !text-emerald-900">
+                    <h2 className="font-clash text-foreground !text-brand text-center text-[24px] font-semibold leading-tight">
                         Check your email
                     </h2>
                     <p className="text-muted-foreground text-center text-sm">
@@ -298,7 +298,7 @@ export const CustomSignIn = ({
                 <p className="text-muted-foreground text-center text-sm">
                     Didn't receive an email?{' '}
                     <span
-                        className={`cursor-pointer text-emerald-600 underline hover:text-emerald-700 ${
+                        className={`hover:text-brand text-brand cursor-pointer underline ${
                             resending ? 'pointer-events-none opacity-70' : ''
                         }`}
                         onClick={handleSendCode}
@@ -310,7 +310,7 @@ export const CustomSignIn = ({
                 <div id="clerk-captcha"></div>
                 <div className="text-muted-foreground text-center text-sm">
                     {error && <p className="text-rose-400">{error}</p>}
-                    {resending && <p className="text-emerald-600">Sending verification code...</p>}
+                    {resending && <p className="text-brand">Sending verification code...</p>}
                 </div>
             </div>
         );
@@ -330,7 +330,7 @@ export const CustomSignIn = ({
                 <IconX className="h-4 w-4" />
             </Button>
             <div className="flex w-[300px] flex-col items-start gap-8">
-                <h2 className="font-clash text-muted-foreground/70 text-left text-[24px] font-semibold leading-tight">
+                <h2 className="text-muted-foreground/70 text-left text-[24px] font-semibold leading-tight">
                     Sign in or sign up to enjoy <br /> the full capabilities
                 </h2>
 
@@ -338,7 +338,7 @@ export const CustomSignIn = ({
                     <Button
                         onClick={handleGoogleAuth}
                         disabled={isLoading === 'google'}
-                        variant="brand"
+                        variant="bordered"
                     >
                         {isLoading === 'google' ? (
                             <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
@@ -351,7 +351,7 @@ export const CustomSignIn = ({
                     <Button
                         onClick={handleGithubAuth}
                         disabled={isLoading === 'github'}
-                        variant="brand"
+                        variant="bordered"
                     >
                         {isLoading === 'github' ? (
                             <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>

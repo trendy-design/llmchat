@@ -38,7 +38,7 @@ export const TableOfMessages = () => {
                                     key={index}
                                     className={cn(
                                         'h-[1px] w-4 cursor-pointer rounded-full transition-all duration-200',
-                                        isActive ? 'w-3 bg-emerald-900' : 'bg-foreground/20 w-2'
+                                        isActive ? 'bg-brand w-3' : 'bg-foreground/20 w-2'
                                     )}
                                     onClick={e => {
                                         e.stopPropagation();

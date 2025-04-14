@@ -82,7 +82,7 @@ export const ThreadItem = memo(
                             />
                         )}
 
-                        <div className="flex flex-row items-center gap-1.5 text-xs font-medium text-emerald-800">
+                        <div className="text-muted-foreground flex flex-row items-center gap-1.5 text-xs font-medium">
                             <IconBook size={16} strokeWidth={2} />
                             Answer
                         </div>

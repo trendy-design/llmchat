@@ -34,7 +34,7 @@ export const FollowupSuggestions = ({ suggestions }: { suggestions: string[] }) 
                 }}
                 initial="hidden"
                 animate="show"
-                className="flex flex-col gap-1.5"
+                className="flex flex-col gap-2"
             >
                 {suggestions?.map(suggestion => (
                     <motion.div
@@ -47,8 +47,8 @@ export const FollowupSuggestions = ({ suggestions }: { suggestions: string[] }) 
                         <Button
                             variant="bordered"
                             size="default"
-                            rounded="default"
-                            className=" group h-auto min-h-7 max-w-full cursor-pointer justify-start overflow-hidden whitespace-normal py-1.5 text-left hover:text-emerald-900"
+                            rounded="lg"
+                            className=" hover:text-brand group h-auto min-h-7 max-w-full cursor-pointer justify-start overflow-hidden whitespace-normal py-1.5 text-left"
                             onClick={() => {
                                 editor?.commands.clearContent();
                                 editor?.commands.insertContent(suggestion);

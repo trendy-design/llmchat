@@ -40,7 +40,7 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
             {imageAttachment && <ImageMessage imageAttachment={imageAttachment} />}
             <div
                 className={cn(
-                    'text-foreground border-border bg-background group relative max-w-[80%] overflow-hidden rounded-md border',
+                    'text-foreground bg-tertiary group relative max-w-[80%] overflow-hidden rounded-lg',
                     isEditing && 'border-hard'
                 )}
             >
@@ -48,7 +48,7 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
                     <>
                         <div
                             ref={messageRef}
-                            className={cn(' prose-sm relative px-3 py-2 font-normal', {
+                            className={cn('prose-sm relative px-3 py-1.5 font-normal', {
                                 'pb-12': isExpanded,
                                 markdownStyles,
                             })}
@@ -65,7 +65,7 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
                                 showExpandButton && 'flex'
                             )}
                         >
-                            <div className="via-background/85 to-background flex w-full items-center justify-end gap-1 bg-gradient-to-b from-transparent p-1.5">
+                            <div className="via-tertiary/85 to-tertiary flex w-full items-center justify-end gap-1 bg-gradient-to-b from-transparent p-1.5">
                                 {showExpandButton && (
                                     <Button
                                         variant="secondary"
@@ -78,9 +78,8 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
                                     </Button>
                                 )}
                                 <Button
-                                    variant="secondary"
+                                    variant="bordered"
                                     size="icon-sm"
-                                    rounded="full"
                                     onClick={handleCopy}
                                     tooltip={status === 'copied' ? 'Copied' : 'Copy'}
                                 >
@@ -96,9 +95,8 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
                                         threadItem.status === 'QUEUED' ||
                                         threadItem.status === 'PENDING'
                                     }
-                                    variant="secondary"
+                                    variant="bordered"
                                     size="icon-sm"
-                                    rounded="full"
                                     tooltip="Edit"
                                     onClick={() => setIsEditing(true)}
                                 >
@@ -164,7 +162,7 @@ export const EditMessage = memo(({ message, onCancel, threadItem, width }: TEdit
     return (
         <div className="relative flex max-w-full flex-col items-end gap-2">
             <div
-                className={cn(' relative px-3 py-2 text-base font-normal', {})}
+                className={cn(' relative px-3 py-0 text-base font-normal', {})}
                 style={{
                     minWidth: width,
                     transition: 'max-height 0.3s ease-in-out',
@@ -176,14 +174,13 @@ export const EditMessage = memo(({ message, onCancel, threadItem, width }: TEdit
                     sendMessage={() => {
                         handleSave(editor?.getText() || '');
                     }}
-                    className={cn('prose-sm max-w-full overflow-y-scroll p-0', markdownStyles)}
+                    className={cn('prose-sm max-w-full overflow-y-scroll !p-0', markdownStyles)}
                 />
             </div>
             <div className={cn('flex-col items-center  group-hover:flex')}>
-                <div className="via-background/85 to-background flex w-full items-center justify-end gap-1 bg-gradient-to-b from-transparent p-1.5">
+                <div className=" flex w-full items-center justify-end gap-1 bg-gradient-to-b from-transparent p-1.5">
                     <Button
                         size="xs"
-                        rounded="full"
                         onClick={() => {
                             handleSave(editor?.getText() || '');
                         }}
@@ -191,13 +188,7 @@ export const EditMessage = memo(({ message, onCancel, threadItem, width }: TEdit
                     >
                         Save
                     </Button>
-                    <Button
-                        variant="secondary"
-                        size="xs"
-                        rounded="full"
-                        tooltip="Edit"
-                        onClick={onCancel}
-                    >
+                    <Button variant="bordered" size="xs" tooltip="Edit" onClick={onCancel}>
                         Cancel
                     </Button>
                 </div>

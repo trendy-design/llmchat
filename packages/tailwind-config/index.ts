@@ -1,7 +1,6 @@
-const { fontFamily } = require('tailwindcss/defaultTheme');
+import { fontFamily } from 'tailwindcss/defaultTheme';
 
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+const config: any = {
     darkMode: ['class'],
     theme: {
         container: {
@@ -27,10 +26,6 @@ module.exports = {
                 brand: {
                     DEFAULT: 'hsl(var(--brand))',
                     foreground: 'hsl(var(--brand-foreground))',
-                },
-                secondary: {
-                    DEFAULT: 'hsl(var(--secondary))',
-                    foreground: 'hsl(var(--secondary-foreground))',
                 },
                 tertiary: {
                     DEFAULT: 'hsl(var(--tertiary))',
@@ -126,7 +121,7 @@ module.exports = {
                 'fade-in-once': 'fade-in-once 10s ease-out forwards',
                 'reveal-pop': 'reveal-pop 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
             },
-            typography: ({ theme }) => ({
+            typography: () => ({
                 prosetheme: {
                     css: {
                         '--tw-prose-body': 'hsl(var(--foreground))',
@@ -166,6 +161,14 @@ module.exports = {
                     },
                 },
             }),
+            boxShadow: {
+                layered:
+                    'rgba(0, 0, 0, 0.05) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.05) 0px 1px 1px -1.5px, rgba(0, 0, 0, 0.05) 0px 1px 1px -3px, rgba(0, 0, 0, 0.05) 0px 2px 2px -6px, rgba(0, 0, 0, 0.1) 0px 0px 0px 1px',
+                'subtle-xs':
+                    'rgba(0, 0, 0, 0.04) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.08) 0px 2px 2px -1px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px',
+                'subtle-sm':
+                    'rgba(0, 0, 0, 0.03) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.06) 0px 1px 1px -0.5px, rgba(0, 0, 0, 0.06) 0px 2px 2px -1px, rgba(0, 0, 0, 0.05) 0px 0px 0px 0.5px',
+            },
         },
     },
 
@@ -175,3 +178,5 @@ module.exports = {
         require('tailwind-scrollbar-hide'),
     ],
 };
+
+export default config;

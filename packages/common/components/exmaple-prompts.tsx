@@ -85,10 +85,9 @@ export const ExamplePrompts = () => {
             {Object.entries(categoryIcons).map(([category, value], index) => (
                 <Button
                     key={index}
-                    variant="secondary"
+                    variant="bordered"
                     rounded="full"
                     size="sm"
-                    className="border-border"
                     onClick={() => handleCategoryClick(category as keyof typeof examplePrompts)}
                 >
                     <value.icon size={16} className={'text-muted-foreground/50'} />

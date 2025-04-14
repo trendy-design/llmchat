@@ -45,7 +45,7 @@ export const FeedbackWidget = () => {
             <AnimatePresence mode="wait">
                 {!isOpen ? (
                     <motion.button
-                        className="border-border flex h-6 w-6 items-center justify-center rounded-full border bg-emerald-700 text-white shadow-2xl"
+                        className=" bg-muted-foreground/30 text-background flex h-6 w-6 items-center justify-center rounded-full shadow-2xl"
                         onClick={() => {
                             setIsOpen(true);
                             setTimeout(() => {
@@ -107,7 +107,7 @@ export const FeedbackWidget = () => {
                                     <IconCircleCheckFilled
                                         size={24}
                                         strokeWidth={2}
-                                        className="text-emerald-700"
+                                        className="text-brand"
                                     />
                                 </div>
                                 <div className="flex flex-col gap-0">
