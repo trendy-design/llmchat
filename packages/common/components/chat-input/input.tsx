@@ -243,15 +243,7 @@ export const ChatInput = ({
                             transition={{ duration: 0.3, ease: 'easeOut' }}
                             className="mb-4 flex w-full flex-col items-center gap-1"
                         >
-                            <AnimatedTitles
-                                titles={[
-                                    'Ask me anything...',
-                                    'Curious? Ask away',
-                                    "Let's dive deeper",
-                                    'Unlock deeper insights',
-                                    'Deep thinking starts here',
-                                ]}
-                            />
+                            <AnimatedTitles titles={['Ask me anything']} />
                         </motion.div>
                     )}
 

@@ -24,12 +24,12 @@ export const Footer = () => {
         },
     ];
     return (
-        <div className="flex w-full flex-row items-center justify-center gap-4 p-4">
+        <div className="flex w-full flex-row items-center justify-center gap-4 p-3">
             {links.map(link => (
                 <Link
                     key={link.href}
                     href={link.href}
-                    className="text-muted-foreground text-xs opacity-80 hover:opacity-100"
+                    className="text-muted-foreground text-xs opacity-50 hover:opacity-100"
                 >
                     {link.label}
                 </Link>

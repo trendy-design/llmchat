@@ -24,12 +24,15 @@ export default function OauthSignIn() {
                 }}
             />
 
-            <div className="text-muted-foreground/50 mt-4 text-xs">
-                <a href="/terms" className="hover:text-foreground">
+            <div className="text-muted-foreground/50 mt-4 w-[300px] text-xs">
+                <span className="text-muted-foreground/50">
+                    By using this app, you agree to the{' '}
+                </span>
+                <a href="/terms" className="hover:text-foreground underline">
                     Terms of Service
                 </a>{' '}
-                ·{' '}
-                <a href="/privacy" className="hover:text-foreground">
+                and{' '}
+                <a href="/privacy" className="hover:text-foreground underline">
                     Privacy Policy
                 </a>
             </div>

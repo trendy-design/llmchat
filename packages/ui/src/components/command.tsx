@@ -32,6 +32,7 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
             <DialogContent
                 className="top-[40%] w-[700px] overflow-hidden p-0"
                 ariaTitle="Command Search"
+                closeButtonClassName="hidden"
             >
                 <Command className="[&_[cmdk-group-heading]]:text-muted-foreground bg-background pb-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-1 [&_[cmdk-input-wrapper]_svg]:h-4 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
                     {children}

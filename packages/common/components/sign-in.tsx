@@ -1,6 +1,6 @@
 import { useSignIn, useSignUp } from '@clerk/nextjs';
 import { isClerkAPIResponseError } from '@clerk/nextjs/errors';
-import { Button, Input, InputOTP, InputOTPGroup, InputOTPSlot } from '@repo/ui';
+import { Button, InputOTP, InputOTPGroup, InputOTPSlot } from '@repo/ui';
 import { IconX } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -329,8 +329,8 @@ export const CustomSignIn = ({
             >
                 <IconX className="h-4 w-4" />
             </Button>
-            <div className="flex w-[300px] flex-col items-center gap-6">
-                <h2 className="font-clash text-foreground text-center text-[24px] font-semibold leading-tight !text-emerald-900">
+            <div className="flex w-[300px] flex-col items-start gap-8">
+                <h2 className="font-clash text-muted-foreground/70 text-left text-[24px] font-semibold leading-tight">
                     Sign in or sign up to enjoy <br /> the full capabilities
                 </h2>
 
@@ -338,14 +338,12 @@ export const CustomSignIn = ({
                     <Button
                         onClick={handleGoogleAuth}
                         disabled={isLoading === 'google'}
-                        rounded="full"
-                        size="lg"
                         variant="brand"
                     >
                         {isLoading === 'google' ? (
                             <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                         ) : (
-                            <FaGoogle className=" size-4" />
+                            <FaGoogle className=" size-3" />
                         )}
                         {isLoading === 'google' ? 'Authenticating...' : 'Continue with Google'}
                     </Button>
@@ -353,41 +351,15 @@ export const CustomSignIn = ({
                     <Button
                         onClick={handleGithubAuth}
                         disabled={isLoading === 'github'}
-                        rounded="full"
-                        size="lg"
                         variant="brand"
                     >
                         {isLoading === 'github' ? (
                             <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                         ) : (
-                            <FaGithub className=" size-4" />
+                            <FaGithub className=" size-3" />
                         )}
                         {isLoading === 'github' ? 'Authenticating...' : 'Continue with GitHub'}
                     </Button>
-                </div>
-                <div className="border-border flex w-full flex-col items-center gap-2 border-t border-dashed py-4">
-                    <Input
-                        placeholder="Enter your email"
-                        className="w-full"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        type="email"
-                    />
-
-                    <Button
-                        variant="secondary"
-                        size="lg"
-                        rounded="full"
-                        className="w-full"
-                        onClick={handleEmailAuth}
-                        disabled={isLoading === 'email'}
-                    >
-                        {isLoading === 'email' ? (
-                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent"></div>
-                        ) : null}
-                        {isLoading === 'email' ? 'Sending code...' : 'Continue with email'}
-                    </Button>
-                    <div id="clerk-captcha"></div>
                 </div>
             </div>
         </>

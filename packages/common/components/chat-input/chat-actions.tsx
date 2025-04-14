@@ -207,7 +207,7 @@ export const ChatModeOptions = ({
         <DropdownMenuContent
             align="start"
             side="bottom"
-            className="no-scrollbar max-h-[300px] w-[280px] overflow-y-auto"
+            className="no-scrollbar max-h-[300px] w-[300px] overflow-y-auto"
         >
             {isChatPage && (
                 <DropdownMenuGroup>

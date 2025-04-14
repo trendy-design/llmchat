@@ -21,7 +21,7 @@ const buttonVariants = cva(
                 bordered:
                     'border border-hard bg-background text-foreground opacity-100 hover:opacity-80',
                 secondary:
-                    'bg-quaternary border border-border text-emerald-900 opacity-100 hover:opacity-80 [&>svg]:text-emerald-900 font-semibold',
+                    'bg-quaternary border border-border text-emerald-950 opacity-100 hover:opacity-80 [&>svg]:text-emerald-700 font-semibold',
                 ghost: 'hover:bg-quaternary text-foreground opacity-100 hover:opacity-80',
                 link: 'text-muted-foreground underline-offset-4 hover:underline h-auto decoration-border',
                 text: 'p-0 text-xs',
@@ -31,7 +31,7 @@ const buttonVariants = cva(
                 sm: 'h-8 px-3 text-xs md:text-xs rounded-xl',
                 xs: 'h-7 px-2 text-xs md:text-xs',
                 md: 'h-9 px-4 text-xs md:text-sm font-semibold',
-                lg: 'h-11 md:h-11  px-8 text-xs md:text-base font-semibold',
+                lg: 'h-10 md:h-10  px-8 text-xs md:text-sm font-semibold',
                 icon: 'h-8 min-w-8 text-xs md:text-sm',
                 'icon-sm': 'h-7 min-w-7 text-xs md:text-sm',
                 'icon-xs': 'h-6 min-w-6 text-xs md:text-sm',
@@ -42,7 +42,7 @@ const buttonVariants = cva(
                 default: 'rounded-sm',
                 lg: 'rounded-md',
                 xl: 'rounded-xl',
-                full: 'rounded-full',
+                full: 'rounded-lg',
             },
         },
         defaultVariants: {

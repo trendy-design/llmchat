@@ -85,7 +85,7 @@ export const ExamplePrompts = () => {
             {Object.entries(categoryIcons).map(([category, value], index) => (
                 <Button
                     key={index}
-                    variant="bordered"
+                    variant="secondary"
                     rounded="full"
                     size="sm"
                     className="border-border"
