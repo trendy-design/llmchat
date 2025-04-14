@@ -1,18 +1,6 @@
 
 <img width="1512" alt="Screenshot 2025-04-14 at 1 17 45 AM" src="https://github.com/user-attachments/assets/f572650c-3b96-4301-8989-756116c45e8d" />
 
-<div align="center" id="top">
-  <a href="https://llmchat.co">
-    <img width="160" alt="LLMChat.co logo" src="https://github.com/user-attachments/assets/ea0535c8-37ee-4d5f-8db2-e15d5bc1decb">
-  </a>
-</div>
-
-<div align="center">
-  <a href="https://llmchat.co/docs">📚 Documentation</a> &nbsp;|&nbsp;
-  <a href="https://llmchat.co/examples">💡 Examples</a> &nbsp;|&nbsp;
-  <a href="https://github.com/your-repo/llmchat/stargazers">🌟 Star Us</a>
-</div>
-
 ## Introduction
 
 [LLMChat.co](https://llmchat.co) is a sophisticated AI-powered chatbot platform that prioritizes privacy while offering powerful research and agentic capabilities. Built as a monorepo with Next.js, TypeScript, and cutting-edge AI technologies, it provides multiple specialized chat modes including Pro Search and Deep Research for in-depth analysis of complex topics.
