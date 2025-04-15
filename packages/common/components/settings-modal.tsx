@@ -473,9 +473,12 @@ export const PersonalizationSettings = () => {
         },
     });
     return (
-        <div className="flex flex-col gap-4 pb-3">
-            <h3 className="text-base font-semibold">Custom Instructions</h3>
-            <div className=" shadow-subtle-sm border-border rounded-lg border p-2">
+        <div className="flex flex-col gap-1 pb-3">
+            <h3 className="text-base font-semibold">Customize your AI Response</h3>
+            <p className="text-muted-foreground text-sm">
+                These instructions will be added to the beginning of every message.
+            </p>
+            <div className=" shadow-subtle-sm border-border mt-2 rounded-lg border p-3">
                 <ChatEditor editor={editor} />
             </div>
         </div>
