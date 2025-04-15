@@ -6,6 +6,7 @@ export const SETTING_TABS = {
     API_KEYS: 'api-keys',
     MCP_TOOLS: 'mcp-tools',
     CREDITS: 'credits',
+    PERSONALIZATION: 'personalization',
 } as const;
 
 type SideDrawerProps = {

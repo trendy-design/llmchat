@@ -12,6 +12,7 @@ export const completionRequestSchema = z.object({
     mcpConfig: z.record(z.string(), z.string()).optional(),
     webSearch: z.boolean().optional(),
     showSuggestions: z.boolean().optional(),
+    customInstructions: z.string().optional(),
 });
 
 export type CompletionRequestType = z.infer<typeof completionRequestSchema>;

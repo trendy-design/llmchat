@@ -39,6 +39,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         updateThread,
         chatMode,
         fetchRemainingCredits,
+        customInstructions,
     } = useChatStore(state => ({
         updateThreadItem: state.updateThreadItem,
         setIsGenerating: state.setIsGenerating,
@@ -49,6 +50,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         updateThread: state.updateThread,
         chatMode: state.chatMode,
         fetchRemainingCredits: state.fetchRemainingCredits,
+        customInstructions: state.customInstructions,
     }));
     const { push } = useRouter();
 
@@ -418,6 +420,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     mcpConfig: getSelectedMCP(),
                     threadItemId: optimisticAiThreadItemId,
                     parentThreadItemId: '',
+                    customInstructions,
                     apiKeys: apiKeys(),
                 });
             } else {
@@ -428,6 +431,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     messages: coreMessages,
                     mcpConfig: getSelectedMCP(),
                     threadItemId: optimisticAiThreadItemId,
+                    customInstructions,
                     parentThreadItemId: '',
                     webSearch: useWebSearch,
                     showSuggestions: showSuggestions ?? true,
@@ -446,6 +450,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             setCurrentSources,
             abortWorkflow,
             startWorkflow,
+            customInstructions,
             getSelectedMCP,
             apiKeys,
             hasApiKeyForChatMode,

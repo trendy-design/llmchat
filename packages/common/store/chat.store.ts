@@ -35,6 +35,7 @@ const loadInitialData = async () => {
     const config = configStr
         ? JSON.parse(configStr)
         : {
+              customInstructions: undefined,
               model: models[0].id,
               useWebSearch: false,
               showSuggestions: true,
@@ -42,6 +43,7 @@ const loadInitialData = async () => {
           };
     const chatMode = config.chatMode || ChatMode.GEMINI_2_FLASH;
     const useWebSearch = typeof config.useWebSearch === 'boolean' ? config.useWebSearch : false;
+    const customInstructions = config.customInstructions || '';
 
     const initialThreads = threads.length ? threads : [];
 
@@ -51,6 +53,7 @@ const loadInitialData = async () => {
         config,
         useWebSearch,
         chatMode,
+        customInstructions,
         showSuggestions: config.showSuggestions ?? true,
     };
 };
@@ -59,6 +62,7 @@ type State = {
     model: Model;
     isGenerating: boolean;
     useWebSearch: boolean;
+    customInstructions: string;
     showSuggestions: boolean;
     editor: any;
     chatMode: ChatMode;
@@ -104,7 +108,7 @@ type Actions = {
     updateThreadItem: (threadId: string, threadItem: Partial<ThreadItem>) => Promise<void>;
     switchThread: (threadId: string) => void;
     setActiveThreadItemView: (threadItemId: string) => void;
-
+    setCustomInstructions: (customInstructions: string) => void;
     deleteThreadItem: (threadItemId: string) => Promise<void>;
     deleteThread: (threadId: string) => Promise<void>;
     getPreviousThreadItems: (threadId?: string) => ThreadItem[];
@@ -438,6 +442,7 @@ export const useChatStore = create(
         chatMode: ChatMode.GEMINI_2_FLASH,
         threadItems: [],
         useWebSearch: false,
+        customInstructions: '',
         currentThreadId: null,
         activeThreadItemView: null,
         currentThread: null,
@@ -456,6 +461,17 @@ export const useChatStore = create(
             isFetched: false,
         },
         showSuggestions: true,
+
+        setCustomInstructions: (customInstructions: string) => {
+            const existingConfig = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
+            localStorage.setItem(
+                CONFIG_KEY,
+                JSON.stringify({ ...existingConfig, customInstructions })
+            );
+            set(state => {
+                state.customInstructions = customInstructions;
+            });
+        },
 
         setImageAttachment: (imageAttachment: { base64?: string; file?: File }) => {
             set(state => {
@@ -911,7 +927,14 @@ export const useChatStore = create(
 if (typeof window !== 'undefined') {
     // Initialize store with data from IndexedDB
     loadInitialData().then(
-        ({ threads, currentThreadId, chatMode, useWebSearch, showSuggestions }) => {
+        ({
+            threads,
+            currentThreadId,
+            chatMode,
+            useWebSearch,
+            showSuggestions,
+            customInstructions,
+        }) => {
             useChatStore.setState({
                 threads,
                 currentThreadId,
@@ -919,6 +942,7 @@ if (typeof window !== 'undefined') {
                 chatMode,
                 useWebSearch,
                 showSuggestions,
+                customInstructions,
             });
 
             // Initialize the shared worker for tab synchronization

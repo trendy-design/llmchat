@@ -71,6 +71,8 @@ Your goal is to help the user quickly understand and extract value from these se
     return prompt;
 };
 
+const MAX_ALLOWED_CUSTOM_INSTRUCTIONS_LENGTH = 6000;
+
 export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'quickSearch',
     execute: async ({ events, context, signal, trace }) => {
@@ -79,7 +81,7 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
         const { updateStep, updateStatus, addSources, updateAnswer, nextStepId } =
             sendEvents(events);
 
-        const messages =
+        let messages =
             context
                 ?.get('messages')
                 ?.filter(
@@ -91,6 +93,20 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
         const chatMode = context?.get('mode');
         const gl = context?.get('gl');
         const model = getModelFromChatMode(chatMode);
+        const customInstructions = context?.get('customInstructions');
+
+        if (
+            customInstructions &&
+            customInstructions?.length < MAX_ALLOWED_CUSTOM_INSTRUCTIONS_LENGTH
+        ) {
+            messages = [
+                {
+                    role: 'system',
+                    content: `Today is ${getHumanizedDate()}. and current location is ${gl?.city}, ${gl?.country}. \n\n ${customInstructions}`,
+                },
+                ...messages,
+            ];
+        }
 
         const query = await generateObject({
             prompt: `Today is ${getHumanizedDate()}.${gl?.country ? `You are in ${gl?.country}\n\n` : ''}

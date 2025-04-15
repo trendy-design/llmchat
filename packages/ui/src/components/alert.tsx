@@ -9,6 +9,7 @@ const alertVariants = cva(
             variant: {
                 default: 'bg-secondary text-secondary-foreground',
                 success: 'bg-brand/10 text-brand [&>svg]:text-brand ',
+                info: 'bg-background border border-border shadow-subtle-sm text-blue-700 [&>svg]:text-blue-700',
                 warning: 'bg-yellow-700/10 text-yellow-700 [&>svg]:text-yellow-700',
                 destructive:
                     'bg-background border border-border text-rose-600/70 [&>svg]:text-rose-600/70',

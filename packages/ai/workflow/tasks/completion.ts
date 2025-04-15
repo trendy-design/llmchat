@@ -1,8 +1,9 @@
 import { createTask } from '@repo/orchestrator';
 import { getModelFromChatMode } from '../../models';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { ChunkBuffer, generateText, getHumanizedDate } from '../utils';
-import { generateErrorMessage } from './utils';
+import { ChunkBuffer, generateText, getHumanizedDate, handleError } from '../utils';
+
+const MAX_ALLOWED_CUSTOM_INSTRUCTIONS_LENGTH = 6000;
 
 export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'completion',
@@ -11,7 +12,11 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
             throw new Error('Context is required but was not provided');
         }
 
-        const messages =
+        const customInstructions = context?.get('customInstructions');
+        const mode = context.get('mode');
+        const webSearch = context.get('webSearch') || false;
+
+        let messages =
             context
                 .get('messages')
                 ?.filter(
@@ -20,9 +25,20 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
                         !!message.content
                 ) || [];
 
-        const mode = context.get('mode');
-        const webSearch = context.get('webSearch') || false;
-        const mcpConfig = context.get('mcpConfig') || {};
+        console.log('customInstructions', customInstructions);
+
+        if (
+            customInstructions &&
+            customInstructions?.length < MAX_ALLOWED_CUSTOM_INSTRUCTIONS_LENGTH
+        ) {
+            messages = [
+                {
+                    role: 'system',
+                    content: `Today is ${getHumanizedDate()}. and current location is ${context.get('gl')?.city}, ${context.get('gl')?.country}. \n\n ${customInstructions}`,
+                },
+                ...messages,
+            ];
+        }
 
         if (webSearch) {
             redirectTo('quickSearch');
@@ -30,22 +46,6 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
         }
 
         const model = getModelFromChatMode(mode);
-
-        // const config = {
-        //     proxyEndpoint: process.env.NEXT_PUBLIC_APP_URL + '/mcp/proxy',
-        //     mcpServers: mcpConfig,
-        // };
-
-        // let toolsInstance = undefined;
-        // let tools = undefined;
-
-        // if (Object.keys(mcpConfig).length > 0) {
-        //     toolsInstance = await buildAllTools(config);
-        //     tools = toolsInstance;
-        // }
-
-        const toolCallsMap: Record<string, any> = {};
-        const toolResultsMap: Record<string, any> = {};
 
         let prompt = `You are a helpful assistant that can answer questions and help with tasks.
         Today is ${getHumanizedDate()}.
@@ -85,82 +85,46 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
             },
         });
 
-        try {
-            const response = await generateText({
-                model,
-                messages,
-                prompt,
-                signal,
-                toolChoice: 'auto',
-                maxSteps: 2,
-                // tools: {
-                //     ...(tools?.allTools || {}),
-                // },
-                onReasoning: (chunk, fullText) => {
-                    reasoningBuffer.add(chunk);
-                },
-                onToolCall: toolCall => {
-                    toolCallsMap[toolCall.toolCallId] = toolCall;
-                    events?.update('toolCalls', prev => ({
-                        ...prev,
-                        ...(toolCallsMap as any),
-                    }));
-                },
-                onToolResult: toolResult => {
-                    toolResultsMap[toolResult.toolCallId] = toolResult;
-                    events?.update('toolResults', prev => ({
-                        ...prev,
-                        ...(toolResultsMap as any),
-                    }));
-                },
-                onChunk: (chunk, fullText) => {
-                    chunkBuffer.add(chunk);
-                },
-            });
+        const response = await generateText({
+            model,
+            messages,
+            prompt,
+            signal,
+            toolChoice: 'auto',
+            maxSteps: 2,
+            onReasoning: (chunk, fullText) => {
+                reasoningBuffer.add(chunk);
+            },
+            onChunk: (chunk, fullText) => {
+                chunkBuffer.add(chunk);
+            },
+        });
 
-            reasoningBuffer.end();
-            chunkBuffer.end();
+        reasoningBuffer.end();
+        chunkBuffer.end();
 
-            events?.update('answer', prev => ({
-                ...prev,
-                text: '',
-                fullText: response,
-                status: 'COMPLETED',
-            }));
-
-            context.update('answer', _ => response);
-
-            events?.update('status', prev => 'COMPLETED');
-
-            const onFinish = context.get('onFinish');
-            if (onFinish) {
-                onFinish({
-                    answer: response,
-                    threadId: context.get('threadId'),
-                    threadItemId: context.get('threadItemId'),
-                });
-            }
-        } finally {
-            // if (toolsInstance?.onClose) {
-            //     toolsInstance.onClose();
-            // }
-        }
-    },
-    onError: (error, { context, events }) => {
-        const errorMessage = generateErrorMessage(error);
-        console.error('Task failed', error);
-
-        events?.update('error', prev => ({
+        events?.update('answer', prev => ({
             ...prev,
-            error: errorMessage,
-            status: 'ERROR',
+            text: '',
+            fullText: response,
+            status: 'COMPLETED',
         }));
 
-        return Promise.resolve({
-            retry: false,
-            result: 'error',
-        });
+        context.update('answer', _ => response);
+
+        events?.update('status', prev => 'COMPLETED');
+
+        const onFinish = context.get('onFinish');
+        if (onFinish) {
+            onFinish({
+                answer: response,
+                threadId: context.get('threadId'),
+                threadItemId: context.get('threadItemId'),
+            });
+        }
+        return;
     },
+    onError: handleError,
     route: ({ context }) => {
         if (context?.get('showSuggestions') && context.get('answer')) {
             return 'suggestions';

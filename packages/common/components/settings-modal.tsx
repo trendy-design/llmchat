@@ -1,16 +1,18 @@
 'use client';
 import { useMcpToolsStore } from '@repo/common/store';
-import { DialogFooter } from '@repo/ui';
+import { Alert, AlertDescription, DialogFooter } from '@repo/ui';
 import { Button } from '@repo/ui/src/components/button';
-import { IconBoltFilled, IconKey, IconTrash } from '@tabler/icons-react';
+import { IconBolt, IconBoltFilled, IconKey, IconSettings2, IconTrash } from '@tabler/icons-react';
 
 import { Badge, Dialog, DialogContent, Input } from '@repo/ui';
 
+import { useChatEditor } from '@repo/common/hooks';
 import moment from 'moment';
 import { useState } from 'react';
 import { ApiKeys, useApiKeysStore } from '../store/api-keys.store';
 import { SETTING_TABS, useAppStore } from '../store/app.store';
 import { useChatStore } from '../store/chat.store';
+import { ChatEditor } from './chat-input';
 import { BYOKIcon, ToolIcon } from './icons';
 
 export const SettingsModal = () => {
@@ -21,13 +23,19 @@ export const SettingsModal = () => {
 
     const settingMenu = [
         {
-            icon: <IconBoltFilled size={14} strokeWidth={2} className="text-muted-foreground" />,
+            icon: <IconSettings2 size={16} strokeWidth={2} className="text-muted-foreground" />,
+            title: 'Customize',
+            key: SETTING_TABS.PERSONALIZATION,
+            component: <PersonalizationSettings />,
+        },
+        {
+            icon: <IconBolt size={16} strokeWidth={2} className="text-muted-foreground" />,
             title: 'Usage',
             key: SETTING_TABS.CREDITS,
             component: <CreditsSettings />,
         },
         {
-            icon: <IconKey size={14} strokeWidth={2} className="text-muted-foreground" />,
+            icon: <IconKey size={16} strokeWidth={2} className="text-muted-foreground" />,
             title: 'API Keys',
             key: SETTING_TABS.API_KEYS,
             component: <ApiKeySettings />,
@@ -326,7 +334,7 @@ export const ApiKeySettings = () => {
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-col">
-                <h2 className="flex items-center gap-1 text-base font-medium">
+                <h2 className="flex items-center gap-1 text-base font-semibold">
                     API Keys <BYOKIcon />
                 </h2>
 
@@ -344,7 +352,7 @@ export const ApiKeySettings = () => {
                             href={apiKey.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-brand text-sm underline-offset-2 hover:underline"
+                            className="text-sm text-blue-400 underline-offset-2 hover:underline"
                         >
                             (Get API key here)
                         </a>
@@ -361,9 +369,8 @@ export const ApiKeySettings = () => {
                                     />
                                 </div>
                                 <Button
-                                    variant="secondary"
+                                    variant="default"
                                     size="sm"
-                                    rounded="full"
                                     onClick={() => handleSave(apiKey.key, apiKey.value || '')}
                                 >
                                     <span className="flex items-center gap-1">✓ Save</span>
@@ -381,9 +388,8 @@ export const ApiKeySettings = () => {
                                     )}
                                 </div>
                                 <Button
-                                    variant="secondary"
+                                    variant={'bordered'}
                                     size="sm"
-                                    rounded="full"
                                     onClick={() => setIsEditing(apiKey.key)}
                                 >
                                     {apiKey.value ? 'Change Key' : 'Add Key'}
@@ -432,6 +438,12 @@ export const CreditsSettings = () => {
         <div className="flex flex-col gap-6">
             <div className="flex flex-col items-start gap-2">
                 <h2 className="flex items-center gap-1 text-base font-medium">Usage Credits</h2>
+                <Alert variant="info" className="w-full">
+                    <AlertDescription className="text-muted-foreground/70 text-sm leading-tight">
+                        You'll recieve some free credits everyday. Once credits are used, you can
+                        use your own API keys to continue.
+                    </AlertDescription>
+                </Alert>
 
                 <div className="divide-border flex w-full flex-col gap-1 divide-y">
                     {info.map(item => (
@@ -441,6 +453,30 @@ export const CreditsSettings = () => {
                         </div>
                     ))}
                 </div>
+            </div>
+        </div>
+    );
+};
+
+const MAX_CHAR_LIMIT = 6000;
+
+export const PersonalizationSettings = () => {
+    const customInstructions = useChatStore(state => state.customInstructions);
+    const setCustomInstructions = useChatStore(state => state.setCustomInstructions);
+    const { editor } = useChatEditor({
+        charLimit: MAX_CHAR_LIMIT,
+        defaultContent: customInstructions,
+        placeholder: 'Enter your custom instructions',
+        enableEnter: true,
+        onUpdate(props) {
+            setCustomInstructions(props.editor.getText());
+        },
+    });
+    return (
+        <div className="flex flex-col gap-4 pb-3">
+            <h3 className="text-base font-semibold">Custom Instructions</h3>
+            <div className=" shadow-subtle-sm border-border rounded-lg border p-2">
+                <ChatEditor editor={editor} />
             </div>
         </div>
     );
