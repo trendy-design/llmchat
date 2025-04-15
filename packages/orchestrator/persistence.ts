@@ -1,4 +1,4 @@
-import { WorkflowConfig } from './engine';
+import { WorkflowConfig } from './types';
 
 type PersistentStorageAdapter = {
     save(key: string, data: any): Promise<void>;

@@ -71,106 +71,275 @@ LLMChat.co is built as a monorepo with a clear separation of concerns:
 
 ## Workflow Orchestration
 
-LLMChat.co's core engine is a sophisticated workflow orchestration system that enables complex agentic capabilities. The system coordinates multiple specialized tasks to deliver comprehensive research and analysis.
+LLMChat.co's workflow orchestration enables powerful agentic capabilities through a modular, step-by-step approach. Here's how to create a research agent:
 
-### Key Components
+### 1. Define Event and Context Types
 
-- **WorkflowEngine**: Manages execution state and coordinates task flow
-- **Task System**: Specialized tasks for different aspects of research and analysis
-- **Event-Driven Architecture**: Reactive system that emits and responds to state changes
-- **Context Management**: Maintains conversation and research context throughout execution
-
-### Research Workflow Example
-
-Here's how you can use the workflow engine to create a research agent:
+First, establish the data structure for events and context:
 
 ```typescript
-import { Langfuse } from 'langfuse';
-import {
-    createContext,
-    createTypedEventEmitter,
-    WorkflowBuilder,
-    WorkflowConfig,
-} from '@repo/orchestrator';
-import { ChatMode } from '@repo/shared/config';
-import {
-    webSearchTask,
-    reflectorTask,
-    analysisTask,
-    writerTask,
-    plannerTask,
-} from '@repo/ai/workflow/tasks';
-
-// Create a research workflow
-function createResearchWorkflow({ question, threadId, messages, onFinish }) {
-    // Initialize tracing for monitoring
-    const trace = new Langfuse().trace({
-        name: 'deep-research-workflow',
-    });
-
-    // Configure workflow parameters
-    const workflowConfig: WorkflowConfig = {
-        maxIterations: 2,
-        timeoutMs: 480000,
-        retryDelayMs: 1000,
+// Define the events emitted by each task
+type AgentEvents = {
+    taskPlanner: {
+        tasks: string[];
+        query: string;
     };
+    informationGatherer: {
+        searchResults: string[];
+    };
+    informationAnalyzer: {
+        analysis: string;
+        insights: string[];
+    };
+    reportGenerator: {
+        report: string;
+    };
+};
 
-    // Set up event system for real-time updates
-    const events = createTypedEventEmitter({
-        steps: {},
-        answer: { status: 'PENDING' },
-        sources: [],
-        status: 'PENDING',
-    });
+// Define the shared context between tasks
+type AgentContext = {
+    query: string;
+    tasks: string[];
+    searchResults: string[];
+    analysis: string;
+    insights: string[];
+    report: string;
+};
+```
 
-    // Create context to share data between tasks
-    const context = createContext({
-        question,
-        mode: ChatMode.Deep,
-        messages,
-        queries: [],
-        sources: [],
-        summaries: [],
-        threadId,
-        onFinish,
-    });
+### 2. Initialize Core Components
 
-    // Build the workflow with necessary tasks
-    return new WorkflowBuilder(threadId, {
-        trace,
-        events,
-        context,
-        config: workflowConfig,
-    })
-        .task(plannerTask) // Plan the research approach
-        .task(webSearchTask) // Search the web for information
-        .task(reflectorTask) // Analyze and reflect on findings
-        .task(analysisTask) // Synthesize research results
-        .task(writerTask) // Generate final comprehensive response
-        .build();
-}
+Next, set up the event emitter, context, and workflow builder:
 
-// Execute the workflow
-const workflow = createResearchWorkflow({
-    question: 'What are the latest developments in quantum computing?',
-    threadId: 'thread-123',
-    messages: [],
-    onFinish: result => console.log('Research complete:', result),
+```typescript
+import { OpenAI } from 'openai';
+import { createTask } from 'task';
+import { WorkflowBuilder } from './builder';
+import { Context } from './context';
+import { TypedEventEmitter } from './events';
+
+// Initialize event emitter with proper typing
+const events = new TypedEventEmitter<AgentEvents>();
+
+// Create the workflow builder with proper context
+const builder = new WorkflowBuilder<AgentEvents, AgentContext>('research-agent', {
+    events,
+    context: new Context<AgentContext>({
+        query: '',
+        tasks: [],
+        searchResults: [],
+        analysis: '',
+        insights: [],
+        report: '',
+    }),
 });
 
-// Start the workflow from the planning stage
-await workflow.start('planner');
+// Initialize LLM client
+const llm = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+});
+```
+
+### 3. Define Research Tasks
+
+Create specialized tasks for each step of the research process:
+
+#### Planning Task
+
+```typescript
+// Task Planner: Breaks down a research query into specific tasks
+const taskPlanner = createTask({
+    name: 'taskPlanner',
+    execute: async ({ context, data }) => {
+        const userQuery = data?.query || 'Research the impact of AI on healthcare';
+
+        const planResponse = await llm.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                {
+                    role: 'system',
+                    content:
+                        'You are a task planning assistant that breaks down research queries into specific search tasks.',
+                },
+                {
+                    role: 'user',
+                    content: `Break down this research query into specific search tasks: "${userQuery}". Return a JSON array of tasks.`,
+                },
+            ],
+            response_format: { type: 'json_object' },
+        });
+
+        const content = planResponse.choices[0].message.content || '{"tasks": []}';
+        const parsedContent = JSON.parse(content);
+        const tasks = parsedContent.tasks || [];
+
+        context?.set('query', userQuery);
+        context?.set('tasks', tasks);
+
+        return {
+            tasks,
+            query: userQuery,
+        };
+    },
+    route: () => 'informationGatherer',
+});
+```
+
+#### Information Gathering Task
+
+```typescript
+// Information Gatherer: Searches for information based on tasks
+const informationGatherer = createTask({
+    name: 'informationGatherer',
+    dependencies: ['taskPlanner'],
+    execute: async ({ context, data }) => {
+        const tasks = data.taskPlanner.tasks;
+        const searchResults: string[] = [];
+
+        // Process each task to gather information
+        for (const task of tasks) {
+            const searchResponse = await llm.chat.completions.create({
+                model: 'gpt-4o',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'You are a search engine that returns factual information.',
+                    },
+                    {
+                        role: 'user',
+                        content: `Search for information about: ${task}. Return relevant facts and data.`,
+                    },
+                ],
+            });
+
+            const result = searchResponse.choices[0].message.content || '';
+            if (result) {
+                searchResults.push(result);
+            }
+        }
+
+        context?.set('searchResults', searchResults);
+
+        return {
+            searchResults,
+        };
+    },
+    route: () => 'informationAnalyzer',
+});
+```
+
+#### Analysis Task
+
+```typescript
+// Information Analyzer: Analyzes gathered information for insights
+const informationAnalyzer = createTask({
+    name: 'informationAnalyzer',
+    dependencies: ['informationGatherer'],
+    execute: async ({ context, data }) => {
+        const searchResults = data.informationGatherer.searchResults;
+        const query = context?.get('query') || '';
+
+        const analysisResponse = await llm.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                {
+                    role: 'system',
+                    content:
+                        'You are an analytical assistant that identifies patterns and extracts insights from information.',
+                },
+                {
+                    role: 'user',
+                    content: `Analyze the following information regarding "${query}" and provide a coherent analysis with key insights:\n\n${searchResults.join('\n\n')}`,
+                },
+            ],
+            response_format: { type: 'json_object' },
+        });
+
+        const content =
+            analysisResponse.choices[0].message.content || '{"analysis": "", "insights": []}';
+        const parsedContent = JSON.parse(content);
+        const analysis = parsedContent.analysis || '';
+        const insights = parsedContent.insights || [];
+
+        context?.set('analysis', analysis);
+        context?.set('insights', insights);
+
+        return {
+            analysis,
+            insights,
+        };
+    },
+    route: () => 'reportGenerator',
+});
+```
+
+#### Report Generation Task
+
+```typescript
+// Report Generator: Creates a comprehensive report
+const reportGenerator = createTask({
+    name: 'reportGenerator',
+    dependencies: ['informationAnalyzer'],
+    execute: async ({ context, data }) => {
+        const { analysis, insights } = data.informationAnalyzer;
+        const { query, searchResults } = context?.getAll() || { query: '', searchResults: [] };
+
+        const reportResponse = await llm.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [
+                {
+                    role: 'system',
+                    content:
+                        'You are a report writing assistant that creates comprehensive, well-structured reports.',
+                },
+                {
+                    role: 'user',
+                    content: `Create a comprehensive report on "${query}" using the following analysis and insights.\n\nAnalysis: ${analysis}\n\nInsights: ${insights.join('\n- ')}\n\nStructure the report with an executive summary, key findings, detailed analysis, and conclusions.`,
+                },
+            ],
+        });
+
+        const report = reportResponse.choices[0].message.content || '';
+
+        context?.set('report', report);
+
+        return {
+            report,
+        };
+    },
+    route: () => 'end',
+});
+```
+
+### 4. Build and Execute the Workflow
+
+Finally, assemble and run the workflow:
+
+```typescript
+// Add all tasks to the workflow
+builder.addTask(taskPlanner);
+builder.addTask(informationGatherer);
+builder.addTask(informationAnalyzer);
+builder.addTask(reportGenerator);
+
+// Build the workflow
+const workflow = builder.build();
+
+// Start the workflow with an initial query
+workflow.start('taskPlanner', { query: 'Research the impact of AI on healthcare' });
+
+// Export the workflow for external use
+export const researchAgent = workflow;
 ```
 
 The workflow processes through these stages:
 
-1. **Planning**: Breaks down complex questions into research steps
-2. **Web Search**: Gathers relevant information from the internet
-3. **Reflection**: Analyzes information gaps and determines if more search is needed
-4. **Analysis**: Synthesizes findings into a coherent understanding
-5. **Writing**: Produces a comprehensive, well-structured response
+1. **Planning**: Breaks down complex questions into specific research tasks
+2. **Information Gathering**: Collects relevant data for each task
+3. **Analysis**: Synthesizes information and identifies key insights
+4. **Report Generation**: Produces a comprehensive, structured response
 
-Each step emits events that update the UI in real-time, allowing users to see the research process unfold.
+Each step emits events that can update the UI in real-time, allowing users to see the research process unfold.
 
 ## Local Storage
 

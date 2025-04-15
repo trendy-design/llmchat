@@ -33,7 +33,7 @@ export const ImageUpload: FC<TImageUpload> = ({
             <input type="file" id={id} className="hidden" onChange={handleImageUpload} />
             <Tooltip content={tooltip}>
                 {showIcon ? (
-                    <Button variant="ghost" size="icon" onClick={handleFileSelect}>
+                    <Button variant="ghost" size="icon-sm" onClick={handleFileSelect}>
                         <IconPaperclip size={16} strokeWidth={2} />
                     </Button>
                 ) : (
