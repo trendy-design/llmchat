@@ -1,14 +1,5 @@
-<div align="center" id="top">
-  <a href="https://llmchat.co">
-    <img width="160" alt="LLMChat.co logo" src="https://github.com/user-attachments/assets/ea0535c8-37ee-4d5f-8db2-e15d5bc1decb">
-  </a>
-</div>
 
-<div align="center">
-  <a href="https://llmchat.co/docs">📚 Documentation</a> &nbsp;|&nbsp;
-  <a href="https://llmchat.co/examples">💡 Examples</a> &nbsp;|&nbsp;
-  <a href="https://github.com/your-repo/llmchat/stargazers">🌟 Star Us</a>
-</div>
+<img width="1512" alt="Screenshot 2025-04-14 at 9 13 25 PM" src="https://github.com/user-attachments/assets/b89d1343-7c6f-4685-8bcf-dbcc71ce2229" />
 
 ## Introduction
 
@@ -24,12 +15,12 @@ LLMChat.co stands out with its workflow orchestration system and focus on privac
 - **Pro Search**: Enhanced search with web integration for real-time information
 
 **Multiple LLM Provider Support**
-
-- OpenAI (GPT-4o, GPT-4o Mini, O3 Mini)
-- Anthropic (Claude 3.5 Sonnet, Claude 3.7 Sonnet)
-- Google (Gemini 2 Flash)
-- Fireworks (Llama 4 Scout, DeepSeek R1, QWQ 32B)
-- Together AI (DeepSeek R1 Distill Qwen 14B)
+- OpenAI
+- Anthropic
+- Google
+- Fireworks
+- Together AI
+- xAI
 
 **Privacy-Focused**
 
@@ -37,16 +28,9 @@ LLMChat.co stands out with its workflow orchestration system and focus on privac
 - **No Server-Side Storage**: Chat history never leaves your device
 
 **Agentic Capabilities**
-
 - **Workflow Orchestration**: Complex task coordination via custom workflow engine
 - **Reflective Analysis**: Self-improvement through analysis of prior reasoning
 - **Structured Output**: Clean presentation of research findings
-
-**Enhanced User Experience**
-
-- **Progressive Web App**: Install on any device for a native-like experience
-- **Tab Synchronization**: Seamless experience across multiple browser tabs
-- **Data Portability**: Easy import/export of chat data
 
 ## Architecture
 
@@ -342,13 +326,7 @@ The workflow processes through these stages:
 Each step emits events that can update the UI in real-time, allowing users to see the research process unfold.
 
 ## Local Storage
-
-LLMChat.co prioritizes user privacy by storing all data locally:
-
-- **Dexie.js**: Used for IndexedDB interaction with a simple and powerful API
-- **Thread Database**: Structured storage of chat threads and messages
-- **Tab Synchronization**: SharedWorker or localStorage fallback for multi-tab experience
-- **No Server Persistence**: Your conversations never leave your browser
+LLMChat.co prioritizes user privacy by storing all data locally
 
 ## Tech Stack
 
@@ -361,19 +339,8 @@ LLMChat.co prioritizes user privacy by storing all data locally:
 - **Shadcn UI**: Component library
 - **Tiptap**: Rich text editor
 - **Zustand**: State management
-
-### AI & Machine Learning
-
+- **Dexie.js**: Used for IndexedDB interaction with a simple and powerful API
 - **AI SDK**: Unified interface for multiple AI providers
-- **LangChain**: Tools for building LLM applications
-- **Workflow Engine**: Custom workflow orchestration system
-- **In-browser Vector Storage**: Local vector embeddings
-
-### Storage & Data
-
-- **Dexie.js**: IndexedDB wrapper
-- **PGLite**: Embedded PostgreSQL for local data
-- **Electric SQL**: Local-first database sync
 
 ### Development
 
@@ -414,21 +381,3 @@ yarn dev
 ```
 
 4. Open your browser and navigate to `http://localhost:3000`
-
-## Documentation & Examples
-
-- [Full Documentation](https://llmchat.co/docs)
-- [Usage Examples](https://llmchat.co/examples)
-- [API Reference](https://llmchat.co/docs/api)
-
-## Contributing
-
-We welcome contributions! Please read our [contributing guidelines](https://github.com/your-repo/llmchat/blob/main/CONTRIBUTING.md) before submitting a pull request.
-
-## License
-
-This project is licensed under the terms included in the repository.
-
-<p align="left">
-  <a href="#top">⬆️ Back to Top</a>
-</p>
