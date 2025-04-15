@@ -22,6 +22,8 @@ export const markdownStyles = {
     'prose-h3:text-lg prose-h3:font-medium ': true,
     'prose-strong:font-medium prose-th:font-medium': true,
 
+    'prose-a:text-blue-400 prose-a:font-normal prose-a:underline prose-a:underline-offset-2': true,
+
     'prose-li:text-muted-foreground prose-li:font-normal prose-li:leading-[1.65rem]': true,
 
     // Code styles

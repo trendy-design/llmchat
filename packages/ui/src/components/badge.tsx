@@ -3,11 +3,11 @@ import * as React from 'react';
 import { cn } from '../lib/utils';
 
 const badgeVariants = cva(
-    'flex items-center whitespace-nowrap gap-1.5 rounded-sm px-2 py-0.5 min-h-1.5 text-[0.7rem] font-medium transition-colors',
+    'flex items-center whitespace-nowrap gap-1.5 rounded-sm px-2 py-0.5 text-[0.7rem] font-medium transition-colors',
     {
         variants: {
             variant: {
-                default: 'bg-tertiary text-emerald-900 rounded-md',
+                default: 'bg-tertiary text-foreground rounded-md',
                 secondary: 'bg-tertiary text-tertiary-foreground rounded-full',
                 tertiary: 'bg-brand text-brand-foreground rounded-full',
                 brand: 'bg-brand text-brand-foreground',
@@ -15,7 +15,7 @@ const badgeVariants = cva(
                 outline: 'border border-input bg-background text-foreground',
             },
             size: {
-                sm: 'px-2 h-4 text-xs',
+                sm: 'px-2 h-5 text-xs',
                 md: 'px-2 h-6 text-xs font-mono text-[11px] tracking-[0.02em] font-[350]',
                 lg: 'px-3  h-7 text-xs',
             },

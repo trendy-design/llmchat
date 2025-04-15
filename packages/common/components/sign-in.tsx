@@ -1,6 +1,6 @@
 import { useSignIn, useSignUp } from '@clerk/nextjs';
 import { isClerkAPIResponseError } from '@clerk/nextjs/errors';
-import { Button, Input, InputOTP, InputOTPGroup, InputOTPSlot } from '@repo/ui';
+import { Button, InputOTP, InputOTPGroup, InputOTPSlot } from '@repo/ui';
 import { IconX } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -10,7 +10,10 @@ type CustomSignInProps = {
     onClose?: () => void;
 };
 
-export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) => {
+export const CustomSignIn = ({
+    redirectUrl = '/sign-in/sso-callback',
+    onClose,
+}: CustomSignInProps) => {
     const [isLoading, setIsLoading] = useState<string | null>(null);
     const [email, setEmail] = useState('');
     const [error, setError] = useState('');
@@ -268,7 +271,7 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
         return (
             <div className="flex w-[300px] flex-col items-center gap-4">
                 <div className="flex flex-col items-center gap-1">
-                    <h2 className="font-clash text-foreground text-center text-[24px] font-semibold leading-tight !text-emerald-900">
+                    <h2 className="font-clash text-foreground !text-brand text-center text-[24px] font-semibold leading-tight">
                         Check your email
                     </h2>
                     <p className="text-muted-foreground text-center text-sm">
@@ -295,7 +298,7 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
                 <p className="text-muted-foreground text-center text-sm">
                     Didn't receive an email?{' '}
                     <span
-                        className={`cursor-pointer text-emerald-600 underline hover:text-emerald-700 ${
+                        className={`hover:text-brand text-brand cursor-pointer underline ${
                             resending ? 'pointer-events-none opacity-70' : ''
                         }`}
                         onClick={handleSendCode}
@@ -307,7 +310,7 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
                 <div id="clerk-captcha"></div>
                 <div className="text-muted-foreground text-center text-sm">
                     {error && <p className="text-rose-400">{error}</p>}
-                    {resending && <p className="text-emerald-600">Sending verification code...</p>}
+                    {resending && <p className="text-brand">Sending verification code...</p>}
                 </div>
             </div>
         );
@@ -321,13 +324,12 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
                 }}
                 variant="ghost"
                 size="icon-sm"
-                rounded="full"
                 className="absolute right-2 top-2"
             >
                 <IconX className="h-4 w-4" />
             </Button>
-            <div className="flex w-[300px] flex-col items-center gap-4">
-                <h2 className="font-clash text-foreground text-center text-[24px] font-semibold leading-tight !text-emerald-900">
+            <div className="flex w-[300px] flex-col items-start gap-8">
+                <h2 className="text-muted-foreground/70 text-left text-[24px] font-semibold leading-tight">
                     Sign in or sign up to enjoy <br /> the full capabilities
                 </h2>
 
@@ -335,14 +337,12 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
                     <Button
                         onClick={handleGoogleAuth}
                         disabled={isLoading === 'google'}
-                        rounded="full"
-                        size="lg"
-                        variant="brand"
+                        variant="bordered"
                     >
                         {isLoading === 'google' ? (
                             <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                         ) : (
-                            <FaGoogle className=" size-4" />
+                            <FaGoogle className=" size-3" />
                         )}
                         {isLoading === 'google' ? 'Authenticating...' : 'Continue with Google'}
                     </Button>
@@ -350,40 +350,14 @@ export const CustomSignIn = ({ redirectUrl = '/', onClose }: CustomSignInProps) 
                     <Button
                         onClick={handleGithubAuth}
                         disabled={isLoading === 'github'}
-                        rounded="full"
-                        size="lg"
-                        variant="brand"
+                        variant="bordered"
                     >
                         {isLoading === 'github' ? (
                             <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
                         ) : (
-                            <FaGithub className=" size-4" />
+                            <FaGithub className=" size-3" />
                         )}
                         {isLoading === 'github' ? 'Authenticating...' : 'Continue with GitHub'}
-                    </Button>
-                </div>
-                <div className="border-border flex w-full flex-col items-center gap-2 border-t border-dashed py-4">
-                    <Input
-                        placeholder="Enter your email"
-                        className="w-full"
-                        value={email}
-                        onChange={e => setEmail(e.target.value)}
-                        type="email"
-                    />
-                    <div id="clerk-captcha"></div>
-
-                    <Button
-                        variant="secondary"
-                        size="lg"
-                        rounded="full"
-                        className="w-full"
-                        onClick={handleEmailAuth}
-                        disabled={isLoading === 'email'}
-                    >
-                        {isLoading === 'email' ? (
-                            <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-black border-t-transparent"></div>
-                        ) : null}
-                        {isLoading === 'email' ? 'Sending code...' : 'Continue with email'}
                     </Button>
                 </div>
             </div>

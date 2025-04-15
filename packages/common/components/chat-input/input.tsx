@@ -113,7 +113,7 @@ export const ChatInput = ({
     const renderChatInput = () => (
         <AnimatePresence>
             <motion.div
-                className="w-full px-2"
+                className="w-full px-3"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 key={`chat-input`}
@@ -121,7 +121,9 @@ export const ChatInput = ({
             >
                 <Flex
                     direction="col"
-                    className="bg-background/50 border-hard relative z-10 w-full rounded-2xl border shadow-sm"
+                    className={cn(
+                        'bg-background border-hard/50 shadow-subtle-sm relative z-10 w-full rounded-xl border'
+                    )}
                 >
                     <ImageDropzoneRoot dropzoneProps={dropzonProps}>
                         <motion.div
@@ -142,12 +144,12 @@ export const ChatInput = ({
                                         <ChatEditor
                                             sendMessage={sendMessage}
                                             editor={editor}
-                                            className="px-4 pt-4"
+                                            className="px-3 pt-3"
                                         />
                                     </Flex>
 
                                     <Flex
-                                        className="w-full gap-0 px-2 py-2"
+                                        className="border-border w-full gap-0 border-t border-dashed px-2 py-2"
                                         gap="none"
                                         items="center"
                                         justify="between"
@@ -227,7 +229,7 @@ export const ChatInput = ({
                 className={cn(
                     'mx-auto flex w-full max-w-3xl flex-col items-start',
                     !threadItemsLength && 'justify-start',
-                    size === 'sm' && 'px-4'
+                    size === 'sm' && 'px-8'
                 )}
             >
                 <Flex
@@ -243,15 +245,7 @@ export const ChatInput = ({
                             transition={{ duration: 0.3, ease: 'easeOut' }}
                             className="mb-4 flex w-full flex-col items-center gap-1"
                         >
-                            <AnimatedTitles
-                                titles={[
-                                    'Ask me anything...',
-                                    'Curious? Ask away',
-                                    "Let's dive deeper",
-                                    'Unlock deeper insights',
-                                    'Deep thinking starts here',
-                                ]}
-                            />
+                            <AnimatedTitles />
                         </motion.div>
                     )}
 
@@ -266,19 +260,37 @@ export const ChatInput = ({
 };
 
 type AnimatedTitlesProps = {
-    titles: string[];
+    titles?: string[];
 };
 
-const AnimatedTitles = ({ titles }: AnimatedTitlesProps) => {
-    const [titleIndex, setTitleIndex] = React.useState(0);
+const AnimatedTitles = ({ titles = [] }: AnimatedTitlesProps) => {
+    const [greeting, setGreeting] = React.useState<string>('');
 
     React.useEffect(() => {
+        const getTimeBasedGreeting = () => {
+            const hour = new Date().getHours();
+
+            if (hour >= 5 && hour < 12) {
+                return 'Good morning';
+            } else if (hour >= 12 && hour < 18) {
+                return 'Good afternoon';
+            } else {
+                return 'Good evening';
+            }
+        };
+
+        setGreeting(getTimeBasedGreeting());
+
+        // Update the greeting if the component is mounted during a time transition
         const interval = setInterval(() => {
-            setTitleIndex(prevIndex => (prevIndex + 1) % titles.length);
-        }, 10000); // Slightly faster rotation for better engagement
+            const newGreeting = getTimeBasedGreeting();
+            if (newGreeting !== greeting) {
+                setGreeting(newGreeting);
+            }
+        }, 60000); // Check every minute
 
         return () => clearInterval(interval);
-    }, [titles.length]);
+    }, [greeting]);
 
     return (
         <Flex
@@ -287,7 +299,7 @@ const AnimatedTitles = ({ titles }: AnimatedTitlesProps) => {
         >
             <AnimatePresence mode="wait">
                 <motion.h1
-                    key={titleIndex}
+                    key={greeting}
                     initial={{ opacity: 0, y: -5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 5 }}
@@ -295,9 +307,9 @@ const AnimatedTitles = ({ titles }: AnimatedTitlesProps) => {
                         duration: 0.8,
                         ease: 'easeInOut',
                     }}
-                    className="font-clash text-foreground text-center text-[32px] font-semibold !text-emerald-900"
+                    className="from-muted-foreground/50 via-muted-foreground/40 to-muted-foreground/20 bg-gradient-to-r bg-clip-text text-center text-[32px] font-semibold tracking-tight text-transparent"
                 >
-                    {titles[titleIndex]}
+                    {greeting}
                 </motion.h1>
             </AnimatePresence>
         </Flex>

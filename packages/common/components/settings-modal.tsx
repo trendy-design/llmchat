@@ -43,7 +43,7 @@ export const SettingsModal = () => {
         <Dialog open={isSettingOpen} onOpenChange={() => setIsSettingOpen(false)}>
             <DialogContent
                 ariaTitle="Settings"
-                className="h-full max-h-[600px] !max-w-[700px] overflow-x-hidden rounded-xl p-0"
+                className="h-full max-h-[600px] !max-w-[760px] overflow-x-hidden rounded-xl p-0"
             >
                 <div className="no-scrollbar relative max-w-full overflow-y-auto overflow-x-hidden">
                     <h3 className="border-border mx-5 border-b py-4 text-lg font-bold">Settings</h3>
@@ -52,7 +52,6 @@ export const SettingsModal = () => {
                             {settingMenu.map(setting => (
                                 <Button
                                     key={setting.key}
-                                    rounded="full"
                                     className="justify-start"
                                     variant={settingTab === setting.key ? 'secondary' : 'ghost'}
                                     onClick={() => setSettingTab(setting.key)}
@@ -90,9 +89,9 @@ export const MCPSettings = () => {
                     Connected Tools{' '}
                     <Badge
                         variant="secondary"
-                        className="inline-flex items-center gap-1 rounded-full bg-transparent text-emerald-600"
+                        className="text-brand inline-flex items-center gap-1 rounded-full bg-transparent"
                     >
-                        <span className="inline-block size-2 rounded-full bg-emerald-600"></span>
+                        <span className="bg-brand inline-block size-2 rounded-full"></span>
                         {mcpConfig && Object.keys(mcpConfig).length} Connected
                     </Badge>
                 </p>
@@ -128,7 +127,6 @@ export const MCPSettings = () => {
 
                 <Button
                     size="sm"
-                    rounded="full"
                     className="mt-2 self-start"
                     onClick={() => setIsAddToolDialogOpen(true)}
                 >
@@ -264,16 +262,10 @@ const AddToolDialog = ({ isOpen, onOpenChange, onAddTool }: AddToolDialogProps) 
                 </div>
                 <DialogFooter className="border-border mt-4 border-t pt-4">
                     <div className="flex justify-end gap-2">
-                        <Button
-                            variant="bordered"
-                            rounded={'full'}
-                            onClick={() => handleOpenChange(false)}
-                        >
+                        <Button variant="bordered" onClick={() => handleOpenChange(false)}>
                             Cancel
                         </Button>
-                        <Button onClick={handleAddTool} rounded="full">
-                            Add Tool
-                        </Button>
+                        <Button onClick={handleAddTool}>Add Tool</Button>
                     </div>
                 </DialogFooter>
             </DialogContent>
@@ -344,7 +336,7 @@ export const ApiKeySettings = () => {
                             href={apiKey.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-emerald-700 underline-offset-2 hover:underline"
+                            className="text-brand text-sm underline-offset-2 hover:underline"
                         >
                             (Get API key here)
                         </a>
@@ -363,7 +355,6 @@ export const ApiKeySettings = () => {
                                 <Button
                                     variant="secondary"
                                     size="sm"
-                                    rounded="full"
                                     onClick={() => handleSave(apiKey.key, apiKey.value || '')}
                                 >
                                     <span className="flex items-center gap-1">✓ Save</span>
@@ -383,7 +374,6 @@ export const ApiKeySettings = () => {
                                 <Button
                                     variant="secondary"
                                     size="sm"
-                                    rounded="full"
                                     onClick={() => setIsEditing(apiKey.key)}
                                 >
                                     {apiKey.value ? 'Change Key' : 'Add Key'}
@@ -406,10 +396,7 @@ export const CreditsSettings = () => {
         {
             title: 'Plan',
             value: (
-                <Badge
-                    variant="secondary"
-                    className="rounded-full bg-emerald-600/10 text-emerald-600"
-                >
+                <Badge variant="secondary" className="bg-brand/10 text-brand rounded-full">
                     <span className="text-xs font-medium">FREE</span>
                 </Badge>
             ),
@@ -418,10 +405,10 @@ export const CreditsSettings = () => {
             title: 'Credits',
             value: (
                 <div className="flex h-7 flex-row items-center gap-1 rounded-full py-1">
-                    <IconBoltFilled size={14} strokeWidth={2} className="text-emerald-600" />
-                    <span className="text-sm font-medium text-emerald-600">{remainingCredits}</span>
-                    <span className="text-sm text-emerald-800 opacity-50">/</span>
-                    <span className="text-sm text-emerald-800 opacity-50">{maxLimit}</span>
+                    <IconBoltFilled size={14} strokeWidth={2} className="text-brand" />
+                    <span className="text-brand text-sm font-medium">{remainingCredits}</span>
+                    <span className="text-brand text-sm opacity-50">/</span>
+                    <span className="text-brand text-sm opacity-50">{maxLimit}</span>
                 </div>
             ),
         },

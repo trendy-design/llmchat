@@ -3,6 +3,7 @@ import { Step } from '@repo/shared/types';
 import { Badge } from '@repo/ui';
 import { IconSearch } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
+import React from 'react';
 
 export type StepRendererType = {
     step: Step;
@@ -11,7 +12,7 @@ export type StepRendererType = {
 export const StepRenderer = ({ step }: StepRendererType) => {
     console.log(step);
     const renderTextStep = () => {
-        if (step.text) {
+        if (step?.text) {
             return (
                 <motion.p
                     className="text-muted-foreground text-sm"
@@ -23,6 +24,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                 </motion.p>
             );
         }
+        return null;
     };
 
     const renderSearchStep = () => {
@@ -85,14 +87,20 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                             Reading
                         </TextShimmer>
                     </div>
-                    <SearchResultsList sources={step.steps?.read?.data || []} />
+                    <SearchResultsList
+                        sources={Array.isArray(step.steps?.read?.data) ? step.steps.read.data : []}
+                    />
                 </motion.div>
             );
         }
+        return null;
     };
 
     const renderReasoningStep = () => {
         if (step?.steps && 'reasoning' in step.steps) {
+            const reasoningData =
+                typeof step.steps?.reasoning?.data === 'string' ? step.steps.reasoning.data : '';
+
             return (
                 <motion.div
                     className="flex flex-col gap-2"
@@ -110,19 +118,18 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                         </TextShimmer>
                     </div>
                     <p className="text-muted-foreground text-sm">
-                        {step.steps?.reasoning?.data
-                            ?.split('\n\n')
-                            ?.map((line: string, index: number) => (
-                                <>
-                                    <span key={index}>{line}</span>
-                                    <br />
-                                    <br />
-                                </>
-                            ))}
+                        {reasoningData.split('\n\n').map((line: string, index: number) => (
+                            <React.Fragment key={index}>
+                                <span>{line}</span>
+                                <br />
+                                <br />
+                            </React.Fragment>
+                        ))}
                     </p>
                 </motion.div>
             );
         }
+        return null;
     };
 
     const renderWrapupStep = () => {
@@ -143,10 +150,11 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                             Wrapping up
                         </TextShimmer>
                     </div>
-                    <p>{step.steps?.wrapup?.data}</p>
+                    <p>{step.steps?.wrapup?.data || ''}</p>
                 </motion.div>
             );
         }
+        return null;
     };
 
     return (
