@@ -9,7 +9,14 @@ export default clerkMiddleware(
         });
         return NextResponse.next();
     },
-    { debug: true, authorizedParties: ['http://localhost:3000', 'https://llmchat.co'] }
+    {
+        debug: true,
+        authorizedParties: [
+            'http://localhost:3000',
+            'https://llmchat.co',
+            'https://staging.llmchat.co',
+        ],
+    }
 );
 
 export const config = {
