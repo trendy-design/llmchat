@@ -97,6 +97,7 @@ export function useWorkflowWorker(onMessage?: (data: any) => void, onAbort?: () 
         threadId,
         threadItemId,
         parentThreadItemId,
+        customInstructions,
         messages,
         config,
         apiKeys,
@@ -108,6 +109,7 @@ export function useWorkflowWorker(onMessage?: (data: any) => void, onAbort?: () 
         threadItemId: string;
         parentThreadItemId: string;
         messages: CoreMessage[];
+        customInstructions?: string;
         config?: WorkflowConfig;
         apiKeys?: Record<string, string>;
         mcpConfig?: Record<string, string>;
@@ -145,6 +147,7 @@ export function useWorkflowWorker(onMessage?: (data: any) => void, onAbort?: () 
                     threadId,
                     threadItemId,
                     parentThreadItemId,
+                    customInstructions,
                     messages,
                     config,
                     apiKeys: apiKeys || {},

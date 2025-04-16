@@ -76,7 +76,7 @@ export default function ThreadsPage() {
     return (
         <div className="flex w-full flex-col gap-2">
             <div className="mx-auto flex w-full max-w-2xl flex-col items-start gap-2 pt-16">
-                <h3 className="font-clash text-2xl font-semibold tracking-wide text-emerald-900">
+                <h3 className="font-clash text-brand text-2xl font-semibold tracking-wide">
                     Chat History
                 </h3>
                 <Command className="bg-secondary !max-h-auto w-full">

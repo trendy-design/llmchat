@@ -41,6 +41,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         updateThread,
         chatMode,
         fetchRemainingCredits,
+        customInstructions,
     } = useChatStore(state => ({
         updateThreadItem: state.updateThreadItem,
         setIsGenerating: state.setIsGenerating,
@@ -51,6 +52,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         updateThread: state.updateThread,
         chatMode: state.chatMode,
         fetchRemainingCredits: state.fetchRemainingCredits,
+        customInstructions: state.customInstructions,
     }));
     const { push } = useRouter();
 
@@ -321,11 +323,25 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     `Total time: ${totalTime.toFixed(2)}ms`
                 );
                 setIsGenerating(false);
-                updateThreadItem(body.threadId, {
-                    id: body.threadItemId,
-                    status: 'ERROR',
-                    error: 'Stream connection error: ' + streamError.message,
-                });
+                if (streamError.name === 'AbortError') {
+                    updateThreadItem(body.threadId, {
+                        id: body.threadItemId,
+                        status: 'ABORTED',
+                        error: 'Generation aborted',
+                    });
+                } else if (streamError.message.includes('429')) {
+                    updateThreadItem(body.threadId, {
+                        id: body.threadItemId,
+                        status: 'ERROR',
+                        error: 'You have reached the daily limit of requests. Please try again tomorrow or Use your own API key.',
+                    });
+                } else {
+                    updateThreadItem(body.threadId, {
+                        id: body.threadItemId,
+                        status: 'ERROR',
+                        error: 'Something went wrong. Please try again.',
+                    });
+                }
             } finally {
                 setIsGenerating(false);
 
@@ -435,6 +451,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     mcpConfig: getSelectedMCP(),
                     threadItemId: optimisticAiThreadItemId,
                     parentThreadItemId: '',
+                    customInstructions,
                     apiKeys: apiKeys(),
                 });
             } else {
@@ -445,6 +462,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     messages: coreMessages,
                     mcpConfig: getSelectedMCP(),
                     threadItemId: optimisticAiThreadItemId,
+                    customInstructions,
                     parentThreadItemId: '',
                     webSearch: useWebSearch,
                     showSuggestions: showSuggestions ?? true,
@@ -465,6 +483,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             setCurrentSources,
             abortWorkflow,
             startWorkflow,
+            customInstructions,
             getSelectedMCP,
             apiKeys,
             hasApiKeyForChatMode,

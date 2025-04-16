@@ -24,7 +24,7 @@
 //       {Object.entries(block).map(([key, value]) => (
 //         <div className="flex flex-col gap-2" key={key}>
 //           <div className="flex items-center justify-between">
-//             <p className="text-sm text-emerald-800">{key}</p>
+//             <p className="text-sm text-brand">{key}</p>
 //             <Button
 //               variant="ghost"
 //               size="xs"

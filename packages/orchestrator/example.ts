@@ -1,68 +1,10 @@
+import { OpenAI } from 'openai';
+import { WorkflowBuilder } from './builder';
+import { Context } from './context';
+import { TypedEventEmitter } from './events';
+import { createTask } from './task';
 
-<img width="1512" alt="Screenshot 2025-04-14 at 9 13 25 PM" src="https://github.com/user-attachments/assets/b89d1343-7c6f-4685-8bcf-dbcc71ce2229" />
-
-## Introduction
-
-[LLMChat.co](https://llmchat.co) is a sophisticated AI-powered chatbot platform that prioritizes privacy while offering powerful research and agentic capabilities. Built as a monorepo with Next.js, TypeScript, and cutting-edge AI technologies, it provides multiple specialized chat modes including Pro Search and Deep Research for in-depth analysis of complex topics.
-
-LLMChat.co stands out with its workflow orchestration system and focus on privacy, storing all user data locally in the browser using IndexedDB, ensuring your conversations never leave your device.
-
-## Key Features
-
-**Advanced Research Modes**
-
-- **Deep Research**: Comprehensive analysis of complex topics with in-depth exploration
-- **Pro Search**: Enhanced search with web integration for real-time information
-
-**Multiple LLM Provider Support**
-- OpenAI
-- Anthropic
-- Google
-- Fireworks
-- Together AI
-- xAI
-
-**Privacy-Focused**
-
-- **Local Storage**: All user data stored in browser using IndexedDB via Dexie.js
-- **No Server-Side Storage**: Chat history never leaves your device
-
-**Agentic Capabilities**
-- **Workflow Orchestration**: Complex task coordination via custom workflow engine
-- **Reflective Analysis**: Self-improvement through analysis of prior reasoning
-- **Structured Output**: Clean presentation of research findings
-
-## Architecture
-
-LLMChat.co is built as a monorepo with a clear separation of concerns:
-
-```
-├── apps/
-│   ├── web/         # Next.js web application
-│   └── desktop/     # Desktop application
-│
-└── packages/
-    ├── ai/          # AI models and workflow orchestration
-    ├── actions/     # Shared actions and API handlers
-    ├── common/      # Common utilities and hooks
-    ├── orchestrator/# Workflow engine and task management
-    ├── prisma/      # Database schema and client
-    ├── shared/      # Shared types and constants
-    ├── ui/          # Reusable UI components
-    ├── tailwind-config/ # Shared Tailwind configuration
-    └── typescript-config/ # Shared TypeScript configuration
-```
-
-## Workflow Orchestration
-
-LLMChat.co's workflow orchestration enables powerful agentic capabilities through a modular, step-by-step approach. Here's how to create a research agent:
-
-### 1. Define Event and Context Types
-
-First, establish the data structure for events and context:
-
-```typescript
-// Define the events emitted by each task
+// Define specific event types
 type AgentEvents = {
     taskPlanner: {
         tasks: string[];
@@ -80,7 +22,7 @@ type AgentEvents = {
     };
 };
 
-// Define the shared context between tasks
+// Define the context shape with proper typing
 type AgentContext = {
     query: string;
     tasks: string[];
@@ -89,23 +31,11 @@ type AgentContext = {
     insights: string[];
     report: string;
 };
-```
-
-### 2. Initialize Core Components
-
-Next, set up the event emitter, context, and workflow builder:
-
-```typescript
-import { OpenAI } from 'openai';
-import { createTask } from 'task';
-import { WorkflowBuilder } from './builder';
-import { Context } from './context';
-import { TypedEventEmitter } from './events';
 
 // Initialize event emitter with proper typing
 const events = new TypedEventEmitter<AgentEvents>();
 
-// Create the workflow builder with proper context
+// Initialize workflow builder with proper context
 const builder = new WorkflowBuilder<AgentEvents, AgentContext>('research-agent', {
     events,
     context: new Context<AgentContext>({
@@ -122,15 +52,7 @@ const builder = new WorkflowBuilder<AgentEvents, AgentContext>('research-agent',
 const llm = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
-```
 
-### 3. Define Research Tasks
-
-Create specialized tasks for each step of the research process:
-
-#### Planning Task
-
-```typescript
 // Task Planner: Breaks down a research query into specific tasks
 const taskPlanner = createTask({
     name: 'taskPlanner',
@@ -167,12 +89,8 @@ const taskPlanner = createTask({
     },
     route: () => 'informationGatherer',
 });
-```
 
-#### Information Gathering Task
-
-```typescript
-// Information Gatherer: Searches for information based on tasks
+// Information Gatherer: Simulates searching for information based on tasks
 const informationGatherer = createTask({
     name: 'informationGatherer',
     dependencies: ['taskPlanner'],
@@ -210,12 +128,8 @@ const informationGatherer = createTask({
     },
     route: () => 'informationAnalyzer',
 });
-```
 
-#### Analysis Task
-
-```typescript
-// Information Analyzer: Analyzes gathered information for insights
+// Information Analyzer: Analyzes the gathered information to extract insights
 const informationAnalyzer = createTask({
     name: 'informationAnalyzer',
     dependencies: ['informationGatherer'],
@@ -255,12 +169,8 @@ const informationAnalyzer = createTask({
     },
     route: () => 'reportGenerator',
 });
-```
 
-#### Report Generation Task
-
-```typescript
-// Report Generator: Creates a comprehensive report
+// Report Generator: Creates a comprehensive report based on the analysis
 const reportGenerator = createTask({
     name: 'reportGenerator',
     dependencies: ['informationAnalyzer'],
@@ -293,91 +203,16 @@ const reportGenerator = createTask({
     },
     route: () => 'end',
 });
-```
 
-### 4. Build and Execute the Workflow
-
-Finally, assemble and run the workflow:
-
-```typescript
 // Add all tasks to the workflow
 builder.addTask(taskPlanner);
 builder.addTask(informationGatherer);
 builder.addTask(informationAnalyzer);
 builder.addTask(reportGenerator);
 
-// Build the workflow
+// Build and start the workflow
 const workflow = builder.build();
-
-// Start the workflow with an initial query
 workflow.start('taskPlanner', { query: 'Research the impact of AI on healthcare' });
 
 // Export the workflow for external use
 export const researchAgent = workflow;
-```
-
-The workflow processes through these stages:
-
-1. **Planning**: Breaks down complex questions into specific research tasks
-2. **Information Gathering**: Collects relevant data for each task
-3. **Analysis**: Synthesizes information and identifies key insights
-4. **Report Generation**: Produces a comprehensive, structured response
-
-Each step emits events that can update the UI in real-time, allowing users to see the research process unfold.
-
-## Local Storage
-LLMChat.co prioritizes user privacy by storing all data locally
-
-## Tech Stack
-
-### Frontend
-
-- **Next.js 14**: React framework with server components
-- **TypeScript**: Type-safe development
-- **Tailwind CSS**: Utility-first styling
-- **Framer Motion**: Smooth animations
-- **Shadcn UI**: Component library
-- **Tiptap**: Rich text editor
-- **Zustand**: State management
-- **Dexie.js**: Used for IndexedDB interaction with a simple and powerful API
-- **AI SDK**: Unified interface for multiple AI providers
-
-### Development
-
-- **Turborepo**: Monorepo management
-- **Bun**: JavaScript runtime and package manager
-- **ESLint & Prettier**: Code quality tools
-- **Husky**: Git hooks
-
-## Getting Started
-
-### Prerequisites
-
-- Ensure you have `bun` installed (recommended) or `yarn`
-
-### Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/your-repo/llmchat.git
-cd llmchat
-```
-
-2. Install dependencies:
-
-```bash
-bun install
-# or
-yarn install
-```
-
-3. Start the development server:
-
-```bash
-bun dev
-# or
-yarn dev
-```
-
-4. Open your browser and navigate to `http://localhost:3000`

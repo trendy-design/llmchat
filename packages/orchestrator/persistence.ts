@@ -1,4 +1,4 @@
-import { WorkflowConfig } from './engine';
+import { WorkflowConfig } from './types';
 
 type PersistentStorageAdapter<TEvent, TContext> = {
     save(id: string, data: WorkflowPersistenceData<TEvent, TContext>): Promise<void>;

@@ -3,7 +3,7 @@ import { cn, Dialog, DialogContent } from '@repo/ui';
 import { IconCircleCheckFilled } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { DarkLogo } from './logo';
+import { Logo } from './logo';
 export const IntroDialog = () => {
     const [isOpen, setIsOpen] = useState(false);
     const { isSignedIn } = useUser();
@@ -74,31 +74,22 @@ export const IntroDialog = () => {
                 ariaTitle="Introduction"
                 className="flex max-w-[420px] flex-col gap-0 overflow-hidden p-0"
             >
-                <div className="relative h-[100px] w-full bg-emerald-700">
-                    <div className="absolute inset-0 z-10 flex h-full flex-col justify-end gap-2 p-4">
+                <div className="flex flex-col gap-8 p-5">
+                    <div className="flex flex-col gap-2">
                         <div
                             className={cn(
-                                'flex h-8 w-full cursor-pointer items-center justify-start gap-1.5'
+                                'flex h-8 w-full cursor-pointer items-center justify-start gap-1.5 '
                             )}
                         >
-                            <DarkLogo className="size-6 text-white" />
-                            <p className="font-clash text-lg font-bold tracking-wide text-white">
+                            <Logo className="text-brand size-5" />
+                            <p className="font-clash text-foreground text-lg font-bold tracking-wide">
                                 llmchat.co
                             </p>
                         </div>
+                        <p className="text-base font-semibold">
+                            Private, Open-Source, and Built for You
+                        </p>
                     </div>
-                    <div
-                        style={{
-                            backgroundImage: 'url(/icons/image.png)',
-                            backgroundSize: 'cover',
-                        }}
-                        className="z-1 absolute inset-0 flex h-full w-full bg-emerald-500/70 bg-cover bg-center bg-no-repeat bg-blend-hard-light"
-                    />
-                </div>
-                <div className="flex flex-col gap-8 p-5">
-                    <p className="text-base font-semibold">
-                        Private, Open-Source, and Built for You
-                    </p>
 
                     <div className="flex flex-col gap-2">
                         <h3 className="text-sm font-semibold">Key benefits:</h3>

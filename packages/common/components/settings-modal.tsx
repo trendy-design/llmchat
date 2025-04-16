@@ -1,16 +1,18 @@
 'use client';
 import { useMcpToolsStore } from '@repo/common/store';
-import { DialogFooter } from '@repo/ui';
+import { Alert, AlertDescription, DialogFooter } from '@repo/ui';
 import { Button } from '@repo/ui/src/components/button';
-import { IconBoltFilled, IconKey, IconTrash } from '@tabler/icons-react';
+import { IconBolt, IconBoltFilled, IconKey, IconSettings2, IconTrash } from '@tabler/icons-react';
 
 import { Badge, Dialog, DialogContent, Input } from '@repo/ui';
 
+import { useChatEditor } from '@repo/common/hooks';
 import moment from 'moment';
 import { useState } from 'react';
 import { ApiKeys, useApiKeysStore } from '../store/api-keys.store';
 import { SETTING_TABS, useAppStore } from '../store/app.store';
 import { useChatStore } from '../store/chat.store';
+import { ChatEditor } from './chat-input';
 import { BYOKIcon, ToolIcon } from './icons';
 
 export const SettingsModal = () => {
@@ -21,13 +23,19 @@ export const SettingsModal = () => {
 
     const settingMenu = [
         {
-            icon: <IconBoltFilled size={14} strokeWidth={2} className="text-muted-foreground" />,
+            icon: <IconSettings2 size={16} strokeWidth={2} className="text-muted-foreground" />,
+            title: 'Customize',
+            key: SETTING_TABS.PERSONALIZATION,
+            component: <PersonalizationSettings />,
+        },
+        {
+            icon: <IconBolt size={16} strokeWidth={2} className="text-muted-foreground" />,
             title: 'Usage',
             key: SETTING_TABS.CREDITS,
             component: <CreditsSettings />,
         },
         {
-            icon: <IconKey size={14} strokeWidth={2} className="text-muted-foreground" />,
+            icon: <IconKey size={16} strokeWidth={2} className="text-muted-foreground" />,
             title: 'API Keys',
             key: SETTING_TABS.API_KEYS,
             component: <ApiKeySettings />,
@@ -43,7 +51,7 @@ export const SettingsModal = () => {
         <Dialog open={isSettingOpen} onOpenChange={() => setIsSettingOpen(false)}>
             <DialogContent
                 ariaTitle="Settings"
-                className="h-full max-h-[600px] !max-w-[700px] overflow-x-hidden rounded-xl p-0"
+                className="h-full max-h-[600px] !max-w-[760px] overflow-x-hidden rounded-xl p-0"
             >
                 <div className="no-scrollbar relative max-w-full overflow-y-auto overflow-x-hidden">
                     <h3 className="border-border mx-5 border-b py-4 text-lg font-bold">Settings</h3>
@@ -90,9 +98,9 @@ export const MCPSettings = () => {
                     Connected Tools{' '}
                     <Badge
                         variant="secondary"
-                        className="inline-flex items-center gap-1 rounded-full bg-transparent text-emerald-600"
+                        className="text-brand inline-flex items-center gap-1 rounded-full bg-transparent"
                     >
-                        <span className="inline-block size-2 rounded-full bg-emerald-600"></span>
+                        <span className="bg-brand inline-block size-2 rounded-full"></span>
                         {mcpConfig && Object.keys(mcpConfig).length} Connected
                     </Badge>
                 </p>
@@ -326,7 +334,7 @@ export const ApiKeySettings = () => {
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-col">
-                <h2 className="flex items-center gap-1 text-base font-medium">
+                <h2 className="flex items-center gap-1 text-base font-semibold">
                     API Keys <BYOKIcon />
                 </h2>
 
@@ -344,7 +352,7 @@ export const ApiKeySettings = () => {
                             href={apiKey.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-sm text-emerald-700 underline-offset-2 hover:underline"
+                            className="text-sm text-blue-400 underline-offset-2 hover:underline"
                         >
                             (Get API key here)
                         </a>
@@ -361,9 +369,8 @@ export const ApiKeySettings = () => {
                                     />
                                 </div>
                                 <Button
-                                    variant="secondary"
+                                    variant="default"
                                     size="sm"
-                                    rounded="full"
                                     onClick={() => handleSave(apiKey.key, apiKey.value || '')}
                                 >
                                     <span className="flex items-center gap-1">✓ Save</span>
@@ -381,9 +388,8 @@ export const ApiKeySettings = () => {
                                     )}
                                 </div>
                                 <Button
-                                    variant="secondary"
+                                    variant={'bordered'}
                                     size="sm"
-                                    rounded="full"
                                     onClick={() => setIsEditing(apiKey.key)}
                                 >
                                     {apiKey.value ? 'Change Key' : 'Add Key'}
@@ -406,10 +412,7 @@ export const CreditsSettings = () => {
         {
             title: 'Plan',
             value: (
-                <Badge
-                    variant="secondary"
-                    className="rounded-full bg-emerald-600/10 text-emerald-600"
-                >
+                <Badge variant="secondary" className="bg-brand/10 text-brand rounded-full">
                     <span className="text-xs font-medium">FREE</span>
                 </Badge>
             ),
@@ -418,10 +421,10 @@ export const CreditsSettings = () => {
             title: 'Credits',
             value: (
                 <div className="flex h-7 flex-row items-center gap-1 rounded-full py-1">
-                    <IconBoltFilled size={14} strokeWidth={2} className="text-emerald-600" />
-                    <span className="text-sm font-medium text-emerald-600">{remainingCredits}</span>
-                    <span className="text-sm text-emerald-800 opacity-50">/</span>
-                    <span className="text-sm text-emerald-800 opacity-50">{maxLimit}</span>
+                    <IconBoltFilled size={14} strokeWidth={2} className="text-brand" />
+                    <span className="text-brand text-sm font-medium">{remainingCredits}</span>
+                    <span className="text-brand text-sm opacity-50">/</span>
+                    <span className="text-brand text-sm opacity-50">{maxLimit}</span>
                 </div>
             ),
         },
@@ -435,6 +438,12 @@ export const CreditsSettings = () => {
         <div className="flex flex-col gap-6">
             <div className="flex flex-col items-start gap-2">
                 <h2 className="flex items-center gap-1 text-base font-medium">Usage Credits</h2>
+                <Alert variant="info" className="w-full">
+                    <AlertDescription className="text-muted-foreground/70 text-sm leading-tight">
+                        You'll recieve some free credits everyday. Once credits are used, you can
+                        use your own API keys to continue.
+                    </AlertDescription>
+                </Alert>
 
                 <div className="divide-border flex w-full flex-col gap-1 divide-y">
                     {info.map(item => (
@@ -444,6 +453,33 @@ export const CreditsSettings = () => {
                         </div>
                     ))}
                 </div>
+            </div>
+        </div>
+    );
+};
+
+const MAX_CHAR_LIMIT = 6000;
+
+export const PersonalizationSettings = () => {
+    const customInstructions = useChatStore(state => state.customInstructions);
+    const setCustomInstructions = useChatStore(state => state.setCustomInstructions);
+    const { editor } = useChatEditor({
+        charLimit: MAX_CHAR_LIMIT,
+        defaultContent: customInstructions,
+        placeholder: 'Enter your custom instructions',
+        enableEnter: true,
+        onUpdate(props) {
+            setCustomInstructions(props.editor.getText());
+        },
+    });
+    return (
+        <div className="flex flex-col gap-1 pb-3">
+            <h3 className="text-base font-semibold">Customize your AI Response</h3>
+            <p className="text-muted-foreground text-sm">
+                These instructions will be added to the beginning of every message.
+            </p>
+            <div className=" shadow-subtle-sm border-border mt-2 rounded-lg border p-3">
+                <ChatEditor editor={editor} />
             </div>
         </div>
     );

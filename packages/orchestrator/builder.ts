@@ -1,9 +1,9 @@
 import { LangfuseTraceClient } from 'langfuse';
 import { Context, ContextSchemaDefinition } from './context';
-import { WorkflowConfig, WorkflowEngine } from './engine';
+import { WorkflowEngine } from './engine';
 import { EventSchemaDefinition, TypedEventEmitter } from './events';
 import { PersistenceLayer } from './persistence';
-import { TaskDefinition } from './task';
+import { TaskDefinition, WorkflowConfig } from './types';
 
 export type WorkflowBuilderOptions<
     TEvent extends EventSchemaDefinition = any,

@@ -88,7 +88,6 @@ export const ExamplePrompts = () => {
                     variant="bordered"
                     rounded="full"
                     size="sm"
-                    className="border-border"
                     onClick={() => handleCategoryClick(category as keyof typeof examplePrompts)}
                 >
                     <value.icon size={16} className={'text-muted-foreground/50'} />

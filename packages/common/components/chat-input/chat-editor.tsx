@@ -4,7 +4,7 @@ import { Editor, EditorContent } from '@tiptap/react';
 import { FC } from 'react';
 
 export type TChatEditor = {
-    sendMessage: (message: string) => void;
+    sendMessage?: (message: string) => void;
     editor: Editor | null;
     maxHeight?: string;
     className?: string;
@@ -28,7 +28,7 @@ export const ChatEditor: FC<TChatEditor> = ({
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (isGenerating) return;
         if (e.key === 'Enter' && !e.shiftKey) {
-            sendMessage(editor.getText());
+            sendMessage?.(editor.getText());
         }
         if (e.key === 'Enter' && e.shiftKey) {
             e.preventDefault();

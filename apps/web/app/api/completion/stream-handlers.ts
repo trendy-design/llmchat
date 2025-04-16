@@ -73,6 +73,7 @@ export async function executeStream({
             threadId: data.threadId,
             threadItemId: data.threadItemId,
             messages: data.messages,
+            customInstructions: data.customInstructions,
             webSearch: data.webSearch || false,
             config: {
                 maxIterations: data.maxIterations || 3,

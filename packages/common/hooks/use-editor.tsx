@@ -14,6 +14,8 @@ import { useChatStore } from '../store';
 export const useChatEditor = (editorProps: {
     placeholder?: string;
     defaultContent?: string;
+    charLimit?: number;
+    enableEnter?: boolean;
     onInit?: (props: { editor: Editor }) => void;
     onUpdate?: (props: { editor: Editor }) => void;
 }) => {
@@ -27,16 +29,15 @@ export const useChatEditor = (editorProps: {
                 placeholder: editorProps?.placeholder || 'Ask anything',
             }),
             CharacterCount.configure({
-                limit: 400000,
+                limit: editorProps?.charLimit || 400000,
             }),
-            ShiftEnterToLineBreak,
+            ...(!editorProps?.enableEnter ? [ShiftEnterToLineBreak, DisableEnter] : []),
             Highlight.configure({
                 HTMLAttributes: {
                     class: 'prompt-highlight',
                 },
             }),
             HardBreak,
-            DisableEnter,
         ],
         immediatelyRender: false,
         content: '',

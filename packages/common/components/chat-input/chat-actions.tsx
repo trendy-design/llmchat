@@ -53,6 +53,27 @@ export const modelOptions = [
         creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.LLAMA_4_SCOUT],
     },
     {
+        label: 'GPT 4.1',
+        value: ChatMode.GPT_4_1,
+        // webSearch: true,
+        icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.GPT_4_1],
+    },
+    {
+        label: 'GPT 4.1 Mini',
+        value: ChatMode.GPT_4_1_Mini,
+        // webSearch: true,
+        icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.GPT_4_1_Mini],
+    },
+    {
+        label: 'GPT 4.1 Nano',
+        value: ChatMode.GPT_4_1_Nano,
+        // webSearch: true,
+        icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.GPT_4_1_Nano],
+    },
+    {
         label: 'Gemini Flash 2.0',
         value: ChatMode.GEMINI_2_FLASH,
         // webSearch: true,
@@ -131,10 +152,10 @@ export const ChatModeButton = () => {
     return (
         <DropdownMenu open={isChatModeOpen} onOpenChange={setIsChatModeOpen}>
             <DropdownMenuTrigger asChild>
-                <Button variant={'secondary'} size="sm" rounded="full" className="bg-tertiary">
+                <Button variant={'secondary'} size="xs">
                     {selectedOption?.icon}
                     {selectedOption?.label}
-                    <IconChevronDown size={16} strokeWidth={2} />
+                    <IconChevronDown size={14} strokeWidth={2} />
                 </Button>
             </DropdownMenuTrigger>
             <ChatModeOptions chatMode={chatMode} setChatMode={setChatMode} />
@@ -152,17 +173,16 @@ export const WebSearchButton = () => {
 
     return (
         <Button
-            size={useWebSearch ? 'sm' : 'icon'}
+            size={useWebSearch ? 'sm' : 'icon-sm'}
             tooltip="Web Search"
             variant={useWebSearch ? 'secondary' : 'ghost'}
-            className={cn('gap-2', useWebSearch && 'bg-purple-500/20 pl-2 text-purple-700')}
-            rounded="full"
+            className={cn('gap-2', useWebSearch && 'bg-blue-500/10 text-blue-500')}
             onClick={() => setUseWebSearch(!useWebSearch)}
         >
             <IconWorld
-                size={18}
+                size={16}
                 strokeWidth={2}
-                className={cn(useWebSearch ? '!text-purple-600' : 'text-muted-foreground')}
+                className={cn(useWebSearch ? '!text-blue-500' : 'text-muted-foreground')}
             />
             {useWebSearch && <p className="text-xs">Web</p>}
         </Button>
@@ -207,7 +227,7 @@ export const ChatModeOptions = ({
         <DropdownMenuContent
             align="start"
             side="bottom"
-            className="no-scrollbar max-h-[300px] w-[320px] overflow-y-auto"
+            className="no-scrollbar max-h-[300px] w-[300px] overflow-y-auto"
         >
             {isChatPage && (
                 <DropdownMenuGroup>
@@ -298,7 +318,6 @@ export const SendStopButton = ({
                     >
                         <Button
                             size="icon-sm"
-                            rounded="full"
                             variant="default"
                             onClick={stopGeneration}
                             tooltip="Stop Generation"
@@ -316,7 +335,6 @@ export const SendStopButton = ({
                     >
                         <Button
                             size="icon-sm"
-                            rounded="full"
                             tooltip="Send Message"
                             variant={hasTextInput ? 'default' : 'secondary'}
                             disabled={!hasTextInput || isGenerating}

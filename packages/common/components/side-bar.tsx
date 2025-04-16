@@ -5,6 +5,7 @@ import { useRootContext } from '@repo/common/context';
 import { useAppStore, useChatStore } from '@repo/common/store';
 import { Thread } from '@repo/shared/types';
 import {
+    Badge,
     Button,
     cn,
     DropdownMenu,
@@ -16,8 +17,7 @@ import {
 import {
     IconArrowBarLeft,
     IconArrowBarRight,
-    IconChevronRight,
-    IconHistory,
+    IconCommand,
     IconLogout,
     IconPinned,
     IconPlus,
@@ -149,9 +149,9 @@ export const Sidebar = () => {
                                 !isSidebarOpen && 'justify-center px-0'
                             )}
                         >
-                            <Logo className="size-5 text-emerald-900" />
+                            <Logo className="text-brand size-5" />
                             {isSidebarOpen && (
-                                <p className="font-clash text-lg font-bold tracking-wide text-emerald-900">
+                                <p className="font-clash text-foreground text-lg font-bold tracking-wide">
                                     llmchat.co
                                 </p>
                             )}
@@ -176,58 +176,66 @@ export const Sidebar = () => {
                         'w-full items-end px-3 ',
                         !isSidebarOpen && 'items-center justify-center px-0'
                     )}
-                    gap="sm"
+                    gap="xs"
                 >
                     {!isChatPage ? (
                         <Link href="/chat" className={isSidebarOpen ? 'w-full' : ''}>
                             <Button
-                                size={isSidebarOpen ? 'xs' : 'icon-sm'}
-                                variant="secondary"
+                                size={isSidebarOpen ? 'sm' : 'icon-sm'}
+                                variant="bordered"
                                 rounded="lg"
                                 tooltip={isSidebarOpen ? undefined : 'New Thread'}
                                 tooltipSide="right"
                                 className={cn(isSidebarOpen && 'relative w-full', 'justify-center')}
                             >
-                                <IconPlus
-                                    size={16}
-                                    strokeWidth={2}
-                                    className={cn(isSidebarOpen && 'absolute left-2')}
-                                />
+                                <IconPlus size={16} strokeWidth={2} className={cn(isSidebarOpen)} />
                                 {isSidebarOpen && 'New'}
                             </Button>
                         </Link>
                     ) : (
                         <Button
-                            size={isSidebarOpen ? 'xs' : 'icon-sm'}
-                            variant="secondary"
+                            size={isSidebarOpen ? 'sm' : 'icon-sm'}
+                            variant="bordered"
                             rounded="lg"
                             tooltip={isSidebarOpen ? undefined : 'New Thread'}
                             tooltipSide="right"
                             className={cn(isSidebarOpen && 'relative w-full', 'justify-center')}
                         >
-                            <IconPlus
-                                size={16}
-                                strokeWidth={2}
-                                className={cn(isSidebarOpen && 'absolute left-2')}
-                            />
+                            <IconPlus size={16} strokeWidth={2} className={cn(isSidebarOpen)} />
                             {isSidebarOpen && 'New Thread'}
                         </Button>
                     )}
                     <Button
-                        size={isSidebarOpen ? 'xs' : 'icon-sm'}
+                        size={isSidebarOpen ? 'sm' : 'icon-sm'}
                         variant="bordered"
                         rounded="lg"
                         tooltip={isSidebarOpen ? undefined : 'Search'}
                         tooltipSide="right"
-                        className={cn(isSidebarOpen && 'relative w-full', 'justify-center')}
+                        className={cn(
+                            isSidebarOpen && 'relative w-full',
+                            'text-muted-foreground justify-center px-2'
+                        )}
                         onClick={() => setIsCommandSearchOpen(true)}
                     >
-                        <IconSearch
-                            size={16}
-                            strokeWidth={2}
-                            className={cn(isSidebarOpen && 'absolute left-2')}
-                        />
+                        <IconSearch size={14} strokeWidth={2} className={cn(isSidebarOpen)} />
                         {isSidebarOpen && 'Search'}
+                        {isSidebarOpen && <div className="flex-1" />}
+                        {isSidebarOpen && (
+                            <div className="flex flex-row items-center gap-1">
+                                <Badge
+                                    variant="secondary"
+                                    className="bg-muted-foreground/10 text-muted-foreground flex size-5 items-center justify-center rounded-md p-0"
+                                >
+                                    <IconCommand size={12} strokeWidth={2} className="shrink-0" />
+                                </Badge>
+                                <Badge
+                                    variant="secondary"
+                                    className="bg-muted-foreground/10 text-muted-foreground flex size-5 items-center justify-center rounded-md p-0"
+                                >
+                                    K
+                                </Badge>
+                            </div>
+                        )}
                     </Button>
                 </Flex>
                 <Flex
@@ -238,10 +246,10 @@ export const Sidebar = () => {
                         !isSidebarOpen && 'items-center justify-center px-0'
                     )}
                 >
-                    <Link href="/recent" className={isSidebarOpen ? 'w-full' : ''}>
+                    {/* <Link href="/recent" className={isSidebarOpen ? 'w-full' : ''}>
                         <Button
                             size={isSidebarOpen ? 'xs' : 'icon-sm'}
-                            variant="secondary"
+                            variant="bordered"
                             rounded="lg"
                             tooltip={isSidebarOpen ? undefined : 'Recent'}
                             tooltipSide="right"
@@ -255,7 +263,7 @@ export const Sidebar = () => {
                             {isSidebarOpen && <span className="inline-flex flex-1" />}
                             {isSidebarOpen && <IconChevronRight size={14} strokeWidth={2} />}
                         </Button>
-                    </Link>
+                    </Link> */}
                 </Flex>
 
                 {false ? (
@@ -319,11 +327,11 @@ export const Sidebar = () => {
                             <DropdownMenuTrigger asChild>
                                 <div
                                     className={cn(
-                                        'hover:bg-quaternary flex w-full cursor-pointer flex-row items-center gap-3 rounded-lg p-2 px-2',
+                                        'hover:bg-quaternary bg-background shadow-subtle-xs flex w-full cursor-pointer flex-row items-center gap-3 rounded-lg px-2 py-1.5',
                                         !isSidebarOpen && 'px-1.5'
                                     )}
                                 >
-                                    <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-800">
+                                    <div className="bg-brand flex size-5 shrink-0 items-center justify-center rounded-full">
                                         {user && user.hasImage ? (
                                             <img
                                                 src={user?.imageUrl ?? ''}
@@ -384,7 +392,7 @@ export const Sidebar = () => {
                     {isSidebarOpen && !isSignedIn && (
                         <div className="flex w-full flex-col gap-1.5 p-1">
                             <Button
-                                variant="secondary"
+                                variant="bordered"
                                 size="sm"
                                 rounded="lg"
                                 onClick={() => {
@@ -394,12 +402,7 @@ export const Sidebar = () => {
                                 <IconSettings2 size={14} strokeWidth={2} />
                                 Settings
                             </Button>
-                            <Button
-                                variant="brand"
-                                size="sm"
-                                rounded="lg"
-                                onClick={() => push('/sign-in')}
-                            >
+                            <Button size="sm" rounded="lg" onClick={() => push('/sign-in')}>
                                 Log in / Sign up
                             </Button>
                         </div>
