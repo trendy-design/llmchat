@@ -61,6 +61,27 @@ export const models: Model[] = [
         contextWindow: 16384,
     },
     {
+        id: ModelEnum.GPT_4_1_Mini,
+        name: 'GPT-4.1 Mini',
+        provider: 'openai',
+        maxTokens: 16384,
+        contextWindow: 16384,
+    },
+    {
+        id: ModelEnum.GPT_4_1_Nano,
+        name: 'GPT-4.1 Nano',
+        provider: 'openai',
+        maxTokens: 16384,
+        contextWindow: 16384,
+    },
+    {
+        id: ModelEnum.GPT_4_1,
+        name: 'GPT-4.1',
+        provider: 'openai',
+        maxTokens: 16384,
+        contextWindow: 16384,
+    },
+    {
         id: ModelEnum.GPT_4o,
         name: 'GPT-4o',
         provider: 'openai',

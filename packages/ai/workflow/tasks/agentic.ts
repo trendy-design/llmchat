@@ -172,9 +172,9 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
 
         chunkBuffer.end();
 
-        // if (context.get('waitForApproval') || false) {
-        //     interrupt(context.get('waitForApprovalMetadata') as ToolCall);
-        // }
+        if (context.get('waitForApproval') || false) {
+            interrupt(context.get('waitForApprovalMetadata') as ToolCall);
+        }
 
         updateAnswer({
             text: undefined,
@@ -186,9 +186,9 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
     },
     onError: handleError,
     route: ({ context }) => {
-        if (context?.get('waitForApproval') || false) {
-            return 'agentic';
-        }
+        // if (context?.get('waitForApproval') || false) {
+        //     return 'agentic';
+        // }
         return 'end';
     },
 });

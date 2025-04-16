@@ -82,7 +82,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         'object',
         'breakpoint',
     ];
-
     // Helper: Update in-memory and store thread item
     const handleThreadItemUpdate = useCallback(
         (
@@ -150,7 +149,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         },
         [threadItemMap, updateThreadItem]
     );
-
     const { startWorkflow, abortWorkflow } = useWorkflowWorker(
         useCallback(
             (data: any) => {

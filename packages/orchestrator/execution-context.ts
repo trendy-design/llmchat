@@ -23,6 +23,10 @@ export class ExecutionContext {
         this.taskTimings = new Map();
     }
 
+    setTaskExecutionCount(taskName: string, count: number) {
+        this.taskExecutionCounts.set(taskName, count);
+    }
+
     setState(func: (state: WorkflowState) => WorkflowState) {
         this.state = func(this.state);
     }

@@ -22,11 +22,13 @@ export const markdownStyles = {
     'prose-h3:text-lg prose-h3:font-medium ': true,
     'prose-strong:font-medium prose-th:font-medium': true,
 
+    'prose-a:text-blue-400 prose-a:font-normal prose-a:underline prose-a:underline-offset-2': true,
+
     'prose-li:text-muted-foreground prose-li:font-normal prose-li:leading-[1.65rem]': true,
 
     // Code styles
     'prose-code:font-mono prose-code:text-sm prose-code:font-normal': true,
-    'prose-code:bg-secondary prose-code:border-border prose-code:border prose-code:rounded-lg prose-code:p-0.5':
+    'prose-code:bg-tertiary prose-code:border-border prose-code:border prose-code:rounded-md prose-code:p-0.5 prose-code:mx-0.5':
         true,
 
     // Table styles

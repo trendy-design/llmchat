@@ -1,4 +1,3 @@
-
 <img width="1512" alt="Screenshot 2025-04-14 at 9 13 25 PM" src="https://github.com/user-attachments/assets/b89d1343-7c6f-4685-8bcf-dbcc71ce2229" />
 
 ## Introduction
@@ -15,6 +14,7 @@ LLMChat.co stands out with its workflow orchestration system and focus on privac
 - **Pro Search**: Enhanced search with web integration for real-time information
 
 **Multiple LLM Provider Support**
+
 - OpenAI
 - Anthropic
 - Google
@@ -28,6 +28,7 @@ LLMChat.co stands out with its workflow orchestration system and focus on privac
 - **No Server-Side Storage**: Chat history never leaves your device
 
 **Agentic Capabilities**
+
 - **Workflow Orchestration**: Complex task coordination via custom workflow engine
 - **Reflective Analysis**: Self-improvement through analysis of prior reasoning
 - **Structured Output**: Clean presentation of research findings
@@ -326,6 +327,7 @@ The workflow processes through these stages:
 Each step emits events that can update the UI in real-time, allowing users to see the research process unfold.
 
 ## Local Storage
+
 LLMChat.co prioritizes user privacy by storing all data locally
 
 ## Tech Stack

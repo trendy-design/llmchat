@@ -71,9 +71,13 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
                         <div className={containerClass}>
                             <div className="relative flex h-full w-0 flex-1 flex-row">
                                 <div className="flex w-full flex-col gap-2 overflow-y-auto">
-                                    <div className="from-secondary to-secondary/0 via-secondary/70 absolute left-0 right-0 top-0 z-40 flex flex-row items-center justify-center gap-1 bg-gradient-to-b p-2 pb-12"></div>
+                                    <div
+                                        className="from-secondary to-secondary/0 via-secondary/70 absolute left-0 right-0 top-0 z-40 flex flex-row items-center justify-center gap-1 bg-gradient-to-b p-2 pb-12 bg-blend-multiply filter"
+                                        style={{ mixBlendMode: 'multiply' }}
+                                    ></div>
                                     {/* Auth Button Header */}
 
+                                    {/* Auth Button Header */}
                                     {children}
                                 </div>
                             </div>

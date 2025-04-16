@@ -11,7 +11,7 @@ const buttonVariants = cva(
         variants: {
             variant: {
                 default:
-                    'bg-foreground shadow-subtle-xs border-sky-600 text-background font-semibold hover:opacity-90 [&>svg]:text-background',
+                    'bg-foreground shadow-subtle-xs text-background font-semibold hover:opacity-90 [&>svg]:text-background',
                 brand: 'bg-brand text-background font-semibold hover:opacity-90 [&>svg]:text-background',
                 'brand-secondary':
                     'bg-brand-secondary text-brand-secondary-foreground font-semibold hover:opacity-90',
@@ -32,6 +32,7 @@ const buttonVariants = cva(
                 default: 'h-9 px-3 text-xs md:text-sm',
                 sm: 'h-8 px-3 text-xs md:text-xs rounded-xl',
                 xs: 'h-7 px-2 text-xs md:text-xs',
+                xxs: 'h-6 px-2 text-xs md:text-xs',
                 md: 'h-9 px-4 text-xs md:text-sm font-semibold',
                 lg: 'h-10 md:h-10  px-8 text-xs md:text-sm font-semibold',
                 icon: 'h-8 min-w-8 text-xs md:text-sm',

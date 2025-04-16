@@ -23,6 +23,14 @@ const config: any = {
                     DEFAULT: 'hsl(var(--secondary))',
                     foreground: 'hsl(var(--secondary-foreground))',
                 },
+                codeblock: {
+                    DEFAULT: 'hsl(var(--codeblock))',
+                    foreground: 'hsl(var(--codeblock-foreground))',
+                },
+                'codeblock-secondary': {
+                    DEFAULT: 'hsl(var(--codeblock-secondary))',
+                    foreground: 'hsl(var(--codeblock-secondary-foreground))',
+                },
                 brand: {
                     DEFAULT: 'hsl(var(--brand))',
                     foreground: 'hsl(var(--brand-foreground))',

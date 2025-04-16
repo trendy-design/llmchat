@@ -173,7 +173,7 @@ export const WebSearchButton = () => {
 
     return (
         <Button
-            size={useWebSearch ? 'sm' : 'icon-sm'}
+            size={useWebSearch ? 'xs' : 'icon-sm'}
             tooltip="Web Search"
             variant={useWebSearch ? 'secondary' : 'ghost'}
             className={cn('gap-2', useWebSearch && 'bg-blue-500/10 text-blue-500')}

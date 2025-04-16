@@ -39,9 +39,9 @@ const loadInitialData = async () => {
               model: models[0].id,
               useWebSearch: false,
               showSuggestions: true,
-              chatMode: ChatMode.GEMINI_2_FLASH,
+              chatMode: ChatMode.GPT_4_1_Nano,
           };
-    const chatMode = config.chatMode || ChatMode.GEMINI_2_FLASH;
+    const chatMode = config.chatMode || ChatMode.GPT_4_1_Nano;
     const useWebSearch = typeof config.useWebSearch === 'boolean' ? config.useWebSearch : false;
     const customInstructions = config.customInstructions || '';
 
@@ -439,7 +439,7 @@ export const useChatStore = create(
         editor: undefined,
         context: '',
         threads: [],
-        chatMode: ChatMode.GEMINI_2_FLASH,
+        chatMode: ChatMode.GPT_4_1_Nano,
         threadItems: [],
         useWebSearch: false,
         customInstructions: '',
@@ -834,7 +834,7 @@ export const useChatStore = create(
                         id: threadItem.id,
                         threadId,
                         query: threadItem.query || '',
-                        mode: threadItem.mode || ChatMode.GEMINI_2_FLASH,
+                        mode: threadItem.mode || ChatMode.GPT_4_1_Nano,
                         createdAt: new Date(),
                         updatedAt: new Date(),
                         ...threadItem,

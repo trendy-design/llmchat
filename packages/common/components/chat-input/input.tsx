@@ -1,5 +1,5 @@
 'use client';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
 import {
     ImageAttachment,
     ImageDropzoneRoot,
@@ -112,94 +112,97 @@ export const ChatInput = ({
 
     const renderChatInput = () => (
         <AnimatePresence>
-            <motion.div
-                className="w-full px-4"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                key={`chat-input`}
-                transition={{ duration: 0.2, ease: 'easeOut' }}
-            >
-                <Flex
-                    direction="col"
-                    className={cn(
-                        'bg-background border-hard/50 shadow-subtle-sm relative z-10 w-full rounded-xl border'
-                    )}
+            <div className="bg-tertiary w-full rounded-xl p-1">
+                <MessagesRemainingBadge key="remaining-messages" />
+
+                <motion.div
+                    className="w-full "
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    key={`chat-input`}
+                    transition={{ duration: 0.2, ease: 'easeOut' }}
                 >
-                    <ImageDropzoneRoot dropzoneProps={dropzonProps}>
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ duration: 0.15 }}
-                            className="flex w-full flex-shrink-0 overflow-hidden rounded-lg"
-                        >
-                            {editor?.isEditable ? (
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    transition={{ duration: 0.15, ease: 'easeOut' }}
-                                    className="w-full"
-                                >
-                                    <ImageAttachment />
-                                    <Flex className="flex w-full flex-row items-end gap-0">
-                                        <ChatEditor
-                                            sendMessage={sendMessage}
-                                            editor={editor}
-                                            className="px-3 pt-3"
-                                        />
-                                    </Flex>
-
-                                    <Flex
-                                        className="border-border w-full gap-0 border-t border-dashed px-2 py-2"
-                                        gap="none"
-                                        items="center"
-                                        justify="between"
+                    <Flex
+                        direction="col"
+                        className={cn(
+                            'bg-background border-hard/50 shadow-subtle-sm relative z-10 w-full rounded-xl border'
+                        )}
+                    >
+                        <ImageDropzoneRoot dropzoneProps={dropzonProps}>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ duration: 0.15 }}
+                                className="flex w-full flex-shrink-0 overflow-hidden rounded-lg"
+                            >
+                                {editor?.isEditable ? (
+                                    <motion.div
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        transition={{ duration: 0.15, ease: 'easeOut' }}
+                                        className="w-full"
                                     >
-                                        {isGenerating && !isChatPage ? (
-                                            <GeneratingStatus />
-                                        ) : (
-                                            <Flex gap="xs" items="center" className="shrink-0">
-                                                <ChatModeButton />
-                                                {/* <AttachmentButton /> */}
-                                                <WebSearchButton />
-                                                {/* <ToolsMenu /> */}
-                                                <ImageUpload
-                                                    id="image-attachment"
-                                                    label="Image"
-                                                    tooltip="Image Attachment"
-                                                    showIcon={true}
-                                                    handleImageUpload={handleImageUpload}
-                                                />
-                                                <ToolsMenu />
-                                            </Flex>
-                                        )}
-
-                                        <Flex gap="md" items="center">
-                                            <SendStopButton
-                                                isGenerating={isGenerating}
-                                                isChatPage={isChatPage}
-                                                stopGeneration={stopGeneration}
-                                                hasTextInput={hasTextInput}
+                                        <ImageAttachment />
+                                        <Flex className="flex w-full flex-row items-end gap-0">
+                                            <ChatEditor
                                                 sendMessage={sendMessage}
+                                                editor={editor}
+                                                className="px-3 pt-3"
                                             />
                                         </Flex>
-                                    </Flex>
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    className="flex h-24 w-full items-center justify-center"
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.15 }}
-                                >
-                                    <div className="animate-pulse">Loading editor...</div>
-                                </motion.div>
-                            )}
-                        </motion.div>
-                    </ImageDropzoneRoot>
-                </Flex>
-            </motion.div>
-            <MessagesRemainingBadge key="remaining-messages" />
+
+                                        <Flex
+                                            className="border-border w-full gap-0 border-t border-dashed px-2 py-2"
+                                            gap="none"
+                                            items="center"
+                                            justify="between"
+                                        >
+                                            {isGenerating && !isChatPage ? (
+                                                <GeneratingStatus />
+                                            ) : (
+                                                <Flex gap="xs" items="center" className="shrink-0">
+                                                    <ChatModeButton />
+                                                    {/* <AttachmentButton /> */}
+                                                    <WebSearchButton />
+                                                    {/* <ToolsMenu /> */}
+                                                    <ImageUpload
+                                                        id="image-attachment"
+                                                        label="Image"
+                                                        tooltip="Image Attachment"
+                                                        showIcon={true}
+                                                        handleImageUpload={handleImageUpload}
+                                                    />
+                                                    <ToolsMenu />
+                                                </Flex>
+                                            )}
+
+                                            <Flex gap="md" items="center">
+                                                <SendStopButton
+                                                    isGenerating={isGenerating}
+                                                    isChatPage={isChatPage}
+                                                    stopGeneration={stopGeneration}
+                                                    hasTextInput={hasTextInput}
+                                                    sendMessage={sendMessage}
+                                                />
+                                            </Flex>
+                                        </Flex>
+                                    </motion.div>
+                                ) : (
+                                    <motion.div
+                                        className="flex h-24 w-full items-center justify-center"
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0 }}
+                                        transition={{ duration: 0.15 }}
+                                    >
+                                        <div className="animate-pulse">Loading editor...</div>
+                                    </motion.div>
+                                )}
+                            </motion.div>
+                        </ImageDropzoneRoot>
+                    </Flex>
+                </motion.div>
+            </div>
         </AnimatePresence>
     );
 
@@ -265,6 +268,7 @@ type AnimatedTitlesProps = {
 
 const AnimatedTitles = ({ titles = [] }: AnimatedTitlesProps) => {
     const [greeting, setGreeting] = React.useState<string>('');
+    const { user } = useUser();
 
     React.useEffect(() => {
         const getTimeBasedGreeting = () => {
@@ -309,7 +313,7 @@ const AnimatedTitles = ({ titles = [] }: AnimatedTitlesProps) => {
                     }}
                     className="from-muted-foreground/50 via-muted-foreground/40 to-muted-foreground/20 bg-gradient-to-r bg-clip-text text-center text-[32px] font-semibold tracking-tight text-transparent"
                 >
-                    {greeting}
+                    {user?.firstName && `Hello ${user?.firstName},`} {greeting}
                 </motion.h1>
             </AnimatePresence>
         </Flex>

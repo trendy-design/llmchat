@@ -124,7 +124,7 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                     </Button>
                 )}
                 {threadItem.mode && (
-                    <p className="text-muted-foreground px-2 text-xs">
+                    <p className="text-muted-foreground/50 px-2 text-xs">
                         Generated with {getChatModeName(threadItem.mode)}
                     </p>
                 )}
