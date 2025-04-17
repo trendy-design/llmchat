@@ -10,13 +10,13 @@ export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
         preserveAspectRatio="xMidYMid meet"
         {...props}
     >
-        <rect width="62" height="62" rx="31" fill="currentColor" />
+        <rect width="62" height="62" rx="20" fill="currentColor" />
         <rect
             x="0.5"
             y="0.5"
             width="61"
             height="61"
-            rx="30.5"
+            rx="18.5"
             stroke="black"
             strokeOpacity="0.27"
         />
@@ -25,7 +25,7 @@ export const Logo = (props: React.SVGProps<SVGSVGElement>) => (
             y="1.5"
             width="59"
             height="59"
-            rx="29.5"
+            rx="16.5"
             fill="currentColor"
             stroke="url(#paint0_linear_85_14)"
         />

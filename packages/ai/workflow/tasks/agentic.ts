@@ -24,6 +24,18 @@ export const agenticPlannerTask = createTask<WorkflowEventSchema, WorkflowContex
         const { addAnswerMessage } = sendEvents(events);
 
         const optimisticTextMessageId = uuidv4();
+        const mcpConfig = context.get('mcpConfig') || {};
+        let mcpToolManager: MCPToolManager | undefined;
+
+        let tools: ToolSet | undefined;
+
+        if (mcpConfig) {
+            mcpToolManager = await MCPToolManager.create(mcpConfig);
+            await mcpToolManager?.initialize({ shouldExecute: false });
+            if (mcpToolManager) {
+                tools = mcpToolManager.getTools();
+            }
+        }
 
         let messages =
             context
@@ -47,7 +59,12 @@ export const agenticPlannerTask = createTask<WorkflowEventSchema, WorkflowContex
 
 You are a helpful assistant that can answer questions and help with tasks.
 
-You may be given a task to complete. analyze the task and come up with a plan to complete the task.
+You may be given a task to complete. analyze the task and come up with a plan to complete the task using the tools provided.
+
+First check for necessary connection to tools before using them.
+
+You can use the following tools to help you:
+${tools ? JSON.stringify(tools) : 'No tools available'}
 
 `,
             signal,
@@ -73,6 +90,14 @@ You may be given a task to complete. analyze the task and come up with a plan to
                 id: optimisticTextMessageId,
                 type: 'text',
                 text: response.reasoning,
+                isFullText: true,
+            });
+
+            addAnswerMessage({
+                id: optimisticTextMessageId,
+                type: 'text',
+                text: `Plan: ${response.plan.join('\n')}`,
+                isFullText: true,
             });
         }
     },
@@ -132,7 +157,7 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
                             ...a,
                             messages: a.messages?.map(m => {
                                 if (m.id === optimisticTextMessageId) {
-                                    return { ...m, text: text };
+                                    return { ...m, text: text, isFullText: false };
                                 }
                                 return m;
                             }),
@@ -143,7 +168,7 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
                         ...a,
                         messages: [
                             ...(a.messages || []),
-                            { id: optimisticTextMessageId, type: 'text', text },
+                            { id: optimisticTextMessageId, type: 'text', text, isFullText: false },
                         ],
                     };
                 });
@@ -219,6 +244,10 @@ ${steps.map(step => `- ${step}`).join('\n')}
 
 stick to the steps and do not do anything else. If step is already completed, do not do anything.
 
+You may be given a task to complete. analyze the task and come up with a plan to complete the task using the tools provided.
+
+First check for necessary connection to tools before using them.
+
 `;
 
         const response = await generateText({
@@ -227,7 +256,7 @@ stick to the steps and do not do anything else. If step is already completed, do
             prompt,
             signal,
             toolChoice: 'auto',
-            maxSteps: 1,
+            maxSteps: 2,
             tools,
             onToolCall: toolCall => {
                 console.log('toolCall', toolCall);
@@ -272,13 +301,14 @@ stick to the steps and do not do anything else. If step is already completed, do
             prompt: `Just reflect on last task you did.`,
         });
 
-        if (reflection) {
-            addAnswerMessage({
-                id: uuidv4(),
-                type: 'text',
-                text: reflection.reflection,
-            });
-        }
+        // if (reflection) {
+        //     addAnswerMessage({
+        //         id: uuidv4(),
+        //         type: 'text',
+        //         text: `Reflection: ${reflection.reflection}`,
+        //         isFullText: true,
+        //     });
+        // }
 
         if (context.get('waitForApproval') || false) {
             interrupt(context.get('waitForApprovalMetadata') as ToolCall);

@@ -224,7 +224,7 @@ export const ToolCallUI = ({
     }, [message]);
 
     return (
-        <div className="flex w-full flex-col gap-2">
+        <div className="flex w-full flex-col gap-6">
             {filteredMessages.map((m, i) => {
                 if (m.type === 'tool-call') {
                     return (
@@ -280,7 +280,7 @@ export const ToolMessage = ({
             key={tool.toolCall?.toolCallId}
             className="bg-tertiary border-hard flex w-full flex-col rounded-xl border p-1"
         >
-            <div className="flex flex-row items-center justify-between px-1.5 py-1">
+            <div className="flex h-8 flex-row items-center justify-between px-1.5">
                 <div
                     className="flex flex-row items-center gap-2"
                     onClick={() => setIsOpen(prev => !prev)}

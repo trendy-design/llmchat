@@ -4,9 +4,9 @@ import { IconBoltFilled, IconSpiral, IconTools } from '@tabler/icons-react';
 export const ToolIcon = ({ className }: { className?: string }) => {
     return (
         <div
-            className={`bg-brand flex size-5 items-center justify-center  rounded-md p-0.5 ${className}`}
+            className={`flex size-5 items-center justify-center rounded-md  bg-purple-400 p-0.5 ${className}`}
         >
-            <IconTools size={14} strokeWidth={2} className="text-background" />
+            <IconTools size={14} strokeWidth={2} className="text-foreground/50" />
         </div>
     );
 };
@@ -33,7 +33,7 @@ export const BYOKIcon = () => {
 
 export const ToolCallIcon = () => {
     return (
-        <div className="flex-inline flex h-5 items-center justify-center gap-1 rounded-md bg-blue-500/20 p-0.5 px-1 font-mono text-xs font-semibold text-blue-600">
+        <div className="flex-inline flex h-5 items-center justify-center gap-1 rounded-md bg-purple-500/20 p-0.5 px-1 text-xs font-semibold text-purple-600">
             Tool
         </div>
     );

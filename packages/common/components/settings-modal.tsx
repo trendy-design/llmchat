@@ -86,9 +86,9 @@ export const MCPSettings = () => {
                     Available Tools{' '}
                     <Badge
                         variant="secondary"
-                        className="text-brand inline-flex items-center gap-1 rounded-full bg-transparent"
+                        className="inline-flex items-center gap-1 rounded-full bg-transparent text-emerald-600"
                     >
-                        <span className="bg-brand inline-block size-2 rounded-full"></span>
+                        <span className="inline-block size-2 rounded-full bg-emerald-600"></span>
                         {selectedMCP.length} Connected
                     </Badge>
                 </p>
@@ -106,6 +106,7 @@ export const MCPSettings = () => {
                                 </p>
                                 <div className="flex-1" />
                                 <Switch
+                                    className="data-[state=unchecked]:bg-muted data-[state=checked]:bg-emerald-600"
                                     checked={selectedMCP.includes(key)}
                                     onCheckedChange={() => {
                                         updateSelectedMCP(prev => {

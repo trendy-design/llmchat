@@ -128,8 +128,10 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                 ) {
                                     return {
                                         ...newMessage,
-                                        text:
-                                            (existingMessage.text || '') + (newMessage.text || ''),
+                                        text: newMessage.isFullText
+                                            ? newMessage.text
+                                            : (existingMessage.text || '') +
+                                              (newMessage.text || ''),
                                     };
                                 }
                                 return newMessage;

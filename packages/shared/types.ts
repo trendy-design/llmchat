@@ -63,6 +63,7 @@ export type AnswerText = {
     id: string;
     type: 'text';
     text: string;
+    isFullText: boolean;
 };
 
 export type AnswerToolResult = ToolResult & {
