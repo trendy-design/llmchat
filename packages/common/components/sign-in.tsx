@@ -328,9 +328,9 @@ export const CustomSignIn = ({
             >
                 <IconX className="h-4 w-4" />
             </Button>
-            <div className="flex w-[300px] flex-col items-start gap-8">
-                <h2 className="text-muted-foreground/70 text-left text-[24px] font-semibold leading-tight">
-                    Sign in or sign up to enjoy <br /> the full capabilities
+            <div className="flex w-[320px] flex-col items-center gap-8">
+                <h2 className="text-muted-foreground/70 text-center text-[24px] font-semibold leading-tight">
+                    Sign in to unlock <br /> advanced research tools
                 </h2>
 
                 <div className="flex w-[300px] flex-col space-y-1.5">
@@ -360,6 +360,21 @@ export const CustomSignIn = ({
                         {isLoading === 'github' ? 'Authenticating...' : 'Continue with GitHub'}
                     </Button>
                 </div>
+                <div className="text-muted-foreground/50 w-full text-center text-xs">
+                    <span className="text-muted-foreground/50">
+                        By using this app, you agree to the{' '}
+                    </span>
+                    <a href="/terms" className="hover:text-foreground underline">
+                        Terms of Service
+                    </a>{' '}
+                    and{' '}
+                    <a href="/privacy" className="hover:text-foreground underline">
+                        Privacy Policy
+                    </a>
+                </div>
+                <Button variant="ghost" size="sm" className="w-full" onClick={onClose}>
+                    Close
+                </Button>
             </div>
         </>
     );

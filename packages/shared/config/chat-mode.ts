@@ -1,7 +1,7 @@
 export enum ChatMode {
     Pro = 'pro',
     Deep = 'deep',
-    O3_Mini = 'o3-mini',
+    O4_Mini = 'o4-mini',
     GPT_4_1 = 'gpt-4.1',
     GPT_4_1_Mini = 'gpt-4.1-mini',
     GPT_4_1_Nano = 'gpt-4.1-nano',
@@ -63,10 +63,11 @@ export const ChatModeConfig: Record<
         isNew: true,
         isAuthRequired: false,
     },
-    [ChatMode.O3_Mini]: {
+    [ChatMode.O4_Mini]: {
         webSearch: true,
         imageUpload: false,
         retry: true,
+        isNew: true,
         isAuthRequired: true,
     },
     [ChatMode.GPT_4o_Mini]: {
@@ -109,7 +110,7 @@ export const CHAT_MODE_CREDIT_COSTS = {
     [ChatMode.GPT_4_1]: 5,
     [ChatMode.GPT_4_1_Mini]: 2,
     [ChatMode.GPT_4_1_Nano]: 1,
-    [ChatMode.O3_Mini]: 5,
+    [ChatMode.O4_Mini]: 5,
     [ChatMode.CLAUDE_3_5_SONNET]: 5,
     [ChatMode.CLAUDE_3_7_SONNET]: 5,
     [ChatMode.GEMINI_2_FLASH]: 1,
@@ -136,8 +137,8 @@ export const getChatModeName = (mode: ChatMode) => {
             return 'Claude 3.5 Sonnet';
         case ChatMode.CLAUDE_3_7_SONNET:
             return 'Claude 3.7 Sonnet';
-        case ChatMode.O3_Mini:
-            return 'O3 Mini';
+        case ChatMode.O4_Mini:
+            return 'O4 Mini';
         case ChatMode.DEEPSEEK_R1:
             return 'DeepSeek R1';
         case ChatMode.GEMINI_2_FLASH:

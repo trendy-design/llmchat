@@ -23,19 +23,6 @@ export default function OauthSignIn() {
                     router.push('/chat');
                 }}
             />
-
-            <div className="text-muted-foreground/50 mt-4 w-[300px] text-xs">
-                <span className="text-muted-foreground/50">
-                    By using this app, you agree to the{' '}
-                </span>
-                <a href="/terms" className="hover:text-foreground underline">
-                    Terms of Service
-                </a>{' '}
-                and{' '}
-                <a href="/privacy" className="hover:text-foreground underline">
-                    Privacy Policy
-                </a>
-            </div>
         </div>
     );
 }
