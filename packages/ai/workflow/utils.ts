@@ -95,7 +95,11 @@ export const generateText = async ({
             separator: '\n',
         });
 
-        const selectedModel = getLanguageModel(model, middleware);
+        const selectedModel = getLanguageModel(
+            model,
+            middleware,
+            tools?.length ? false : undefined
+        );
         const { fullStream } = !!messages?.length
             ? streamText({
                   system: prompt,
