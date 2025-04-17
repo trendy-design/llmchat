@@ -11,7 +11,7 @@ export enum ModelEnum {
     LLAMA_4_SCOUT = 'accounts/fireworks/models/llama4-scout-instruct-basic',
     Deepseek_R1_Distill_Qwen_14B = 'deepseek-r1-distill-qwen-14b',
     Claude_3_5_Sonnet = 'claude-3-5-sonnet-20240620',
-    O3_Mini = 'o3-mini',
+    O4_Mini = 'o4-mini',
     GEMINI_2_FLASH = 'gemini-2.0-flash',
     QWQ_32B = 'accounts/fireworks/models/qwq-32b',
     Deepseek_R1 = 'accounts/fireworks/models/deepseek-r1',
@@ -63,8 +63,8 @@ export const models: Model[] = [
         contextWindow: 16384,
     },
     {
-        id: ModelEnum.O3_Mini,
-        name: 'O3 Mini',
+        id: ModelEnum.O4_Mini,
+        name: 'O4 Mini',
         provider: 'openai',
         maxTokens: 16384,
         contextWindow: 16384,
@@ -137,8 +137,17 @@ export const getModelFromChatMode = (mode?: string): ModelEnum => {
             return ModelEnum.Claude_3_5_Sonnet;
         case ChatMode.CLAUDE_3_7_SONNET:
             return ModelEnum.Claude_3_7_Sonnet;
-        case ChatMode.O3_Mini:
-            return ModelEnum.O3_Mini;
+        case ChatMode.GPT_4o_Mini:
+            return ModelEnum.GPT_4o_Mini;
+        case ChatMode.GPT_4_1:
+            return ModelEnum.GPT_4_1;
+        case ChatMode.GPT_4_1_Mini:
+            return ModelEnum.GPT_4_1_Mini;
+        case ChatMode.GPT_4_1_Nano:
+            return ModelEnum.GPT_4_1_Nano;
+        case ChatMode.O4_Mini:
+            return ModelEnum.O4_Mini;
+        case ChatMode.GPT_4_1_Mini:
         default:
             return ModelEnum.GPT_4o_Mini;
     }
@@ -154,7 +163,7 @@ export const getChatModeMaxTokens = (mode: ChatMode) => {
             return 100000;
         case ChatMode.CLAUDE_3_7_SONNET:
             return 100000;
-        case ChatMode.O3_Mini:
+        case ChatMode.O4_Mini:
             return 100000;
         case ChatMode.GPT_4o_Mini:
             return 100000;
