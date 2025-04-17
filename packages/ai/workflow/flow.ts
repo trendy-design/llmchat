@@ -12,6 +12,7 @@ import { Geo } from '@vercel/functions';
 import { CoreMessage } from 'ai';
 import { Langfuse } from 'langfuse';
 import {
+    agenticPlannerTask,
     agenticTask,
     analysisTask,
     completionTask,
@@ -87,6 +88,10 @@ export type WorkflowContextSchema = {
             link: string;
         }[];
     }[];
+    agenticPlan?: {
+        plan: string[];
+        reasoning: string;
+    };
     webSearch: boolean;
     queries: string[];
     summaries: string[];
@@ -177,6 +182,7 @@ export const runWorkflow = ({
         queries: [],
         steps: [],
         gl,
+        agenticPlan: undefined,
         customInstructions,
         sources: [],
         summaries: [],
@@ -252,6 +258,7 @@ export const runWorkflow = ({
         quickSearchTask,
         proSearchTask,
         agenticTask,
+        agenticPlannerTask,
     ]);
 
     return builder.build();

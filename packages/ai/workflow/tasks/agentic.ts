@@ -2,13 +2,85 @@ import { createTask } from '@repo/orchestrator';
 import { AnswerMessage, ToolCall } from '@repo/shared/types';
 import { CoreAssistantMessage, CoreToolMessage, ToolSet } from 'ai';
 import { v4 as uuidv4 } from 'uuid';
+import { z } from 'zod';
 import { getModelFromChatMode } from '../../models';
 import { MCPToolManager } from '../../tools/MCPToolManager';
 import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
-import { ChunkBuffer, generateText, getHumanizedDate, handleError, sendEvents } from '../utils';
-let prompt = `You are a helpful assistant that can answer questions and help with tasks.
-Today is ${getHumanizedDate()}.
-`;
+import {
+    ChunkBuffer,
+    generateObject,
+    generateText,
+    getHumanizedDate,
+    handleError,
+    sendEvents,
+} from '../utils';
+
+export const agenticPlannerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
+    name: 'agentic-planner',
+    execute: async ({ events, context, signal, redirectTo, interrupt }) => {
+        if (!context) {
+            throw new Error('Context is required but was not provided');
+        }
+        const { addAnswerMessage } = sendEvents(events);
+
+        const optimisticTextMessageId = uuidv4();
+
+        let messages =
+            context
+                .get('messages')
+                ?.filter(
+                    message =>
+                        (message.role === 'user' ||
+                            message.role === 'assistant' ||
+                            message.role === 'tool') &&
+                        !!message.content
+                ) || [];
+
+        const mode = context.get('mode');
+
+        const model = getModelFromChatMode(mode);
+
+        const response = await generateObject({
+            model,
+            messages,
+            prompt: `Today is ${getHumanizedDate()}.
+
+You are a helpful assistant that can answer questions and help with tasks.
+
+You may be given a task to complete. analyze the task and come up with a plan to complete the task.
+
+`,
+            signal,
+            schema: z.object({
+                plan: z
+                    .array(z.string())
+                    .describe('How to do the task. This should be a list of steps.'),
+                reasoning: z
+                    .string()
+                    .describe('How you came up with the plan. This should be a short explanation.'),
+            }),
+        });
+
+        if (response) {
+            context.update('agenticPlan', _ => {
+                return {
+                    plan: response.plan,
+                    reasoning: response.reasoning,
+                };
+            });
+
+            addAnswerMessage({
+                id: optimisticTextMessageId,
+                type: 'text',
+                text: response.reasoning,
+            });
+        }
+    },
+    onError: handleError,
+    route: ({ context }) => {
+        return 'agentic';
+    },
+});
 
 export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'agentic',
@@ -17,6 +89,13 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
             throw new Error('Context is required but was not provided');
         }
         const { updateStatus, updateAnswer, updateStep, addAnswerMessage } = sendEvents(events);
+
+        const agenticPlan = context.get('agenticPlan');
+        if (!agenticPlan) {
+            throw new Error('Agentic plan is required but was not provided');
+        }
+
+        const steps = agenticPlan.plan;
 
         const optimisticTextMessageId = uuidv4();
 
@@ -132,13 +211,23 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
         }
         console.log('tools', tools, mcpConfig);
 
+        let prompt = `You are a helpful assistant that can answer questions and help with tasks.
+Today is ${getHumanizedDate()}.
+
+Here are the steps you are working on:
+${steps.map(step => `- ${step}`).join('\n')}
+
+stick to the steps and do not do anything else. If step is already completed, do not do anything.
+
+`;
+
         const response = await generateText({
             model,
             messages,
             prompt,
             signal,
             toolChoice: 'auto',
-            maxSteps: 2,
+            maxSteps: 1,
             tools,
             onToolCall: toolCall => {
                 console.log('toolCall', toolCall);
@@ -171,6 +260,25 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
         });
 
         chunkBuffer.end();
+
+        const reflection = await generateObject({
+            model,
+            messages,
+            schema: z.object({
+                reflection: z
+                    .string()
+                    .describe('What went well? What could have been done better?'),
+            }),
+            prompt: `Just reflect on last task you did.`,
+        });
+
+        if (reflection) {
+            addAnswerMessage({
+                id: uuidv4(),
+                type: 'text',
+                text: reflection.reflection,
+            });
+        }
 
         if (context.get('waitForApproval') || false) {
             interrupt(context.get('waitForApprovalMetadata') as ToolCall);

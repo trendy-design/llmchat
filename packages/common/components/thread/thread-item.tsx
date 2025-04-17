@@ -194,38 +194,6 @@ export const ToolCallUI = ({
     const getThreadItems = useChatStore(state => state.getThreadItems);
     const useWebSearch = useChatStore(state => state.useWebSearch);
 
-    // Group messages by toolCallId
-    const groupedMessages = useMemo(() => {
-        const grouped: Record<
-            string,
-            {
-                toolCall?: AnswerMessage & { type: 'tool-call' };
-                toolResult?: AnswerMessage & { type: 'tool-result' };
-            }
-        > = {};
-
-        message.forEach(m => {
-            if (m.type === 'tool-call' || m.type === 'tool-result') {
-                const id = m.toolCallId;
-                if (!grouped[id]) {
-                    grouped[id] = {};
-                }
-
-                if (m.type === 'tool-call') {
-                    grouped[id].toolCall = m as AnswerMessage & { type: 'tool-call' };
-                } else {
-                    grouped[id].toolResult = m as AnswerMessage & { type: 'tool-result' };
-                }
-            }
-        });
-
-        return grouped;
-    }, [message]);
-
-    const textMessages = useMemo(() => {
-        return message.filter(m => m.type === 'text');
-    }, [message]);
-
     const handleRun = async () => {
         const formData = new FormData();
         formData.append('query', threadItem.query || '');
@@ -241,29 +209,52 @@ export const ToolCallUI = ({
         });
     };
 
+    const toolResultMap = useMemo(() => {
+        const map: Record<string, AnswerMessage & { type: 'tool-result' }> = {};
+        message.forEach(m => {
+            if (m.type === 'tool-result' && m.toolCallId) {
+                map[m.toolCallId] = m as AnswerMessage & { type: 'tool-result' };
+            }
+        });
+        return map;
+    }, [message]);
+
+    const filteredMessages = useMemo(() => {
+        return message.filter(m => m.type !== 'tool-result');
+    }, [message]);
+
     return (
         <div className="flex w-full flex-col gap-2">
-            {/* Render grouped tool calls and results */}
-            {Object.entries(groupedMessages).map(([toolCallId, group]) => {
-                if (!group.toolCall) return null;
-
-                return <ToolMessage tool={group} handleRun={handleRun} />;
+            {filteredMessages.map((m, i) => {
+                if (m.type === 'tool-call') {
+                    return (
+                        <ToolMessage
+                            key={m.toolCallId}
+                            tool={{
+                                toolCall: m as AnswerMessage & { type: 'tool-call' },
+                                toolResult: toolResultMap[m.toolCallId],
+                            }}
+                            handleRun={handleRun}
+                        />
+                    );
+                }
+                if (m.type === 'text') {
+                    return (
+                        <MarkdownContent
+                            key={`text-${threadItem.id}-${i}`}
+                            content={m.text || ''}
+                            isCompleted={['COMPLETED', 'ERROR', 'ABORTED'].includes(
+                                threadItem.status || ''
+                            )}
+                            shouldAnimate={
+                                !['COMPLETED', 'ERROR', 'ABORTED'].includes(threadItem.status || '')
+                            }
+                            isLast={false}
+                        />
+                    );
+                }
+                return null;
             })}
-
-            {/* Render text messages */}
-            {textMessages.map((m, index) => (
-                <MarkdownContent
-                    key={`text-${threadItem.id}-${index}`}
-                    content={m.text || ''}
-                    isCompleted={['COMPLETED', 'ERROR', 'ABORTED'].includes(
-                        threadItem.status || ''
-                    )}
-                    shouldAnimate={
-                        !['COMPLETED', 'ERROR', 'ABORTED'].includes(threadItem.status || '')
-                    }
-                    isLast={false}
-                />
-            ))}
         </div>
     );
 };

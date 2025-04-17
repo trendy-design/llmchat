@@ -3,14 +3,9 @@ import { NextResponse } from 'next/server';
 
 export default clerkMiddleware(
     async (auth, req) => {
-        console.log({
-            auth,
-            req,
-        });
         return NextResponse.next();
     },
     {
-        debug: true,
         authorizedParties: [
             'http://localhost:3000',
             'https://llmchat.co',

@@ -29,7 +29,7 @@ export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSc
         } else if (hasWebSearch) {
             redirectTo('quickSearch');
         } else if (hasMcpConfig) {
-            redirectTo('agentic');
+            redirectTo('agentic-planner');
         } else {
             redirectTo('completion');
         }

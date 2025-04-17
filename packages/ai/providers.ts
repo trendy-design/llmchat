@@ -109,10 +109,23 @@ export const getProviderInstance = (provider: ProviderEnumType) => {
     }
 };
 
-export const getLanguageModel = (m: ModelEnum, middleware?: LanguageModelV1Middleware) => {
+export const getLanguageModel = (
+    m: ModelEnum,
+    middleware?: LanguageModelV1Middleware,
+    useParallelToolCalls?: boolean
+) => {
     const model = models.find(model => model.id === m);
     const instance = getProviderInstance(model?.provider as ProviderEnumType);
-    const selectedModel = instance(model?.id || 'gpt-4o-mini');
+    const selectedModel =
+        model?.provider === Providers.OPENAI
+            ? instance(model?.id || 'gpt-4o-mini', {
+                  ...(typeof useParallelToolCalls === 'boolean'
+                      ? {
+                            parallelToolCalls: useParallelToolCalls,
+                        }
+                      : {}),
+              })
+            : instance(model?.id || 'gpt-4o-mini');
     if (middleware) {
         return wrapLanguageModel({
             model: selectedModel as LanguageModelV1,

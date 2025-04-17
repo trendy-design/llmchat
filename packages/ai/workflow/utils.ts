@@ -600,6 +600,7 @@ export const sendEvents = (events?: TypedEventEmitter<WorkflowEventSchema>) => {
     };
 
     const addAnswerMessage = (message: AnswerMessage) => {
+        console.log('addAnswerMessage', message);
         events?.update('answer', prev => ({
             ...prev,
             messages: [...(prev?.messages || []), message],

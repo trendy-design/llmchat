@@ -1,36 +1,53 @@
 import { useAuth, useUser } from '@clerk/nextjs';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { ChatMode, ChatModeConfig } from '@repo/shared/config';
 import { ThreadItem } from '@repo/shared/types';
 import { buildCoreMessagesFromThreadItems, plausible } from '@repo/shared/utils';
+import { produce } from 'immer';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo } from 'react';
-import { useApiKeysStore, useAppStore, useChatStore, useMcpToolsStore } from '../store';
+import { useApiKeysStore, useChatStore, useMcpToolsStore } from '../store';
 
+export type submitHandlerArgs = {
+    formData: FormData;
+    newThreadId?: string;
+    existingThreadItemId?: string;
+    newChatMode?: string;
+    messages?: ThreadItem[];
+    useWebSearch?: boolean;
+    showSuggestions?: boolean;
+    breakpointId?: string;
+    breakpointData?: any;
+};
+
+// ... existing code ...
 export type AgentContextType = {
-    runAgent: (body: any) => Promise<void>;
-    handleSubmit: (args: {
-        formData: FormData;
-        newThreadId?: string;
-        existingThreadItemId?: string;
-        newChatMode?: string;
-        messages?: ThreadItem[];
-        useWebSearch?: boolean;
-        showSuggestions?: boolean;
-        breakpointId?: string;
-        breakpointData?: any;
-    }) => Promise<void>;
-    updateContext: (threadId: string, data: any) => void;
+    executeAgent: (payload: any) => Promise<void>;
+    handleSubmit: (args: submitHandlerArgs) => Promise<void>;
+    updateAgentContext: (threadId: string, data: any) => void;
 };
 
 const AgentContext = createContext<AgentContextType | undefined>(undefined);
+
+const AGENT_EVENT_TYPES = [
+    'steps',
+    'sources',
+    'answer',
+    'error',
+    'status',
+    'suggestions',
+    'toolCalls',
+    'toolResults',
+    'object',
+    'breakpoint',
+];
 
 export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const { threadId: currentThreadId } = useParams();
     const { isSignedIn } = useAuth();
     const { user } = useUser();
-
     const {
         updateThreadItem,
         setIsGenerating,
@@ -56,305 +73,193 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     }));
     const { push } = useRouter();
 
-    const getSelectedMCP = useMcpToolsStore(state => state.getSelectedMCP);
-    const apiKeys = useApiKeysStore(state => state.getAllKeys);
-    const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
-    const setShowSignInModal = useAppStore(state => state.setShowSignInModal);
+    const getSelectedMCPConfig = useMcpToolsStore(state => state.getSelectedMCP);
+    const getApiKeys = useApiKeysStore(state => state.getAllKeys);
+    const hasApiKeyForMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
 
-    // Fetch remaining credits when user changes
     useEffect(() => {
         fetchRemainingCredits();
     }, [user?.id, fetchRemainingCredits]);
 
-    // In-memory store for thread items
-    const threadItemMap = useMemo(() => new Map<string, ThreadItem>(), []);
+    const threadItemCache = useMemo(() => new Map<string, ThreadItem>(), []);
 
-    // Define common event types to reduce repetition
-    const EVENT_TYPES = [
-        'steps',
-        'sources',
-        'answer',
-        'error',
-        'status',
-        'suggestions',
-        'toolCalls',
-        'toolResults',
-        'object',
-        'breakpoint',
-    ];
-    // Helper: Update in-memory and store thread item
-    const handleThreadItemUpdate = useCallback(
+    const updateThreadItemCache = useCallback(
         (
             threadId: string,
             threadItemId: string,
             eventType: string,
             eventData: ThreadItem,
-            parentThreadItemId?: string,
-            shouldPersistToDB: boolean = true
+            parentThreadItemId?: string
         ) => {
-            console.log('eventData', eventData);
-            const prevItem = threadItemMap.get(threadItemId) || ({} as ThreadItem);
+            const previousItem = threadItemCache.get(threadItemId) || ({} as ThreadItem);
 
-            const updatedItem: ThreadItem = {
-                ...prevItem,
-                query: eventData?.query || prevItem.query || '',
-                mode: eventData?.mode || prevItem.mode,
-                threadId,
-                parentId: parentThreadItemId || prevItem.parentId,
-                id: threadItemId,
-                object: eventData?.object || prevItem.object,
-                createdAt: prevItem.createdAt || new Date(),
-                updatedAt: new Date(),
-                breakpoint: eventData?.breakpoint || prevItem.breakpoint,
-                ...(eventType === 'answer'
-                    ? {
-                          answer: {
-                              ...eventData.answer,
-                              text: (prevItem.answer?.text || '') + eventData.answer?.text,
-                              messages: [
-                                  ...(prevItem.answer?.messages?.filter(m => {
-                                      // Keep all messages that aren't being updated
-                                      return !eventData.answer?.messages?.some(
-                                          em => em.id === m.id && em.type === m.type
-                                      );
-                                  }) || []),
-                                  ...(eventData.answer?.messages?.map(newMessage => {
-                                      const existingMessage = prevItem.answer?.messages?.find(
-                                          m => m.id === newMessage.id && m.type === newMessage.type
-                                      );
+            const mergedItem = produce(previousItem, draft => {
+                draft.query = eventData?.query || draft.query || '';
+                draft.mode = eventData?.mode || draft.mode;
+                draft.threadId = threadId;
+                draft.parentId = parentThreadItemId || draft.parentId;
+                draft.id = threadItemId;
+                draft.object = eventData?.object || draft.object;
+                draft.createdAt = draft.createdAt || new Date();
+                draft.updatedAt = new Date();
+                draft.breakpoint = eventData?.breakpoint || draft.breakpoint;
 
-                                      if (
-                                          existingMessage &&
-                                          newMessage.type === 'text' &&
-                                          existingMessage.type === 'text'
-                                      ) {
-                                          return {
-                                              ...newMessage,
-                                              text:
-                                                  (existingMessage.text || '') +
-                                                  (newMessage.text || ''),
-                                          };
-                                      }
+                if (eventType === 'answer' && eventData.answer) {
+                    draft.answer = draft.answer;
+                    draft.answer = {
+                        ...draft.answer,
+                        ...eventData.answer,
+                        text: (draft.answer?.text || '') + (eventData.answer.text || ''),
+                        messages: [
+                            ...(draft.answer?.messages?.filter(
+                                m =>
+                                    !eventData.answer?.messages?.some(
+                                        em => em.id === m.id && em.type === m.type
+                                    )
+                            ) || []),
+                            ...(eventData.answer?.messages?.map(newMessage => {
+                                const existingMessage = draft.answer?.messages?.find(
+                                    m => m.id === newMessage.id && m.type === newMessage.type
+                                );
+                                if (
+                                    existingMessage &&
+                                    newMessage.type === 'text' &&
+                                    existingMessage.type === 'text'
+                                ) {
+                                    return {
+                                        ...newMessage,
+                                        text:
+                                            (existingMessage.text || '') + (newMessage.text || ''),
+                                    };
+                                }
+                                return newMessage;
+                            }) || []),
+                        ],
+                    };
+                } else if (eventType in eventData) {
+                    // @ts-ignore
+                    draft[eventType] = eventData[eventType as keyof ThreadItem];
+                }
+            });
 
-                                      return newMessage;
-                                  }) || []),
-                              ],
-                          },
-                      }
-                    : { [eventType]: eventData[eventType as keyof ThreadItem] }),
-            };
-
-            threadItemMap.set(threadItemId, updatedItem);
-            updateThreadItem(threadId, { ...updatedItem, persistToDB: true });
+            threadItemCache.set(threadItemId, mergedItem);
+            updateThreadItem(threadId, { ...mergedItem, persistToDB: true });
         },
-        [threadItemMap, updateThreadItem]
+        [threadItemCache, updateThreadItem]
     );
+
     const { startWorkflow, abortWorkflow } = useWorkflowWorker(
         useCallback(
-            (data: any) => {
+            (event: any) => {
                 if (
-                    data?.threadId &&
-                    data?.threadItemId &&
-                    data.event &&
-                    EVENT_TYPES.includes(data.event)
+                    event?.threadId &&
+                    event?.threadItemId &&
+                    event.event &&
+                    AGENT_EVENT_TYPES.includes(event.event)
                 ) {
-                    handleThreadItemUpdate(
-                        data.threadId,
-                        data.threadItemId,
-                        data.event,
-                        data,
-                        data.parentThreadItemId
+                    updateThreadItemCache(
+                        event.threadId,
+                        event.threadItemId,
+                        event.event,
+                        event,
+                        event.parentThreadItemId
                     );
                 }
 
-                if (data.type === 'done') {
+                if (event.type === 'done') {
                     setIsGenerating(false);
                     setTimeout(fetchRemainingCredits, 1000);
-                    if (data?.threadItemId) {
-                        threadItemMap.delete(data.threadItemId);
+                    if (event?.threadItemId) {
+                        threadItemCache.delete(event.threadItemId);
                     }
                 }
             },
-            [handleThreadItemUpdate, setIsGenerating, fetchRemainingCredits, threadItemMap]
+            [updateThreadItemCache, setIsGenerating, fetchRemainingCredits, threadItemCache]
         )
     );
 
-    const runAgent = useCallback(
-        async (body: any) => {
+    const executeAgent = useCallback(
+        async (payload: any) => {
             const abortController = new AbortController();
             setAbortController(abortController);
             setIsGenerating(true);
-            const startTime = performance.now();
 
             abortController.signal.addEventListener('abort', () => {
-                console.info('Abort controller triggered');
                 setIsGenerating(false);
-                updateThreadItem(body.threadId, {
-                    id: body.threadItemId,
+                updateThreadItem(payload.threadId, {
+                    id: payload.threadItemId,
                     status: 'ABORTED',
                     persistToDB: true,
                 });
             });
 
             try {
-                const response = await fetch('/api/completion', {
+                await fetchEventSource('/api/completion', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(body),
+                    body: JSON.stringify(payload),
                     credentials: 'include',
-                    cache: 'no-store',
                     signal: abortController.signal,
-                });
-
-                if (!response.ok) {
-                    let errorText = await response.text();
-
-                    if (response.status === 429 && isSignedIn) {
-                        errorText =
-                            'You have reached the daily limit of requests. Please try again tomorrow or Use your own API key.';
-                    }
-
-                    if (response.status === 429 && !isSignedIn) {
-                        errorText =
-                            'You have reached the daily limit of requests. Please sign in to enjoy more requests.';
-                    }
-
-                    setIsGenerating(false);
-                    updateThreadItem(body.threadId, {
-                        id: body.threadItemId,
-                        status: 'ERROR',
-                        error: errorText,
-                        persistToDB: true,
-                    });
-                    console.error('Error response:', errorText);
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                if (!response.body) {
-                    throw new Error('No response body received');
-                }
-
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder();
-                let lastDbUpdate = Date.now();
-                const DB_UPDATE_INTERVAL = 1000;
-                let eventCount = 0;
-                const streamStartTime = performance.now();
-
-                let buffer = '';
-
-                while (true) {
-                    try {
-                        const { value, done } = await reader.read();
-                        if (done) break;
-
-                        buffer += decoder.decode(value, { stream: true });
-                        const messages = buffer.split('\n\n');
-                        buffer = messages.pop() || '';
-
-                        for (const message of messages) {
-                            if (!message.trim()) continue;
-
-                            const eventMatch = message.match(/^event: (.+)$/m);
-                            const dataMatch = message.match(/^data: (.+)$/m);
-
-                            if (eventMatch && dataMatch) {
-                                const currentEvent = eventMatch[1];
-                                eventCount++;
-
-                                try {
-                                    const data = JSON.parse(dataMatch[1]);
-                                    if (
-                                        EVENT_TYPES.includes(currentEvent) &&
-                                        data?.threadId &&
-                                        data?.threadItemId
-                                    ) {
-                                        const shouldPersistToDB =
-                                            Date.now() - lastDbUpdate >= DB_UPDATE_INTERVAL;
-                                        handleThreadItemUpdate(
-                                            data.threadId,
-                                            data.threadItemId,
-                                            currentEvent,
-                                            data,
-                                            data.parentThreadItemId,
-                                            shouldPersistToDB
-                                        );
-                                        if (shouldPersistToDB) {
-                                            lastDbUpdate = Date.now();
-                                        }
-                                    } else if (currentEvent === 'done' && data.type === 'done') {
-                                        setIsGenerating(false);
-                                        const streamDuration = performance.now() - streamStartTime;
-                                        console.log(
-                                            'done event received',
-                                            eventCount,
-                                            `Stream duration: ${streamDuration.toFixed(2)}ms`
-                                        );
-                                        setTimeout(fetchRemainingCredits, 1000);
-                                        if (data.threadItemId) {
-                                            threadItemMap.delete(data.threadItemId);
-                                        }
-                                        if (data.status === 'error') {
-                                            console.error('Stream error:', data.error);
-                                        }
-                                    }
-                                } catch (jsonError) {
-                                    console.warn(
-                                        'JSON parse error for data:',
-                                        dataMatch[1],
-                                        jsonError
-                                    );
+                    onopen: async res => {
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+                    },
+                    onmessage(msg) {
+                        const { event, data } = msg;
+                        if (!event || !data) return;
+                        try {
+                            const parsedData = JSON.parse(data);
+                            if (
+                                AGENT_EVENT_TYPES.includes(event) &&
+                                parsedData?.threadId &&
+                                parsedData?.threadItemId
+                            ) {
+                                updateThreadItemCache(
+                                    parsedData.threadId,
+                                    parsedData.threadItemId,
+                                    event,
+                                    parsedData,
+                                    parsedData.parentThreadItemId
+                                );
+                            } else if (event === 'done' && parsedData.type === 'done') {
+                                setIsGenerating(false);
+                                setTimeout(fetchRemainingCredits, 1000);
+                                if (parsedData.threadItemId) {
+                                    threadItemCache.delete(parsedData.threadItemId);
                                 }
                             }
-                        }
-                    } catch (readError) {
-                        console.error('Error reading from stream:', readError);
-                        await new Promise(resolve => setTimeout(resolve, 1000));
-                        continue;
-                    }
-                }
-            } catch (streamError: any) {
-                const totalTime = performance.now() - startTime;
-                console.error(
-                    'Fatal stream error:',
-                    streamError,
-                    `Total time: ${totalTime.toFixed(2)}ms`
-                );
+                        } catch (err) {}
+                    },
+                    onerror() {
+                        setIsGenerating(false);
+                        updateThreadItem(payload.threadId, {
+                            id: payload.threadItemId,
+                            status: 'ERROR',
+                            error: 'Something went wrong. Please try again.',
+                        });
+                    },
+                    onclose() {
+                        setIsGenerating(false);
+                    },
+                });
+            } catch (err: any) {
                 setIsGenerating(false);
-                if (streamError.name === 'AbortError') {
-                    updateThreadItem(body.threadId, {
-                        id: body.threadItemId,
-                        status: 'ABORTED',
-                        error: 'Generation aborted',
-                    });
-                } else if (streamError.message.includes('429')) {
-                    updateThreadItem(body.threadId, {
-                        id: body.threadItemId,
-                        status: 'ERROR',
-                        error: 'You have reached the daily limit of requests. Please try again tomorrow or Use your own API key.',
-                    });
-                } else {
-                    updateThreadItem(body.threadId, {
-                        id: body.threadItemId,
-                        status: 'ERROR',
-                        error: 'Something went wrong. Please try again.',
-                    });
-                }
-            } finally {
-                setIsGenerating(false);
-
-                const totalTime = performance.now() - startTime;
-                console.info(`Stream completed in ${totalTime.toFixed(2)}ms`);
+                updateThreadItem(payload.threadId, {
+                    id: payload.threadItemId,
+                    status: 'ERROR',
+                    error: err.message || 'Something went wrong. Please try again.',
+                });
             }
         },
         [
             setAbortController,
             setIsGenerating,
             updateThreadItem,
-            handleThreadItemUpdate,
+            updateThreadItemCache,
             fetchRemainingCredits,
-            EVENT_TYPES,
-            threadItemMap,
+            AGENT_EVENT_TYPES,
+            threadItemCache,
         ]
     );
 
@@ -369,42 +274,31 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             showSuggestions,
             breakpointId,
             breakpointData,
-        }: {
-            formData: FormData;
-            newThreadId?: string;
-            existingThreadItemId?: string;
-            newChatMode?: string;
-            messages?: ThreadItem[];
-            useWebSearch?: boolean;
-            showSuggestions?: boolean;
-            breakpointId?: string;
-            breakpointData?: any;
-        }) => {
+        }: submitHandlerArgs) => {
             const mode = (newChatMode || chatMode) as ChatMode;
             if (
                 !isSignedIn &&
-                !!ChatModeConfig[mode as keyof typeof ChatModeConfig]?.isAuthRequired
+                ChatModeConfig[mode as keyof typeof ChatModeConfig]?.isAuthRequired
             ) {
                 push('/sign-in');
-
                 return;
             }
 
             const threadId = currentThreadId?.toString() || newThreadId;
             if (!threadId) return;
 
-            // Update thread title
             updateThread({ id: threadId, title: formData.get('query') as string });
 
-            const optimisticAiThreadItemId = existingThreadItemId || nanoid();
+            const aiThreadItemId = existingThreadItemId || nanoid();
             const query = formData.get('query') as string;
             const imageAttachment = formData.get('imageAttachment') as string;
 
             const aiThreadItem: ThreadItem = {
-                id: optimisticAiThreadItemId,
+                id: aiThreadItemId,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 status: 'QUEUED',
+                error: undefined,
                 threadId,
                 query,
                 imageAttachment,
@@ -422,23 +316,21 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 },
             });
 
-            // Build core messages array
             const coreMessages = buildCoreMessagesFromThreadItems({
                 messages: messages || [],
                 query,
                 imageAttachment,
             });
 
-            if (hasApiKeyForChatMode(mode)) {
+            if (hasApiKeyForMode(mode)) {
                 const abortController = new AbortController();
                 setAbortController(abortController);
                 setIsGenerating(true);
 
                 abortController.signal.addEventListener('abort', () => {
-                    console.info('Abort signal received');
                     setIsGenerating(false);
                     abortWorkflow();
-                    updateThreadItem(threadId, { id: optimisticAiThreadItemId, status: 'ABORTED' });
+                    updateThreadItem(threadId, { id: aiThreadItemId, status: 'ABORTED' });
                 });
 
                 startWorkflow({
@@ -446,20 +338,20 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     question: query,
                     threadId,
                     messages: coreMessages,
-                    mcpConfig: getSelectedMCP(),
-                    threadItemId: optimisticAiThreadItemId,
+                    mcpConfig: getSelectedMCPConfig(),
+                    threadItemId: aiThreadItemId,
                     parentThreadItemId: '',
                     customInstructions,
-                    apiKeys: apiKeys(),
+                    apiKeys: getApiKeys(),
                 });
             } else {
-                runAgent({
+                executeAgent({
                     mode: newChatMode || chatMode,
                     prompt: query,
                     threadId,
                     messages: coreMessages,
-                    mcpConfig: getSelectedMCP(),
-                    threadItemId: optimisticAiThreadItemId,
+                    mcpConfig: getSelectedMCPConfig(),
+                    threadItemId: aiThreadItemId,
                     customInstructions,
                     parentThreadItemId: '',
                     webSearch: useWebSearch,
@@ -473,7 +365,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             isSignedIn,
             currentThreadId,
             chatMode,
-            setShowSignInModal,
             updateThread,
             createThreadItem,
             setCurrentThreadItem,
@@ -482,17 +373,16 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             abortWorkflow,
             startWorkflow,
             customInstructions,
-            getSelectedMCP,
-            apiKeys,
-            hasApiKeyForChatMode,
+            getSelectedMCPConfig,
+            getApiKeys,
+            hasApiKeyForMode,
             updateThreadItem,
-            runAgent,
+            executeAgent,
         ]
     );
 
-    const updateContext = useCallback(
+    const updateAgentContext = useCallback(
         (threadId: string, data: any) => {
-            console.info('Updating context', data);
             updateThreadItem(threadId, {
                 id: data.threadItemId,
                 parentId: data.parentThreadItemId,
@@ -505,11 +395,11 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
 
     const contextValue = useMemo(
         () => ({
-            runAgent,
+            executeAgent,
             handleSubmit,
-            updateContext,
+            updateAgentContext,
         }),
-        [runAgent, handleSubmit, updateContext]
+        [executeAgent, handleSubmit, updateAgentContext]
     );
 
     return <AgentContext.Provider value={contextValue}>{children}</AgentContext.Provider>;
@@ -522,3 +412,4 @@ export const useAgentStream = (): AgentContextType => {
     }
     return context;
 };
+// ... existing code ...
