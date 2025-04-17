@@ -27,10 +27,6 @@ export const IntroDialog = () => {
     const points = [
         {
             icon,
-            text: `**Privacy-focused**: Your chat history never leaves your device.`,
-        },
-        {
-            icon,
             text: `**Open source**: Fully transparent and modifiable. Easily deploy it yourself.`,
         },
         {

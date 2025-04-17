@@ -1,32 +1,40 @@
-  // This is your Prisma schema file,
-  // learn more about it in the docs: https://pris.ly/d/prisma-schema
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-  generator client {
-    provider = "prisma-client-js"
-  }
+generator client {
+  provider = "prisma-client-js"
+}
 
-  datasource db {
-    provider = "postgresql"
-    url      = env("DATABASE_URL")
-  }
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
 model Feedback {
-  id String @id @default(uuid())
-  userId String
-  feedback String
-  metadata Json?
+  id        String   @id @default(uuid())
+  userId    String
+  feedback  String
+  metadata  Json?
   createdAt DateTime @default(now())
 }
 
+enum WorkflowStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  ABORTED
+  INTERRUPTED
+}
+
 model Workflow {
-  id             String   @id
-  workflowState  Json
-  eventState     Json
-  contextState   Json
-  taskTimings    Json
+  id              String         @id
+  workflowState   Json
+  eventState      Json
+  contextState    Json
+  taskTimings     Json
   executionCounts Json
-  workflowConfig Json
-  lastUpdated    DateTime
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-} 
+  lastUpdated     DateTime
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  status          WorkflowStatus
+}

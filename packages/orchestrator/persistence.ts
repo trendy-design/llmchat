@@ -1,4 +1,4 @@
-import { WorkflowConfig } from './types';
+import { WorkflowStatus } from './types';
 
 type PersistentStorageAdapter<TEvent, TContext> = {
     save(id: string, data: WorkflowPersistenceData<TEvent, TContext>): Promise<void>;
@@ -14,8 +14,8 @@ type WorkflowPersistenceData<TEvent, TContext> = {
     contextState: TContext;
     taskTimings: Record<string, any[]>;
     executionCounts: Record<string, number>;
-    workflowConfig: WorkflowConfig;
     lastUpdated: string;
+    status: WorkflowStatus;
 };
 
 export class PersistenceLayer<TEvent, TContext> {
@@ -25,7 +25,7 @@ export class PersistenceLayer<TEvent, TContext> {
         this.storage = storage;
     }
 
-    async saveWorkflow(id: string, engine: any): Promise<void> {
+    async saveWorkflow(id: string, engine: any, status: WorkflowStatus): Promise<void> {
         const executionContext = engine.executionContext;
         const events = engine.getEvents();
         const context = engine.getContext();
@@ -46,8 +46,8 @@ export class PersistenceLayer<TEvent, TContext> {
                 ? this.sanitizeForSerialization(Object.fromEntries(executionContext.taskTimings))
                 : {},
             executionCounts: executionContext.getAllTaskRunCounts(),
-            workflowConfig: sanitizedConfig,
             lastUpdated: new Date().toISOString(),
+            status,
         };
         await this.storage.save(this.getStorageKey(id), data);
     }

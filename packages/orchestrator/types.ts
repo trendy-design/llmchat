@@ -12,6 +12,14 @@ export type WorkflowConfig = {
     signal?: AbortSignal;
 };
 
+export enum WorkflowStatus {
+    COMPLETED = 'COMPLETED',
+    FAILED = 'FAILED',
+    PENDING = 'PENDING',
+    ABORTED = 'ABORTED',
+    INTERRUPTED = 'INTERRUPTED',
+}
+
 export type TaskParams<
     TEvent extends EventSchemaDefinition = any,
     TContext extends ContextSchemaDefinition = any,

@@ -196,16 +196,16 @@ export const runWorkflow = ({
                 update: {
                     ...data,
                     id: key,
-                    workflowConfig: JSON.stringify(data.workflowConfig),
                     contextState: JSON.stringify(data.contextState),
                     eventState: JSON.stringify(data.eventState),
+                    status: data.status,
                 },
                 create: {
                     ...data,
                     id: key,
-                    workflowConfig: JSON.stringify(data.workflowConfig),
                     contextState: JSON.stringify(data.contextState),
                     eventState: JSON.stringify(data.eventState),
+                    status: data.status,
                 },
             });
         },

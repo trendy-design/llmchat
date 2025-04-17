@@ -12,6 +12,7 @@ import {
     TaskOptions,
     TaskParams,
     WorkflowConfig,
+    WorkflowStatus,
 } from './types';
 
 export class WorkflowEngine<
@@ -28,6 +29,7 @@ export class WorkflowEngine<
     private config?: WorkflowConfig;
     private persistence?: PersistenceLayer<TEvent, TContext>;
     private signal?: AbortSignal;
+    private status: WorkflowStatus = WorkflowStatus.PENDING;
 
     constructor({
         id,
@@ -62,7 +64,7 @@ export class WorkflowEngine<
 
     persistState() {
         if (this.persistence) {
-            this.persistence.saveWorkflow(this.id, this);
+            this.persistence.saveWorkflow(this.id, this, this.status);
         }
     }
 
@@ -78,7 +80,7 @@ export class WorkflowEngine<
 
             // Make sure we persist state immediately
             if (this.persistence) {
-                this.persistence.saveWorkflow(this.id, this);
+                this.persistence.saveWorkflow(this.id, this, this.status);
             }
 
             console.log(`🔴 Breakpoint created for task "${task}" with data:`, data);
@@ -100,6 +102,9 @@ export class WorkflowEngine<
     }
 
     async start(initialTask: string, initialData?: any) {
+        // Update status to running when workflow starts
+        this.status = WorkflowStatus.PENDING;
+
         // Initialize context with initial data if provided
         if (initialData) {
             // Also update typed context if available
@@ -226,6 +231,7 @@ export class WorkflowEngine<
     async executeTask(taskName: string, data?: any) {
         if (this.executionContext.isAborted() && !this.executionContext.isGracefulShutdown()) {
             console.log(`⚠️ Task "${taskName}" skipped due to workflow abortion.`);
+            this.status = WorkflowStatus.ABORTED;
             return;
         }
 
@@ -236,6 +242,10 @@ export class WorkflowEngine<
                 taskName,
                 new Error(`Task "${taskName}" not found.`)
             );
+            this.status = WorkflowStatus.FAILED;
+            if (this.persistence) {
+                await this.persistence.saveWorkflow(this.id, this, this.status);
+            }
             throw new Error(`Task "${taskName}" not found.`);
 
             return;
@@ -323,7 +333,7 @@ export class WorkflowEngine<
 
                 this.executionContext.markTaskComplete(taskName, result);
                 if (this.persistence) {
-                    await this.persistence.saveWorkflow(this.id, this);
+                    await this.persistence.saveWorkflow(this.id, this, this.status);
                 }
                 // Emit an event with the updated execution count
                 const executionCount = this.executionContext.getTaskExecutionCount(taskName);
@@ -334,6 +344,7 @@ export class WorkflowEngine<
                     !this.executionContext.isGracefulShutdown()
                 ) {
                     console.log(`⚠️ Workflow stopped after task "${taskName}".`);
+                    this.status = WorkflowStatus.ABORTED;
                     return result;
                 }
 
@@ -368,8 +379,9 @@ export class WorkflowEngine<
                 // Check for special "end" route value
                 if (nextTasks === 'end') {
                     console.log(`🏁 Workflow ended after task "${taskName}".`);
+                    this.status = WorkflowStatus.COMPLETED;
                     if (this.persistence) {
-                        await this.persistence.saveWorkflow(this.id, this);
+                        await this.persistence.saveWorkflow(this.id, this, this.status);
                     }
                     return result;
                 }
@@ -403,7 +415,7 @@ export class WorkflowEngine<
                     }
                 }
                 if (this.persistence) {
-                    await this.persistence.saveWorkflow(this.id, this);
+                    await this.persistence.saveWorkflow(this.id, this, this.status);
                 }
                 return result;
             } catch (error) {
@@ -413,6 +425,10 @@ export class WorkflowEngine<
 
                 if (error instanceof BreakpointError) {
                     console.log(`🔴 Breakpoint hit for task "${taskName}".`);
+                    this.status = WorkflowStatus.INTERRUPTED;
+                    if (this.persistence) {
+                        await this.persistence.saveWorkflow(this.id, this, this.status);
+                    }
                     return;
                 }
 
@@ -440,7 +456,7 @@ export class WorkflowEngine<
                         if (errorResult.result !== undefined) {
                             this.executionContext.markTaskComplete(taskName, errorResult.result);
                             if (this.persistence) {
-                                await this.persistence.saveWorkflow(this.id, this);
+                                await this.persistence.saveWorkflow(this.id, this, this.status);
                             }
 
                             if (errorResult.next) {
@@ -482,6 +498,10 @@ export class WorkflowEngine<
 
                 if (attempt > (config.retryCount || 0)) {
                     console.error(`⛔ Task "${taskName}" failed after ${attempt} attempts.`);
+                    this.status = WorkflowStatus.FAILED;
+                    if (this.persistence) {
+                        await this.persistence.saveWorkflow(this.id, this, this.status);
+                    }
                     throw error;
                 }
             }
@@ -515,8 +535,9 @@ export class WorkflowEngine<
 
     abort(graceful: boolean = false) {
         this.executionContext.abortWorkflow(graceful);
+        this.status = graceful ? WorkflowStatus.ABORTED : WorkflowStatus.ABORTED;
         if (this.persistence) {
-            this.persistence.saveWorkflow(this.id, this);
+            this.persistence.saveWorkflow(this.id, this, this.status);
         }
     }
 
@@ -539,6 +560,49 @@ export class WorkflowEngine<
 
     getTimingSummary() {
         return this.executionContext.getMainTimingSummary();
+    }
+
+    /**
+     * Get the current status of the workflow
+     */
+    getStatus(): WorkflowStatus {
+        return this.status;
+    }
+
+    /**
+     * Set the workflow status
+     */
+    setStatus(status: WorkflowStatus): void {
+        this.status = status;
+        if (this.persistence) {
+            this.persistence.saveWorkflow(this.id, this, this.status);
+        }
+    }
+
+    /**
+     * Interrupt the workflow and create a breakpoint
+     */
+    interrupt(taskName: string, data: any): void {
+        console.log(`🔴 Interrupting workflow at task "${taskName}"`);
+        this.status = WorkflowStatus.INTERRUPTED;
+        this.createBreakpoint(taskName, data);
+        if (this.persistence) {
+            this.persistence.saveWorkflow(this.id, this, this.status);
+        }
+    }
+
+    /**
+     * Resume an interrupted workflow
+     */
+    async resumeInterrupted(): Promise<void> {
+        if (this.status === WorkflowStatus.INTERRUPTED) {
+            this.status = WorkflowStatus.PENDING;
+            if (this.persistence) {
+                await this.persistence.saveWorkflow(this.id, this, this.status);
+            }
+        } else {
+            console.warn('Attempted to resume a workflow that is not in INTERRUPTED state');
+        }
     }
 }
 
