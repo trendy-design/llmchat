@@ -27,6 +27,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { BYOKIcon, NewIcon } from '../icons';
+
 export const chatOptions = [
     {
         label: 'Deep Research',
@@ -90,11 +91,11 @@ export const modelOptions = [
     },
 
     {
-        label: 'O3 Mini',
-        value: ChatMode.O3_Mini,
+        label: 'O4 Mini',
+        value: ChatMode.O4_Mini,
         // webSearch: true,
         icon: undefined,
-        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.O3_Mini],
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.O4_Mini],
     },
 
     {
