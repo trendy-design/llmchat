@@ -1,7 +1,9 @@
 import { createTask } from '@repo/orchestrator';
+import { WorkflowEventSchema } from '@repo/shared/types';
+import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { getModelFromChatMode, ModelEnum } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
+import { WorkflowContextSchema } from '../flow';
 import { readWebPagesWithTimeout, TReaderResult } from '../reader';
 import {
     generateObject,
@@ -189,8 +191,15 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
 
         const prompt = buildWebSearchPrompt(webpageReader);
 
+        const messageId = uuidv4();
+
         updateAnswer({
-            text: '',
+            message: {
+                type: 'text',
+                text: '',
+                isFullText: false,
+                id: messageId,
+            },
             status: 'PENDING',
         });
 
@@ -200,15 +209,24 @@ export const quickSearchTask = createTask<WorkflowEventSchema, WorkflowContextSc
             prompt,
             onChunk: (chunk, fullText) => {
                 updateAnswer({
-                    text: chunk,
+                    message: {
+                        type: 'text',
+                        text: chunk,
+                        isFullText: false,
+                        id: messageId,
+                    },
                     status: 'PENDING',
                 });
             },
         });
 
         updateAnswer({
-            text: '',
-            finalText: response,
+            message: {
+                type: 'text',
+                text: response,
+                isFullText: true,
+                id: messageId,
+            },
             status: 'COMPLETED',
         });
 

@@ -1,7 +1,9 @@
 import { createTask } from '@repo/orchestrator';
+import { WorkflowEventSchema } from '@repo/shared/types';
 import { format } from 'date-fns';
+import { v4 as uuidv4 } from 'uuid';
 import { ModelEnum } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
+import { WorkflowContextSchema } from '../flow';
 import { ChunkBuffer, generateText, handleError, sendEvents } from '../utils';
 
 export const writerTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
@@ -79,12 +81,20 @@ Your report should demonstrate subject matter expertise while remaining intellec
                 },
             });
         }
+
+        const messageId = uuidv4();
+
         const chunkBuffer = new ChunkBuffer({
             threshold: 150,
             breakOn: ['\n\n', '.', '!', '?'],
             onFlush: (text: string) => {
                 updateAnswer({
-                    text,
+                    message: {
+                        type: 'text',
+                        text,
+                        isFullText: false,
+                        id: messageId,
+                    },
                     status: 'PENDING',
                 });
             },
@@ -104,8 +114,12 @@ Your report should demonstrate subject matter expertise while remaining intellec
         chunkBuffer.flush();
 
         updateAnswer({
-            text: '',
-            finalText: answer,
+            message: {
+                type: 'text',
+                text: answer,
+                isFullText: true,
+                id: messageId,
+            },
             status: 'COMPLETED',
         });
 

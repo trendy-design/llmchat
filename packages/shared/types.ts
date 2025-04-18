@@ -68,24 +68,67 @@ export type AnswerText = {
 
 export type AnswerToolResult = ToolResult & {
     id: string;
-    approvalStatus?: 'APPROVED' | 'REJECTED' | 'PENDING';
+    approvalStatus?: 'APPROVED' | 'REJECTED' | 'PENDING' | 'AUTO_APPROVED' | 'RUNNING';
 };
 
 export type AnswerToolCall = ToolCall & {
     id: string;
-    approvalStatus?: 'APPROVED' | 'REJECTED' | 'PENDING';
+    approvalStatus?: 'APPROVED' | 'REJECTED' | 'PENDING' | 'AUTO_APPROVED' | 'RUNNING';
 };
 
 export type AnswerMessage = AnswerObject | AnswerText | AnswerToolCall | AnswerToolResult;
 
 export type Answer = {
-    text: string;
-    finalText?: string;
+    text: string; // deprecated
+    isChunk?: boolean; // deprecated
     messages?: Array<AnswerMessage>;
     status?: ItemStatus;
 };
 
+export type AnswerEvent = {
+    status: ItemStatus;
+    message?: AnswerMessage;
+};
+
+// Define the workflow schema type
+export type WorkflowEventSchema = {
+    schemaVersion: number;
+    steps?: Record<
+        string,
+        {
+            id: number;
+            text?: string;
+            steps: Record<
+                string,
+                {
+                    data?: any;
+                    status: ItemStatus;
+                }
+            >;
+            status: ItemStatus;
+        }
+    >;
+    answer: AnswerEvent;
+    sources?: {
+        index: number;
+        title: string;
+        link: string;
+    }[];
+    object?: Record<string, any>;
+    error?: {
+        error: string;
+        status: ItemStatus;
+    };
+    status: ItemStatus;
+    suggestions?: string[];
+    breakpoint?: {
+        id?: string;
+        data?: any;
+    };
+};
+
 export type ThreadItem = {
+    schemaVersion: number;
     query: string;
     steps?: Record<string, Step>;
     answer?: Answer;

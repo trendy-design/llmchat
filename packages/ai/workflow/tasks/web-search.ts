@@ -1,6 +1,7 @@
 import { createTask } from '@repo/orchestrator';
+import { WorkflowEventSchema } from '@repo/shared/types';
 import { ModelEnum } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
+import { WorkflowContextSchema } from '../flow';
 import {
     executeWebSearch,
     generateText,

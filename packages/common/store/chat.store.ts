@@ -831,6 +831,7 @@ export const useChatStore = create(
                 // Safety fallback - try to persist directly in case of errors in the main logic
                 try {
                     const fallbackItem = {
+                        schemaVersion: 1,
                         id: threadItem.id,
                         threadId,
                         query: threadItem.query || '',

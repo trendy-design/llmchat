@@ -7,10 +7,11 @@ import {
 } from '@repo/orchestrator';
 import { prisma } from '@repo/prisma';
 import { ChatMode } from '@repo/shared/config';
-import { Answer } from '@repo/shared/types';
+import { Answer, WorkflowEventSchema } from '@repo/shared/types';
 import { Geo } from '@vercel/functions';
 import { CoreMessage } from 'ai';
 import { Langfuse } from 'langfuse';
+import { MCPToolManager } from '../tools/MCPToolManager';
 import {
     agenticPlannerTask,
     agenticTask,
@@ -26,47 +27,11 @@ import {
     webSearchTask,
     writerTask,
 } from './tasks';
-type Status = 'PENDING' | 'COMPLETED' | 'ERROR' | 'HUMAN_REVIEW';
-
-// Define the workflow schema type
-export type WorkflowEventSchema = {
-    steps?: Record<
-        string,
-        {
-            id: number;
-            text?: string;
-            steps: Record<
-                string,
-                {
-                    data?: any;
-                    status: Status;
-                }
-            >;
-            status: Status;
-        }
-    >;
-    answer: Answer;
-    sources?: {
-        index: number;
-        title: string;
-        link: string;
-    }[];
-    object?: Record<string, any>;
-    error?: {
-        error: string;
-        status: Status;
-    };
-    status: Status;
-    suggestions?: string[];
-    breakpoint?: {
-        id?: string;
-        data?: any;
-    };
-};
 
 // Define the context schema type
 export type WorkflowContextSchema = {
     mcpConfig: Record<string, string>;
+    mcpToolManager?: any;
     question: string;
     search_queries: string[];
     messages: CoreMessage[];
@@ -111,7 +76,7 @@ export type WorkflowContextSchema = {
     waitForApprovalMetadata: any;
 };
 
-export const runWorkflow = ({
+export const runWorkflow = async ({
     mcpConfig = {},
     mode,
     question,
@@ -152,13 +117,25 @@ export const runWorkflow = ({
         ...config,
     };
 
+    // Initialize MCPToolManager at workflow startup if mcpConfig is provided
+    let mcpToolManager;
+    if (Object.keys(mcpConfig).length > 0) {
+        try {
+            mcpToolManager = await MCPToolManager.create(mcpConfig);
+            await mcpToolManager?.initialize({ shouldExecute: false });
+            console.log('MCPToolManager initialized successfully at workflow start');
+        } catch (error) {
+            console.error('Failed to initialize MCPToolManager:', error);
+        }
+    }
+
     // Create typed event emitter with the proper type
     const events = createTypedEventEmitter<WorkflowEventSchema>({
+        schemaVersion: 1,
         steps: {},
         answer: {
-            text: '',
             status: 'PENDING',
-            messages: [],
+            message: undefined,
         },
         sources: [],
         suggestions: [],
@@ -172,6 +149,7 @@ export const runWorkflow = ({
 
     const context = createContext<WorkflowContextSchema>({
         mcpConfig,
+        mcpToolManager,
         question,
         mode,
         webSearch,
@@ -261,5 +239,5 @@ export const runWorkflow = ({
         agenticPlannerTask,
     ]);
 
-    return builder.build();
+    return Promise.resolve(builder.build());
 };

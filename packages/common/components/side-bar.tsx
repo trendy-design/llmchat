@@ -149,7 +149,12 @@ export const Sidebar = () => {
                                 !isSidebarOpen && 'justify-center px-0'
                             )}
                         >
-                            <Logo className="text-foreground size-6" />
+                            <Logo className="text-foreground size-5" />
+                            {isSidebarOpen && (
+                                <p className="font-clash text-foreground text-lg font-bold tracking-wide">
+                                    llmchat.co
+                                </p>
+                            )}
                         </motion.div>
                     </Link>
                     {isSidebarOpen && (

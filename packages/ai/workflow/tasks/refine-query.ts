@@ -1,7 +1,9 @@
 import { createTask } from '@repo/orchestrator';
+import { WorkflowEventSchema } from '@repo/shared/types';
+import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
+import { WorkflowContextSchema } from '../flow';
 import { generateObject, getHumanizedDate, handleError, sendEvents } from '../utils';
 
 const ClarificationResponseSchema = z.object({
@@ -59,9 +61,15 @@ export const refineQueryTask = createTask<WorkflowEventSchema, WorkflowContextSc
         });
 
         if (object?.needsClarification) {
+            const messageId = uuidv4();
+
             updateAnswer({
-                text: object.reasoning,
-                finalText: object.reasoning,
+                message: {
+                    type: 'text',
+                    text: object.reasoning,
+                    isFullText: true,
+                    id: messageId,
+                },
                 status: 'COMPLETED',
             });
             object?.clarifyingQuestion &&

@@ -1,11 +1,10 @@
 import { createTask } from '@repo/orchestrator';
-import { AnswerMessage, ToolCall } from '@repo/shared/types';
+import { ToolCall, WorkflowEventSchema } from '@repo/shared/types';
 import { CoreAssistantMessage, CoreToolMessage, ToolSet } from 'ai';
 import { v4 as uuidv4 } from 'uuid';
 import { z } from 'zod';
 import { getModelFromChatMode } from '../../models';
-import { MCPToolManager } from '../../tools/MCPToolManager';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
+import { WorkflowContextSchema } from '../flow';
 import {
     ChunkBuffer,
     generateObject,
@@ -21,20 +20,16 @@ export const agenticPlannerTask = createTask<WorkflowEventSchema, WorkflowContex
         if (!context) {
             throw new Error('Context is required but was not provided');
         }
-        const { addAnswerMessage } = sendEvents(events);
+        const { updateAnswer } = sendEvents(events);
 
         const optimisticTextMessageId = uuidv4();
-        const mcpConfig = context.get('mcpConfig') || {};
-        let mcpToolManager: MCPToolManager | undefined;
 
+        // Get the tool manager from context - already initialized in flow.ts
+        let mcpToolManager = context.get('mcpToolManager');
         let tools: ToolSet | undefined;
 
-        if (mcpConfig) {
-            mcpToolManager = await MCPToolManager.create(mcpConfig);
-            await mcpToolManager?.initialize({ shouldExecute: false });
-            if (mcpToolManager) {
-                tools = mcpToolManager.getTools();
-            }
+        if (mcpToolManager) {
+            tools = mcpToolManager.getTools();
         }
 
         let messages =
@@ -86,18 +81,14 @@ ${tools ? JSON.stringify(tools) : 'No tools available'}
                 };
             });
 
-            addAnswerMessage({
-                id: optimisticTextMessageId,
-                type: 'text',
-                text: response.reasoning,
-                isFullText: true,
-            });
-
-            addAnswerMessage({
-                id: optimisticTextMessageId,
-                type: 'text',
-                text: `Plan: ${response.plan.join('\n')}`,
-                isFullText: true,
+            updateAnswer({
+                message: {
+                    id: optimisticTextMessageId,
+                    type: 'text',
+                    text: response.reasoning,
+                    isFullText: true,
+                },
+                status: 'PENDING',
             });
         }
     },
@@ -113,7 +104,7 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
         if (!context) {
             throw new Error('Context is required but was not provided');
         }
-        const { updateStatus, updateAnswer, updateStep, addAnswerMessage } = sendEvents(events);
+        const { updateStatus, updateAnswer, updateStep } = sendEvents(events);
 
         const agenticPlan = context.get('agenticPlan');
         if (!agenticPlan) {
@@ -139,55 +130,48 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
         const waitForApprovalMetadata = context.get('waitForApprovalMetadata') || undefined;
 
         const mode = context.get('mode');
-        const mcpConfig = context.get('mcpConfig') || {};
 
+        // Get tool manager from context - already initialized in flow.ts
+        let mcpToolManager = context.get('mcpToolManager');
         let tools: ToolSet | undefined;
 
-        let mcpToolManager: MCPToolManager | undefined;
+        if (mcpToolManager) {
+            tools = mcpToolManager.getTools();
+        }
 
         const chunkBuffer = new ChunkBuffer({
             threshold: 200,
             breakOn: ['\n'],
             onFlush: (text: string) => {
                 console.log('chunk', text);
-                events?.update('answer', a => {
-                    const hasMessage = a.messages?.find(m => m.id === optimisticTextMessageId);
-                    if (hasMessage) {
-                        return {
-                            ...a,
-                            messages: a.messages?.map(m => {
-                                if (m.id === optimisticTextMessageId) {
-                                    return { ...m, text: text, isFullText: false };
-                                }
-                                return m;
-                            }),
-                        };
-                    }
 
-                    return {
-                        ...a,
-                        messages: [
-                            ...(a.messages || []),
-                            { id: optimisticTextMessageId, type: 'text', text, isFullText: false },
-                        ],
-                    };
+                updateAnswer({
+                    message: {
+                        id: optimisticTextMessageId,
+                        type: 'text',
+                        text,
+                        isFullText: false,
+                    },
+                    status: 'PENDING',
                 });
             },
         });
 
-        if (mcpConfig) {
-            mcpToolManager = await MCPToolManager.create(mcpConfig);
-            await mcpToolManager?.initialize({ shouldExecute: false });
-            if (mcpToolManager) {
-                tools = mcpToolManager.getTools();
-            }
-        }
-
-        const model = getModelFromChatMode(mode);
-
         if (waitForApproval) {
             // get last tool waiting for approval
             const toolCall = waitForApprovalMetadata as ToolCall;
+
+            updateAnswer({
+                message: {
+                    id: toolCall.toolCallId,
+                    type: 'tool-call',
+                    toolCallId: toolCall.toolCallId,
+                    toolName: toolCall.toolName,
+                    args: toolCall.args,
+                    approvalStatus: 'RUNNING',
+                },
+                status: 'PENDING',
+            });
 
             // execute tool
             const result = await mcpToolManager?.executeTool(toolCall);
@@ -201,30 +185,28 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
                 content: [result],
             };
 
-            events?.update('answer', a => {
-                const updatedMessages = a.messages?.map(m => {
-                    if (m.type === 'tool-call' && m.toolCallId === toolCall.toolCallId) {
-                        return {
-                            ...m,
-                            approvalStatus: 'APPROVED',
-                        };
-                    }
-                    return m;
-                }) as Array<AnswerMessage>;
-                return {
-                    ...a,
-                    messages: [
-                        ...(updatedMessages || []),
-                        {
-                            id: toolCall.toolCallId,
-                            type: 'tool-result',
-                            toolCallId: toolCall.toolCallId,
-                            toolName: toolCall.toolName,
-                            result: result,
-                            approvalStatus: 'APPROVED',
-                        },
-                    ],
-                };
+            updateAnswer({
+                message: {
+                    id: toolCall.toolCallId,
+                    type: 'tool-call',
+                    toolCallId: toolCall.toolCallId,
+                    toolName: toolCall.toolName,
+                    args: toolCall.args,
+                    approvalStatus: 'APPROVED',
+                },
+                status: 'PENDING',
+            });
+
+            updateAnswer({
+                message: {
+                    id: toolCall.toolCallId,
+                    type: 'tool-result',
+                    toolCallId: toolCall.toolCallId,
+                    toolName: toolCall.toolName,
+                    result: result,
+                    approvalStatus: 'APPROVED',
+                },
+                status: 'PENDING',
             });
 
             context.update('messages', m => [...(m || []), toolMessage]);
@@ -234,7 +216,6 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
 
             messages = context.get('messages') || [];
         }
-        console.log('tools', tools, mcpConfig);
 
         let prompt = `You are a helpful assistant that can answer questions and help with tasks.
 Today is ${getHumanizedDate()}.
@@ -250,6 +231,8 @@ First check for necessary connection to tools before using them.
 
 `;
 
+        const model = getModelFromChatMode(mode);
+
         const response = await generateText({
             model,
             messages,
@@ -261,14 +244,16 @@ First check for necessary connection to tools before using them.
             onToolCall: toolCall => {
                 console.log('toolCall', toolCall);
 
-                events?.update('answer', a => {
-                    return {
-                        ...a,
-                        messages: [
-                            ...(a.messages || []),
-                            { ...toolCall, approvalStatus: 'PENDING', id: toolCall.toolCallId },
-                        ],
-                    };
+                updateAnswer({
+                    message: {
+                        id: toolCall.toolCallId,
+                        type: 'tool-call',
+                        toolCallId: toolCall.toolCallId,
+                        toolName: toolCall.toolName,
+                        args: toolCall.args,
+                        approvalStatus: 'AUTO_APPROVED',
+                    },
+                    status: 'PENDING',
                 });
 
                 const toolCallMessage: CoreAssistantMessage = {
@@ -289,44 +274,20 @@ First check for necessary connection to tools before using them.
         });
 
         chunkBuffer.end();
-
-        const reflection = await generateObject({
-            model,
-            messages,
-            schema: z.object({
-                reflection: z
-                    .string()
-                    .describe('What went well? What could have been done better?'),
-            }),
-            prompt: `Just reflect on last task you did.`,
-        });
-
-        // if (reflection) {
-        //     addAnswerMessage({
-        //         id: uuidv4(),
-        //         type: 'text',
-        //         text: `Reflection: ${reflection.reflection}`,
-        //         isFullText: true,
-        //     });
-        // }
-
-        if (context.get('waitForApproval') || false) {
-            interrupt(context.get('waitForApprovalMetadata') as ToolCall);
+    },
+    onError: handleError,
+    route: ({ context, events }) => {
+        const { updateAnswer, updateStatus } = sendEvents(events);
+        if (context?.get('waitForApproval') || false) {
+            return 'agentic';
         }
 
         updateAnswer({
-            text: undefined,
-            message: [],
+            message: undefined,
             status: 'COMPLETED',
         });
 
         updateStatus('COMPLETED');
-    },
-    onError: handleError,
-    route: ({ context }) => {
-        // if (context?.get('waitForApproval') || false) {
-        //     return 'agentic';
-        // }
         return 'end';
     },
 });

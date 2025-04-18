@@ -1,7 +1,8 @@
 import { createTask } from '@repo/orchestrator';
+import { WorkflowEventSchema } from '@repo/shared/types';
 import { z } from 'zod';
 import { estimateTokensByWordCount, ModelEnum } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
+import { WorkflowContextSchema } from '../flow';
 import { generateObject, getHumanizedDate, handleError } from '../utils';
 
 const MAX_ALLOWED_TOKENS = 1000;

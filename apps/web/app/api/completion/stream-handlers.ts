@@ -67,7 +67,7 @@ export async function executeStream({
 
         const { signal } = abortController;
 
-        const workflow = runWorkflow({
+        const workflow = await runWorkflow({
             mode: data.mode,
             question: data.prompt,
             threadId: data.threadId,

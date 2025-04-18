@@ -1,5 +1,5 @@
 import { TaskParams, TypedEventEmitter } from '@repo/orchestrator';
-import { AnswerMessage, ToolCall, ToolResult } from '@repo/shared/types';
+import { AnswerMessage, ToolCall, ToolResult, WorkflowEventSchema } from '@repo/shared/types';
 import { Geo } from '@vercel/functions';
 import {
     CoreMessage,
@@ -12,9 +12,7 @@ import { format } from 'date-fns';
 import { ZodSchema } from 'zod';
 import { ModelEnum } from '../models';
 import { getLanguageModel } from '../providers';
-import { WorkflowEventSchema } from './flow';
 import { generateErrorMessage } from './tasks/utils';
-
 export type ChunkBufferOptions = {
     threshold?: number;
     breakOn?: string[];
@@ -95,11 +93,14 @@ export const generateText = async ({
             separator: '\n',
         });
 
-        const selectedModel = getLanguageModel(
+        const hasTools = !!Object.keys(tools || {})?.length;
+        console.log('hasTools', hasTools, tools);
+
+        const selectedModel = getLanguageModel({
             model,
             middleware,
-            tools?.length ? false : undefined
-        );
+            useParallelToolCalls: hasTools ? false : undefined, // this field is only supported while using tools
+        });
         const { fullStream } = !!messages?.length
             ? streamText({
                   system: prompt,
@@ -171,7 +172,9 @@ export const generateObject = async ({
             throw new Error('Operation aborted');
         }
 
-        const selectedModel = getLanguageModel(model);
+        const selectedModel = getLanguageModel({
+            model,
+        });
         const { object } = !!messages?.length
             ? await generateObjectAi({
                   system: prompt,
@@ -584,30 +587,16 @@ export const sendEvents = (events?: TypedEventEmitter<WorkflowEventSchema>) => {
     };
 
     const updateAnswer = ({
-        text,
-        finalText,
         message,
         status,
     }: {
-        text?: string;
-        finalText?: string;
-        message?: Array<AnswerMessage>;
+        message?: AnswerMessage;
         status?: 'PENDING' | 'COMPLETED';
     }) => {
         events?.update('answer', prev => ({
             ...prev,
-            text: text || prev?.text,
-            finalText: finalText || prev?.finalText,
             status: status || prev?.status,
-            messages: message || prev?.messages,
-        }));
-    };
-
-    const addAnswerMessage = (message: AnswerMessage) => {
-        console.log('addAnswerMessage', message);
-        events?.update('answer', prev => ({
-            ...prev,
-            messages: [...(prev?.messages || []), message],
+            message: message || prev?.message,
         }));
     };
 
@@ -626,6 +615,5 @@ export const sendEvents = (events?: TypedEventEmitter<WorkflowEventSchema>) => {
         nextStepId,
         updateStatus,
         updateObject,
-        addAnswerMessage,
     };
 };

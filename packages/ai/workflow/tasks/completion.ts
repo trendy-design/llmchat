@@ -1,6 +1,8 @@
 import { createTask } from '@repo/orchestrator';
+import { WorkflowEventSchema } from '@repo/shared/types';
+import { v4 as uuidv4 } from 'uuid';
 import { getModelFromChatMode } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
+import { WorkflowContextSchema } from '../flow';
 import { ChunkBuffer, generateText, getHumanizedDate, handleError, sendEvents } from '../utils';
 
 const MAX_ALLOWED_CUSTOM_INSTRUCTIONS_LENGTH = 6000;
@@ -13,6 +15,8 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
         }
 
         const { updateStatus, updateAnswer, updateStep, addSources } = sendEvents(events);
+
+        const messageId = uuidv4();
 
         const customInstructions = context?.get('customInstructions');
         const mode = context.get('mode');
@@ -75,7 +79,12 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
             breakOn: ['\n'],
             onFlush: (text: string) => {
                 updateAnswer({
-                    text,
+                    message: {
+                        type: 'text',
+                        text,
+                        isFullText: false,
+                        id: messageId,
+                    },
                     status: 'PENDING' as const,
                 });
             },
@@ -98,8 +107,12 @@ export const completionTask = createTask<WorkflowEventSchema, WorkflowContextSch
         chunkBuffer.end();
 
         updateAnswer({
-            text: '',
-            finalText: response,
+            message: {
+                type: 'text',
+                text: response,
+                isFullText: true,
+                id: messageId,
+            },
             status: 'COMPLETED',
         });
 

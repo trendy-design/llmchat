@@ -1,7 +1,7 @@
 import { createTask } from '@repo/orchestrator';
 import { z } from 'zod';
 import { ModelEnum } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
+import { WorkflowContextSchema } from '../flow';
 import {
     ChunkBuffer,
     generateObject,
@@ -20,6 +20,9 @@ type SearchResult = {
     content?: string;
     index?: number;
 };
+
+import { WorkflowEventSchema } from '@repo/shared/types';
+import { v4 as uuidv4 } from 'uuid';
 
 const getAnalysisPrompt = (question: string, webPageContent: SearchResult[]): string => {
     return `
@@ -213,12 +216,19 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
                 },
             });
 
+            const messageId = uuidv4();
+
             const chunkBuffer = new ChunkBuffer({
                 threshold: 200,
                 breakOn: ['\n\n'],
                 onFlush: (chunk, fullText) => {
                     updateAnswer({
-                        text: chunk,
+                        message: {
+                            type: 'text',
+                            text: chunk,
+                            isFullText: false,
+                            id: messageId,
+                        },
                         status: 'PENDING',
                     });
                 },
@@ -263,8 +273,12 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
 
             // Update flow with completed answer
             updateAnswer({
-                text: '',
-                finalText: reasoning,
+                message: {
+                    type: 'text',
+                    text: reasoning,
+                    isFullText: true,
+                    id: messageId,
+                },
                 status: 'COMPLETED',
             });
 

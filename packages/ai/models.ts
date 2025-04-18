@@ -18,6 +18,7 @@ export enum ModelEnum {
     Claude_3_7_Sonnet = 'claude-3-7-sonnet-20250219',
     Grok_3 = 'grok-3-beta',
     Grok_3_Mini = 'grok-3-mini-beta',
+    GEMINI_2_5_FLASH = 'gemini-2.5-flash',
 }
 
 export type Model = {
@@ -179,10 +180,19 @@ export const models: Model[] = [
         contextWindow: 16384,
         hasReasoningCapability: true,
     },
+    {
+        id: ModelEnum.GEMINI_2_5_FLASH,
+        name: 'Gemini 2.5 Flash',
+        provider: 'google',
+        maxTokens: 200000,
+        contextWindow: 200000,
+    },
 ];
 
 export const getModelFromChatMode = (mode?: string): ModelEnum => {
     switch (mode) {
+        case ChatMode.Agent:
+            return ModelEnum.GPT_4_1_Nano;
         case ChatMode.GEMINI_2_FLASH:
             return ModelEnum.GEMINI_2_FLASH;
         case ChatMode.DEEPSEEK_R1:
@@ -202,6 +212,12 @@ export const getModelFromChatMode = (mode?: string): ModelEnum => {
         case ChatMode.O4_Mini:
             return ModelEnum.O4_Mini;
         case ChatMode.GPT_4_1_Mini:
+            return ModelEnum.GPT_4_1_Mini;
+        case ChatMode.GPT_4_1_Nano:
+            return ModelEnum.GPT_4_1_Nano;
+        case ChatMode.GEMINI_2_5_FLASH:
+            return ModelEnum.GEMINI_2_5_FLASH;
+
         default:
             return ModelEnum.GPT_4o_Mini;
     }

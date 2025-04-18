@@ -1,7 +1,8 @@
 import { trimMessageHistoryEstimated } from '@repo/ai/models';
 import { createTask } from '@repo/orchestrator';
 import { ChatMode } from '@repo/shared/config';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
+import { WorkflowEventSchema } from '@repo/shared/types';
+import { WorkflowContextSchema } from '../flow';
 import { handleError, sendEvents } from '../utils';
 export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'router',
@@ -26,10 +27,10 @@ export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSc
             redirectTo('refine-query');
         } else if (mode === ChatMode.Pro) {
             redirectTo('pro-search');
+        } else if (mode === ChatMode.Agent) {
+            redirectTo('agentic-planner');
         } else if (hasWebSearch) {
             redirectTo('quickSearch');
-        } else if (hasMcpConfig) {
-            redirectTo('agentic-planner');
         } else {
             redirectTo('completion');
         }

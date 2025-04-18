@@ -1,8 +1,8 @@
 import { createTask } from '@repo/orchestrator';
+import { WorkflowEventSchema } from '@repo/shared/types';
 import { ModelEnum } from '../../models';
-import { WorkflowContextSchema, WorkflowEventSchema } from '../flow';
+import { WorkflowContextSchema } from '../flow';
 import { ChunkBuffer, generateText, getHumanizedDate, handleError, sendEvents } from '../utils';
-
 export const analysisTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'analysis',
     execute: async ({ trace, events, context, signal }) => {

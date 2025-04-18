@@ -21,6 +21,7 @@ import {
     IconNorthStar,
     IconPaperclip,
     IconPlayerStopFilled,
+    IconRepeat,
     IconWorld,
 } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -43,6 +44,13 @@ export const chatOptions = [
         icon: <IconNorthStar size={16} className="text-muted-foreground" strokeWidth={2} />,
         creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Pro],
     },
+    {
+        label: 'Agent',
+        description: 'MCP Tools Agent',
+        value: ChatMode.Agent,
+        icon: <IconRepeat size={16} className="text-muted-foreground" strokeWidth={2} />,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Agent],
+    },
 ];
 
 export const modelOptions = [
@@ -52,6 +60,13 @@ export const modelOptions = [
         // webSearch: true,
         icon: undefined,
         creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.LLAMA_4_SCOUT],
+    },
+    {
+        label: 'Gemini 2.5 Flash',
+        value: ChatMode.GEMINI_2_5_FLASH,
+        // webSearch: true,
+        icon: undefined,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.GEMINI_2_5_FLASH],
     },
     {
         label: 'GPT 4.1',

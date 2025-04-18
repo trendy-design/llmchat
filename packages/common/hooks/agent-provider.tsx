@@ -2,7 +2,7 @@ import { useAuth, useUser } from '@clerk/nextjs';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { useWorkflowWorker } from '@repo/ai/worker';
 import { ChatMode, ChatModeConfig } from '@repo/shared/config';
-import { ThreadItem } from '@repo/shared/types';
+import { ThreadItem, WorkflowEventSchema } from '@repo/shared/types';
 import { buildCoreMessagesFromThreadItems, plausible } from '@repo/shared/utils';
 import { produce } from 'immer';
 import { nanoid } from 'nanoid';
@@ -88,7 +88,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             threadId: string,
             threadItemId: string,
             eventType: string,
-            eventData: ThreadItem,
+            eventData: WorkflowEventSchema & { query: string; mode: ChatMode },
             parentThreadItemId?: string
         ) => {
             const previousItem = threadItemCache.get(threadItemId) || ({} as ThreadItem);
@@ -104,38 +104,56 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 draft.updatedAt = new Date();
                 draft.breakpoint = eventData?.breakpoint || draft.breakpoint;
 
-                if (eventType === 'answer' && eventData.answer) {
-                    draft.answer = draft.answer;
+                if (eventType === 'answer' && eventData.answer && eventData.answer.message) {
+                    console.log(eventData, draft.answer);
+                    const newMessage = draft.answer?.messages?.find(
+                        m =>
+                            m.type === eventData.answer.message?.type &&
+                            m.id === eventData.answer.message?.id
+                    );
+
                     draft.answer = {
                         ...draft.answer,
-                        ...eventData.answer,
-                        text: (draft.answer?.text || '') + (eventData.answer.text || ''),
+                        text: '', // deprecated
+                        isChunk: false, // deprecated
                         messages: [
-                            ...(draft.answer?.messages?.filter(
-                                m =>
-                                    !eventData.answer?.messages?.some(
-                                        em => em.id === m.id && em.type === m.type
-                                    )
-                            ) || []),
-                            ...(eventData.answer?.messages?.map(newMessage => {
-                                const existingMessage = draft.answer?.messages?.find(
-                                    m => m.id === newMessage.id && m.type === newMessage.type
-                                );
+                            ...(draft.answer?.messages || []).map(m => {
                                 if (
-                                    existingMessage &&
-                                    newMessage.type === 'text' &&
-                                    existingMessage.type === 'text'
+                                    m.type === eventData.answer.message?.type &&
+                                    m.id === eventData.answer.message?.id &&
+                                    eventData.answer.message.type === 'text' &&
+                                    m.type === 'text'
                                 ) {
+                                    if (eventData.answer.message.isFullText) {
+                                        return eventData.answer.message;
+                                    }
                                     return {
-                                        ...newMessage,
-                                        text: newMessage.isFullText
-                                            ? newMessage.text
-                                            : (existingMessage.text || '') +
-                                              (newMessage.text || ''),
+                                        ...m,
+                                        text:
+                                            (m.text || '') + (eventData.answer.message.text || ''),
                                     };
                                 }
-                                return newMessage;
-                            }) || []),
+
+                                if (
+                                    m.type === eventData.answer.message?.type &&
+                                    m.id === eventData.answer.message?.id &&
+                                    eventData.answer.message.type === 'tool-call' &&
+                                    m.type === 'tool-call'
+                                ) {
+                                    return eventData.answer.message;
+                                }
+
+                                if (
+                                    m.type === eventData.answer.message?.type &&
+                                    m.id === eventData.answer.message?.id &&
+                                    eventData.answer.message.type === 'tool-result' &&
+                                    m.type === 'tool-result'
+                                ) {
+                                    return eventData.answer.message;
+                                }
+                                return m;
+                            }),
+                            ...(newMessage ? [] : [eventData.answer.message]),
                         ],
                     };
                 } else if (eventType in eventData) {
@@ -217,6 +235,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                 parsedData?.threadId &&
                                 parsedData?.threadItemId
                             ) {
+                                console.log('levent', parsedData);
                                 updateThreadItemCache(
                                     parsedData.threadId,
                                     parsedData.threadItemId,
@@ -305,6 +324,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 query,
                 imageAttachment,
                 mode,
+                schemaVersion: 1,
             };
 
             createThreadItem(aiThreadItem);

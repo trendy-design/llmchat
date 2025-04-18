@@ -301,6 +301,20 @@ export const ToolMessage = ({
                         </p>
                     </div>
                 </div>
+
+                {tool.toolCall?.approvalStatus === 'RUNNING' && (
+                    <div className="text-muted-foreground flex flex-row items-center gap-1.5 text-xs font-medium ">
+                        <IconLoader size={14} strokeWidth={2} className="animate-spin" />
+                        Running
+                    </div>
+                )}
+
+                {tool.toolCall?.approvalStatus === 'AUTO_APPROVED' && (
+                    <div className="text-muted-foreground flex flex-row items-center gap-1.5 text-xs font-medium ">
+                        <IconCheck size={14} strokeWidth={2} className="text-muted-foreground/50" />{' '}
+                        Auto
+                    </div>
+                )}
                 {tool.toolCall?.approvalStatus === 'PENDING' && (
                     <div className="flex flex-row gap-1">
                         <Button
