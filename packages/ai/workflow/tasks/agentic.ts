@@ -1,10 +1,19 @@
 import { createTask } from '@repo/orchestrator';
+import { ChatMode } from '@repo/shared/config';
 import { ToolCall, WorkflowEventSchema } from '@repo/shared/types';
 import { CoreAssistantMessage, CoreToolMessage, ToolSet } from 'ai';
 import { v4 as uuidv4 } from 'uuid';
+import { z } from 'zod';
 import { getModelFromChatMode } from '../../models';
 import { WorkflowContextSchema } from '../flow';
-import { ChunkBuffer, generateText, getHumanizedDate, handleError, sendEvents } from '../utils';
+import {
+    ChunkBuffer,
+    generateObject,
+    generateText,
+    getHumanizedDate,
+    handleError,
+    sendEvents,
+} from '../utils';
 
 export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'agentic',
@@ -129,6 +138,8 @@ First check for necessary connection to tools before using them.
 
         const model = getModelFromChatMode(mode);
 
+        let currentToolCall: ToolCall | undefined;
+
         const response = await generateText({
             model,
             messages,
@@ -139,47 +150,76 @@ First check for necessary connection to tools before using them.
             tools,
             onToolCall: toolCall => {
                 console.log('toolCall', toolCall);
-
-                updateAnswer({
-                    message: {
-                        id: toolCall.toolCallId,
-                        type: 'tool-call',
-                        toolCallId: toolCall.toolCallId,
-                        toolName: toolCall.toolName,
-                        args: toolCall.args,
-                        approvalStatus: 'AUTO_APPROVED',
-                    },
-                    status: 'PENDING',
-                });
-
-                const toolCallMessage: CoreAssistantMessage = {
-                    role: 'assistant',
-                    content: [toolCall],
-                };
-
-                context.update('messages', _ => [...messages, toolCallMessage]);
-
-                context.update('waitForApproval', _ => true);
-                context.update('waitForApprovalMetadata', _ => {
-                    return toolCall;
-                });
+                currentToolCall = toolCall;
             },
             onChunk: (chunk, fullText) => {
                 chunkBuffer.add(chunk);
             },
         });
 
+        const object = await generateObject({
+            model: getModelFromChatMode(ChatMode.GPT_4_1_Nano),
+            prompt: `
+            You are a helpful assistant that can answer questions and help with tasks.
+
+            previous agent generated tool call:
+            ${JSON.stringify(currentToolCall)}
+            
+            Does this tool call require human approval?
+            If so, return true.
+            If not, return false.
+
+            **When you should ask for human approval:**
+            - the tool call is modiying / adding something to external source must be reviewed by human
+            - Only reading something from external source does not require human approval.
+            `,
+            schema: z.object({
+                requireHumanApproval: z.boolean(),
+            }),
+        });
+
         chunkBuffer.end();
+
+        if (currentToolCall) {
+            updateAnswer({
+                message: {
+                    id: currentToolCall?.toolCallId,
+                    type: 'tool-call',
+                    toolCallId: currentToolCall?.toolCallId,
+                    toolName: currentToolCall?.toolName,
+                    args: currentToolCall?.args,
+                    approvalStatus: !!object?.requireHumanApproval ? 'PENDING' : 'AUTO_APPROVED',
+                },
+                status: 'PENDING',
+            });
+
+            const toolCallMessage: CoreAssistantMessage = {
+                role: 'assistant',
+                content: [currentToolCall],
+            };
+
+            context.update('messages', _ => [...messages, toolCallMessage]);
+
+            context.update('waitForApproval', _ => true);
+            context.update('waitForApprovalMetadata', _ => {
+                return currentToolCall;
+            });
+        }
+
+        if (object?.requireHumanApproval) {
+            interrupt('agenticReview');
+            return;
+        }
     },
     onError: handleError,
     route: ({ context, events }) => {
-        const { updateAnswer, updateStatus } = sendEvents(events);
-
-        if (context?.get('waitForApproval') || false) {
+        const { updateStatus } = sendEvents(events);
+        if (context?.get('waitForApproval')) {
             return 'agentic';
         }
 
         updateStatus('COMPLETED');
+
         return 'end';
     },
 });
