@@ -202,15 +202,16 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
 
             addSources(searchResultsData);
 
+            let reasoningStepId = 1;
+
             const reasoningBuffer = new ChunkBuffer({
-                threshold: 200,
                 breakOn: ['\n\n'],
                 onFlush: (chunk, fullText) => {
                     updateStep({
-                        stepId: 1,
-                        stepStatus: 'PENDING',
+                        stepId: reasoningStepId++,
+                        stepStatus: 'COMPLETED',
                         subSteps: {
-                            reasoning: { status: 'COMPLETED', data: fullText },
+                            reasoning: { status: 'COMPLETED', data: chunk },
                         },
                     });
                 },
@@ -261,12 +262,10 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             reasoningBuffer.end();
             chunkBuffer.end();
 
-            // Update flow with completed reasoning
             updateStep({
-                stepId: 1,
+                stepId: reasoningStepId++,
                 stepStatus: 'COMPLETED',
                 subSteps: {
-                    reasoning: { status: 'COMPLETED' },
                     wrapup: { status: 'COMPLETED' },
                 },
             });

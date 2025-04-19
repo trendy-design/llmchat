@@ -108,21 +108,10 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.4 }}
                 >
-                    <div className="w-[100px]">
-                        <TextShimmer
-                            duration={0.7}
-                            spread={step.steps?.reasoning?.status === 'COMPLETED' ? 0 : 2}
-                            className="text-xs"
-                        >
-                            Analyzing
-                        </TextShimmer>
-                    </div>
                     <p className="text-muted-foreground text-sm">
                         {reasoningData.split('\n\n').map((line: string, index: number) => (
                             <React.Fragment key={index}>
-                                <span>{line}</span>
-                                <br />
-                                <br />
+                                <div className="py-1">{line}</div>
                             </React.Fragment>
                         ))}
                     </p>
@@ -159,13 +148,13 @@ export const StepRenderer = ({ step }: StepRendererType) => {
 
     return (
         <div className="flex w-full flex-row items-stretch justify-start gap-2">
-            <div className="flex min-h-full shrink-0 flex-col items-center justify-start px-2">
+            <div className="flex min-h-full shrink-0 flex-col items-center justify-start">
                 <div className="bg-border/50 h-1.5 shrink-0" />
-                <div className="bg-background z-10">
+                <div className="bg-secondary z-2 px-1 pb-2 pt-1">
                     <StepStatus status={step.status} />
                 </div>
                 <motion.div
-                    className="border-border min-h-full w-[1px] flex-1 border-l border-dashed"
+                    className="border-border min-h-full w-[1px] flex-1 border-l-[1px]"
                     initial={{ height: 0 }}
                     animate={{ height: '100%' }}
                     transition={{ duration: 0.5 }}

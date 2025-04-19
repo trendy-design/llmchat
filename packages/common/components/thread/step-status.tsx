@@ -1,4 +1,5 @@
 import { ItemStatus } from '@repo/shared/types';
+import { IconLoader2 } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 
 export const StepStatus = ({ status }: { status: ItemStatus }) => {
@@ -6,15 +7,14 @@ export const StepStatus = ({ status }: { status: ItemStatus }) => {
         case 'PENDING':
             return (
                 <span className="relative flex size-3 items-center justify-center">
-                    <span className="bg-brand/50 absolute inline-flex h-full w-full animate-ping rounded-full opacity-75"></span>
-                    <span className="bg-brand relative inline-flex size-1 rounded-full"></span>
+                    <IconLoader2 className="size-3 animate-spin" />
                 </span>
             );
         case 'COMPLETED':
             return (
                 <span className="relative flex size-3 items-center justify-center">
-                    <span className="relative flex size-1">
-                        <span className="bg-brand relative inline-flex size-1 rounded-full"></span>
+                    <span className="relative flex size-1.5">
+                        <span className="bg-foreground/50 relative inline-flex size-1.5 rounded-full"></span>
                     </span>
                 </span>
             );

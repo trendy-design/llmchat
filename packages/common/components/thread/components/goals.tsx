@@ -86,11 +86,11 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
         }
     }, [hasAnswer]);
 
-    useEffect(() => {
-        if (steps[0]?.status === 'PENDING') {
-            handleClick();
-        }
-    }, [steps[0]]);
+    // useEffect(() => {
+    //     if (steps[0]?.status === 'PENDING') {
+    //         handleClick();
+    //     }
+    // }, [steps[0]]);
 
     const stepCounts = steps.length;
 
@@ -159,8 +159,8 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
 
     return (
         <>
-            {renderTitle()}
-            <div className="flex w-full flex-1 flex-col px-2 py-4">
+            {/* {renderTitle()} */}
+            <div className="mb-16 flex w-full flex-1 flex-col">
                 {steps.map((step, index) => (
                     <StepRenderer key={index} step={step} />
                 ))}

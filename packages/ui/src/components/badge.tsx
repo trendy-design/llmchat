@@ -7,7 +7,7 @@ const badgeVariants = cva(
     {
         variants: {
             variant: {
-                default: 'bg-tertiary text-foreground rounded-md',
+                default: 'bg-quaternary text-foreground rounded-full',
                 secondary: 'bg-tertiary text-tertiary-foreground rounded-full',
                 tertiary: 'bg-brand text-brand-foreground rounded-full',
                 brand: 'bg-brand text-brand-foreground',
@@ -15,8 +15,8 @@ const badgeVariants = cva(
                 outline: 'border border-input bg-background text-foreground',
             },
             size: {
-                sm: 'px-2 h-5 text-xs',
-                md: 'px-2 h-6 text-xs font-mono text-[11px] tracking-[0.02em] font-[350]',
+                sm: 'px-2 h-4 text-xs',
+                md: 'px-2 h-6 text-xs text-[11px] tracking-[0.02em] font-[350]',
                 lg: 'px-3  h-7 text-xs',
             },
         },
