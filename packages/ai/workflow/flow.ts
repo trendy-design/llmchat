@@ -29,8 +29,7 @@ import {
 
 // Define the context schema type
 export type WorkflowContextSchema = {
-    mcpConfig: Record<string, string>;
-    mcpToolManager?: any;
+    mcpToolManager?: MCPToolManager;
     question: string;
     search_queries: string[];
     messages: CoreMessage[];
@@ -76,7 +75,7 @@ export type WorkflowContextSchema = {
 };
 
 export const runWorkflow = async ({
-    mcpConfig = {},
+    mcpToolManager,
     mode,
     question,
     threadId,
@@ -90,7 +89,7 @@ export const runWorkflow = async ({
     customInstructions,
     gl,
 }: {
-    mcpConfig: Record<string, string>;
+    mcpToolManager?: MCPToolManager;
     mode: ChatMode;
     question: string;
     threadId: string;
@@ -116,18 +115,6 @@ export const runWorkflow = async ({
         ...config,
     };
 
-    // Initialize MCPToolManager at workflow startup if mcpConfig is provided
-    let mcpToolManager;
-    if (Object.keys(mcpConfig).length > 0) {
-        try {
-            mcpToolManager = await MCPToolManager.create(mcpConfig);
-            await mcpToolManager?.initialize({ shouldExecute: false });
-            console.log('MCPToolManager initialized successfully at workflow start');
-        } catch (error) {
-            console.error('Failed to initialize MCPToolManager:', error);
-        }
-    }
-
     // Create typed event emitter with the proper type
     const events = createTypedEventEmitter<WorkflowEventSchema>({
         schemaVersion: 1,
@@ -147,7 +134,6 @@ export const runWorkflow = async ({
     });
 
     const context = createContext<WorkflowContextSchema>({
-        mcpConfig,
         mcpToolManager,
         question,
         mode,

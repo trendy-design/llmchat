@@ -3,6 +3,7 @@ import { CHAT_MODE_CREDIT_COSTS } from '@repo/shared/config';
 import { logger } from '@repo/shared/logger';
 import { EVENT_TYPES, posthog } from '@repo/shared/posthog';
 import { Geo } from '@vercel/functions';
+import { MCPToolManager } from '../../../../../packages/ai/tools/MCPToolManager';
 import { CompletionRequestType, StreamController } from './types';
 import { sanitizePayloadForJSON } from './utils';
 
@@ -65,6 +66,18 @@ export async function executeStream({
     try {
         const creditCost = CHAT_MODE_CREDIT_COSTS[data.mode];
 
+        // Initialize MCPToolManager at workflow startup if mcpConfig is provided
+        let mcpToolManager: MCPToolManager | undefined;
+        if (Object.keys(data.mcpConfig ?? {}).length > 0) {
+            try {
+                mcpToolManager = await MCPToolManager.create(data.mcpConfig as any);
+                await mcpToolManager?.initialize({ shouldExecute: false });
+                console.log('MCPToolManager initialized successfully at workflow start');
+            } catch (error) {
+                console.error('Failed to initialize MCPToolManager:', error);
+            }
+        }
+
         const { signal } = abortController;
 
         const workflow = await runWorkflow({
@@ -80,8 +93,8 @@ export async function executeStream({
                 signal,
             },
             gl,
-            mcpConfig: data.mcpConfig || {},
             showSuggestions: data.showSuggestions || false,
+            mcpToolManager,
             onFinish: onFinish,
         });
 
@@ -105,7 +118,10 @@ export async function executeStream({
         }
 
         if (data.breakpointId) {
-            await workflow.resume(data.threadId, data.breakpointId);
+            const overideContext = {
+                mcpToolManager,
+            };
+            await workflow.resume(data.threadId, overideContext);
         } else {
             await workflow.start('router', {
                 question: data.prompt,

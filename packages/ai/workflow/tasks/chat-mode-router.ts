@@ -11,7 +11,6 @@ export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSc
         const { updateStatus } = sendEvents(events);
 
         const hasWebSearch = context?.get('webSearch') || false;
-        const hasMcpConfig = Object.keys(context?.get('mcpConfig') || {}).length > 0;
 
         const messageHistory = context?.get('messages') || [];
         const trimmedMessageHistory = trimMessageHistoryEstimated(messageHistory, mode);

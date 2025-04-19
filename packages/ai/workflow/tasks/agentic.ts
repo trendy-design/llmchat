@@ -159,22 +159,20 @@ First check for necessary connection to tools before using them.
 
         const object = await generateObject({
             model: getModelFromChatMode(ChatMode.GPT_4_1_Nano),
+            messages,
             prompt: `
             You are a helpful assistant that can answer questions and help with tasks.
 
             previous agent generated tool call:
             ${JSON.stringify(currentToolCall)}
-            
-            Does this tool call require human approval?
-            If so, return true.
-            If not, return false.
 
             **When you should ask for human approval:**
-            - the tool call is modiying / adding something to external source must be reviewed by human
-            - Only reading something from external source does not require human approval.
+            - if tool call is modiying / adding something to external application, it must be reviewed by human
+            - if tool call is only reading something from external application, it does not require human approval.
+
             `,
             schema: z.object({
-                requireHumanApproval: z.boolean(),
+                requireHumanApproval: z.boolean().optional(),
             }),
         });
 
@@ -205,6 +203,8 @@ First check for necessary connection to tools before using them.
                 return currentToolCall;
             });
         }
+
+        console.log('object', object);
 
         if (object?.requireHumanApproval) {
             interrupt('agenticReview');

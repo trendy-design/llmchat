@@ -2,14 +2,7 @@ import { StepRenderer, StepStatus, ToolCallStep, ToolResultStep } from '@repo/co
 import { useAppStore } from '@repo/common/store';
 import { ChatMode } from '@repo/shared/config';
 import { Step, ThreadItem, ToolCall, ToolResult } from '@repo/shared/types';
-import { Badge } from '@repo/ui';
-import {
-    IconAtom,
-    IconChecklist,
-    IconChevronRight,
-    IconLoader2,
-    IconNorthStar,
-} from '@tabler/icons-react';
+import { IconAtom, IconChecklist, IconLoader2, IconNorthStar } from '@tabler/icons-react';
 import { memo, useEffect } from 'react';
 const getTitle = (threadItem: ThreadItem) => {
     if (threadItem.mode === ChatMode.Deep) {
@@ -166,19 +159,14 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
 
     return (
         <>
-            <div
-                className="bg-background shadow-subtle-xs hover:bg-secondary flex w-full cursor-pointer flex-row items-center gap-2 rounded-lg px-3 py-2.5"
-                onClick={() => {
-                    handleClick();
-                }}
-            >
-                {renderTitle()}
-                <div className="flex-1" />
-
-                <Badge variant="default" size="sm">
-                    {stepCounts} {stepCounts === 1 ? 'Step' : 'Steps'}
-                </Badge>
-                <IconChevronRight size={14} strokeWidth={2} />
+            {renderTitle()}
+            <div className="flex w-full flex-1 flex-col px-2 py-4">
+                {steps.map((step, index) => (
+                    <StepRenderer key={index} step={step} />
+                ))}
+                {/* {toolCallAndResults.map(({ toolCall, toolResult }) => (
+                        <ToolStep toolCall={toolCall} toolResult={toolResult} />
+                    ))} */}
             </div>
         </>
     );

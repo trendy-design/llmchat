@@ -115,7 +115,7 @@ export class WorkflowEngine<
         await this.executeTask(initialTask, initialData);
     }
 
-    async resume(workflowId: string, breakpointId: string) {
+    async resume(workflowId: string, overideContext?: Partial<TContext>) {
         if (this.persistence) {
             const savedWorkflow: any = await this.persistence.loadWorkflow(workflowId);
             if (savedWorkflow) {
@@ -143,8 +143,15 @@ export class WorkflowEngine<
                 // Restore context state
                 if (this.context) {
                     this.context.merge(
-                        this.deserializeState(JSON.parse(savedWorkflow.contextState))
+                        this.deserializeState({
+                            ...JSON.parse(savedWorkflow.contextState),
+                        })
                     );
+                    if (overideContext) {
+                        this.context.merge(overideContext);
+                    }
+
+                    console.log('context', this.context);
                 }
 
                 // Restore task execution counts if available
