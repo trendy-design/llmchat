@@ -13,7 +13,6 @@ import { CoreMessage } from 'ai';
 import { Langfuse } from 'langfuse';
 import { MCPToolManager } from '../tools/MCPToolManager';
 import {
-    agenticPlannerTask,
     agenticTask,
     analysisTask,
     completionTask,
@@ -236,7 +235,6 @@ export const runWorkflow = async ({
         quickSearchTask,
         proSearchTask,
         agenticTask,
-        agenticPlannerTask,
     ]);
 
     return Promise.resolve(builder.build());

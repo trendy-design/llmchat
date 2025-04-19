@@ -106,17 +106,6 @@ function parseCitationsWithSourceTags(markdown: string): string {
     return result;
 }
 
-function sanitizeMarkdownForMdx(content: string): string {
-    // Escape @ symbols
-    content = content.replace(/@/g, '&#64;');
-
-    // Escape other problematic characters as needed
-    content = content.replace(/</g, '&lt;');
-    content = content.replace(/>/g, '&gt;');
-
-    return content;
-}
-
 export const MarkdownContent = memo(
     ({ content, className, isCompleted, isLast }: MarkdownContentProps) => {
         const [previousContent, setPreviousContent] = useState<string[]>([]);
@@ -129,8 +118,7 @@ export const MarkdownContent = memo(
             (async () => {
                 try {
                     const normalizedContent = normalizeContent(content);
-                    const sanitizedContent = sanitizeMarkdownForMdx(normalizedContent);
-                    const contentWithCitations = parseCitationsWithSourceTags(sanitizedContent);
+                    const contentWithCitations = parseCitationsWithSourceTags(normalizedContent);
 
                     if (isCompleted) {
                         setPreviousContent([]);

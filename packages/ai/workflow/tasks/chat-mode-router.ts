@@ -28,7 +28,7 @@ export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSc
         } else if (mode === ChatMode.Pro) {
             redirectTo('pro-search');
         } else if (mode === ChatMode.Agent) {
-            redirectTo('agentic-planner');
+            redirectTo('agentic');
         } else if (hasWebSearch) {
             redirectTo('quickSearch');
         } else {
