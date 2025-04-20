@@ -38,3 +38,11 @@ model Workflow {
   updatedAt       DateTime       @updatedAt
   status          WorkflowStatus
 }
+
+model NewUpdate {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  content    Json
+  shouldShow Boolean  @default(false)
+}

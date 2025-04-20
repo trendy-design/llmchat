@@ -120,6 +120,7 @@ export class WorkflowEngine<
             const savedWorkflow: any = await this.persistence.loadWorkflow(workflowId);
             if (savedWorkflow) {
                 console.log('🔴 Resuming workflow', savedWorkflow);
+                console.log('🔴 Deserializing workflow state', JSON.stringify(savedWorkflow));
 
                 // Properly deserialize the workflow state
                 const deserializedState = this.deserializeState(savedWorkflow.workflowState);
@@ -136,16 +137,22 @@ export class WorkflowEngine<
                 // Restore event state
                 if (this.events) {
                     this.events.setAllState(
-                        this.deserializeState(JSON.parse(savedWorkflow.eventState))
+                        this.deserializeState(
+                            typeof savedWorkflow.eventState === 'string'
+                                ? JSON.parse(savedWorkflow.eventState)
+                                : savedWorkflow.eventState
+                        )
                     );
                 }
 
                 // Restore context state
                 if (this.context) {
                     this.context.merge(
-                        this.deserializeState({
-                            ...JSON.parse(savedWorkflow.contextState),
-                        })
+                        this.deserializeState(
+                            typeof savedWorkflow.contextState === 'string'
+                                ? JSON.parse(savedWorkflow.contextState)
+                                : savedWorkflow.contextState
+                        )
                     );
                     if (overideContext) {
                         this.context.merge(overideContext);
@@ -177,36 +184,46 @@ export class WorkflowEngine<
 
     // Add a deserializer method to handle the serialized data
     private deserializeState(data: any): any {
-        if (data === null || data === undefined) {
-            return data;
-        }
-
-        // Handle serialized Set
-        if (data && typeof data === 'object' && data.type === 'Set' && Array.isArray(data.value)) {
-            return new Set(data.value);
-        }
-
-        // Handle serialized Map
-        if (data && typeof data === 'object' && data.type === 'Map' && data.value) {
-            return new Map(Object.entries(data.value));
-        }
-
-        // Handle arrays
-        if (Array.isArray(data)) {
-            return data.map(item => this.deserializeState(item));
-        }
-
-        // Handle objects
-        if (typeof data === 'object') {
-            const result: Record<string, any> = {};
-            for (const [key, value] of Object.entries(data)) {
-                result[key] = this.deserializeState(value);
+        try {
+            console.log('🔴 Deserializing state', JSON.stringify(data, null, 2));
+            if (data === null || data === undefined) {
+                return data;
             }
-            return result;
-        }
 
-        // Return primitive values as is
-        return data;
+            // Handle serialized Set
+            if (
+                data &&
+                typeof data === 'object' &&
+                data.type === 'Set' &&
+                Array.isArray(data.value)
+            ) {
+                return new Set(data.value);
+            }
+
+            // Handle serialized Map
+            if (data && typeof data === 'object' && data.type === 'Map' && data.value) {
+                return new Map(Object.entries(data.value));
+            }
+
+            // Handle arrays
+            if (Array.isArray(data)) {
+                return data.map(item => this.deserializeState(item));
+            }
+
+            // Handle objects
+            if (typeof data === 'object') {
+                const result: Record<string, any> = {};
+                for (const [key, value] of Object.entries(data)) {
+                    result[key] = this.deserializeState(value);
+                }
+                return result;
+            }
+
+            // Return primitive values as is
+            return data;
+        } catch (error) {
+            throw new Error('🔴 Error deserializing state');
+        }
     }
 
     async executeTaskWithTimeout(

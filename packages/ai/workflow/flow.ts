@@ -5,7 +5,7 @@ import {
     WorkflowBuilder,
     WorkflowConfig,
 } from '@repo/orchestrator';
-import { prisma } from '@repo/prisma';
+// import { prisma } from '@repo/prisma';
 import { ChatMode } from '@repo/shared/config';
 import { Answer, WorkflowEventSchema } from '@repo/shared/types';
 import { Geo } from '@vercel/functions';
@@ -87,6 +87,7 @@ export const runWorkflow = async ({
     showSuggestions = false,
     onFinish,
     customInstructions,
+    persistence,
     gl,
 }: {
     mcpToolManager?: MCPToolManager;
@@ -102,6 +103,7 @@ export const runWorkflow = async ({
     onFinish?: (data: any) => void;
     gl?: Geo;
     customInstructions?: string;
+    persistence?: PersistenceLayer<WorkflowEventSchema, WorkflowContextSchema>;
 }) => {
     const langfuse = new Langfuse();
     const trace = langfuse.trace({
@@ -158,44 +160,44 @@ export const runWorkflow = async ({
         waitForApprovalMetadata: undefined,
     });
 
-    const persistence = new PersistenceLayer<WorkflowEventSchema, WorkflowContextSchema>({
-        save: async (key, data) => {
-            await prisma.workflow.upsert({
-                where: { id: key },
-                update: {
-                    ...data,
-                    id: key,
-                    contextState: JSON.stringify(data.contextState),
-                    eventState: JSON.stringify(data.eventState),
-                    status: data.status,
-                },
-                create: {
-                    ...data,
-                    id: key,
-                    contextState: JSON.stringify(data.contextState),
-                    eventState: JSON.stringify(data.eventState),
-                    status: data.status,
-                },
-            });
-        },
-        load: async key => {
-            const workflow = await prisma.workflow.findUnique({
-                where: { id: key },
-            });
-            return workflow as any;
-        },
-        delete: async key => {
-            await prisma.workflow.delete({
-                where: { id: key },
-            });
-        },
-        exists: async key => {
-            const workflow = await prisma.workflow.findUnique({
-                where: { id: key },
-            });
-            return !!workflow;
-        },
-    });
+    // const persistence = new PersistenceLayer<WorkflowEventSchema, WorkflowContextSchema>({
+    //     save: async (key, data) => {
+    //         await prisma.workflow.upsert({
+    //             where: { id: key },
+    //             update: {
+    //                 ...data,
+    //                 id: key,
+    //                 contextState: JSON.stringify(data.contextState),
+    //                 eventState: JSON.stringify(data.eventState),
+    //                 status: data.status,
+    //             },
+    //             create: {
+    //                 ...data,
+    //                 id: key,
+    //                 contextState: JSON.stringify(data.contextState),
+    //                 eventState: JSON.stringify(data.eventState),
+    //                 status: data.status,
+    //             },
+    //         });
+    //     },
+    //     load: async key => {
+    //         const workflow = await prisma.workflow.findUnique({
+    //             where: { id: key },
+    //         });
+    //         return workflow as any;
+    //     },
+    //     delete: async key => {
+    //         await prisma.workflow.delete({
+    //             where: { id: key },
+    //         });
+    //     },
+    //     exists: async key => {
+    //         const workflow = await prisma.workflow.findUnique({
+    //             where: { id: key },
+    //         });
+    //         return !!workflow;
+    //     },
+    // });
 
     // Use the typed builder
     const builder = new WorkflowBuilder(threadId, {

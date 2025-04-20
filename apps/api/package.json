@@ -1,0 +1,26 @@
+{
+	"name": "llm-worker",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deploy": "wrangler deploy",
+		"dev": "wrangler dev",
+		"start": "wrangler dev",
+		"cf-typegen": "wrangler types"
+	},
+	"devDependencies": {
+		"@repo/orchestrator": "*",
+		"@repo/shared": "*",
+		"@repo/ai": "*",
+		"typescript": "^5.5.2",
+		"wrangler": "^4.12.0"
+	},
+	"dependencies": {
+		"@clerk/backend": "^1.29.1",
+		"@hono/clerk-auth": "^2.0.0",
+		"@types/node": "^22.14.1",
+		"@upstash/redis": "^1.34.8",
+		"hono": "^4.7.7",
+		"zod": "^3.24.3"
+	}
+}

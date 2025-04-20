@@ -1,0 +1,24 @@
+{
+	"name": "llm-worker",
+	"main": "src/index.ts",
+	"compatibility_date": "2024-03-01",
+	"compatibility_flags": ["nodejs_compat_v2", "rpc", "nodejs_compat_populate_process_env", "cache_option_enabled"],
+
+	"migrations": [
+		{
+			"new_sqlite_classes": ["WorkflowStateObject"],
+			"tag": "v1",
+		},
+	],
+	"durable_objects": {
+		"bindings": [
+			{
+				"class_name": "WorkflowStateObject",
+				"name": "WORKFLOW_STATE",
+			},
+		],
+	},
+	"observability": {
+		"enabled": true,
+	},
+}

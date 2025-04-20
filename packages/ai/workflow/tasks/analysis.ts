@@ -5,13 +5,22 @@ import { WorkflowContextSchema } from '../flow';
 import { ChunkBuffer, generateText, getHumanizedDate, handleError, sendEvents } from '../utils';
 export const analysisTask = createTask<WorkflowEventSchema, WorkflowContextSchema>({
     name: 'analysis',
-    execute: async ({ trace, events, context, signal }) => {
+    execute: async ({ trace, events, context, signal, interrupt }) => {
         const messages = context?.get('messages') || [];
         const question = context?.get('question') || '';
         const prevSummaries = context?.get('summaries') || [];
         const { updateStep, nextStepId, addSources } = sendEvents(events);
 
         const stepId = nextStepId();
+        const waitForApproval = context?.get('waitForApproval') || false;
+
+        if (!waitForApproval) {
+            context?.update('waitForApproval', _ => true);
+
+            interrupt({
+                name: 'analysis',
+            });
+        }
 
         const prompt = `
           
@@ -45,16 +54,17 @@ ${s}
 
                 `;
 
+        let reasoningStepId = stepId;
+
         const chunkBuffer = new ChunkBuffer({
-            threshold: 200,
             breakOn: ['\n\n'],
             onFlush: (chunk: string, fullText: string) => {
                 updateStep({
-                    stepId,
-                    stepStatus: 'PENDING',
+                    stepId: reasoningStepId++,
+                    stepStatus: 'COMPLETED',
                     text: chunk,
                     subSteps: {
-                        reasoning: { status: 'PENDING', data: fullText },
+                        reasoning: { status: 'COMPLETED', data: chunk },
                     },
                 });
             },

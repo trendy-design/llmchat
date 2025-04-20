@@ -76,6 +76,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const getSelectedMCPConfig = useMcpToolsStore(state => state.getSelectedMCP);
     const getApiKeys = useApiKeysStore(state => state.getAllKeys);
     const hasApiKeyForMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
+    const { getToken } = useAuth();
 
     useEffect(() => {
         fetchRemainingCredits();
@@ -214,9 +215,12 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             });
 
             try {
-                await fetchEventSource('/api/completion', {
+                await fetchEventSource('http://agent.chats.so/', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${await getToken()}`,
+                    },
                     body: JSON.stringify(payload),
                     credentials: 'include',
                     signal: abortController.signal,
@@ -252,13 +256,14 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                             }
                         } catch (err) {}
                     },
-                    onerror() {
+                    onerror(err) {
                         setIsGenerating(false);
                         updateThreadItem(payload.threadId, {
                             id: payload.threadItemId,
                             status: 'ERROR',
                             error: 'Something went wrong. Please try again.',
                         });
+                        throw err;
                     },
                     onclose() {
                         setIsGenerating(false);
