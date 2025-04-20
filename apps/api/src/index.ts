@@ -1,4 +1,5 @@
 import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
+import { MCPToolManager } from '@repo/ai/tools';
 import { runWorkflow } from '@repo/ai/workflow';
 import { PersistenceLayer } from '@repo/orchestrator';
 import { CHAT_MODE_CREDIT_COSTS, ChatMode, ChatModeConfig } from '@repo/shared/config';
@@ -63,7 +64,7 @@ const app = new Hono<{ Bindings: Env }>();
 // Configure CORS with specific origin and credentials support
 app.use(
 	cors({
-		origin: ['http://localhost:3000'], // Specify exact origins instead of wildcard
+		origin: ['http://localhost:3000', 'https://staging.llmchat.co', 'https://llmchat.co'], // Specify exact origins instead of wildcard
 		allowMethods: ['GET', 'HEAD', 'POST', 'OPTIONS'],
 		allowHeaders: ['Content-Type', 'Authorization'],
 		credentials: true, // Important for credentials: 'include'
@@ -180,6 +181,17 @@ app.post('/', async (c) => {
 						exists: async (id) => stateObject.stateExists(id),
 					});
 
+					let mcpToolManager: MCPToolManager | undefined;
+					if (Object.keys(validatedBody.data.mcpConfig ?? {}).length > 0) {
+						try {
+							mcpToolManager = await MCPToolManager.create(validatedBody.data.mcpConfig as any);
+							await mcpToolManager?.initialize({ shouldExecute: false });
+							console.log('MCPToolManager initialized successfully at workflow start');
+						} catch (error) {
+							console.error('Failed to initialize MCPToolManager:', error);
+						}
+					}
+
 					const workflow = await runWorkflow({
 						mode: validatedBody.data.mode || ChatMode.Deep,
 						question: validatedBody.data.prompt || 'Recent AI news',
@@ -195,6 +207,7 @@ app.post('/', async (c) => {
 						},
 						showSuggestions: validatedBody.data.showSuggestions || false,
 						persistence: persistence,
+						mcpToolManager,
 					});
 
 					workflow.onAll((event: any, payload: any) => {
@@ -206,13 +219,16 @@ app.post('/', async (c) => {
 							mode: validatedBody.data.mode,
 							webSearch: validatedBody.data.webSearch || false,
 							showSuggestions: validatedBody.data.showSuggestions || false,
+
 							[event]: payload,
 						})}\n\n`;
 						controller.enqueue(encoder.encode(message));
 					});
 
 					if (validatedBody.data.breakpointId) {
-						await workflow.resume(validatedBody.data.breakpointId);
+						await workflow.resume(validatedBody.data.breakpointId, {
+							mcpToolManager,
+						});
 					} else {
 						await workflow.start('router', {
 							question: validatedBody.data.prompt,
