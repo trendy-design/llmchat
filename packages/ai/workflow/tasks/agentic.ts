@@ -46,7 +46,7 @@ export const agenticTask = createTask<WorkflowEventSchema, WorkflowContextSchema
         let tools: ToolSet | undefined;
 
         if (mcpToolManager) {
-            tools = mcpToolManager.getTools();
+            tools = mcpToolManager?.getTools();
         }
 
         const chunkBuffer = new ChunkBuffer({
@@ -186,7 +186,7 @@ First check for necessary connection to tools before using them.
                     toolCallId: currentToolCall?.toolCallId,
                     toolName: currentToolCall?.toolName,
                     args: currentToolCall?.args,
-                    approvalStatus: !!object?.requireHumanApproval ? 'PENDING' : 'AUTO_APPROVED',
+                    approvalStatus: 'PENDING',
                 },
                 status: 'PENDING',
             });
@@ -206,7 +206,7 @@ First check for necessary connection to tools before using them.
 
         console.log('object', object);
 
-        if (object?.requireHumanApproval) {
+        if (!!currentToolCall) {
             interrupt('agenticReview');
             return;
         }

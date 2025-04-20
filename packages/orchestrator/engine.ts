@@ -1,5 +1,6 @@
 import { EventEmitter } from 'events';
 import { LangfuseTraceClient } from 'langfuse';
+import superjson from 'superjson';
 import { v4 as uuidv4 } from 'uuid';
 import { Context, ContextSchemaDefinition } from './context';
 import { EventSchemaDefinition, TypedEventEmitter } from './events';
@@ -116,14 +117,16 @@ export class WorkflowEngine<
     }
 
     async resume(workflowId: string, overideContext?: Partial<TContext>) {
+        console.log('🔴 Resuming workflow', workflowId);
         if (this.persistence) {
             const savedWorkflow: any = await this.persistence.loadWorkflow(workflowId);
             if (savedWorkflow) {
                 console.log('🔴 Resuming workflow', savedWorkflow);
-                console.log('🔴 Deserializing workflow state', JSON.stringify(savedWorkflow));
+                console.log('🔴 Deserializing workflow state', savedWorkflow);
 
                 // Properly deserialize the workflow state
                 const deserializedState = this.deserializeState(savedWorkflow.workflowState);
+                console.log('🔴 Deserialized workflow state', deserializedState);
 
                 this.executionContext.setState((state: any) => ({
                     ...state,
@@ -161,6 +164,8 @@ export class WorkflowEngine<
                     console.log('context', this.context);
                 }
 
+                console.log();
+
                 // Restore task execution counts if available
                 if (savedWorkflow.executionCounts) {
                     for (const [taskName, count] of Object.entries(savedWorkflow.executionCounts)) {
@@ -178,14 +183,34 @@ export class WorkflowEngine<
                         `Task "${savedWorkflow.workflowState.breakpointTask}" not found.`
                     );
                 }
+            } else {
+                console.error('Workflow not found');
+                throw new Error('Workflow not found');
             }
+        } else {
+            console.error('Persistence not found');
+            throw new Error('Persistence not found');
         }
     }
 
     // Add a deserializer method to handle the serialized data
     private deserializeState(data: any): any {
         try {
-            console.log('🔴 Deserializing state', JSON.stringify(data, null, 2));
+            // First try using SuperJSON's built-in deserialization
+            if (typeof data === 'string') {
+                console.log('🔴 Deserializing workflow state', data);
+                return superjson.parse(data);
+            }
+
+            // If it's already an object, it might have been processed by SuperJSON already
+            return data;
+        } catch (error) {
+            console.error(
+                '🔴 Error deserializing with SuperJSON, falling back to manual deserialization',
+                error
+            );
+
+            // Fallback to original manual deserialization logic
             if (data === null || data === undefined) {
                 return data;
             }
@@ -221,8 +246,6 @@ export class WorkflowEngine<
 
             // Return primitive values as is
             return data;
-        } catch (error) {
-            throw new Error('🔴 Error deserializing state');
         }
     }
 
@@ -256,6 +279,7 @@ export class WorkflowEngine<
         if (this.executionContext.isAborted() && !this.executionContext.isGracefulShutdown()) {
             console.log(`⚠️ Task "${taskName}" skipped due to workflow abortion.`);
             this.status = WorkflowStatus.ABORTED;
+            await this.persistIfEnabled();
             return;
         }
 
@@ -267,12 +291,8 @@ export class WorkflowEngine<
                 new Error(`Task "${taskName}" not found.`)
             );
             this.status = WorkflowStatus.FAILED;
-            if (this.persistence) {
-                await this.persistence.saveWorkflow(this.id, this, this.status);
-            }
+            await this.persistIfEnabled();
             throw new Error(`Task "${taskName}" not found.`);
-
-            return;
         }
 
         if (
@@ -356,19 +376,15 @@ export class WorkflowEngine<
                 }
 
                 this.executionContext.markTaskComplete(taskName, result);
-                if (this.persistence) {
-                    await this.persistence.saveWorkflow(this.id, this, this.status);
-                }
-                // Emit an event with the updated execution count
-                const executionCount = this.executionContext.getTaskExecutionCount(taskName);
-                this.executionContext.emitTaskExecutionEvent(taskName, executionCount);
 
+                // Only persist state at significant state changes
                 if (
                     this.executionContext.isAborted() &&
                     !this.executionContext.isGracefulShutdown()
                 ) {
                     console.log(`⚠️ Workflow stopped after task "${taskName}".`);
                     this.status = WorkflowStatus.ABORTED;
+                    await this.persistIfEnabled();
                     return result;
                 }
 
@@ -438,9 +454,7 @@ export class WorkflowEngine<
                         await this.executeTask(nextTasks as string, result);
                     }
                 }
-                if (this.persistence) {
-                    await this.persistence.saveWorkflow(this.id, this, this.status);
-                }
+
                 return result;
             } catch (error) {
                 this.executionContext.endTaskTiming(taskName, error as Error);
@@ -450,9 +464,7 @@ export class WorkflowEngine<
                 if (error instanceof BreakpointError) {
                     console.log(`🔴 Breakpoint hit for task "${taskName}".`);
                     this.status = WorkflowStatus.INTERRUPTED;
-                    if (this.persistence) {
-                        await this.persistence.saveWorkflow(this.id, this, this.status);
-                    }
+                    await this.persistIfEnabled();
                     return;
                 }
 
@@ -523,12 +535,17 @@ export class WorkflowEngine<
                 if (attempt > (config.retryCount || 0)) {
                     console.error(`⛔ Task "${taskName}" failed after ${attempt} attempts.`);
                     this.status = WorkflowStatus.FAILED;
-                    if (this.persistence) {
-                        await this.persistence.saveWorkflow(this.id, this, this.status);
-                    }
+                    await this.persistIfEnabled();
                     throw error;
                 }
             }
+        }
+    }
+
+    // Add a helper method to handle conditional persistence
+    private async persistIfEnabled(): Promise<void> {
+        if (this.persistence) {
+            await this.persistence.saveWorkflow(this.id, this, this.status);
         }
     }
 

@@ -29,8 +29,6 @@ export class MCPToolManager {
         for (const key in this.config) {
             const baseUrl = this.config[key];
 
-            console.log(`Creating MCP client for ${key} with URL: ${baseUrl}`);
-
             const client = new Client(
                 {
                     name: key,
@@ -44,7 +42,6 @@ export class MCPToolManager {
             );
 
             try {
-                console.log(`Connecting to ${baseUrl}`);
                 await client.connect(new SSEClientTransport(new URL(this.config[key])));
                 console.log(`Successfully connected to ${baseUrl}`);
                 this.clients.push(client);
@@ -66,7 +63,6 @@ export class MCPToolManager {
                     });
 
                     nextCursor = toolList.nextCursor;
-                    console.log(mcpClient, 'toolList', toolList);
 
                     const mcpTools = toolList.tools.map(tool => {
                         this.toolServerMap.set(tool.name, mcpClient);
@@ -81,7 +77,6 @@ export class MCPToolManager {
                 } while (nextCursor);
 
                 const aiSdkTools = allMcpTools.map(t => {
-                    console.log(t.input_schema);
                     if (shouldExecute) {
                         return {
                             name: t.name,

@@ -1,3 +1,4 @@
+import superjson from 'superjson';
 import { WorkflowStatus } from './types';
 
 type PersistentStorageAdapter<TEvent, TContext> = {
@@ -29,11 +30,6 @@ export class PersistenceLayer<TEvent, TContext> {
         const executionContext = engine.executionContext;
         const events = engine.getEvents();
         const context = engine.getContext();
-        const config = engine.getConfig() || {};
-
-        // Create a sanitized version of the workflow config
-        // that doesn't include functions
-        const sanitizedConfig = this.sanitizeForSerialization(config);
 
         const data: WorkflowPersistenceData<TEvent, TContext> = {
             id,
@@ -49,6 +45,7 @@ export class PersistenceLayer<TEvent, TContext> {
             lastUpdated: new Date().toISOString(),
             status,
         };
+        console.log('saveWorkflow', data);
         await this.storage.save(this.getStorageKey(id), data);
     }
 
@@ -56,6 +53,7 @@ export class PersistenceLayer<TEvent, TContext> {
         const exists = await this.storage.exists(this.getStorageKey(id));
         if (!exists) return null;
         const data = await this.storage.load(this.getStorageKey(id));
+        console.log('loadWorkflow', data);
         if (!data) return null;
         return data;
     }
@@ -72,36 +70,55 @@ export class PersistenceLayer<TEvent, TContext> {
         return `workflow:${id}`;
     }
 
-    // Add a new helper method to sanitize objects before serialization
     private sanitizeForSerialization(obj: any): any {
+        try {
+            // Use SuperJSON to safely serialize the object
+            const serialized = superjson.stringify(obj);
+            // Parse back to an object to ensure it's safe
+            return superjson.parse(serialized);
+        } catch (error) {
+            console.warn('Failed to serialize with SuperJSON:', error);
+            // Fallback to simple type handling
+            return this.serializeSimpleTypesOnly(obj);
+        }
+    }
+
+    // Fallback serializer that only handles simple types
+    private serializeSimpleTypesOnly(obj: any): any {
+        // Handle null or undefined
         if (obj === null || obj === undefined) {
             return obj;
         }
 
-        if (obj instanceof Set) {
-            return { type: 'Set', value: Array.from(obj) };
+        // Handle primitive types that serialize cleanly
+        if (typeof obj === 'string' || typeof obj === 'number' || typeof obj === 'boolean') {
+            return obj;
         }
 
-        if (obj instanceof Map) {
-            return { type: 'Map', value: Object.fromEntries(obj) };
-        }
-
+        // Handle arrays by recursively processing their elements
         if (Array.isArray(obj)) {
-            return obj.map(item => this.sanitizeForSerialization(item));
+            return obj.map(item => this.serializeSimpleTypesOnly(item));
         }
 
+        // Handle plain objects
         if (typeof obj === 'object') {
+            // Skip any object that's not a plain object (has custom constructor)
+            if (obj.constructor !== Object) {
+                return null;
+            }
+
             const result: Record<string, any> = {};
             for (const [key, value] of Object.entries(obj)) {
-                // Skip functions
-                if (typeof value !== 'function') {
-                    result[key] = this.sanitizeForSerialization(value);
+                // Skip functions and non-basic types
+                const processed = this.serializeSimpleTypesOnly(value);
+                if (processed !== undefined) {
+                    result[key] = processed;
                 }
             }
             return result;
         }
 
-        // Return primitive values as is
-        return obj;
+        // Skip all other types
+        return undefined;
     }
 }

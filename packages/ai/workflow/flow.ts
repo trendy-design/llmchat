@@ -200,7 +200,7 @@ export const runWorkflow = async ({
     // });
 
     // Use the typed builder
-    const builder = new WorkflowBuilder(threadId, {
+    const builder = new WorkflowBuilder(threadItemId, {
         trace,
         initialEventState: events.getAllState(),
         events,

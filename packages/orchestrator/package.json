@@ -14,5 +14,8 @@
         "@repo/typescript-config": "*",
         "eslint": "^8.56.0",
         "typescript": "^5.3.3"
+    },
+    "dependencies": {
+        "superjson": "^2.2.2"
     }
 }

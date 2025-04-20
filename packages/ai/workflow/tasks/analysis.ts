@@ -12,15 +12,6 @@ export const analysisTask = createTask<WorkflowEventSchema, WorkflowContextSchem
         const { updateStep, nextStepId, addSources } = sendEvents(events);
 
         const stepId = nextStepId();
-        const waitForApproval = context?.get('waitForApproval') || false;
-
-        if (!waitForApproval) {
-            context?.update('waitForApproval', _ => true);
-
-            interrupt({
-                name: 'analysis',
-            });
-        }
 
         const prompt = `
           

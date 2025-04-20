@@ -1,8 +1,9 @@
 import { clerkMiddleware, getAuth } from '@hono/clerk-auth';
 import { MCPToolManager } from '@repo/ai/tools';
-import { runWorkflow } from '@repo/ai/workflow';
+import { runWorkflow, WorkflowContextSchema } from '@repo/ai/workflow';
 import { PersistenceLayer } from '@repo/orchestrator';
 import { CHAT_MODE_CREDIT_COSTS, ChatMode, ChatModeConfig } from '@repo/shared/config';
+import { WorkflowEventSchema } from '@repo/shared/types';
 import { DurableObject } from 'cloudflare:workers';
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
@@ -43,6 +44,7 @@ export class WorkflowStateObject extends DurableObject<Env> {
 
 	// Only handle state persistence methods
 	async saveState(id: string, data: any): Promise<void> {
+		console.log('saveState', id, data);
 		await this.ctx.storage.put(id, data);
 	}
 
@@ -122,9 +124,13 @@ app.post('/', async (c) => {
 			);
 		}
 
-		const uniqueId = validatedBody.data.threadId || crypto.randomUUID();
+		console.log('validatedBody', validatedBody.data);
+
+		const uniqueId = validatedBody.data.threadItemId || crypto.randomUUID();
+		console.log('durable object id', uniqueId);
 		const id = c.env.WORKFLOW_STATE.idFromName(uniqueId);
 		const stateObject = c.env.WORKFLOW_STATE.get(id);
+		console.log('stateObject', stateObject);
 
 		// Get credit cost for the selected mode
 		const creditCost = CHAT_MODE_CREDIT_COSTS[validatedBody.data.mode];
@@ -174,15 +180,16 @@ app.post('/', async (c) => {
 				let success = false;
 
 				try {
-					const persistence = new PersistenceLayer({
+					const persistence = new PersistenceLayer<WorkflowEventSchema, WorkflowContextSchema>({
 						save: async (id, data) => stateObject.saveState(id, data),
-						load: async (id) => stateObject.loadState(id),
+						// @ts-ignore
+						load: async (id) => stateObject.loadState(id) as any,
 						delete: async (id) => stateObject.deleteState(id),
 						exists: async (id) => stateObject.stateExists(id),
 					});
 
 					let mcpToolManager: MCPToolManager | undefined;
-					if (Object.keys(validatedBody.data.mcpConfig ?? {}).length > 0) {
+					if (Object.keys(validatedBody.data.mcpConfig ?? {}).length > 0 && validatedBody.data.mode === ChatMode.Agent) {
 						try {
 							mcpToolManager = await MCPToolManager.create(validatedBody.data.mcpConfig as any);
 							await mcpToolManager?.initialize({ shouldExecute: false });
