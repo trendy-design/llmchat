@@ -215,7 +215,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             });
 
             try {
-                await fetchEventSource('https://agent.chats.so', {
+                await fetchEventSource('/api/completion', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
