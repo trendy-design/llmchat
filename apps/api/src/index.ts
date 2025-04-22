@@ -192,7 +192,6 @@ app.post('/', async (c) => {
 					if (Object.keys(validatedBody.data.mcpConfig ?? {}).length > 0 && validatedBody.data.mode === ChatMode.Agent) {
 						try {
 							mcpToolManager = await MCPToolManager.create(validatedBody.data.mcpConfig as any);
-							await mcpToolManager?.initialize({ shouldExecute: false });
 							console.log('MCPToolManager initialized successfully at workflow start');
 						} catch (error) {
 							console.error('Failed to initialize MCPToolManager:', error);
