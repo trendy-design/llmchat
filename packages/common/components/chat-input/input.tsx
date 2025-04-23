@@ -4,7 +4,6 @@ import {
     ImageAttachment,
     ImageDropzoneRoot,
     MessagesRemainingBadge,
-    ToolsMenu,
 } from '@repo/common/components';
 import { useImageAttachment } from '@repo/common/hooks';
 import { ChatModeConfig } from '@repo/shared/config';
@@ -172,7 +171,7 @@ export const ChatInput = ({
                                                         showIcon={true}
                                                         handleImageUpload={handleImageUpload}
                                                     />
-                                                    <ToolsMenu />
+                                                    {/* <ToolsMenu /> */}
                                                 </Flex>
                                             )}
 

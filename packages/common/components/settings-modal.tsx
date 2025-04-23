@@ -29,11 +29,11 @@ export const SettingsModal = () => {
             key: SETTING_TABS.API_KEYS,
             component: <ApiKeySettings />,
         },
-        {
-            title: 'MCP Tools',
-            key: SETTING_TABS.MCP_TOOLS,
-            component: <MCPSettings />,
-        },
+        // {
+        //     title: 'MCP Tools',
+        //     key: SETTING_TABS.MCP_TOOLS,
+        //     component: <MCPSettings />,
+        // },
     ];
 
     return (

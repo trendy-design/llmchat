@@ -4,7 +4,6 @@ import { useWorkflowWorker } from '@repo/ai/worker';
 import { ChatMode, ChatModeConfig } from '@repo/shared/config';
 import { ThreadItem, WorkflowEventSchema } from '@repo/shared/types';
 import { buildCoreMessagesFromThreadItems, plausible } from '@repo/shared/utils';
-import { produce } from 'immer';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo } from 'react';
@@ -59,6 +58,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         chatMode,
         fetchRemainingCredits,
         customInstructions,
+        getCurrentThreadItem,
     } = useChatStore(state => ({
         updateThreadItem: state.updateThreadItem,
         setIsGenerating: state.setIsGenerating,
@@ -70,6 +70,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         chatMode: state.chatMode,
         fetchRemainingCredits: state.fetchRemainingCredits,
         customInstructions: state.customInstructions,
+        getCurrentThreadItem: state.getCurrentThreadItem,
     }));
     const { push } = useRouter();
 
@@ -82,8 +83,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         fetchRemainingCredits();
     }, [user?.id, fetchRemainingCredits]);
 
-    const threadItemCache = useMemo(() => new Map<string, ThreadItem>(), []);
-
     const updateThreadItemCache = useCallback(
         (
             threadId: string,
@@ -92,81 +91,99 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             eventData: WorkflowEventSchema & { query: string; mode: ChatMode },
             parentThreadItemId?: string
         ) => {
-            const previousItem = threadItemCache.get(threadItemId) || ({} as ThreadItem);
+            const previousItem = getCurrentThreadItem() || ({} as ThreadItem);
 
-            const mergedItem = produce(previousItem, draft => {
-                draft.query = eventData?.query || draft.query || '';
-                draft.mode = eventData?.mode || draft.mode;
-                draft.threadId = threadId;
-                draft.parentId = parentThreadItemId || draft.parentId;
-                draft.id = threadItemId;
-                draft.object = eventData?.object || draft.object;
-                draft.createdAt = draft.createdAt || new Date();
-                draft.updatedAt = new Date();
-                draft.breakpoint = eventData?.breakpoint || draft.breakpoint;
+            let mergedItem: ThreadItem = {
+                ...previousItem,
+                query: eventData?.query || previousItem.query || '',
+                mode: eventData?.mode || previousItem.mode,
+                threadId,
+                parentId: parentThreadItemId || previousItem.parentId,
+                id: threadItemId,
+                object: eventData?.object || previousItem.object,
+                createdAt: previousItem.createdAt || new Date(),
+                updatedAt: new Date(),
+                breakpoint: eventData?.breakpoint || previousItem.breakpoint,
+            };
 
-                if (eventType === 'answer' && eventData.answer && eventData.answer.message) {
-                    console.log(eventData, draft.answer);
-                    const newMessage = draft.answer?.messages?.find(
-                        m =>
-                            m.type === eventData.answer.message?.type &&
-                            m.id === eventData.answer.message?.id
-                    );
+            if (eventType === 'answer' && eventData.answer && eventData.answer.message) {
+                console.log(
+                    'answer event',
+                    eventData.answer.message,
+                    mergedItem.answer?.messages,
+                    previousItem
+                );
 
-                    draft.answer = {
-                        ...draft.answer,
+                const existingMessages = mergedItem?.answer?.messages ?? [];
+                const newMessage = existingMessages.find(
+                    m =>
+                        m.type === eventData.answer.message?.type &&
+                        m.id === eventData.answer.message?.id
+                );
+
+                const updatedMessages = existingMessages.map(m => {
+                    if (
+                        m.type === eventData.answer.message?.type &&
+                        m.id === eventData.answer.message?.id &&
+                        eventData.answer.message.type === 'text' &&
+                        m.type === 'text'
+                    ) {
+                        if (eventData.answer.message.isFullText) {
+                            return eventData.answer.message;
+                        }
+                        return {
+                            ...m,
+                            text: (m.text || '') + (eventData.answer.message.text || ''),
+                        };
+                    }
+
+                    if (
+                        m.type === eventData.answer.message?.type &&
+                        m.id === eventData.answer.message?.id &&
+                        eventData.answer.message.type === 'tool-call' &&
+                        m.type === 'tool-call'
+                    ) {
+                        return eventData.answer.message;
+                    }
+
+                    if (
+                        m.type === eventData.answer.message?.type &&
+                        m.id === eventData.answer.message?.id &&
+                        eventData.answer.message.type === 'tool-result' &&
+                        m.type === 'tool-result'
+                    ) {
+                        return eventData.answer.message;
+                    }
+
+                    return m;
+                });
+
+                console.log('mergedItem u new', updatedMessages, newMessage);
+
+                mergedItem = {
+                    ...mergedItem,
+                    answer: {
+                        ...mergedItem.answer,
                         text: '', // deprecated
                         isChunk: false, // deprecated
                         messages: [
-                            ...(draft.answer?.messages || []).map(m => {
-                                if (
-                                    m.type === eventData.answer.message?.type &&
-                                    m.id === eventData.answer.message?.id &&
-                                    eventData.answer.message.type === 'text' &&
-                                    m.type === 'text'
-                                ) {
-                                    if (eventData.answer.message.isFullText) {
-                                        return eventData.answer.message;
-                                    }
-                                    return {
-                                        ...m,
-                                        text:
-                                            (m.text || '') + (eventData.answer.message.text || ''),
-                                    };
-                                }
-
-                                if (
-                                    m.type === eventData.answer.message?.type &&
-                                    m.id === eventData.answer.message?.id &&
-                                    eventData.answer.message.type === 'tool-call' &&
-                                    m.type === 'tool-call'
-                                ) {
-                                    return eventData.answer.message;
-                                }
-
-                                if (
-                                    m.type === eventData.answer.message?.type &&
-                                    m.id === eventData.answer.message?.id &&
-                                    eventData.answer.message.type === 'tool-result' &&
-                                    m.type === 'tool-result'
-                                ) {
-                                    return eventData.answer.message;
-                                }
-                                return m;
-                            }),
+                            ...updatedMessages,
                             ...(newMessage ? [] : [eventData.answer.message]),
                         ],
-                    };
-                } else if (eventType in eventData) {
-                    // @ts-ignore
-                    draft[eventType] = eventData[eventType as keyof ThreadItem];
-                }
-            });
+                    },
+                };
+            } else if (eventType in eventData) {
+                mergedItem = {
+                    ...mergedItem,
+                    [eventType]: eventData[eventType as keyof WorkflowEventSchema],
+                };
+            }
 
-            threadItemCache.set(threadItemId, mergedItem);
+            console.log('mergedItem', mergedItem);
+
             updateThreadItem(threadId, { ...mergedItem, persistToDB: true });
         },
-        [threadItemCache, updateThreadItem]
+        [updateThreadItem]
     );
 
     const { startWorkflow, abortWorkflow } = useWorkflowWorker(
@@ -190,12 +207,9 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 if (event.type === 'done') {
                     setIsGenerating(false);
                     setTimeout(fetchRemainingCredits, 1000);
-                    if (event?.threadItemId) {
-                        threadItemCache.delete(event.threadItemId);
-                    }
                 }
             },
-            [updateThreadItemCache, setIsGenerating, fetchRemainingCredits, threadItemCache]
+            [updateThreadItemCache, setIsGenerating, fetchRemainingCredits]
         )
     );
 
@@ -215,7 +229,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             });
 
             try {
-                await fetchEventSource('https://agent.chats.so', {
+                await fetchEventSource('http://localhost:8787', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -239,7 +253,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                                 parsedData?.threadId &&
                                 parsedData?.threadItemId
                             ) {
-                                console.log('levent', parsedData);
+                                setCurrentThreadItem(parsedData.threadItemId);
                                 updateThreadItemCache(
                                     parsedData.threadId,
                                     parsedData.threadItemId,
@@ -250,9 +264,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                             } else if (event === 'done' && parsedData.type === 'done') {
                                 setIsGenerating(false);
                                 setTimeout(fetchRemainingCredits, 1000);
-                                if (parsedData.threadItemId) {
-                                    threadItemCache.delete(parsedData.threadItemId);
-                                }
                             }
                         } catch (err) {}
                     },
@@ -285,7 +296,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             updateThreadItemCache,
             fetchRemainingCredits,
             AGENT_EVENT_TYPES,
-            threadItemCache,
         ]
     );
 
@@ -333,7 +343,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             };
 
             createThreadItem(aiThreadItem);
-            setCurrentThreadItem(aiThreadItem);
+            setCurrentThreadItem(aiThreadItem.id);
             setIsGenerating(true);
             setCurrentSources([]);
 

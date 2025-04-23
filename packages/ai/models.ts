@@ -18,7 +18,7 @@ export enum ModelEnum {
     Claude_3_7_Sonnet = 'claude-3-7-sonnet-20250219',
     Grok_3 = 'grok-3-beta',
     Grok_3_Mini = 'grok-3-mini-beta',
-    GEMINI_2_5_FLASH = 'gemini-2.5-flash',
+    GEMINI_2_5_FLASH = 'gemini-2.5-flash-preview-04-17',
 }
 
 export type Model = {
@@ -191,8 +191,8 @@ export const models: Model[] = [
 
 export const getModelFromChatMode = (mode?: string): ModelEnum => {
     switch (mode) {
-        case ChatMode.Agent:
-            return ModelEnum.GPT_4_1_Nano;
+        // case ChatMode.Agent:
+        //     return ModelEnum.GPT_4_1_Nano;
         case ChatMode.GEMINI_2_FLASH:
             return ModelEnum.GEMINI_2_FLASH;
         case ChatMode.DEEPSEEK_R1:

@@ -117,7 +117,7 @@ type Actions = {
     removeFollowupThreadItems: (threadItemId: string) => Promise<void>;
     getThreadItems: (threadId: string) => Promise<ThreadItem[]>;
     loadThreadItems: (threadId: string) => Promise<void>;
-    setCurrentThreadItem: (threadItem: ThreadItem) => void;
+    setCurrentThreadItem: (threadItemId: string) => void;
     clearAllThreads: () => void;
     setCurrentSources: (sources: string[]) => void;
     setUseWebSearch: (useWebSearch: boolean) => void;
@@ -593,10 +593,13 @@ export const useChatStore = create(
             });
         },
 
-        setCurrentThreadItem: threadItem =>
+        setCurrentThreadItem: (threadItemId: string) => {
+            const threadItem = get().threadItems.find(t => t.id === threadItemId);
+            if (!threadItem) return;
             set(state => {
                 state.currentThreadItem = threadItem;
-            }),
+            });
+        },
 
         setEditor: editor =>
             set(state => {

@@ -1,7 +1,7 @@
 export enum ChatMode {
     Pro = 'pro',
     Deep = 'deep',
-    Agent = 'agent',
+    // Agent = 'agent',
     O4_Mini = 'o4-mini',
     GPT_4_1 = 'gpt-4.1',
     GPT_4_1_Mini = 'gpt-4.1-mini',
@@ -9,7 +9,7 @@ export enum ChatMode {
     GPT_4o_Mini = 'gpt-4o-mini',
     LLAMA_4_SCOUT = 'llama-4-scout',
     GEMINI_2_FLASH = 'gemini-flash-2.0',
-    GEMINI_2_5_FLASH = 'gemini-flash-2.5',
+    GEMINI_2_5_FLASH = 'gemini-2.5-flash-preview-04-17',
     DEEPSEEK_R1 = 'deepseek-r1',
     CLAUDE_3_5_SONNET = 'claude-3-5-sonnet',
     CLAUDE_3_7_SONNET = 'claude-3-7-sonnet',
@@ -40,13 +40,13 @@ export const ChatModeConfig: Record<
         retry: false,
         isAuthRequired: true,
     },
-    [ChatMode.Agent]: {
-        webSearch: false,
-        imageUpload: true,
-        supportMcp: true,
-        retry: false,
-        isAuthRequired: true,
-    },
+    // [ChatMode.Agent]: {
+    //     webSearch: false,
+    //     imageUpload: true,
+    //     supportMcp: true,
+    //     retry: false,
+    //     isAuthRequired: true,
+    // },
     [ChatMode.GPT_4_1]: {
         webSearch: true,
         imageUpload: true,
@@ -144,7 +144,7 @@ export const ChatModeConfig: Record<
 export const CHAT_MODE_CREDIT_COSTS = {
     [ChatMode.Deep]: 10,
     [ChatMode.Pro]: 5,
-    [ChatMode.Agent]: 1,
+    // [ChatMode.Agent]: 1,
     [ChatMode.LLAMA_4_SCOUT]: 1,
     [ChatMode.GPT_4o_Mini]: 1,
     [ChatMode.GPT_4_1]: 5,
@@ -164,8 +164,8 @@ export const getChatModeName = (mode: ChatMode) => {
             return 'Deep Research';
         case ChatMode.Pro:
             return 'Pro Search';
-        case ChatMode.Agent:
-            return 'Agent';
+        // case ChatMode.Agent:
+        //     return 'Agent';
         case ChatMode.GEMINI_2_5_FLASH:
             return 'Gemini 2.5 Flash';
         case ChatMode.GPT_4_1:
