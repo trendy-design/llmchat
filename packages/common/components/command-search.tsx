@@ -15,7 +15,9 @@ import {
     IconCommand,
     IconKey,
     IconMessageCircleFilled,
+    IconMoon,
     IconPlus,
+    IconSun,
     IconTrash,
 } from '@tabler/icons-react';
 import moment from 'moment';
@@ -108,6 +110,14 @@ export const CommandSearch = () => {
                     router.push('/chat');
                     onClose();
                 }
+            },
+        },
+        {
+            name: `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`,
+            icon: theme === 'dark' ? IconSun : IconMoon,
+            action: () => {
+                setTheme(theme === 'dark' ? 'light' : 'dark');
+                onClose();
             },
         },
         {
