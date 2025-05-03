@@ -113,7 +113,7 @@ export const CommandSearch = () => {
             },
         },
         {
-            name: 'Toggle Theme',
+            name: `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`,
             icon: theme === 'dark' ? IconSun : IconMoon,
             action: () => {
                 setTheme(theme === 'dark' ? 'light' : 'dark');
