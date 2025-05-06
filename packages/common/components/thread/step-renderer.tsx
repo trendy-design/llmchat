@@ -10,7 +10,6 @@ export type StepRendererType = {
 };
 
 export const StepRenderer = ({ step }: StepRendererType) => {
-    console.log(step);
     const renderTextStep = () => {
         if (step?.text) {
             return (
@@ -67,6 +66,7 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                 </motion.div>
             );
         }
+        return null;
     };
 
     const renderReadStep = () => {
@@ -166,11 +166,13 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
             >
-                {renderWrapupStep()}
-                {renderTextStep()}
-                {renderReasoningStep()}
-                {renderSearchStep()}
-                {renderReadStep()}
+                <div className="flex flex-col gap-4">
+                    {renderWrapupStep()}
+                    {renderTextStep()}
+                    {renderReasoningStep()}
+                    {renderSearchStep()}
+                    {renderReadStep()}
+                </div>
             </motion.div>
         </div>
     );

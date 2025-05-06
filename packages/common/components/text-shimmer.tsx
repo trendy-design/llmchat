@@ -28,9 +28,9 @@ function TextShimmerComponent({
         <MotionComponent
             className={cn(
                 'relative inline-block bg-[length:250%_100%,auto] bg-clip-text',
-                'text-transparent [--base-color:hsl(var(--muted-foreground)/50)] [--base-gradient-color:hsl(var(--foreground))]',
+                'text-transparent [--base-color:hsl(var(--muted-foreground)/20)] [--base-gradient-color:hsl(var(--foreground))]',
                 '[--bg:linear-gradient(90deg,#0000_calc(50%-var(--spread)),var(--base-gradient-color),#0000_calc(50%+var(--spread)))] [background-repeat:no-repeat,padding-box]',
-                'dark:[--base-color:hsl(var(--muted-foreground)/50)] dark:[--base-gradient-color:hsl(var(--brand))]',
+                'dark:[--base-color:hsl(var(--muted-foreground)/20)] dark:[--base-gradient-color:hsl(var(--brand))]',
                 className
             )}
             initial={{ backgroundPosition: '100% center' }}

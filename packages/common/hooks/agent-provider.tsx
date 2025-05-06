@@ -228,8 +228,13 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                 });
             });
 
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+            if (!apiUrl) {
+                throw new Error('NEXT_PUBLIC_API_URL is not set');
+            }
+
             try {
-                await fetchEventSource('https://agent.chats.so', {
+                await fetchEventSource(apiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

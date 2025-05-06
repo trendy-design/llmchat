@@ -2,6 +2,12 @@ import { StepRenderer, StepStatus, ToolCallStep, ToolResultStep } from '@repo/co
 import { useAppStore } from '@repo/common/store';
 import { ChatMode } from '@repo/shared/config';
 import { Step, ThreadItem, ToolCall, ToolResult } from '@repo/shared/types';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@repo/ui/src/components/accordion';
 import { IconAtom, IconChecklist, IconLoader2, IconNorthStar } from '@tabler/icons-react';
 import { memo, useEffect } from 'react';
 const getTitle = (threadItem: ThreadItem) => {
@@ -159,15 +165,18 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
 
     return (
         <>
-            {/* {renderTitle()} */}
-            <div className="mb-16 flex w-full flex-1 flex-col">
-                {steps.map((step, index) => (
-                    <StepRenderer key={index} step={step} />
-                ))}
-                {/* {toolCallAndResults.map(({ toolCall, toolResult }) => (
-                        <ToolStep toolCall={toolCall} toolResult={toolResult} />
-                    ))} */}
-            </div>
+            <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="steps" className="px-0">
+                    <AccordionTrigger className="flex-none gap-2">Thoughts</AccordionTrigger>
+                    <AccordionContent>
+                        <div className="mb-16 flex w-full flex-1 flex-col">
+                            {steps.map((step, index) => (
+                                <StepRenderer key={index} step={step} />
+                            ))}
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
         </>
     );
 };

@@ -152,9 +152,11 @@ app.post('/', async (c) => {
 			ip: ip ?? undefined,
 		});
 
-		console.log('remainingCredits', remainingCredits);
+		const env = process.env;
+
+		console.log('remainingCredits', remainingCredits, env, env.NODE_ENV);
 		// Check if user has enough credits
-		if (remainingCredits < creditCost && process.env.NODE_ENV !== 'development') {
+		if (remainingCredits < creditCost && env.NODE_ENV !== 'development') {
 			return c.json(
 				{
 					error: 'Rate limit exceeded',
@@ -175,7 +177,8 @@ app.post('/', async (c) => {
 			async start(controller) {
 				const heartbeatInterval = setInterval(() => {
 					controller.enqueue(encoder.encode(': heartbeat\n\n'));
-				}, 30000);
+					controller.enqueue(new Uint8Array(0)); // Force flush
+				}, 15000);
 
 				let success = false;
 
@@ -189,14 +192,14 @@ app.post('/', async (c) => {
 					});
 
 					let mcpToolManager: MCPToolManager | undefined;
-					if (Object.keys(validatedBody.data.mcpConfig ?? {}).length > 0 && validatedBody.data.mode === ChatMode.Agent) {
-						try {
-							mcpToolManager = await MCPToolManager.create(validatedBody.data.mcpConfig as any);
-							console.log('MCPToolManager initialized successfully at workflow start');
-						} catch (error) {
-							console.error('Failed to initialize MCPToolManager:', error);
-						}
-					}
+					// if (Object.keys(validatedBody.data.mcpConfig ?? {}).length > 0 && validatedBody.data.mode === ChatMode.Agent) {
+					// 	try {
+					// 		mcpToolManager = await MCPToolManager.create(validatedBody.data.mcpConfig as any);
+					// 		console.log('MCPToolManager initialized successfully at workflow start');
+					// 	} catch (error) {
+					// 		console.error('Failed to initialize MCPToolManager:', error);
+					// 	}
+					// }
 
 					const workflow = await runWorkflow({
 						mode: validatedBody.data.mode || ChatMode.Deep,
@@ -282,8 +285,10 @@ app.post('/', async (c) => {
 
 		const headers = {
 			'Content-Type': 'text/event-stream',
-			'Cache-Control': 'no-cache',
+			'Cache-Control': 'no-cache, no-transform',
 			Connection: 'keep-alive',
+			'X-Accel-Buffering': 'no',
+			'Transfer-Encoding': 'chunked',
 			'X-Credits-Available': remainingCredits.toString(),
 			'X-Credits-Cost': creditCost.toString(),
 			'X-Credits-Daily-Allowance': userId ? DAILY_CREDITS_AUTH.toString() : DAILY_CREDITS_IP.toString(),
