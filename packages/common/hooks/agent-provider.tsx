@@ -6,7 +6,15 @@ import { ThreadItem, WorkflowEventSchema } from '@repo/shared/types';
 import { buildCoreMessagesFromThreadItems, plausible } from '@repo/shared/utils';
 import { nanoid } from 'nanoid';
 import { useParams, useRouter } from 'next/navigation';
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo } from 'react';
+import {
+    createContext,
+    ReactNode,
+    useCallback,
+    useContext,
+    useEffect,
+    useMemo,
+    useRef,
+} from 'react';
 import { useApiKeysStore, useChatStore, useMcpToolsStore } from '../store';
 
 export type submitHandlerArgs = {
@@ -78,6 +86,8 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const getApiKeys = useApiKeysStore(state => state.getAllKeys);
     const hasApiKeyForMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
     const { getToken } = useAuth();
+
+    const abortControllerRef = useRef<AbortController | null>(null);
 
     useEffect(() => {
         fetchRemainingCredits();
@@ -215,8 +225,12 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
 
     const executeAgent = useCallback(
         async (payload: any) => {
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+            console.log('executing agent');
             const abortController = new AbortController();
-            setAbortController(abortController);
+            abortControllerRef.current = abortController;
             setIsGenerating(true);
 
             abortController.signal.addEventListener('abort', () => {
@@ -284,6 +298,9 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                     onclose() {
                         setIsGenerating(false);
                     },
+                    keepalive: true,
+                    priority: 'high',
+                    openWhenHidden: true,
                 });
             } catch (err: any) {
                 setIsGenerating(false);
@@ -295,12 +312,12 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             }
         },
         [
-            setAbortController,
             setIsGenerating,
             updateThreadItem,
             updateThreadItemCache,
             fetchRemainingCredits,
             AGENT_EVENT_TYPES,
+            getToken,
         ]
     );
 
