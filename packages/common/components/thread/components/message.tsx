@@ -40,7 +40,7 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
             {imageAttachment && <ImageMessage imageAttachment={imageAttachment} />}
             <div
                 className={cn(
-                    'text-foreground bg-tertiary group relative max-w-[80%] overflow-hidden rounded-lg',
+                    'text-foreground bg-quaternary group relative max-w-[80%] overflow-hidden rounded-xl',
                     isEditing && 'border-hard'
                 )}
             >

@@ -1,7 +1,7 @@
 import { ThreadItem } from '@repo/common/components';
 import { useChatStore } from '@repo/common/store';
 import { useParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 export function Thread() {
@@ -27,6 +27,10 @@ export function Thread() {
             </div>
         ));
     }, [previousThreadItems]);
+
+    useEffect(() => {
+        console.log('currentThreadItem', currentThreadId, previousThreadItems, currentThreadItem);
+    }, [currentThreadId, previousThreadItems, currentThreadItem]);
 
     return (
         <div className="relative" id="thread-container">

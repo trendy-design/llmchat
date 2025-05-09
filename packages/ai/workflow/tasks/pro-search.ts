@@ -131,7 +131,6 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
             let searchResults: SearchResult[] = [];
             try {
                 const gl = context?.get('gl');
-                console.log('gl', gl);
                 searchResults = await getSERPResults([query.query], gl);
                 if (!searchResults || searchResults.length === 0) {
                     throw new Error('No search results found');
@@ -210,9 +209,8 @@ export const proSearchTask = createTask<WorkflowEventSchema, WorkflowContextSche
                     updateStep({
                         stepId: reasoningStepId++,
                         stepStatus: 'COMPLETED',
-                        subSteps: {
-                            reasoning: { status: 'COMPLETED', data: chunk },
-                        },
+                        text: chunk,
+                        subSteps: {},
                     });
                 },
             });

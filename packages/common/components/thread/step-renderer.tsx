@@ -1,20 +1,20 @@
 import { SearchResultsList, StepStatus, TextShimmer } from '@repo/common/components';
 import { Step } from '@repo/shared/types';
-import { Badge } from '@repo/ui';
+import { Badge, cn } from '@repo/ui';
 import { IconSearch } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
-import React from 'react';
 
 export type StepRendererType = {
     step: Step;
+    isLastStep: boolean;
 };
 
-export const StepRenderer = ({ step }: StepRendererType) => {
+export const StepRenderer = ({ step, isLastStep }: StepRendererType) => {
     const renderTextStep = () => {
         if (step?.text) {
             return (
                 <motion.p
-                    className="text-muted-foreground text-sm"
+                    className="text-muted-foreground mb-4 text-sm"
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3, delay: 0.1 }}
@@ -96,31 +96,6 @@ export const StepRenderer = ({ step }: StepRendererType) => {
         return null;
     };
 
-    const renderReasoningStep = () => {
-        if (step?.steps && 'reasoning' in step.steps) {
-            const reasoningData =
-                typeof step.steps?.reasoning?.data === 'string' ? step.steps.reasoning.data : '';
-
-            return (
-                <motion.div
-                    className="flex flex-col gap-2"
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.4 }}
-                >
-                    <p className="text-muted-foreground text-sm">
-                        {reasoningData.split('\n\n').map((line: string, index: number) => (
-                            <React.Fragment key={index}>
-                                <div className="py-1">{line}</div>
-                            </React.Fragment>
-                        ))}
-                    </p>
-                </motion.div>
-            );
-        }
-        return null;
-    };
-
     const renderWrapupStep = () => {
         if (step?.steps && 'wrapup' in step.steps) {
             return (
@@ -147,14 +122,17 @@ export const StepRenderer = ({ step }: StepRendererType) => {
     };
 
     return (
-        <div className="flex w-full flex-row items-stretch justify-start gap-2">
+        <div className="flex w-full flex-row items-stretch justify-start gap-3">
             <div className="flex min-h-full shrink-0 flex-col items-center justify-start">
                 <div className="bg-border/50 h-1.5 shrink-0" />
-                <div className="bg-secondary z-2 px-1 pb-2 pt-1">
+                <div className="bg-secondary z-2">
                     <StepStatus status={step.status} />
                 </div>
                 <motion.div
-                    className="border-border min-h-full w-[1px] flex-1 border-l-[1px]"
+                    className={cn(
+                        ' min-h-full w-[1px] flex-1',
+                        isLastStep ? 'from-border !bg-gradient-to-b to-transparent' : 'bg-border'
+                    )}
                     initial={{ height: 0 }}
                     animate={{ height: '100%' }}
                     transition={{ duration: 0.5 }}
@@ -169,7 +147,6 @@ export const StepRenderer = ({ step }: StepRendererType) => {
                 <div className="flex flex-col gap-4">
                     {renderWrapupStep()}
                     {renderTextStep()}
-                    {renderReasoningStep()}
                     {renderSearchStep()}
                     {renderReadStep()}
                 </div>

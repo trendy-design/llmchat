@@ -15,13 +15,7 @@ import { useAgentStream, useAnimatedText } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
 import { AnswerMessage, ThreadItem as ThreadItemType } from '@repo/shared/types';
 import { Alert, AlertDescription, Button, cn } from '@repo/ui';
-import {
-    IconAlertCircle,
-    IconBook,
-    IconCheck,
-    IconChevronUp,
-    IconLoader,
-} from '@tabler/icons-react';
+import { IconAlertCircle, IconCheck, IconChevronUp, IconLoader } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
@@ -90,11 +84,6 @@ export const ThreadItem = memo(
                                 threadItem={threadItem}
                             />
                         )}
-
-                        <div className="text-muted-foreground flex flex-row items-center gap-1.5 text-xs font-medium">
-                            <IconBook size={16} strokeWidth={2} />
-                            Answer
-                        </div>
 
                         {threadItem.steps && (
                             <Steps

@@ -66,7 +66,7 @@ const app = new Hono<{ Bindings: Env }>();
 // Configure CORS with specific origin and credentials support
 app.use(
 	cors({
-		origin: ['http://localhost:3000', 'https://staging.llmchat.co', 'https://llmchat.co'], // Specify exact origins instead of wildcard
+		origin: ['http://localhost:3005', 'https://staging.llmchat.co', 'https://llmchat.co'], // Specify exact origins instead of wildcard
 		allowMethods: ['GET', 'HEAD', 'POST', 'OPTIONS'],
 		allowHeaders: ['Content-Type', 'Authorization'],
 		credentials: true, // Important for credentials: 'include'

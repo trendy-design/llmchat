@@ -28,7 +28,7 @@ export const markdownStyles = {
 
     // Code styles
     'prose-code:font-mono prose-code:text-sm prose-code:font-normal': true,
-    'prose-code:bg-tertiary prose-code:border-border prose-code:border prose-code:rounded-md prose-code:p-0.5 prose-code:mx-0.5':
+    'prose-code:bg-quaternary prose-code:border-border prose-code:border prose-code:rounded-md prose-code:p-0.5 prose-code:mx-0.5':
         true,
 
     // Table styles

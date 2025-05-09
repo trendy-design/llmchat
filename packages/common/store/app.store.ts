@@ -20,6 +20,7 @@ type State = {
     isSidebarOpen: boolean;
     isSourcesOpen: boolean;
     isSettingsOpen: boolean;
+    isFaqOpen: boolean;
     showSignInModal: boolean;
     settingTab: (typeof SETTING_TABS)[keyof typeof SETTING_TABS];
     sideDrawer: SideDrawerProps;
@@ -32,6 +33,7 @@ type Actions = {
     setIsSourcesOpen: (prev: (prev: boolean) => boolean) => void;
     setIsSettingsOpen: (open: boolean) => void;
     setSettingTab: (tab: (typeof SETTING_TABS)[keyof typeof SETTING_TABS]) => void;
+    setIsFaqOpen: (open: boolean) => void;
     setShowSignInModal: (show: boolean) => void;
     openSideDrawer: (props: Omit<SideDrawerProps, 'open'>) => void;
     updateSideDrawer: (props: Partial<SideDrawerProps>) => void;
@@ -43,6 +45,7 @@ export const useAppStore = create(
         isSidebarOpen: true,
         isSourcesOpen: false,
         isSettingsOpen: false,
+        isFaqOpen: false,
         settingTab: 'api-keys',
         showSignInModal: false,
         setIsSidebarOpen: (prev: (prev: boolean) => boolean) =>
@@ -52,6 +55,7 @@ export const useAppStore = create(
         setIsSettingsOpen: (open: boolean) => set({ isSettingsOpen: open }),
         setSettingTab: (tab: (typeof SETTING_TABS)[keyof typeof SETTING_TABS]) =>
             set({ settingTab: tab }),
+        setIsFaqOpen: (open: boolean) => set({ isFaqOpen: open }),
         setShowSignInModal: (show: boolean) => set({ showSignInModal: show }),
         sideDrawer: { open: false, title: '', renderContent: () => null, badge: undefined },
         openSideDrawer: (props: Omit<SideDrawerProps, 'open'>) => {

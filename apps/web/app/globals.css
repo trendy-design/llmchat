@@ -21,14 +21,14 @@
         --background: 180 0% 100%;
         --foreground: 180 0% 2%;
 
-        --secondary: 180 0% 98%;
+        --secondary: 180 0% 99%;
         --secondary-foreground: 180 0% 4%;
 
         --tertiary: 180 0% 95%;
         --tertiary-foreground: 180 0% 6%;
 
-        --quaternary: 180 0% 90%;
-        --quaternary-foreground: 180 0% 10%;
+        --quaternary: 180 0% 93%;
+        --quaternary-foreground: 180 0% 8%;
 
         --card: 40 30% 98%;
         --card-foreground: 20 15% 10%;
@@ -48,7 +48,7 @@
         --destructive: 0 84% 60%;
         --destructive-foreground: 40 30% 98%;
 
-        --border: 180 0% 84%;
+        --border: 180 0% 88%;
         --soft: 180 0% 92%;
         --hard: 180 0% 78%;
         --input: 180 0% 85%;
@@ -99,7 +99,7 @@
         --destructive: 0 84% 60%;
         --destructive-foreground: 40 30% 98%;
 
-        --border: 180 0% 16%;
+        --border: 180 0% 80%;
         --soft: 180 0% 8%;
         --hard: 180 0% 22%;
         --input: 180 0% 16%;

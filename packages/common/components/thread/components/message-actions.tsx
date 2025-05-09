@@ -5,7 +5,8 @@ import { useChatStore } from '@repo/common/store';
 import { ChatMode, getChatModeName } from '@repo/shared/config';
 import { ThreadItem } from '@repo/shared/types';
 import { Button, DropdownMenu, DropdownMenuTrigger } from '@repo/ui';
-import { IconCheck, IconCopy, IconMarkdown, IconRefresh, IconTrash } from '@tabler/icons-react';
+import { IconCheck } from '@tabler/icons-react';
+import { CheckIcon, Copy, RefreshCcw, TrashIcon } from 'lucide-react';
 import { forwardRef, useState } from 'react';
 type MessageActionsProps = {
     threadItem: ThreadItem;
@@ -58,14 +59,14 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                         tooltip="Copy"
                     >
                         {status === 'copied' ? (
-                            <IconCheck size={16} strokeWidth={2} />
+                            <CheckIcon size={16} strokeWidth={2} />
                         ) : (
-                            <IconCopy size={16} strokeWidth={2} />
+                            <Copy size={16} strokeWidth={2} />
                         )}
                     </Button>
                 )}
 
-                {threadItem?.answer?.text && (
+                {/* {threadItem?.answer?.text && (
                     <Button
                         variant="ghost-bordered"
                         size="icon-sm"
@@ -79,17 +80,17 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                         tooltip="Copy Markdown"
                     >
                         {markdownCopyStatus === 'copied' ? (
-                            <IconCheck size={16} strokeWidth={2} />
+                            <CheckIcon size={16} strokeWidth={2} />
                         ) : (
-                            <IconMarkdown size={16} strokeWidth={2} />
+                            <Mark size={16} strokeWidth={2} />
                         )}
                     </Button>
-                )}
+                )} */}
                 {threadItem.status !== 'ERROR' && threadItem.answer?.status !== 'HUMAN_REVIEW' && (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost-bordered" size="icon-sm" tooltip="Rewrite">
-                                <IconRefresh size={16} strokeWidth={2} />
+                                <RefreshCcw size={16} strokeWidth={2} />
                             </Button>
                         </DropdownMenuTrigger>
                         <ChatModeOptions
@@ -120,7 +121,7 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                         }}
                         tooltip="Remove"
                     >
-                        <IconTrash size={16} strokeWidth={2} />
+                        <TrashIcon size={16} strokeWidth={2} />
                     </Button>
                 )}
                 {threadItem.mode && (

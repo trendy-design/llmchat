@@ -172,6 +172,7 @@ const config: any = {
             boxShadow: {
                 'subtle-xs': 'var(--shadow-subtle-xs)',
                 'subtle-sm': 'var(--shadow-subtle-sm)',
+                md: '0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)',
             },
         },
     },

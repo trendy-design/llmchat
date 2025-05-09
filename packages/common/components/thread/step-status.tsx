@@ -1,37 +1,32 @@
 import { ItemStatus } from '@repo/shared/types';
-import { IconLoader2 } from '@tabler/icons-react';
+import { IconCheck } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
+import { Dot } from 'lucide-react';
 
 export const StepStatus = ({ status }: { status: ItemStatus }) => {
     switch (status) {
         case 'PENDING':
             return (
                 <span className="relative flex size-3 items-center justify-center">
-                    <IconLoader2 className="size-3 animate-spin" />
+                    <Dot className="size-3 animate-spin" />
                 </span>
             );
         case 'COMPLETED':
             return (
                 <span className="relative flex size-3 items-center justify-center">
-                    <span className="relative flex size-1.5">
-                        <span className="bg-foreground/50 relative inline-flex size-1.5 rounded-full"></span>
-                    </span>
+                    <Dot className="size-3 " />
                 </span>
             );
         case 'ERROR':
             return (
                 <span className="relative flex size-3 items-center justify-center">
-                    <span className="relative flex size-1">
-                        <span className="relative inline-flex size-1 rounded-full bg-rose-400"></span>
-                    </span>
+                    <IconCheck className="size-3 " />
                 </span>
             );
         default:
             return (
                 <span className="relative flex size-3 items-center justify-center">
-                    <span className="relative flex size-1">
-                        <span className="bg-tertiary relative inline-flex size-1 rounded-full"></span>
-                    </span>
+                    <IconCheck className="size-3 " />
                 </span>
             );
     }

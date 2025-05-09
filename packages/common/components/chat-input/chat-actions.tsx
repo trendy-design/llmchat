@@ -10,20 +10,13 @@ import {
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
     Kbd,
 } from '@repo/ui';
-import {
-    IconArrowUp,
-    IconAtom,
-    IconChevronDown,
-    IconNorthStar,
-    IconPaperclip,
-    IconPlayerStopFilled,
-    IconWorld,
-} from '@tabler/icons-react';
+import { IconAtom, IconNorthStar, IconPaperclip, IconPlayerStopFilled } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowUpIcon, ChevronDown, GlobeIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { BYOKIcon, NewIcon } from '../icons';
@@ -167,10 +160,9 @@ export const ChatModeButton = () => {
     return (
         <DropdownMenu open={isChatModeOpen} onOpenChange={setIsChatModeOpen}>
             <DropdownMenuTrigger asChild>
-                <Button variant={'secondary'} size="xs">
-                    {selectedOption?.icon}
+                <Button variant={'ghost'} size="xs" className="!text-sm">
                     {selectedOption?.label}
-                    <IconChevronDown size={14} strokeWidth={2} />
+                    <ChevronDown size={16} strokeWidth={2} className="!text-muted-foreground/50" />
                 </Button>
             </DropdownMenuTrigger>
             <ChatModeOptions chatMode={chatMode} setChatMode={setChatMode} />
@@ -194,8 +186,8 @@ export const WebSearchButton = () => {
             className={cn('gap-2', useWebSearch && 'bg-blue-500/10 text-blue-500')}
             onClick={() => setUseWebSearch(!useWebSearch)}
         >
-            <IconWorld
-                size={16}
+            <GlobeIcon
+                size={18}
                 strokeWidth={2}
                 className={cn(useWebSearch ? '!text-blue-500' : 'text-muted-foreground')}
             />
@@ -241,12 +233,12 @@ export const ChatModeOptions = ({
     return (
         <DropdownMenuContent
             align="start"
-            side="bottom"
-            className="no-scrollbar max-h-[300px] w-[300px] overflow-y-auto"
+            side="top"
+            className="no-scrollbar max-h-[300px] w-[250px] overflow-y-auto rounded-xl"
         >
             {isChatPage && (
                 <DropdownMenuGroup>
-                    <DropdownMenuLabel>Advanced Mode</DropdownMenuLabel>
+                    {/* <DropdownMenuLabel>Advanced Mode</DropdownMenuLabel> */}
                     {chatOptions.map(option => (
                         <DropdownMenuItem
                             key={option.label}
@@ -259,13 +251,21 @@ export const ChatModeOptions = ({
                             }}
                             className="h-auto"
                         >
-                            <div className="flex w-full flex-row items-start gap-1.5 px-1.5 py-1.5">
-                                <div className="flex flex-col gap-0 pt-1">{option.icon}</div>
+                            <div className="flex w-full flex-row items-start gap-1.5 px-0 py-1.5">
+                                {/* <div className="flex flex-col gap-0 pt-1">{option.icon}</div> */}
 
                                 <div className="flex flex-col gap-0">
-                                    {<p className="m-0 text-sm font-medium">{option.label}</p>}
+                                    {
+                                        <p className="m-0 text-sm font-medium leading-tight">
+                                            {option.label}
+
+                                            <span className="px-1.5 text-xs text-pink-600">
+                                                Pro
+                                            </span>
+                                        </p>
+                                    }
                                     {option.description && (
-                                        <p className="text-muted-foreground text-xs font-light">
+                                        <p className="text-muted-foreground/50 text-xs font-light leading-tight">
                                             {option.description}
                                         </p>
                                     )}
@@ -277,8 +277,9 @@ export const ChatModeOptions = ({
                     ))}
                 </DropdownMenuGroup>
             )}
+            <DropdownMenuSeparator className="bg-border-hard" />
             <DropdownMenuGroup>
-                <DropdownMenuLabel>Models</DropdownMenuLabel>
+                {/* <DropdownMenuLabel>Models</DropdownMenuLabel> */}
                 {modelOptions.map(option => (
                     <DropdownMenuItem
                         key={option.label}
@@ -291,12 +292,20 @@ export const ChatModeOptions = ({
                         }}
                         className="h-auto"
                     >
-                        <div className="flex w-full flex-row items-center gap-2.5 px-1.5 py-1.5">
-                            <div className="flex flex-col gap-0">
-                                {<p className="text-sm font-medium">{option.label}</p>}
+                        <div className="flex w-full flex-row items-center gap-2.5 px-0 py-1.5">
+                            <div className="flex flex-col gap-0 ">
+                                {
+                                    <p className="text-sm font-medium">
+                                        {option.label}
+                                        {ChatModeConfig[option.value]?.isNew && (
+                                            <span className="px-1.5 text-xs text-blue-600">
+                                                New
+                                            </span>
+                                        )}
+                                    </p>
+                                }
                             </div>
                             <div className="flex-1" />
-                            {ChatModeConfig[option.value]?.isNew && <NewIcon />}
 
                             {hasApiKeyForChatMode(option.value) && <BYOKIcon />}
                         </div>
@@ -333,6 +342,7 @@ export const SendStopButton = ({
                     >
                         <Button
                             size="icon-sm"
+                            className="rounded-xl"
                             variant="default"
                             onClick={stopGeneration}
                             tooltip="Stop Generation"
@@ -350,14 +360,15 @@ export const SendStopButton = ({
                     >
                         <Button
                             size="icon-sm"
+                            className="rounded-xl"
                             tooltip="Send Message"
-                            variant={hasTextInput ? 'default' : 'secondary'}
+                            variant={hasTextInput ? 'default' : 'ghost'}
                             disabled={!hasTextInput || isGenerating}
                             onClick={() => {
                                 sendMessage();
                             }}
                         >
-                            <IconArrowUp size={16} strokeWidth={2} />
+                            <ArrowUpIcon size={18} strokeWidth={2} />
                         </Button>
                     </motion.div>
                 )}

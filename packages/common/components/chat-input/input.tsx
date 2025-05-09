@@ -111,7 +111,7 @@ export const ChatInput = ({
 
     const renderChatInput = () => (
         <AnimatePresence>
-            <div className="bg-tertiary w-full rounded-xl p-1">
+            <div className="w-full rounded-2xl bg-transparent">
                 <MessagesRemainingBadge key="remaining-messages" />
 
                 <motion.div
@@ -124,7 +124,7 @@ export const ChatInput = ({
                     <Flex
                         direction="col"
                         className={cn(
-                            'bg-background relative z-10 w-full rounded-xl shadow-sm outline outline-[1px] outline-[rgba(0,0,0,0.08)]'
+                            'bg-background relative z-10 w-full rounded-2xl shadow-md outline outline-[1px] outline-[rgba(0,0,0,0.08)]'
                         )}
                     >
                         <ImageDropzoneRoot dropzoneProps={dropzonProps}>
@@ -151,7 +151,7 @@ export const ChatInput = ({
                                         </Flex>
 
                                         <Flex
-                                            className="border-border w-full gap-0 border-t border-dashed px-2 py-2"
+                                            className="border-border w-full gap-0 px-2 py-2"
                                             gap="none"
                                             items="center"
                                             justify="between"
@@ -229,7 +229,7 @@ export const ChatInput = ({
         >
             <div
                 className={cn(
-                    'mx-auto flex w-full max-w-3xl flex-col items-start',
+                    'mx-auto flex w-full max-w-[46rem] flex-col items-start',
                     !threadItemsLength && 'justify-start',
                     size === 'sm' && 'px-8'
                 )}
@@ -310,7 +310,7 @@ const AnimatedTitles = ({ titles = [] }: AnimatedTitlesProps) => {
                         duration: 0.8,
                         ease: 'easeInOut',
                     }}
-                    className="from-muted-foreground/50 via-muted-foreground/40 to-muted-foreground/20 bg-gradient-to-r bg-clip-text text-center text-[32px] font-semibold tracking-tight text-transparent"
+                    className="from-muted-foreground/50 via-muted-foreground/50 to-muted-foreground/50 tracking-none bg-gradient-to-r bg-clip-text text-center text-[32px] font-semibold text-transparent"
                 >
                     {user?.firstName && `Hello ${user?.firstName},`} {greeting}
                 </motion.h1>

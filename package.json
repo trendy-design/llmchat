@@ -31,6 +31,8 @@
         "@vercel/functions": "^2.0.0",
         "ai": "^2.2.0",
         "date-fns": "^4.1.0",
+        "lucide": "^0.507.0",
+        "lucide-react": "^0.507.0",
         "node-html-parser": "^7.0.1",
         "react-intersection-observer": "^9.16.0",
         "remark-slug": "^8.0.0",

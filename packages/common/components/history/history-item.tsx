@@ -20,15 +20,11 @@ export const HistoryItem = ({
     dismiss,
     isActive,
     isPinned,
-    pinThread,
-    unpinThread,
 }: {
     thread: Thread;
     dismiss: () => void;
     isActive?: boolean;
     isPinned?: boolean;
-    pinThread: (threadId: string) => void;
-    unpinThread: (threadId: string) => void;
 }) => {
     const { push } = useRouter();
     const { threadId: currentThreadId } = useParams();
@@ -39,6 +35,8 @@ export const HistoryItem = ({
     const historyInputRef = useRef<HTMLInputElement>(null);
     const switchThread = useChatStore(state => state.switchThread);
     const [openOptions, setOpenOptions] = useState(false);
+    const pinThread = useChatStore(state => state.pinThread);
+    const unpinThread = useChatStore(state => state.unpinThread);
 
     useEffect(() => {
         if (isEditing) {
@@ -69,8 +67,8 @@ export const HistoryItem = ({
     };
 
     const containerClasses = cn(
-        'gap-2 w-full group w-full relative flex flex-row items-center h-7 py-0.5 pl-2 pr-1 rounded-sm hover:bg-quaternary',
-        isActive || isEditing ? 'bg-tertiary' : ''
+        'gap-2 w-full group w-full relative flex flex-row items-center h-8 py-0.5 pl-2 pr-1 rounded-lg hover:bg-quaternary',
+        isActive || isEditing ? 'bg-quaternary' : ''
     );
 
     const handleEditClick = () => {
@@ -92,7 +90,7 @@ export const HistoryItem = ({
             {isEditing ? (
                 <Input
                     variant="ghost"
-                    className="h-5 pl-0 text-xs"
+                    className="h-5 pl-0 text-xs shadow-none"
                     ref={historyInputRef}
                     value={title || 'Untitled'}
                     onChange={handleInputChange}
@@ -111,7 +109,7 @@ export const HistoryItem = ({
                         className="flex-1 overflow-hidden"
                         gap="none"
                     >
-                        <p className="hover:text-foreground line-clamp-1 w-full text-xs">
+                        <p className="hover:text-foreground line-clamp-1 w-full text-xs font-medium">
                             {thread.title}
                         </p>
                     </Flex>

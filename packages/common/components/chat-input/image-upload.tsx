@@ -1,7 +1,7 @@
 import { useChatStore } from '@repo/common/store';
 import { ChatModeConfig } from '@repo/shared/config';
 import { Button, Tooltip } from '@repo/ui';
-import { IconPaperclip } from '@tabler/icons-react';
+import { ImagePlus } from 'lucide-react';
 import { FC } from 'react';
 
 export type TImageUpload = {
@@ -34,7 +34,7 @@ export const ImageUpload: FC<TImageUpload> = ({
             <Tooltip content={tooltip}>
                 {showIcon ? (
                     <Button variant="ghost" size="icon-sm" onClick={handleFileSelect}>
-                        <IconPaperclip size={16} strokeWidth={2} />
+                        <ImagePlus size={18} strokeWidth={2} />
                     </Button>
                 ) : (
                     <Button variant="bordered" onClick={handleFileSelect}>

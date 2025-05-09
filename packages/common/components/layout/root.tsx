@@ -1,18 +1,13 @@
 'use client';
-import {
-    CommandSearch,
-    FeedbackWidget,
-    IntroDialog,
-    SettingsModal,
-    Sidebar,
-} from '@repo/common/components';
+import { CommandSearch, IntroDialog, SettingsModal, Sidebar } from '@repo/common/components';
 import { useRootContext } from '@repo/common/context';
 import { AgentProvider } from '@repo/common/hooks';
 import { useAppStore } from '@repo/common/store';
 import { plausible } from '@repo/shared/utils';
-import { Badge, Button, Flex, Toaster } from '@repo/ui';
-import { IconMoodSadDizzy, IconX } from '@tabler/icons-react';
+import { Badge, Button, Flex, Toaster, Tooltip } from '@repo/ui';
+import { IconBoltFilled, IconInfoCircle, IconMoodSadDizzy, IconX } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import moment from 'moment';
 import { usePathname } from 'next/navigation';
 import { FC, useEffect } from 'react';
 import { useStickToBottom } from 'use-stick-to-bottom';
@@ -26,15 +21,14 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
     const { isSidebarOpen, isMobileSidebarOpen, setIsMobileSidebarOpen } = useRootContext();
     const setIsSettingOpen = useAppStore(state => state.setIsSettingsOpen);
 
-    const containerClass =
-        'relative flex flex-1 flex-row h-[calc(99dvh)] border border-border rounded-sm bg-secondary w-full overflow-hidden shadow-sm';
+    const containerClass = 'relative flex flex-1 flex-row h-[calc(100dvh)] w-full overflow-hidden';
 
     useEffect(() => {
         plausible.trackPageview();
     }, []);
 
     return (
-        <div className="bg-tertiary flex h-[100dvh] w-full flex-row overflow-hidden">
+        <div className="bg-secondary flex h-[100dvh] w-full flex-row overflow-hidden">
             <div className="bg-tertiary item-center fixed inset-0 z-[99999] flex justify-center md:hidden">
                 <div className="flex flex-col items-center justify-center gap-2">
                     <IconMoodSadDizzy size={24} strokeWidth={2} className="text-muted-foreground" />
@@ -66,15 +60,15 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
 
             {/* Main Content */}
             <Flex className="flex-1 overflow-hidden">
-                <motion.div className="flex w-full py-1 pr-1">
+                <motion.div className="flex w-full">
                     <AgentProvider>
                         <div className={containerClass}>
                             <div className="relative flex h-full w-0 flex-1 flex-row">
                                 <div className="flex w-full flex-col gap-2 overflow-y-auto">
-                                    <div
+                                    {/* <div
                                         className="from-secondary to-secondary/0 via-secondary/70 absolute left-0 right-0 top-0 z-40 flex flex-row items-center justify-center gap-1 bg-gradient-to-b p-2 pb-12 bg-blend-multiply filter"
                                         style={{ mixBlendMode: 'multiply' }}
-                                    ></div>
+                                    ></div> */}
                                     {/* Auth Button Header */}
 
                                     {/* Auth Button Header */}
@@ -82,7 +76,6 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
                                 </div>
                             </div>
                             <SideDrawer />
-                            <FeedbackWidget />
                             <IntroDialog />
                         </div>
                     </AgentProvider>
@@ -96,6 +89,46 @@ export const RootLayout: FC<TRootLayout> = ({ children }) => {
     );
 };
 
+export type CreditUsageBarProps = {
+    remainingCredits: number;
+    maxLimit: number;
+    resetDate: Date;
+};
+
+export const CreditUsageBar: FC<CreditUsageBarProps> = ({
+    remainingCredits,
+    maxLimit,
+    resetDate,
+}) => {
+    const usedCredits = maxLimit - remainingCredits;
+    const percent =
+        maxLimit > 0 ? Math.max(0, Math.min(100, Math.round((usedCredits / maxLimit) * 100))) : 0;
+    return (
+        <div className="bg-muted/40 border-border/60 flex flex-col gap-1 rounded-lg border p-2 text-xs">
+            <div className="text-muted-foreground flex items-center gap-1 font-medium">
+                <IconBoltFilled size={14} className="text-brand" />
+                Credits Used
+                <Tooltip content="Bar fills as you use credits. Resets monthly.">
+                    <IconInfoCircle size={12} className="text-muted-foreground/60 ml-1" />
+                </Tooltip>
+            </div>
+            <div className="flex items-center gap-1">
+                <span className="text-brand text-sm font-semibold">{usedCredits}</span>
+                <span className="opacity-60">/</span>
+                <span className="opacity-60">{maxLimit}</span>
+                <span className="text-muted-foreground ml-2">used</span>
+            </div>
+            <div className="bg-muted relative mt-1 h-2 w-full rounded">
+                <div
+                    className={`absolute left-0 top-0 h-2 rounded ${percent > 90 ? 'bg-red-500' : percent > 70 ? 'bg-yellow-500' : 'bg-brand'} transition-all`}
+                    style={{ width: `${percent}%` }}
+                />
+            </div>
+            <div className="text-muted-foreground/70">Resets {moment(resetDate).fromNow()}</div>
+        </div>
+    );
+};
+
 export const SideDrawer = () => {
     const pathname = usePathname();
     const sideDrawer = useAppStore(state => state.sideDrawer);
@@ -105,6 +138,10 @@ export const SideDrawer = () => {
         damping: 0,
     });
     const isThreadPage = pathname.startsWith('/chat/');
+
+    const remainingCredits = 32;
+    const maxLimit = 100;
+    const resetDate = new Date();
 
     return (
         <AnimatePresence>
@@ -148,6 +185,11 @@ export const SideDrawer = () => {
                             <div ref={contentRef} className="w-full">
                                 {sideDrawer.renderContent()}
                             </div>
+                            <CreditUsageBar
+                                remainingCredits={remainingCredits}
+                                maxLimit={maxLimit}
+                                resetDate={resetDate}
+                            />
                         </div>
                     </div>
                 </motion.div>

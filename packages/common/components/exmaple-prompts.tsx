@@ -1,13 +1,7 @@
 import { useChatStore } from '@repo/common/store';
 import { Button } from '@repo/ui';
-import {
-    IconBook,
-    IconBulb,
-    IconChartBar,
-    IconPencil,
-    IconQuestionMark,
-} from '@tabler/icons-react';
 import { Editor } from '@tiptap/react';
+import { BarChart3, Book, HelpCircle, Lightbulb, Pencil } from 'lucide-react';
 
 export const examplePrompts = {
     howTo: [
@@ -61,11 +55,11 @@ export const getRandomPrompt = (category?: keyof typeof examplePrompts) => {
 
 // Map of category to icon component
 const categoryIcons = {
-    howTo: { name: 'How to', icon: IconQuestionMark, color: '!text-yellow-700' },
-    explainConcepts: { name: 'Explain Concepts', icon: IconBulb, color: '!text-blue-700' },
-    creative: { name: 'Creative', icon: IconPencil, color: '!text-green-700' },
-    advice: { name: 'Advice', icon: IconBook, color: '!text-purple-700' },
-    analysis: { name: 'Analysis', icon: IconChartBar, color: '!text-red-700' },
+    howTo: { name: 'How to', icon: HelpCircle, color: '!text-yellow-700' },
+    explainConcepts: { name: 'Explain Concepts', icon: Lightbulb, color: '!text-blue-700' },
+    creative: { name: 'Creative', icon: Pencil, color: '!text-green-700' },
+    advice: { name: 'Advice', icon: Book, color: '!text-purple-700' },
+    analysis: { name: 'Analysis', icon: BarChart3, color: '!text-red-700' },
 };
 
 export const ExamplePrompts = () => {
@@ -81,13 +75,13 @@ export const ExamplePrompts = () => {
     if (!editor) return null;
 
     return (
-        <div className="animate-fade-in mb-8 flex w-full flex-wrap justify-center gap-2 p-6 duration-[1000ms]">
+        <div className="animate-fade-in mb-8 flex w-full flex-wrap justify-center gap-1 p-6 duration-[1000ms]">
             {Object.entries(categoryIcons).map(([category, value], index) => (
                 <Button
                     key={index}
-                    variant="bordered"
-                    rounded="full"
+                    variant="ghost"
                     size="sm"
+                    className="rounded-xl opacity-50 hover:opacity-100"
                     onClick={() => handleCategoryClick(category as keyof typeof examplePrompts)}
                 >
                     <value.icon size={16} className={'text-muted-foreground/50'} />
