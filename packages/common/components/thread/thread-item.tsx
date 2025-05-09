@@ -1,14 +1,13 @@
 import {
     CitationProvider,
     CodeBlock,
-    FollowupSuggestions,
     MarkdownContent,
     Message,
     MessageActions,
-    MotionSkeleton,
     QuestionPrompt,
     SourceGrid,
     Steps,
+    TextShimmer,
     ToolCallIcon,
 } from '@repo/common/components';
 import { useAgentStream, useAnimatedText } from '@repo/common/hooks';
@@ -19,24 +18,19 @@ import { IconAlertCircle, IconCheck, IconChevronUp, IconLoader } from '@tabler/i
 import { motion } from 'framer-motion';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { useInView } from 'react-intersection-observer';
+
 export const ThreadItem = memo(
     ({
         threadItem,
-        isGenerating,
         isLast,
     }: {
         isAnimated: boolean;
         threadItem: ThreadItemType;
-        isGenerating: boolean;
         isLast: boolean;
     }) => {
-        const { isAnimationComplete, text: animatedText } = useAnimatedText(
-            threadItem.answer?.text || '',
-            isLast && isGenerating
-        );
         const setCurrentSources = useChatStore(state => state.setCurrentSources);
         const messageRef = useRef<HTMLDivElement>(null);
-
+        const isGenerating = useChatStore(state => state.isGenerating);
         const { ref: inViewRef, inView } = useInView({});
 
         useEffect(() => {
@@ -75,7 +69,11 @@ export const ThreadItem = memo(
         }, [threadItem]);
         return (
             <CitationProvider sources={threadItem.sources || []}>
-                <div className="w-full" ref={inViewRef} id={`thread-item-${threadItem.id}`}>
+                <div
+                    className="group/thread-item w-full"
+                    ref={inViewRef}
+                    id={`thread-item-${threadItem.id}`}
+                >
                     <div className={cn('flex w-full flex-col items-start gap-3 pt-4')}>
                         {threadItem.query && (
                             <Message
@@ -89,6 +87,12 @@ export const ThreadItem = memo(
                             <Steps
                                 steps={Object.values(threadItem?.steps || {})}
                                 threadItem={threadItem}
+                                isCompleted={
+                                    !!threadItem.answer?.text ||
+                                    !!threadItem.object ||
+                                    !!threadItem.error ||
+                                    !!threadItem.answer?.messages?.length
+                                }
                             />
                         )}
 
@@ -101,19 +105,18 @@ export const ThreadItem = memo(
                             {hasAnswer && threadItem.answer?.text && (
                                 <div className="flex flex-col">
                                     <SourceGrid sources={threadItem.sources || []} />
-
-                                    <MarkdownContent
-                                        content={animatedText || ''}
-                                        key={`answer-${threadItem.id}`}
+                                    <TextContent
+                                        id={`answer-${threadItem.id}`}
+                                        text={threadItem.answer?.text || ''}
                                         isCompleted={['COMPLETED', 'ERROR', 'ABORTED'].includes(
                                             threadItem.status || ''
                                         )}
+                                        isLast={isLast}
                                         shouldAnimate={
                                             !['COMPLETED', 'ERROR', 'ABORTED'].includes(
                                                 threadItem.status || ''
                                             )
                                         }
-                                        isLast={isLast}
                                     />
                                 </div>
                             )}
@@ -138,29 +141,23 @@ export const ThreadItem = memo(
                                 </AlertDescription>
                             </Alert>
                         )}
-                        {!hasResponse && (
-                            <div className="flex w-full flex-col items-start gap-2 opacity-10">
-                                <MotionSkeleton className="bg-muted-foreground/40 mb-2 h-4 !w-[100px] rounded-sm" />
-                                <MotionSkeleton className="w-full bg-gradient-to-r" />
-                                <MotionSkeleton className="w-[70%] bg-gradient-to-r" />
-                                <MotionSkeleton className="w-[50%] bg-gradient-to-r" />
-                            </div>
-                        )}
+                        {!hasResponse && <TextShimmer className="text-sm">Thinking...</TextShimmer>}
 
-                        {isAnimationComplete &&
-                            (threadItem.status === 'COMPLETED' ||
-                                threadItem.status === 'ABORTED' ||
-                                threadItem.status === 'ERROR' ||
-                                !isGenerating) && (
-                                <MessageActions
-                                    threadItem={threadItem}
-                                    ref={messageRef}
-                                    isLast={isLast}
-                                />
+                        {(threadItem.status === 'COMPLETED' ||
+                            threadItem.status === 'ABORTED' ||
+                            threadItem.status === 'ERROR') &&
+                            !isGenerating && (
+                                <div className="opacity-0 transition-opacity duration-300 group-hover/thread-item:opacity-100">
+                                    <MessageActions
+                                        threadItem={threadItem}
+                                        ref={messageRef}
+                                        isLast={isLast}
+                                    />
+                                </div>
                             )}
-                        {isAnimationComplete && isLast && (
+                        {/* {isLast && (
                             <FollowupSuggestions suggestions={threadItem.suggestions || []} />
-                        )}
+                        )} */}
                     </div>
                 </div>
             </CitationProvider>
@@ -213,7 +210,7 @@ export const ToolCallUI = ({
     }, [message]);
 
     return (
-        <div className="flex w-full flex-col gap-6">
+        <div className="flex w-full flex-col gap-6 pt-6">
             {filteredMessages.map((m, i) => {
                 if (m.type === 'tool-call') {
                     return (
@@ -229,9 +226,10 @@ export const ToolCallUI = ({
                 }
                 if (m.type === 'text') {
                     return (
-                        <MarkdownContent
+                        <TextContent
                             key={`text-${threadItem.id}-${i}`}
-                            content={m.text || ''}
+                            id={`text-${threadItem.id}-${i}`}
+                            text={m.text || ''}
                             isCompleted={['COMPLETED', 'ERROR', 'ABORTED'].includes(
                                 threadItem.status || ''
                             )}
@@ -360,5 +358,30 @@ export const ToolMessage = ({
                 )}
             </motion.div>
         </div>
+    );
+};
+
+export const TextContent = ({
+    id,
+    text,
+    isCompleted,
+    shouldAnimate,
+    isLast,
+}: {
+    id: string;
+    text: string;
+    isCompleted: boolean;
+    shouldAnimate: boolean;
+    isLast: boolean;
+}) => {
+    const animatedText = useAnimatedText(text, shouldAnimate);
+
+    return (
+        <MarkdownContent
+            key={`text-${id}`}
+            content={animatedText || ''}
+            isCompleted={isCompleted}
+            isLast={isLast}
+        />
     );
 };

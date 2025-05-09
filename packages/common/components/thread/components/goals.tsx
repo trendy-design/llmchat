@@ -1,5 +1,4 @@
 import { StepRenderer, StepStatus, ToolCallStep, ToolResultStep } from '@repo/common/components';
-import { useAppStore } from '@repo/common/store';
 import { ChatMode } from '@repo/shared/config';
 import { Step, ThreadItem, ToolCall, ToolResult } from '@repo/shared/types';
 import { Button } from '@repo/ui';
@@ -11,7 +10,7 @@ import {
 } from '@repo/ui/src/components/accordion';
 import { IconAtom, IconChecklist, IconNorthStar } from '@tabler/icons-react';
 import { ChevronDown } from 'lucide-react';
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useState } from 'react';
 const getTitle = (threadItem: ThreadItem) => {
     if (threadItem.mode === ChatMode.Deep) {
         return 'Research';
@@ -71,11 +70,15 @@ const ToolStep = memo(({ toolCall, toolResult }: ToolStepProps) => (
     </div>
 ));
 
-export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: ThreadItem }) => {
-    const openSideDrawer = useAppStore(state => state.openSideDrawer);
-    const dismissSideDrawer = useAppStore(state => state.dismissSideDrawer);
-    const updateSideDrawer = useAppStore(state => state.updateSideDrawer);
-
+export const Steps = ({
+    steps,
+    threadItem,
+    isCompleted,
+}: {
+    steps: Step[];
+    threadItem: ThreadItem;
+    isCompleted: boolean;
+}) => {
     const isStopped = threadItem.status === 'ABORTED' || threadItem.status === 'ERROR';
 
     const isLoading = steps.some(step => step.status === 'PENDING') && !isStopped;
@@ -90,7 +93,6 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
     useEffect(() => {
         if (hasAnswer) {
             console.log('dismissing side drawer');
-            dismissSideDrawer();
         }
     }, [hasAnswer]);
 
@@ -165,15 +167,33 @@ export const Steps = ({ steps, threadItem }: { steps: Step[]; threadItem: Thread
     //     );
     // };
 
+    const [open, setOpen] = useState<string | undefined>(
+        steps.length > 0 && !isCompleted ? 'steps' : undefined
+    );
+
+    useEffect(() => {
+        if (steps.length > 0 && !isCompleted) {
+            setOpen('steps');
+        } else if (isCompleted) {
+            setOpen(undefined);
+        }
+    }, [steps.length, isCompleted]);
+
     if (steps.length === 0) {
         return null;
     }
 
     return (
         <>
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion
+                type="single"
+                collapsible
+                className="w-full"
+                value={open}
+                onValueChange={setOpen}
+            >
                 <AccordionItem value="steps" className="border-none px-0">
-                    <AccordionTrigger>
+                    <AccordionTrigger showChevron={false}>
                         <Button variant="ghost" size="sm" className="gap-2">
                             Steps <ChevronDown size={16} strokeWidth={2} />
                         </Button>

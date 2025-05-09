@@ -228,7 +228,6 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
             if (abortControllerRef.current) {
                 abortControllerRef.current.abort();
             }
-            console.log('executing agent');
             const abortController = new AbortController();
             abortControllerRef.current = abortController;
             setIsGenerating(true);
@@ -296,6 +295,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
                         throw err;
                     },
                     onclose() {
+                        console.log('onclose');
                         setIsGenerating(false);
                     },
                     keepalive: true,

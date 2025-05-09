@@ -291,7 +291,12 @@ export const Sidebar = () => {
                 </div>
             )}
 
-            <div className={cn('flex-1 overflow-y-auto border-t p-2', !isSidebarOpen && 'px-1')}>
+            <div
+                className={cn(
+                    'no-scrollbar flex-1 overflow-y-auto border-t p-2',
+                    !isSidebarOpen && 'px-1'
+                )}
+            >
                 {isSidebarOpen &&
                     renderGroup({
                         title: 'Recent History',

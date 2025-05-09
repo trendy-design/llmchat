@@ -21,7 +21,6 @@ export function Thread() {
                     key={threadItem.id}
                     threadItem={threadItem}
                     isAnimated={false}
-                    isGenerating={false}
                     isLast={false}
                 />
             </div>
@@ -42,7 +41,6 @@ export function Thread() {
                             key={currentThreadItem.id}
                             threadItem={currentThreadItem}
                             isAnimated={true}
-                            isGenerating={isGenerating}
                             isLast={true}
                         />
                     </div>
