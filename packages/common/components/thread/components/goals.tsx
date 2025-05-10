@@ -1,7 +1,6 @@
 import { StepRenderer, StepStatus, ToolCallStep, ToolResultStep } from '@repo/common/components';
 import { ChatMode } from '@repo/shared/config';
 import { Step, ThreadItem, ToolCall, ToolResult } from '@repo/shared/types';
-import { Button } from '@repo/ui';
 import {
     Accordion,
     AccordionContent,
@@ -79,9 +78,6 @@ export const Steps = ({
     threadItem: ThreadItem;
     isCompleted: boolean;
 }) => {
-    const isStopped = threadItem.status === 'ABORTED' || threadItem.status === 'ERROR';
-
-    const isLoading = steps.some(step => step.status === 'PENDING') && !isStopped;
     const hasAnswer =
         !!threadItem?.answer?.text &&
         (threadItem.status === 'COMPLETED' ||
@@ -95,77 +91,6 @@ export const Steps = ({
             console.log('dismissing side drawer');
         }
     }, [hasAnswer]);
-
-    // useEffect(() => {
-    //     if (steps[0]?.status === 'PENDING') {
-    //         handleClick();
-    //     }
-    // }, [steps[0]]);
-
-    const stepCounts = steps.length;
-
-    // useEffect(() => {
-    //     if (steps.length > 0) {
-    //         updateSideDrawer({
-    //             renderContent: () => (
-    //                 <div className="flex w-full flex-1 flex-col px-2 py-4">
-    //                     {steps.map((step, index) => (
-    //                         <StepRenderer
-    //                             key={index}
-    //                             step={step}
-    //                             isLastStep={index === steps.length - 1}
-    //                         />
-    //                     ))}
-    //                 </div>
-    //             ),
-    //             badge: stepCounts,
-    //             title: () => renderTitle(false),
-    //         });
-    //     }
-    // }, [steps, threadItem?.status]);
-
-    // const handleClick = () => {
-    //     dismissSideDrawer();
-
-    //     openSideDrawer({
-    //         badge: stepCounts,
-    //         title: () => renderTitle(false),
-    //         renderContent: () => (
-    //             <div className="flex w-full flex-1 flex-col px-2 py-4">
-    //                 {steps.map((step, index) => (
-    //                     <StepRenderer key={index} step={step} />
-    //                 ))}
-    //                 {/* {toolCallAndResults.map(({ toolCall, toolResult }) => (
-    //                     <ToolStep toolCall={toolCall} toolResult={toolResult} />
-    //                 ))} */}
-    //             </div>
-    //         ),
-    //     });
-    // };
-
-    // const renderTitle = (useNote = true) => {
-    //     return (
-    //         <div className="flex flex-row items-start gap-2">
-    //             <div className="mt-0.5">
-    //                 {isLoading ? (
-    //                     <IconLoader2
-    //                         size={16}
-    //                         strokeWidth={2}
-    //                         className=" text-muted-foreground animate-spin"
-    //                     />
-    //                 ) : (
-    //                     getIcon(threadItem)
-    //                 )}
-    //             </div>
-    //             <div className="flex flex-col">
-    //                 <p className="text-sm font-medium">{getTitle(threadItem)}</p>
-    //                 {useNote && !hasAnswer && (
-    //                     <p className="text-muted-foreground/70 text-xs">{getNote(threadItem)}</p>
-    //                 )}
-    //             </div>
-    //         </div>
-    //     );
-    // };
 
     const [open, setOpen] = useState<string | undefined>(
         steps.length > 0 && !isCompleted ? 'steps' : undefined
@@ -193,10 +118,13 @@ export const Steps = ({
                 onValueChange={setOpen}
             >
                 <AccordionItem value="steps" className="border-none px-0">
-                    <AccordionTrigger showChevron={false}>
-                        <Button variant="ghost" size="sm" className="gap-2">
-                            Steps <ChevronDown size={16} strokeWidth={2} />
-                        </Button>
+                    <AccordionTrigger showChevron={false} className="flex-none gap-1">
+                        Steps{' '}
+                        <ChevronDown
+                            size={16}
+                            strokeWidth={2}
+                            className="!text-muted-foreground/50"
+                        />
                     </AccordionTrigger>
                     <AccordionContent>
                         <div className="mb-16 flex w-full flex-1 flex-col">

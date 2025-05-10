@@ -225,15 +225,16 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
 
     const executeAgent = useCallback(
         async (payload: any) => {
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
+            // if (abortControllerRef.current) {
+            //     abortControllerRef.current.abort();
+            // }
             const abortController = new AbortController();
             abortControllerRef.current = abortController;
             setIsGenerating(true);
 
             abortController.signal.addEventListener('abort', () => {
                 setIsGenerating(false);
+                console.log('abort');
                 updateThreadItem(payload.threadId, {
                     id: payload.threadItemId,
                     status: 'ABORTED',

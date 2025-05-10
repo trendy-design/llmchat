@@ -16,10 +16,10 @@ import {
 } from '@repo/ui';
 import { IconAtom, IconNorthStar, IconPaperclip, IconPlayerStopFilled } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpIcon, ChevronDown, GlobeIcon } from 'lucide-react';
+import { ArrowUpIcon, Check, ChevronDown, GlobeIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { BYOKIcon, NewIcon } from '../icons';
+import { BYOKIcon } from '../icons';
 
 export const chatOptions = [
     {
@@ -165,7 +165,11 @@ export const ChatModeButton = () => {
                     <ChevronDown size={16} strokeWidth={2} className="!text-muted-foreground/50" />
                 </Button>
             </DropdownMenuTrigger>
-            <ChatModeOptions chatMode={chatMode} setChatMode={setChatMode} />
+            <ChatModeOptions
+                chatMode={chatMode}
+                setChatMode={setChatMode}
+                selected={selectedOption.value}
+            />
         </DropdownMenu>
     );
 };
@@ -180,18 +184,18 @@ export const WebSearchButton = () => {
 
     return (
         <Button
-            size={useWebSearch ? 'xs' : 'icon-sm'}
+            size={useWebSearch ? 'xs' : 'xs'}
             tooltip="Web Search"
             variant={useWebSearch ? 'secondary' : 'ghost'}
-            className={cn('gap-2', useWebSearch && 'bg-blue-500/10 text-blue-500')}
+            className={cn('gap-2 text-sm', useWebSearch && 'bg-blue-500/10 text-blue-600')}
             onClick={() => setUseWebSearch(!useWebSearch)}
         >
             <GlobeIcon
                 size={18}
                 strokeWidth={2}
-                className={cn(useWebSearch ? '!text-blue-500' : 'text-muted-foreground')}
+                className={cn(useWebSearch ? '!text-blue-600' : 'text-muted-foreground')}
             />
-            {useWebSearch && <p className="text-xs">Web</p>}
+            Search
         </Button>
     );
 };
@@ -221,15 +225,18 @@ export const ChatModeOptions = ({
     chatMode,
     setChatMode,
     isRetry = false,
+    selected,
 }: {
     chatMode: ChatMode;
     setChatMode: (chatMode: ChatMode) => void;
     isRetry?: boolean;
+    selected?: ChatMode;
 }) => {
     const { isSignedIn } = useUser();
     const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
     const isChatPage = usePathname().startsWith('/chat');
     const { push } = useRouter();
+
     return (
         <DropdownMenuContent
             align="start"
@@ -271,7 +278,10 @@ export const ChatModeOptions = ({
                                     )}
                                 </div>
                                 <div className="flex-1" />
-                                {ChatModeConfig[option.value]?.isNew && <NewIcon />}
+
+                                {selected === option.value && (
+                                    <Check size={14} strokeWidth={2} className="text-blue-600" />
+                                )}
                             </div>
                         </DropdownMenuItem>
                     ))}
@@ -308,6 +318,9 @@ export const ChatModeOptions = ({
                             <div className="flex-1" />
 
                             {hasApiKeyForChatMode(option.value) && <BYOKIcon />}
+                            {selected === option.value && (
+                                <Check size={14} strokeWidth={2} className="text-blue-600" />
+                            )}
                         </div>
                     </DropdownMenuItem>
                 ))}

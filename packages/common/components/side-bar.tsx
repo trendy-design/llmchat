@@ -202,6 +202,7 @@ export const Sidebar = () => {
                 <Button
                     variant="ghost"
                     size="sm"
+                    onClick={() => push('/chat')}
                     className={cn('justify-start px-1.5', !isSidebarOpen && 'justify-center')}
                 >
                     <Logo className="size-5" />
@@ -226,7 +227,7 @@ export const Sidebar = () => {
             <div className="flex flex-col gap-2 p-2">
                 <nav className="flex flex-col gap-0">
                     <Button
-                        variant="ghost"
+                        variant={pathname === '/chat' ? 'secondary' : 'ghost'}
                         size="sm"
                         className={cn('justify-start px-2', !isSidebarOpen && 'justify-center')}
                         onClick={() => push('/chat')}
@@ -249,10 +250,10 @@ export const Sidebar = () => {
                     </Button>
 
                     <Button
-                        variant="ghost"
+                        variant={pathname === '/settings' ? 'secondary' : 'ghost'}
                         size="sm"
                         className={cn('justify-start px-2', !isSidebarOpen && 'justify-center')}
-                        onClick={() => setIsSettingsOpen(true)}
+                        onClick={() => push('/settings')}
                     >
                         <BoltIcon size={16} strokeWidth={2} className="!text-muted-foreground/50" />
                         {isSidebarOpen && <span>Settings</span>}

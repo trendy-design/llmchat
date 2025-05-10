@@ -170,6 +170,7 @@ app.post('/', async (c) => {
 		const abortController = new AbortController();
 
 		c.req.raw.signal.addEventListener('abort', () => {
+			console.log('abort endpoint');
 			abortController.abort();
 		});
 
@@ -254,6 +255,7 @@ app.post('/', async (c) => {
 					})}\n\n`;
 					controller.enqueue(encoder.encode(doneMessage));
 				} catch (error) {
+					console.log('abort error', error);
 					const errorMessage = `event: done\ndata: ${JSON.stringify({
 						type: 'done',
 						status: abortController.signal.aborted ? 'aborted' : 'error',

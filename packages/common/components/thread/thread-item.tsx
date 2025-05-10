@@ -96,6 +96,10 @@ export const ThreadItem = memo(
                             />
                         )}
 
+                        {!hasResponse && (
+                            <TextShimmer className="text-base">Thinking...</TextShimmer>
+                        )}
+
                         <ToolCallUI
                             message={threadItem.answer?.messages || []}
                             threadItem={threadItem}
@@ -141,7 +145,6 @@ export const ThreadItem = memo(
                                 </AlertDescription>
                             </Alert>
                         )}
-                        {!hasResponse && <TextShimmer className="text-sm">Thinking...</TextShimmer>}
 
                         {(threadItem.status === 'COMPLETED' ||
                             threadItem.status === 'ABORTED' ||
@@ -210,7 +213,7 @@ export const ToolCallUI = ({
     }, [message]);
 
     return (
-        <div className="flex w-full flex-col gap-6 pt-6">
+        <div className="flex w-full flex-col gap-6">
             {filteredMessages.map((m, i) => {
                 if (m.type === 'tool-call') {
                     return (

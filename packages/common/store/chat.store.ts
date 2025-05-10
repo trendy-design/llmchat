@@ -616,6 +616,7 @@ export const useChatStore = create(
 
         stopGeneration: () => {
             set(state => {
+                console.log('stopGeneration');
                 state.isGenerating = false;
                 state.abortController?.abort();
             });

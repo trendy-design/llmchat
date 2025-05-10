@@ -15,7 +15,7 @@ function TextShimmerComponent({
     children,
     as: Component = 'p',
     className,
-    duration = 1,
+    duration = 4,
     spread = 2,
 }: TextShimmerProps) {
     const MotionComponent = motion(Component as keyof JSX.IntrinsicElements);
@@ -38,7 +38,7 @@ function TextShimmerComponent({
             transition={{
                 repeat: Infinity,
                 duration,
-                ease: 'linear',
+                ease: 'easeInOut',
             }}
             style={
                 {

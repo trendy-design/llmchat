@@ -4,6 +4,7 @@ import {
     ImageAttachment,
     ImageDropzoneRoot,
     MessagesRemainingBadge,
+    ToolsMenu,
 } from '@repo/common/components';
 import { useImageAttachment } from '@repo/common/hooks';
 import { ChatModeConfig } from '@repo/shared/config';
@@ -160,7 +161,7 @@ export const ChatInput = ({
                                                 <GeneratingStatus />
                                             ) : (
                                                 <Flex gap="xs" items="center" className="shrink-0">
-                                                    <ChatModeButton />
+                                                    {/* <ChatModeButton /> */}
                                                     {/* <AttachmentButton /> */}
                                                     <WebSearchButton />
                                                     {/* <ToolsMenu /> */}
@@ -171,11 +172,13 @@ export const ChatInput = ({
                                                         showIcon={true}
                                                         handleImageUpload={handleImageUpload}
                                                     />
-                                                    {/* <ToolsMenu /> */}
+                                                    <ToolsMenu />
                                                 </Flex>
                                             )}
 
-                                            <Flex gap="md" items="center">
+                                            <Flex gap="xs" items="center">
+                                                <ChatModeButton />
+
                                                 <SendStopButton
                                                     isGenerating={isGenerating}
                                                     isChatPage={isChatPage}

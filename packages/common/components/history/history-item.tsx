@@ -90,7 +90,7 @@ export const HistoryItem = ({
             {isEditing ? (
                 <Input
                     variant="ghost"
-                    className="h-5 pl-0 text-xs shadow-none"
+                    className="h-5 pl-0 text-sm shadow-none"
                     ref={historyInputRef}
                     value={title || 'Untitled'}
                     onChange={handleInputChange}
@@ -109,7 +109,7 @@ export const HistoryItem = ({
                         className="flex-1 overflow-hidden"
                         gap="none"
                     >
-                        <p className="hover:text-foreground line-clamp-1 w-full text-xs font-medium">
+                        <p className="hover:text-foreground line-clamp-1 w-full text-sm">
                             {thread.title}
                         </p>
                     </Flex>

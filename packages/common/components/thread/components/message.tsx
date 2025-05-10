@@ -36,7 +36,7 @@ export const Message = memo(({ message, imageAttachment, threadItem }: MessagePr
     const toggleExpand = useCallback(() => setIsExpanded(prev => !prev), []);
 
     return (
-        <div className="flex w-full flex-col items-end gap-2 pt-4">
+        <div className="mb-4 flex w-full flex-col items-end gap-2 pt-4">
             {imageAttachment && <ImageMessage imageAttachment={imageAttachment} />}
             <div
                 className={cn(
