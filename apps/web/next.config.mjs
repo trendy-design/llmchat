@@ -1,10 +1,10 @@
 import { withSentryConfig } from '@sentry/nextjs';
 
 const nextConfig = {
-    output: 'standalone',
-    images: {
-        unoptimized: true,
-    },
+    // output: 'standalone',
+    // images: {
+    //     unoptimized: true,
+    // },
     transpilePackages: ['next-mdx-remote'],
     images: {
         remotePatterns: [

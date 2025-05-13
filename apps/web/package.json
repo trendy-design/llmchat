@@ -2,20 +2,14 @@
     "name": "llmchat-web",
     "version": "0.1.0",
     "private": true,
-    "main": "electron/main.js",
     "scripts": {
         "dev": "next dev -p 3006",
         "build": "cd ../../packages/prisma && bun prisma generate && cd ../../apps/web && next build",
         "start": "next start",
-        "prepare": "husky",
-        "build:electron": "tsup",
-        "dev:electron": "tsup --watch",
-        "generate": "bunx drizzle-kit generate",
-        "electron:dev": "concurrently \"bun run dev\" \"electron .\"",
-        "electron:build": "next build && electron-builder",
-        "electron:start": "electron ."
+        "prepare": "husky"
     },
     "dependencies": {
+        "@repo/electron": "*",
         "@clerk/nextjs": "^6.12.3",
         "@electric-sql/pglite": "0.2.13",
         "@electric-sql/pglite-repl": "^0.2.15",
@@ -153,40 +147,14 @@
         "@types/turndown": "^5.0.4",
         "@types/uuid": "^10.0.0",
         "autoprefixer": "^10.4.20",
-        "concurrently": "^9.1.2",
         "drizzle-kit": "^0.24.2",
-        "electron": "36.2.0",
-        "electron-builder": "^26.0.12",
         "husky": "^9.1.4",
         "postcss": "^8.5.3",
         "postgres": "^3.4.4",
         "prettier": "^3.3.3",
         "prettier-plugin-tailwindcss": "^0.6.5",
         "tailwindcss": "3",
-        "tsup": "^8.4.0",
         "typescript": "^5.8.3",
-        "wait-on": "^8.0.3",
         "yarn": "^1.22.22"
-    },
-    "build": {
-        "appId": "com.llmchat.desktop",
-        "productName": "LLMChat",
-        "files": [
-            "electron/**/*",
-            ".next/**/*",
-            "node_modules/**/*",
-            "package.json"
-        ],
-        "directories": {
-            "buildResources": "resources"
-        },
-        "mac": {
-            "icon": "electron/icons/llmchat.icns",
-            "category": "public.app-category.utilities",
-            "hardenedRuntime": true,
-            "gatekeeperAssess": false,
-            "entitlements": "entitlements.plist",
-            "entitlementsInherit": "entitlements.plist"
-        }
     }
 }

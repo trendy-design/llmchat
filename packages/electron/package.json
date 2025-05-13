@@ -1,0 +1,47 @@
+{
+    "name": "@repo/electron",
+    "version": "0.1.0",
+    "private": true,
+    "main": "src/main.js",
+    "exports": {
+        "types": "./shared/api.d.ts"
+    },
+    "scripts": {
+        "electron:dev": "concurrently \"electron .\"",
+        "electron:build": "electron-builder",
+        "electron:start": "electron ."
+    },
+    "devDependencies": {
+        "@repo/tailwind-config": "*",
+        "@repo/typescript-config": "*",
+        "@swc/core": "^1.11.24",
+        "@types/node": "^22.15.17",
+        "concurrently": "^9.1.2",
+        "electron": "36.2.0",
+        "electron-builder": "^26.0.12",
+        "tsup": "^8.4.0",
+        "typescript": "^5.8.3",
+        "wait-on": "^8.0.3"
+    },
+    "build": {
+        "appId": "com.llmchat.desktop",
+        "productName": "LLMChat",
+        "files": [
+            "electron/**/*",
+            ".next/**/*",
+            "node_modules/**/*",
+            "package.json"
+        ],
+        "directories": {
+            "buildResources": "resources"
+        },
+        "mac": {
+            "icon": "electron/icons/llmchat.icns",
+            "category": "public.app-category.utilities",
+            "hardenedRuntime": true,
+            "gatekeeperAssess": false,
+            "entitlements": "entitlements.plist",
+            "entitlementsInherit": "entitlements.plist"
+        }
+    }
+}

@@ -1,4 +1,4 @@
-import type { WindowAPI } from '../../shared/api';
+import type { WindowAPI } from '@repo/electron/types';
 
 declare global {
   interface Window {

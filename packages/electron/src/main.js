@@ -3,7 +3,9 @@ const path = require('path');
 const url = require('url');
 const { ipcMain } = require('electron');
 
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = true;
+
+console.log('isDev', isDev);
 
 const APP_URL = isDev
     ? 'http://localhost:3006'
