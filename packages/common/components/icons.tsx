@@ -33,7 +33,7 @@ export const BYOKIcon = () => {
 
 export const ToolCallIcon = () => {
     return (
-        <div className="flex-inline flex h-5 items-center justify-center gap-1 rounded-md bg-purple-500/20 p-0.5 px-1 text-xs font-semibold text-purple-600">
+        <div className="flex-inline flex h-5 items-center justify-center gap-1 rounded-md bg-orange-500/20 p-0.5 px-1 text-xs font-semibold text-orange-600 dark:text-orange-400">
             Tool
         </div>
     );

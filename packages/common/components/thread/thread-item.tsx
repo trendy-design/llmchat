@@ -13,7 +13,7 @@ import {
 import { useAgentStream, useAnimatedText } from '@repo/common/hooks';
 import { useChatStore } from '@repo/common/store';
 import { AnswerMessage, ThreadItem as ThreadItemType } from '@repo/shared/types';
-import { Alert, AlertDescription, Button, cn } from '@repo/ui';
+import { Alert, AlertDescription, Button, cn, Dialog, DialogContent, DialogFooter } from '@repo/ui';
 import { IconAlertCircle, IconCheck, IconChevronUp, IconLoader } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
@@ -148,7 +148,8 @@ export const ThreadItem = memo(
 
                         {(threadItem.status === 'COMPLETED' ||
                             threadItem.status === 'ABORTED' ||
-                            threadItem.status === 'ERROR') &&
+                            threadItem.status === 'ERROR' ||
+                            threadItem.status === 'HUMAN_REVIEW') &&
                             !isGenerating && (
                                 <div className="opacity-0 transition-opacity duration-300 group-hover/thread-item:opacity-100">
                                     <MessageActions
@@ -249,6 +250,69 @@ export const ToolCallUI = ({
     );
 };
 
+type ToolCallApprovalDialogProps = {
+    open: boolean;
+    onApprove: () => void;
+    onReject: () => void;
+    toolName?: string;
+    args?: unknown;
+};
+
+const ToolCallApprovalDialog = ({
+    open,
+    onApprove,
+    onReject,
+    toolName,
+    args,
+}: ToolCallApprovalDialogProps) => {
+    let argsContent: string | undefined;
+    if (typeof args === 'string') {
+        argsContent = args;
+    } else if (typeof args === 'object' && args !== null) {
+        argsContent = JSON.stringify(args, null, 2);
+    }
+    return (
+        <Dialog
+            open={open}
+            onOpenChange={open => {
+                if (!open) onReject();
+            }}
+        >
+            <DialogContent
+                ariaTitle="Tool Call Approval"
+                className="max-w-md"
+                showCloseButton={false}
+                onPointerDownOutside={e => e.preventDefault()}
+            >
+                <div className="flex w-full flex-col gap-4 overflow-x-hidden">
+                    <div className="flex flex-col gap-0">
+                        <div className="text-base font-bold">Approve Tool Call?</div>
+                        <div className="text-muted-foreground/50 text-sm">
+                            {toolName ? `Tool: ${toolName}` : 'A tool call needs your approval.'}
+                        </div>
+                    </div>
+                    {argsContent && (
+                        <CodeBlock
+                            code={argsContent}
+                            lang="json"
+                            showNumbering={false}
+                            className="my-0 border"
+                        />
+                    )}
+                </div>
+                <DialogFooter className="w-full">
+                    <Button variant="bordered" onClick={onReject}>
+                        Reject
+                    </Button>
+                    <Button variant="default" onClick={onApprove}>
+                        Approve
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
+};
+
 export const ToolMessage = ({
     tool,
     handleRun,
@@ -264,103 +328,125 @@ export const ToolMessage = ({
     handleRun: () => void;
 }) => {
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+
+    useEffect(() => {
+        if (tool.toolCall?.approvalStatus === 'PENDING') {
+            setIsDialogOpen(true);
+        } else {
+            setIsDialogOpen(false);
+        }
+    }, [tool.toolCall?.approvalStatus]);
+
+    const handleApprove = () => {
+        setIsSubmitted(true);
+        setIsDialogOpen(false);
+        handleRun();
+    };
+
+    const handleReject = () => {
+        setIsDialogOpen(false);
+    };
+
     return (
-        <div
-            key={tool.toolCall?.toolCallId}
-            className="bg-tertiary border-hard flex w-full flex-col rounded-xl border p-1"
-        >
-            <div className="flex h-8 flex-row items-center justify-between px-1.5">
-                <div
-                    className="flex flex-row items-center gap-2"
-                    onClick={() => setIsOpen(prev => !prev)}
-                >
-                    <IconChevronUp
-                        size={14}
-                        strokeWidth={2}
-                        className={cn(
-                            'text-muted-foreground/50 transition-transform duration-300',
-                            isOpen ? 'rotate-180' : 'rotate-90'
-                        )}
-                    />
-
-                    <div className="flex flex-row items-center gap-1">
-                        <ToolCallIcon />
-                        <p className="flex flex-row items-center gap-1 text-xs font-medium">
-                            {tool.toolCall?.toolName}
-                        </p>
-                    </div>
-                </div>
-
-                {tool.toolCall?.approvalStatus === 'RUNNING' && (
-                    <div className="text-muted-foreground flex flex-row items-center gap-1.5 text-xs font-medium ">
-                        <IconLoader size={14} strokeWidth={2} className="animate-spin" />
-                        Running
-                    </div>
-                )}
-
-                {tool.toolCall?.approvalStatus === 'AUTO_APPROVED' && (
-                    <div className="text-muted-foreground flex flex-row items-center gap-1.5 text-xs font-medium ">
-                        <IconCheck size={14} strokeWidth={2} className="text-muted-foreground/50" />{' '}
-                        Auto
-                    </div>
-                )}
-                {tool.toolCall?.approvalStatus === 'PENDING' && (
-                    <div className="flex flex-row gap-1">
-                        <Button
-                            variant="bordered"
-                            size="xs"
-                            onClick={() => {
-                                console.log('reject');
-                            }}
-                        >
-                            Reject
-                        </Button>
-                        <Button
-                            variant="default"
-                            size="xs"
-                            onClick={() => {
-                                setIsSubmitted(true);
-                                handleRun();
-                            }}
-                        >
-                            {isSubmitted && (
-                                <IconLoader size={14} strokeWidth={2} className="animate-spin" />
-                            )}
-                            {isSubmitted ? 'Running...' : 'Run Tool'}
-                        </Button>
-                    </div>
-                )}
-                {tool.toolCall?.approvalStatus === 'APPROVED' && (
-                    <div className="text-muted-foreground flex flex-row items-center gap-1.5 text-xs font-medium ">
-                        <IconCheck size={14} strokeWidth={2} className="text-muted-foreground/50" />
-                    </div>
-                )}
-            </div>
-            <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: isOpen ? 1 : 0, height: isOpen ? 'auto' : 0 }}
-                transition={{ duration: 0.1 }}
-                className={cn('flex flex-col gap-1', isOpen ? 'pt-1' : 'pt-0')}
+        <>
+            <ToolCallApprovalDialog
+                open={isDialogOpen}
+                onApprove={handleApprove}
+                onReject={handleReject}
+                toolName={tool.toolCall?.toolName}
+                args={tool.toolCall?.args}
+            />
+            <div
+                key={tool.toolCall?.toolCallId}
+                className="bg-tertiary border-hard flex w-full flex-col rounded-xl border p-1"
             >
-                <CodeBlock
-                    code={JSON.stringify(tool.toolCall?.args, null, 2)}
-                    lang="json"
-                    showHeader={false}
-                    className="my-0"
-                />
+                <div className="flex h-8 flex-row items-center justify-between px-1.5">
+                    <div
+                        className="flex flex-row items-center gap-2"
+                        onClick={() => setIsOpen(prev => !prev)}
+                    >
+                        <IconChevronUp
+                            size={14}
+                            strokeWidth={2}
+                            className={cn(
+                                'text-muted-foreground/50 transition-transform duration-300',
+                                isOpen ? 'rotate-180' : 'rotate-90'
+                            )}
+                        />
 
-                {/* Show tool result directly below if it exists */}
-                {tool.toolResult && (
+                        <div className="flex flex-row items-center gap-1">
+                            <ToolCallIcon />
+                            <p className="flex flex-row items-center gap-1 text-xs font-medium">
+                                {tool.toolCall?.toolName}
+                            </p>
+                        </div>
+                    </div>
+
+                    {tool.toolCall?.approvalStatus === 'RUNNING' && (
+                        <div className="text-muted-foreground flex flex-row items-center gap-1.5 text-xs font-medium ">
+                            <IconLoader size={14} strokeWidth={2} className="animate-spin" />
+                            Running
+                        </div>
+                    )}
+
+                    {tool.toolCall?.approvalStatus === 'AUTO_APPROVED' && (
+                        <div className="text-muted-foreground flex flex-row items-center gap-1.5 text-xs font-medium ">
+                            <IconCheck
+                                size={14}
+                                strokeWidth={2}
+                                className="text-muted-foreground/50"
+                            />{' '}
+                            Auto
+                        </div>
+                    )}
+                    {tool.toolCall?.approvalStatus === 'PENDING' && (
+                        <div className="flex flex-row gap-1">
+                            <Button
+                                variant="bordered"
+                                size="xs"
+                                onClick={() => setIsDialogOpen(true)}
+                            >
+                                Review
+                            </Button>
+                        </div>
+                    )}
+                    {tool.toolCall?.approvalStatus === 'APPROVED' && (
+                        <div className="text-muted-foreground flex flex-row items-center gap-1.5 text-xs font-medium ">
+                            <IconCheck
+                                size={14}
+                                strokeWidth={2}
+                                className="text-muted-foreground/50"
+                            />
+                        </div>
+                    )}
+                </div>
+                <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: isOpen ? 1 : 0, height: isOpen ? 'auto' : 0 }}
+                    transition={{ duration: 0.1 }}
+                    className={cn('flex flex-col gap-1', isOpen ? 'pt-1' : 'pt-0')}
+                >
                     <CodeBlock
-                        code={JSON.stringify(tool.toolResult.result, null, 2)}
+                        code={JSON.stringify(tool.toolCall?.args, null, 2)}
                         lang="json"
                         showHeader={false}
                         className="my-0"
                     />
-                )}
-            </motion.div>
-        </div>
+
+                    {/* Show tool result directly below if it exists */}
+                    {tool.toolResult && (
+                        <CodeBlock
+                            code={JSON.stringify(tool.toolResult.result, null, 2)}
+                            lang="json"
+                            showHeader={false}
+                            className="my-0"
+                        />
+                    )}
+                </motion.div>
+            </div>
+        </>
     );
 };
 

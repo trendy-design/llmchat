@@ -1,4 +1,4 @@
-import { SearchResultsList, StepStatus, TextShimmer } from '@repo/common/components';
+import { SearchResultsList, StepStatus, TextContent, TextShimmer } from '@repo/common/components';
 import { Step } from '@repo/shared/types';
 import { Badge, cn } from '@repo/ui';
 import { IconSearch } from '@tabler/icons-react';
@@ -13,14 +13,13 @@ export const StepRenderer = ({ step, isLastStep }: StepRendererType) => {
     const renderTextStep = () => {
         if (step?.text) {
             return (
-                <motion.p
-                    className="text-muted-foreground mb-4 text-sm"
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.1 }}
-                >
-                    {step.text}
-                </motion.p>
+                <TextContent
+                    text={step.text}
+                    id={step.id}
+                    isCompleted={step.status === 'COMPLETED'}
+                    shouldAnimate={true}
+                    isLast={isLastStep}
+                />
             );
         }
         return null;

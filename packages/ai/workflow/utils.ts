@@ -591,7 +591,7 @@ export const sendEvents = (events?: TypedEventEmitter<WorkflowEventSchema>) => {
         status,
     }: {
         message?: AnswerMessage;
-        status?: 'PENDING' | 'COMPLETED';
+        status?: 'PENDING' | 'COMPLETED' | 'ERROR' | 'HUMAN_REVIEW';
     }) => {
         events?.update('answer', prev => ({
             ...prev,
@@ -600,7 +600,7 @@ export const sendEvents = (events?: TypedEventEmitter<WorkflowEventSchema>) => {
         }));
     };
 
-    const updateStatus = (status: 'PENDING' | 'COMPLETED' | 'ERROR') => {
+    const updateStatus = (status: 'PENDING' | 'COMPLETED' | 'ERROR' | 'HUMAN_REVIEW') => {
         events?.update('status', prev => status);
     };
 

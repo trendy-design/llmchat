@@ -17,12 +17,13 @@ export const markdownStyles = {
     // Text styles
     'prose-p:font-normal prose-p:text-base prose-p:leading-[1.65rem]': true,
     'prose-headings:text-base prose-headings:font-medium ': true,
-    'prose-h1:text-2xl prose-h1:font-medium ': true,
-    'prose-h2:text-2xl prose-h2:font-medium ': true,
+    'prose-h1:text-xl prose-h1:font-medium ': true,
+    'prose-h2:text-xl prose-h2:font-medium ': true,
     'prose-h3:text-lg prose-h3:font-medium ': true,
     'prose-strong:font-medium prose-th:font-medium': true,
 
-    'prose-a:text-blue-600 prose-a:font-normal prose-a:underline prose-a:underline-offset-4': true,
+    'prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-normal prose-a:underline prose-a:underline-offset-4':
+        true,
 
     'prose-li:text-muted-foreground prose-li:font-normal prose-li:leading-[1.65rem]': true,
 
@@ -47,6 +48,8 @@ export const markdownStyles = {
 
     // Theme
     'prose-prosetheme': true,
+
+    'prose-hr:border-dashed prose-hr:border-border prose-hr:border-t my-1': true,
 };
 
 type MarkdownContentProps = {

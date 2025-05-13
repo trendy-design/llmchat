@@ -18,6 +18,7 @@ export const useChatEditor = (editorProps: {
     enableEnter?: boolean;
     onInit?: (props: { editor: Editor }) => void;
     onUpdate?: (props: { editor: Editor }) => void;
+    onBlur?: (props: { editor: Editor }) => void;
 }) => {
     const setEditor = useChatStore(state => state.setEditor);
     const editor = useEditor({
@@ -42,6 +43,12 @@ export const useChatEditor = (editorProps: {
         immediatelyRender: false,
         content: '',
         autofocus: true,
+        onBlur(props) {
+            console.log('onBlur', props);
+            if (editorProps?.onBlur) {
+                editorProps.onBlur({ editor: props.editor });
+            }
+        },
 
         onTransaction(props) {
             const { editor } = props;

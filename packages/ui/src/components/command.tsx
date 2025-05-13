@@ -34,7 +34,7 @@ const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
                 ariaTitle="Command Search"
                 closeButtonClassName="hidden"
             >
-                <Command className="[&_[cmdk-group-heading]]:text-muted-foreground bg-background pb-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-1 [&_[cmdk-input-wrapper]_svg]:h-4 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
+                <Command className="[&_[cmdk-group-heading]]:text-muted-foreground bg-popover pb-1 [&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-1 [&_[cmdk-input-wrapper]_svg]:h-4 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-10 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
                     {children}
                 </Command>
             </DialogContent>
@@ -121,7 +121,7 @@ const CommandItem = React.forwardRef<
     <CommandPrimitive.Item
         ref={ref}
         className={cn(
-            'text-foreground aria-selected:bg-tertiary aria-selected:text-tertiary-foreground relative flex min-h-8 cursor-pointer items-center gap-2 rounded-lg !px-3 !py-2 text-xs font-medium outline-none aria-disabled:pointer-events-none aria-disabled:opacity-50 md:text-sm',
+            'text-foreground aria-selected:bg-quaternary aria-selected:text-quaternary-foreground relative flex min-h-8 cursor-pointer items-center gap-2 rounded-lg !px-3 !py-2 text-xs font-medium outline-none aria-disabled:pointer-events-none aria-disabled:opacity-50 md:text-sm',
             className
         )}
         {...props}

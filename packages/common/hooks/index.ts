@@ -4,4 +4,5 @@ export * from './use-clipboard';
 export * from './use-copy-text';
 export * from './use-editor';
 export * from './use-image-attachment';
+export * from './use-media-query';
 export * from './use-text-selection';

@@ -188,7 +188,7 @@ First check for necessary connection to tools before using them.
                     args: currentToolCall?.args,
                     approvalStatus: 'PENDING',
                 },
-                status: 'PENDING',
+                status: 'HUMAN_REVIEW',
             });
 
             const toolCallMessage: CoreAssistantMessage = {

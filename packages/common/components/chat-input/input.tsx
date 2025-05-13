@@ -6,7 +6,7 @@ import {
     MessagesRemainingBadge,
     ToolsMenu,
 } from '@repo/common/components';
-import { useImageAttachment } from '@repo/common/hooks';
+import { useImageAttachment, useIsMobile } from '@repo/common/hooks';
 import { ChatModeConfig } from '@repo/shared/config';
 import { cn, Flex } from '@repo/ui';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -32,7 +32,7 @@ export const ChatInput = ({
     isFollowUp?: boolean;
 }) => {
     const { isSignedIn } = useAuth();
-
+    const isMobile = useIsMobile();
     const { threadId: currentThreadId } = useParams();
     const { editor } = useChatEditor({
         placeholder: isFollowUp ? 'Ask follow up' : 'Ask anything',
@@ -125,7 +125,7 @@ export const ChatInput = ({
                     <Flex
                         direction="col"
                         className={cn(
-                            'bg-background relative z-10 w-full rounded-2xl shadow-md outline outline-[1px] outline-[rgba(0,0,0,0.08)]'
+                            'bg-background dark:border-hard relative z-10 w-full rounded-2xl shadow-md outline outline-[1px] outline-[rgba(0,0,0,0.08)] dark:border'
                         )}
                     >
                         <ImageDropzoneRoot dropzoneProps={dropzonProps}>
@@ -161,10 +161,8 @@ export const ChatInput = ({
                                                 <GeneratingStatus />
                                             ) : (
                                                 <Flex gap="xs" items="center" className="shrink-0">
-                                                    {/* <ChatModeButton /> */}
-                                                    {/* <AttachmentButton /> */}
+                                                    <ChatModeButton />
                                                     <WebSearchButton />
-                                                    {/* <ToolsMenu /> */}
                                                     <ImageUpload
                                                         id="image-attachment"
                                                         label="Image"
@@ -177,8 +175,6 @@ export const ChatInput = ({
                                             )}
 
                                             <Flex gap="xs" items="center">
-                                                <ChatModeButton />
-
                                                 <SendStopButton
                                                     isGenerating={isGenerating}
                                                     isChatPage={isChatPage}
@@ -232,9 +228,9 @@ export const ChatInput = ({
         >
             <div
                 className={cn(
-                    'mx-auto flex w-full max-w-[46rem] flex-col items-start',
+                    'mx-auto flex w-full max-w-[42rem] flex-col items-start',
                     !threadItemsLength && 'justify-start',
-                    size === 'sm' && 'px-8'
+                    isMobile && 'px-3'
                 )}
             >
                 <Flex

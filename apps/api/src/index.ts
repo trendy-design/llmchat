@@ -66,7 +66,7 @@ const app = new Hono<{ Bindings: Env }>();
 // Configure CORS with specific origin and credentials support
 app.use(
 	cors({
-		origin: ['http://localhost:3005', 'https://staging.llmchat.co', 'https://llmchat.co'], // Specify exact origins instead of wildcard
+		origin: ['http://localhost:3005', 'http://localhost:3006', 'https://staging.llmchat.co', 'https://llmchat.co'], // Specify exact origins instead of wildcard
 		allowMethods: ['GET', 'HEAD', 'POST', 'OPTIONS'],
 		allowHeaders: ['Content-Type', 'Authorization'],
 		credentials: true, // Important for credentials: 'include'
@@ -193,14 +193,14 @@ app.post('/', async (c) => {
 					});
 
 					let mcpToolManager: MCPToolManager | undefined;
-					// if (Object.keys(validatedBody.data.mcpConfig ?? {}).length > 0 && validatedBody.data.mode === ChatMode.Agent) {
-					// 	try {
-					// 		mcpToolManager = await MCPToolManager.create(validatedBody.data.mcpConfig as any);
-					// 		console.log('MCPToolManager initialized successfully at workflow start');
-					// 	} catch (error) {
-					// 		console.error('Failed to initialize MCPToolManager:', error);
-					// 	}
-					// }
+					if (Object.keys(validatedBody.data.mcpConfig ?? {}).length > 0 && validatedBody.data.mode === ChatMode.Agent) {
+						try {
+							mcpToolManager = await MCPToolManager.create(validatedBody.data.mcpConfig as any);
+							console.log('MCPToolManager initialized successfully at workflow start');
+						} catch (error) {
+							console.error('Failed to initialize MCPToolManager:', error);
+						}
+					}
 
 					const workflow = await runWorkflow({
 						mode: validatedBody.data.mode || ChatMode.Deep,
@@ -300,6 +300,12 @@ app.post('/', async (c) => {
 	} catch (e) {
 		return c.json({ error: 'Internal server error' }, 500);
 	}
+});
+
+app.post('/mcp/validate', async (c) => {
+	const config = await c.req.json();
+	const validated = await MCPToolManager.validateConfig(config.url);
+	return c.json(validated);
 });
 
 export default app;

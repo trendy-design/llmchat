@@ -14,7 +14,7 @@ import {
     DropdownMenuTrigger,
     Kbd,
 } from '@repo/ui';
-import { IconAtom, IconNorthStar, IconPaperclip, IconPlayerStopFilled } from '@tabler/icons-react';
+import { IconPaperclip, IconPlayerStopFilled } from '@tabler/icons-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpIcon, Check, ChevronDown, GlobeIcon } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -26,23 +26,21 @@ export const chatOptions = [
         label: 'Deep Research',
         description: 'In depth research on complex topic',
         value: ChatMode.Deep,
-        icon: <IconAtom size={16} className="text-muted-foreground" strokeWidth={2} />,
         creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Deep],
     },
-    {
-        label: 'Pro Search',
-        description: 'Pro search with web search',
-        value: ChatMode.Pro,
-        icon: <IconNorthStar size={16} className="text-muted-foreground" strokeWidth={2} />,
-        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Pro],
-    },
     // {
-    //     label: 'Agent',
-    //     description: 'MCP Tools Agent',
-    //     value: ChatMode.Agent,
-    //     icon: <IconRepeat size={16} className="text-muted-foreground" strokeWidth={2} />,
-    //     creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Agent],
+    //     label: 'Pro Search',
+    //     description: 'Pro search with web search',
+    //     value: ChatMode.Pro,
+    //     icon: <IconNorthStar size={16} className="text-muted-foreground" strokeWidth={2} />,
+    //     creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Pro],
     // },
+    {
+        label: 'Agent',
+        description: 'MCP Tools Agent',
+        value: ChatMode.Agent,
+        creditCost: CHAT_MODE_CREDIT_COSTS[ChatMode.Agent],
+    },
 ];
 
 export const modelOptions = [
@@ -149,7 +147,6 @@ export const ChatModeButton = () => {
     const chatMode = useChatStore(state => state.chatMode);
     const setChatMode = useChatStore(state => state.setChatMode);
     const [isChatModeOpen, setIsChatModeOpen] = useState(false);
-    const hasApiKeyForChatMode = useApiKeysStore(state => state.hasApiKeyForChatMode);
     const isChatPage = usePathname().startsWith('/chat');
 
     const selectedOption =
@@ -160,7 +157,7 @@ export const ChatModeButton = () => {
     return (
         <DropdownMenu open={isChatModeOpen} onOpenChange={setIsChatModeOpen}>
             <DropdownMenuTrigger asChild>
-                <Button variant={'ghost'} size="xs" className="!text-sm">
+                <Button variant={'ghost'} size="xs" className="gap-1 !text-sm">
                     {selectedOption?.label}
                     <ChevronDown size={16} strokeWidth={2} className="!text-muted-foreground/50" />
                 </Button>
@@ -195,7 +192,6 @@ export const WebSearchButton = () => {
                 strokeWidth={2}
                 className={cn(useWebSearch ? '!text-blue-600' : 'text-muted-foreground')}
             />
-            Search
         </Button>
     );
 };
@@ -266,7 +262,7 @@ export const ChatModeOptions = ({
                                         <p className="m-0 text-sm font-medium leading-tight">
                                             {option.label}
 
-                                            <span className="px-1.5 text-xs text-pink-600">
+                                            <span className="px-1.5 text-xs text-pink-600 dark:text-pink-400">
                                                 Pro
                                             </span>
                                         </p>
@@ -280,7 +276,11 @@ export const ChatModeOptions = ({
                                 <div className="flex-1" />
 
                                 {selected === option.value && (
-                                    <Check size={14} strokeWidth={2} className="text-blue-600" />
+                                    <Check
+                                        size={14}
+                                        strokeWidth={2}
+                                        className="text-blue-600 dark:text-blue-400"
+                                    />
                                 )}
                             </div>
                         </DropdownMenuItem>
@@ -308,7 +308,7 @@ export const ChatModeOptions = ({
                                     <p className="text-sm font-medium">
                                         {option.label}
                                         {ChatModeConfig[option.value]?.isNew && (
-                                            <span className="px-1.5 text-xs text-blue-600">
+                                            <span className="px-1.5 text-xs text-blue-600 dark:text-blue-400">
                                                 New
                                             </span>
                                         )}
@@ -319,7 +319,11 @@ export const ChatModeOptions = ({
 
                             {hasApiKeyForChatMode(option.value) && <BYOKIcon />}
                             {selected === option.value && (
-                                <Check size={14} strokeWidth={2} className="text-blue-600" />
+                                <Check
+                                    size={14}
+                                    strokeWidth={2}
+                                    className="text-blue-600 dark:text-blue-400"
+                                />
                             )}
                         </div>
                     </DropdownMenuItem>

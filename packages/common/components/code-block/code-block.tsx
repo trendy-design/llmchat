@@ -17,13 +17,12 @@ import {
     IconBrandPython,
     IconBrandReact,
     IconBrandTypescript,
-    IconCheck,
-    IconCopy,
     IconFileFilled,
     IconJson,
     IconMarkdown,
     IconTerminal,
 } from '@tabler/icons-react';
+import { Check, Copy } from 'lucide-react';
 import './code-block.css';
 
 export type CodeBlockProps = {
@@ -33,6 +32,7 @@ export type CodeBlockProps = {
     variant?: 'default' | 'secondary';
     maxHeight?: number;
     className?: string;
+    showNumbering?: boolean;
 };
 
 export const CodeBlock = ({
@@ -41,6 +41,7 @@ export const CodeBlock = ({
     showHeader = true,
     variant = 'default',
     maxHeight = 400,
+    showNumbering = true,
     className,
 }: CodeBlockProps) => {
     const ref = useRef<HTMLElement>(null);
@@ -83,16 +84,15 @@ export const CodeBlock = ({
     return (
         <div
             className={cn(
-                'not-prose bg-tertiary relative my-4 w-full overflow-hidden rounded-xl border px-1 pb-1',
+                'not-prose bg-background border-hard relative my-4 w-full overflow-hidden rounded-lg border',
                 variant === 'secondary' && 'bg-tertiary',
                 className,
                 !showHeader && 'rounded-none border-none bg-transparent p-0'
             )}
         >
             {showHeader && (
-                <div className="text-foreground flex items-center justify-between py-1 pl-3 pr-1">
-                    <p className="text-muted-foreground flex flex-row items-center gap-2 text-xs tracking-wide">
-                        {getLangIcon()}
+                <div className="text-foreground bg-tertiary/50 border-border flex items-center justify-between border-b py-1 pl-3 pr-1">
+                    <p className="text-muted-foreground/50 flex flex-row items-center gap-2 text-xs tracking-wide">
                         {lang}
                     </p>
                     <Button
@@ -102,9 +102,13 @@ export const CodeBlock = ({
                         onClick={() => code && copy(code)}
                     >
                         {showCopied ? (
-                            <IconCheck size={14} strokeWidth="2" />
+                            <Check
+                                size={14}
+                                strokeWidth="2"
+                                className="!text-muted-foreground/50"
+                            />
                         ) : (
-                            <IconCopy size={14} strokeWidth="2" />
+                            <Copy size={14} strokeWidth="2" className="!text-muted-foreground/50" />
                         )}
                     </Button>
                 </div>
@@ -113,21 +117,23 @@ export const CodeBlock = ({
                 <pre
                     ref={preRef}
                     className={cn(
-                        'text-foreground border-foreground/20 bg-background no-scrollbar relative flex w-full overflow-x-auto rounded-lg border px-4 py-4 font-mono text-[13px] font-[300]'
+                        'text-foreground no-scrollbar relative flex w-full overflow-x-auto px-4 py-3 font-mono text-[13px] font-[300]'
                     )}
                     style={{ maxHeight }}
                 >
-                    <code
-                        className="text-muted-foreground select-none pr-4 text-right"
-                        aria-hidden="true"
-                    >
-                        {codeLines.map((_, i) => (
-                            <span key={i} className="text-muted-foreground/20 block text-sm">
-                                {i + 1}
-                            </span>
-                        ))}
-                    </code>
-                    <code className={cn(`language-${lang}`, 'pl-4')} ref={ref}>
+                    {showNumbering && (
+                        <code
+                            className="text-muted-foreground flex select-none flex-col gap-0.5 pr-4 text-right"
+                            aria-hidden="true"
+                        >
+                            {codeLines.map((_, i) => (
+                                <span key={i} className="text-muted-foreground/20 block text-sm">
+                                    {i + 1}
+                                </span>
+                            ))}
+                        </code>
+                    )}
+                    <code className={cn(`language-${lang}`, showNumbering && 'pl-4')} ref={ref}>
                         {code}
                     </code>
                 </pre>

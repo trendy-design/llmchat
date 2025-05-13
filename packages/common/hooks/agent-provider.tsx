@@ -1,6 +1,7 @@
 import { useAuth, useUser } from '@clerk/nextjs';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { useWorkflowWorker } from '@repo/ai/worker';
+import { BroadcastMessageEvent, useBroadcastReceiver } from '@repo/common/electron';
 import { ChatMode, ChatModeConfig } from '@repo/shared/config';
 import { ThreadItem, WorkflowEventSchema } from '@repo/shared/types';
 import { buildCoreMessagesFromThreadItems, plausible } from '@repo/shared/utils';
@@ -15,8 +16,8 @@ import {
     useMemo,
     useRef,
 } from 'react';
+import { v4 } from 'uuid';
 import { useApiKeysStore, useChatStore, useMcpToolsStore } from '../store';
-
 export type submitHandlerArgs = {
     formData: FormData;
     newThreadId?: string;
@@ -55,6 +56,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
     const { threadId: currentThreadId } = useParams();
     const { isSignedIn } = useAuth();
     const { user } = useUser();
+    const router = useRouter();
     const {
         updateThreadItem,
         setIsGenerating,
@@ -67,6 +69,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         fetchRemainingCredits,
         customInstructions,
         getCurrentThreadItem,
+        createThread,
     } = useChatStore(state => ({
         updateThreadItem: state.updateThreadItem,
         setIsGenerating: state.setIsGenerating,
@@ -79,6 +82,7 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         fetchRemainingCredits: state.fetchRemainingCredits,
         customInstructions: state.customInstructions,
         getCurrentThreadItem: state.getCurrentThreadItem,
+        createThread: state.createThread,
     }));
     const { push } = useRouter();
 
@@ -452,6 +456,53 @@ export const AgentProvider = ({ children }: { children: ReactNode }) => {
         },
         [updateThreadItem]
     );
+
+    useBroadcastReceiver<string>((event: BroadcastMessageEvent<string>) => {
+        // Handle the received message
+        console.log('Received in receiver:', event.data);
+
+        if (!!event.data && typeof event.data === 'object' && 'query' in event.data) {
+            const optimisticThread = v4();
+            const formData = new FormData();
+            createThread(optimisticThread, {
+                title: (event.data as any).query as string,
+            });
+            router.push(`/chat/${optimisticThread}`);
+
+            formData.set('query', (event.data as any).query as string);
+            handleSubmit({
+                formData,
+                newChatMode: ChatMode.GEMINI_2_5_FLASH,
+                newThreadId: optimisticThread,
+            });
+        }
+        // You can update state or trigger effects here
+    }, 'llm-chat');
+
+    // useEffect(() => {
+    //     const unsubscribe = onBroadcastChannel('run-query', data => {
+    //         if (!data?.query) {
+    //             return;
+    //         }
+    //         nativeWindow.focus();
+    //         nativeWindow.show();
+    //         const optimisticThread = v4();
+    //         const formData = new FormData();
+    //         createThread(optimisticThread, {
+    //             title: data.query,
+    //         });
+    //         router.push(`/chat/${optimisticThread}`);
+
+    //         formData.set('query', data.query);
+    //         handleSubmit({
+    //             formData,
+    //             newChatMode: ChatMode.GEMINI_2_5_FLASH,
+    //             newThreadId: optimisticThread,
+    //         });
+    //     });
+
+    //     return () => unsubscribe();
+    // }, []);
 
     const contextValue = useMemo(
         () => ({

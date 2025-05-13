@@ -3,7 +3,7 @@ import { Button } from '@repo/ui/src/components/button';
 
 import { Badge } from '@repo/ui';
 
-import { IconTools } from '@tabler/icons-react';
+import { Plug } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useApiKeysStore } from '../store/api-keys.store';
 import { useAppStore } from '../store/app.store';
@@ -39,7 +39,7 @@ export const ToolsMenu = () => {
                 }
             }}
         >
-            <IconTools size={14} strokeWidth={2} className="text-muted-foreground" />
+            <Plug size={18} strokeWidth={2} className="text-muted-foreground" />
             {selectedMCPTools?.length > 0 && (
                 <Badge
                     variant="secondary"

@@ -3,6 +3,13 @@ import { SSEClientTransport } from '@modelcontextprotocol/sdk/client/sse.js';
 import { ToolCall, ToolResult } from '@repo/shared/types';
 import { jsonSchema, tool, ToolSet } from 'ai';
 
+export type MCPConfigValidationResult = {
+    url: string;
+    reachable: boolean;
+    tools: string[];
+    error?: string;
+};
+
 export type MCPServersConfig = Record<string, string>;
 
 export class MCPToolManager {
@@ -158,6 +165,51 @@ export class MCPToolManager {
         } catch (error) {
             console.error(`Error executing tool "${tool.toolName}":`, error);
             throw error;
+        }
+    }
+
+    static async validateConfig(url: string): Promise<MCPConfigValidationResult> {
+        const results: MCPConfigValidationResult = {
+            url,
+            reachable: false,
+            tools: [],
+        };
+
+        const client = new Client(
+            {
+                name: 'mcp-test',
+                version: '0.1.0',
+            },
+            {
+                capabilities: {
+                    sampling: {},
+                },
+            }
+        );
+        try {
+            await client.connect(new SSEClientTransport(new URL(url)));
+            let allTools: string[] = [];
+            let nextCursor: string | undefined = undefined;
+            do {
+                const toolList = await client.listTools({ cursor: nextCursor });
+                nextCursor = toolList.nextCursor;
+                allTools.push(...toolList.tools.map(t => t.name));
+            } while (nextCursor);
+
+            return {
+                url,
+                reachable: true,
+                tools: allTools,
+            };
+        } catch (error: any) {
+            return {
+                url,
+                reachable: false,
+                tools: [],
+                error: error?.message || String(error),
+            };
+        } finally {
+            client.close();
         }
     }
 }

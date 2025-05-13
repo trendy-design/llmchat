@@ -24,8 +24,8 @@ export const modeRoutingTask = createTask<WorkflowEventSchema, WorkflowContextSc
 
         if (mode === ChatMode.Deep) {
             redirectTo('refine-query');
-        } else if (mode === ChatMode.Pro) {
-            redirectTo('pro-search');
+        } else if (mode === ChatMode.Agent) {
+            redirectTo('agentic');
         } else if (hasWebSearch) {
             redirectTo('quickSearch');
         } else {

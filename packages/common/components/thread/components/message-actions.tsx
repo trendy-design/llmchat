@@ -47,7 +47,7 @@ export const MessageActions = forwardRef<HTMLDivElement, MessageActionsProps>(
                         <IconCheck size={16} strokeWidth={2} />
                     </Button>
                 )}
-                {threadItem?.answer?.text && (
+                {(threadItem?.answer?.text || threadItem?.answer?.messages?.length) && (
                     <Button
                         variant="ghost-bordered"
                         size="icon-sm"

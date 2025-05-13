@@ -1,5 +1,4 @@
 import { ClerkProvider } from '@clerk/nextjs';
-import { RootLayout } from '@repo/common/components';
 import { ReactQueryProvider, RootProvider } from '@repo/common/context';
 import { TooltipProvider, cn } from '@repo/ui';
 import { GeistMono } from 'geist/font/mono';
@@ -90,7 +89,13 @@ export default function ParentLayout({
     return (
         <html
             lang="en"
-            className={cn(GeistMono.variable, inter.variable, clash.variable, bricolage.variable)}
+            className={cn(
+                GeistMono.variable,
+                inter.variable,
+                clash.variable,
+                bricolage.variable,
+                'dark'
+            )}
             suppressHydrationWarning
         >
             <head>
@@ -112,9 +117,7 @@ export default function ParentLayout({
             disableTransitionOnChange
           > */}
                         <TooltipProvider>
-                            <ReactQueryProvider>
-                                <RootLayout>{children}</RootLayout>
-                            </ReactQueryProvider>
+                            <ReactQueryProvider>{children}</ReactQueryProvider>
                         </TooltipProvider>
                         {/* </ThemeProvider> */}
                     </RootProvider>

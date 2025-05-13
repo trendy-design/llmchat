@@ -6,7 +6,8 @@
         "./hooks": "./hooks/index.ts",
         "./context": "./context/index.ts",
         "./store": "./store/index.ts",
-        "./components": "./components/index.ts"
+        "./components": "./components/index.ts",
+        "./electron": "./electron/index.ts"
     },
     "scripts": {
         "lint": "eslint . --max-warnings 0",

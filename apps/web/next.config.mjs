@@ -9,7 +9,7 @@ const nextConfig = {
             { hostname: 'zyqdiwxgffuy8ymd.public.blob.vercel-storage.com' },
         ],
     },
-
+    output: 'standalone',
     experimental: {
         externalDir: true,
     },

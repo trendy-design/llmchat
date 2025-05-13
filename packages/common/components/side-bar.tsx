@@ -18,6 +18,11 @@ import {
     Tooltip,
 } from '@repo/ui';
 
+import { DesktopDraggable } from '@repo/common/components';
+import { isDesktop } from '@repo/common/electron';
+import { useIsMobile, useIsToDesktop } from '@repo/common/hooks';
+// import { isDesktopApp } from '@todesktop/client-core/platform/todesktop';
+import { AnimatePresence } from 'framer-motion';
 import {
     ArrowRight,
     BoltIcon,
@@ -26,14 +31,13 @@ import {
     Command,
     HelpCircle,
     HistoryIcon,
-    HouseIcon,
     InfoIcon,
     LogOutIcon,
     Logs,
     Mail,
     PanelLeft,
     PinIcon,
-    SettingsIcon,
+    SquarePen,
     ThumbsUp,
     UserIcon,
     ZapIcon,
@@ -41,29 +45,51 @@ import {
 import moment from 'moment';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { Drawer } from 'vaul';
 import { FeedbackWidget } from './feedback-widget';
 import { FaqDialog } from './information/faq';
+const CreditsUsageBox = () => {
+    const remainingCreditsRaw = useChatStore(state => state.creditLimit.remaining);
+    const maxLimitRaw = useChatStore(state => state.creditLimit.maxLimit);
+    const resetDate = useChatStore(state => state.creditLimit.reset);
+    const remainingCredits = typeof remainingCreditsRaw === 'number' ? remainingCreditsRaw : 0;
+    const maxLimit = typeof maxLimitRaw === 'number' ? maxLimitRaw : 0;
+
+    return (
+        <div className=" flex flex-col gap-1 rounded-lg border-t p-3 text-xs">
+            <div className="text-muted-foreground flex items-center justify-between gap-1 font-medium">
+                <div className="flex items-center gap-1">
+                    <ZapIcon size={14} strokeWidth={2} className="text-muted-foreground/50" />
+                    Usage
+                    <Tooltip content={`Reset in ${moment(resetDate).fromNow()}`}>
+                        <InfoIcon size={14} strokeWidth={2} className="text-muted-foreground/50" />
+                    </Tooltip>
+                </div>
+                <div className="flex items-center gap-1 text-xs">
+                    <span className="text-foreground font-semibold">{remainingCredits}</span>
+                    <span className="text-muted-foreground/50">/ {maxLimit}</span>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 export const Sidebar = () => {
+    const isDesktopApp = isDesktop();
     const { threadId: currentThreadId } = useParams();
     const pathname = usePathname();
     const { setIsCommandSearchOpen } = useRootContext();
-    const isChatPage = pathname === '/chat';
     const threads = useChatStore(state => state.threads);
-    const pinThread = useChatStore(state => state.pinThread);
-    const unpinThread = useChatStore(state => state.unpinThread);
-    const sortThreads = (threads: Thread[], sortBy: 'createdAt') => {
-        return [...threads].sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
-    };
-
+    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
     const { isSignedIn, user, isLoaded } = useUser();
     const { openUserProfile, signOut, redirectToSignIn, addListener } = useClerk();
-    const clearAllThreads = useChatStore(state => state.clearAllThreads);
     const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
     const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
     const setIsSettingsOpen = useAppStore(state => state.setIsSettingsOpen);
     const setIsFaqOpen = useAppStore(state => state.setIsFaqOpen);
     const { push } = useRouter();
+    const isMobile = useIsMobile();
+
     const groupedThreads: Record<string, Thread[]> = {
         today: [],
         yesterday: [],
@@ -72,13 +98,9 @@ export const Sidebar = () => {
         previousMonths: [],
     };
 
-    const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
-
-    addListener(async event => {
-        console.log({
-            event,
-        });
-    });
+    const sortThreads = (threads: Thread[], sortBy: 'createdAt') => {
+        return [...threads].sort((a, b) => moment(b[sortBy]).diff(moment(a[sortBy])));
+    };
 
     sortThreads(threads, 'createdAt')?.forEach(thread => {
         const createdAt = moment(thread.createdAt);
@@ -97,10 +119,6 @@ export const Sidebar = () => {
         }
 
         //TODO: Paginate these threads
-    });
-
-    console.log({
-        groupedThreads,
     });
 
     const renderGroup = ({
@@ -142,60 +160,20 @@ export const Sidebar = () => {
         );
     };
 
-    const CreditsUsageBox = () => {
-        const remainingCreditsRaw = useChatStore(state => state.creditLimit.remaining);
-        const maxLimitRaw = useChatStore(state => state.creditLimit.maxLimit);
-        const resetDate = useChatStore(state => state.creditLimit.reset);
-        const remainingCredits = typeof remainingCreditsRaw === 'number' ? remainingCreditsRaw : 0;
-        const maxLimit = typeof maxLimitRaw === 'number' ? maxLimitRaw : 0;
-        const percent =
-            maxLimit > 0 ? Math.min(100, Math.round((remainingCredits / maxLimit) * 100)) : 0;
-
-        return (
-            <div className=" flex flex-col gap-1 rounded-lg border-t p-3 text-xs">
-                <div className="text-muted-foreground flex items-center justify-between gap-1 font-medium">
-                    <div className="flex items-center gap-1">
-                        <ZapIcon size={14} strokeWidth={2} className="text-muted-foreground/50" />
-                        Usage
-                        <Tooltip content={`Reset in ${moment(resetDate).fromNow()}`}>
-                            <InfoIcon
-                                size={14}
-                                strokeWidth={2}
-                                className="text-muted-foreground/50"
-                            />
-                        </Tooltip>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs">
-                        <span className="text-foreground font-semibold">{remainingCredits}</span>
-                        <span className="text-muted-foreground/50">/ {maxLimit}</span>
-                    </div>
-                </div>
-
-                {/* <div className="bg-muted relative mt-1 h-1 w-full rounded">
-                    <div
-                        className="bg-foreground absolute left-0 top-0 h-1 rounded transition-all"
-                        style={{ width: `${percent - 4}%` }}
-                    />
-                </div> */}
-            </div>
-        );
-    };
-
     const pinnedThreads = threads
         .filter(thread => thread.pinned)
         .sort((a, b) => b.pinnedAt.getTime() - a.pinnedAt.getTime());
     const recentThreads = threads.filter(thread => !thread.pinned);
 
+    if (!isSidebarOpen && isMobile) {
+        return null;
+    }
+
     return (
-        <div
-            className={cn(
-                ' border-border relative flex h-[100dvh] w-[240px] flex-col border-r transition-all duration-200',
-                !isSidebarOpen && 'w-[56px]'
-            )}
-        >
+        <>
             <div
                 className={cn(
-                    'flex flex-row justify-between border-b px-2 py-1.5',
+                    'flex flex-row justify-between px-2 pt-1.5',
                     !isSidebarOpen && 'justify-center'
                 )}
             >
@@ -205,25 +183,10 @@ export const Sidebar = () => {
                     onClick={() => push('/chat')}
                     className={cn('justify-start px-1.5', !isSidebarOpen && 'justify-center')}
                 >
-                    <Logo className="size-5" />
+                    <Logo className="size-5 dark:text-blue-400" />
                     {isSidebarOpen && <span className="text-sm font-medium">LLMChat</span>}
                 </Button>
-                {isSidebarOpen && (
-                    <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={() => setIsSidebarOpen(prev => !prev)}
-                    >
-                        <PanelLeft
-                            size={16}
-                            strokeWidth={2}
-                            aria-hidden={!isSidebarOpen}
-                            className="!text-muted-foreground/50"
-                        />
-                    </Button>
-                )}
             </div>
-            {/* Top Section: Logo, Nav, New Thread */}
             <div className="flex flex-col gap-2 p-2">
                 <nav className="flex flex-col gap-0">
                     <Button
@@ -232,12 +195,12 @@ export const Sidebar = () => {
                         className={cn('justify-start px-2', !isSidebarOpen && 'justify-center')}
                         onClick={() => push('/chat')}
                     >
-                        <HouseIcon
+                        <SquarePen
                             size={16}
                             strokeWidth={2}
                             className="!text-muted-foreground/50"
                         />
-                        {isSidebarOpen && <span>Home</span>}
+                        {isSidebarOpen && <span>New Thread</span>}
                     </Button>
                     <Button
                         variant="ghost"
@@ -273,8 +236,6 @@ export const Sidebar = () => {
                     </Button>
                 </nav>
             </div>
-
-            {/* Threads Section */}
             {!isSidebarOpen && pinnedThreads.length > 0 && (
                 <div className={cn('border-t p-2', !isSidebarOpen && 'px-1')}>
                     {renderGroup({
@@ -304,8 +265,6 @@ export const Sidebar = () => {
                         threads: threads.filter(thread => !thread.pinned),
                     })}
             </div>
-
-            {/* Bottom Section: Account, Plan Usage, Support */}
             <div className="flex flex-col gap-2 border-t p-2">
                 {!isSidebarOpen && (
                     <Button
@@ -327,10 +286,13 @@ export const Sidebar = () => {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="justify-start px-2"
+                                className={cn(
+                                    'justify-start px-2',
+                                    !isSidebarOpen && 'justify-center'
+                                )}
                                 onClick={() => setIsCommandSearchOpen(true)}
                             >
-                                <div className="bg-brand flex size-6 items-center justify-center rounded-full">
+                                <div className="flex size-6 items-center justify-center rounded-full bg-orange-500/30">
                                     {user && user.hasImage ? (
                                         <img
                                             src={user?.imageUrl ?? ''}
@@ -341,7 +303,7 @@ export const Sidebar = () => {
                                         <UserIcon
                                             size={16}
                                             strokeWidth={2}
-                                            className="text-background"
+                                            className="text-orange-400"
                                         />
                                     )}
                                 </div>
@@ -361,11 +323,6 @@ export const Sidebar = () => {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuItem onClick={() => setIsSettingsOpen(true)}>
-                                <SettingsIcon size={16} strokeWidth={2} />
-                                Settings
-                            </DropdownMenuItem>
-
                             <DropdownMenuItem onClick={() => openUserProfile()}>
                                 <UserIcon size={16} strokeWidth={2} />
                                 Profile
@@ -409,7 +366,7 @@ export const Sidebar = () => {
                         <PopoverContent
                             align="start"
                             side="bottom"
-                            className="flex w-80 max-w-xs flex-col bg-white p-0"
+                            className="bg-popover flex w-80 max-w-xs flex-col p-0"
                         >
                             <FeedbackWidget onClose={() => setIsFeedbackOpen(false)} />
                         </PopoverContent>
@@ -452,6 +409,93 @@ export const Sidebar = () => {
             </div>
             {isSidebarOpen && <CreditsUsageBox />}
             <FaqDialog />
+        </>
+    );
+};
+
+export const ResponsiveSidebar = () => {
+    const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
+    const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
+    const isMobile = useIsMobile();
+    const isToDesktop = useIsToDesktop();
+
+    if (isMobile) {
+        return (
+            <Drawer.Root
+                open={isSidebarOpen}
+                direction="left"
+                shouldScaleBackground
+                onOpenChange={() => setIsSidebarOpen(prev => !prev)}
+            >
+                <Button
+                    variant="ghost"
+                    className={cn('absolute top-2 z-10', isToDesktop() ? 'left-20' : 'left-2')}
+                    size="icon-sm"
+                    onClick={() => setIsSidebarOpen(prev => !prev)}
+                >
+                    <PanelLeft size={16} strokeWidth={2} className="!text-muted-foreground/50" />
+                    {isToDesktop() && <span>isToDesktop</span>}
+                </Button>
+                <Drawer.Portal>
+                    <Drawer.Overlay className="fixed inset-0 z-30 backdrop-blur-sm" />
+                    <Drawer.Content className="fixed bottom-0 left-0 top-0 z-[50]">
+                        <Flex className="pr-2">
+                            <SidebarBody>
+                                <Sidebar />
+                            </SidebarBody>
+                        </Flex>
+                    </Drawer.Content>
+                </Drawer.Portal>
+            </Drawer.Root>
+        );
+    }
+
+    return (
+        <Flex className="hidden lg:flex">
+            <AnimatePresence>
+                <SidebarBody>
+                    <Sidebar />
+                </SidebarBody>
+            </AnimatePresence>
+        </Flex>
+    );
+};
+
+type SidebarBodyProps = {
+    children: React.ReactNode;
+};
+export const SidebarBody = ({ children }: SidebarBodyProps) => {
+    const isDesktopApp = isDesktop();
+    const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
+    const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
+    const isMobile = useIsMobile();
+
+    return (
+        <div
+            className={cn(
+                'border-border bg-tertiary relative flex h-[100dvh] w-[240px] flex-col border-r transition-all duration-200',
+                !isSidebarOpen && (isMobile ? 'w-0' : 'w-[76px]')
+            )}
+        >
+            <DesktopDraggable />
+            {isSidebarOpen && (
+                <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    className="not-draggable absolute right-2 top-2 z-[20] cursor-pointer"
+                    onClick={() => setIsSidebarOpen(prev => !prev)}
+                >
+                    <PanelLeft
+                        size={16}
+                        strokeWidth={2}
+                        aria-hidden={!isSidebarOpen}
+                        className="!text-muted-foreground/50"
+                    />
+                </Button>
+            )}
+
+            {isDesktopApp && <div className="h-8 w-full" />}
+            {children}
         </div>
     );
 };
