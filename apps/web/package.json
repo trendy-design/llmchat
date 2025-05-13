@@ -2,12 +2,18 @@
     "name": "llmchat-web",
     "version": "0.1.0",
     "private": true,
+    "main": "electron/main.js",
     "scripts": {
-        "dev": "next dev -p 3005",
+        "dev": "next dev -p 3006",
         "build": "cd ../../packages/prisma && bun prisma generate && cd ../../apps/web && next build",
         "start": "next start",
         "prepare": "husky",
-        "generate": "bunx drizzle-kit generate"
+        "build:electron": "tsup",
+        "dev:electron": "tsup --watch",
+        "generate": "bunx drizzle-kit generate",
+        "electron:dev": "concurrently \"bun run dev\" \"electron .\"",
+        "electron:build": "next build && electron-builder",
+        "electron:start": "electron ."
     },
     "dependencies": {
         "@clerk/nextjs": "^6.12.3",
@@ -137,23 +143,50 @@
     "devDependencies": {
         "@repo/tailwind-config": "*",
         "@repo/typescript-config": "*",
+        "@swc/core": "^1.11.24",
         "@tailwindcss/typography": "^0.5.13",
         "@types/jsdom": "^21.1.7",
         "@types/lodash": "^4.17.1",
-        "@types/node": "^20",
+        "@types/node": "^22.15.17",
         "@types/react": "^18",
         "@types/react-dom": "^18",
         "@types/turndown": "^5.0.4",
         "@types/uuid": "^10.0.0",
         "autoprefixer": "^10.4.20",
+        "concurrently": "^9.1.2",
         "drizzle-kit": "^0.24.2",
+        "electron": "36.2.0",
+        "electron-builder": "^26.0.12",
         "husky": "^9.1.4",
         "postcss": "^8.5.3",
         "postgres": "^3.4.4",
         "prettier": "^3.3.3",
         "prettier-plugin-tailwindcss": "^0.6.5",
         "tailwindcss": "3",
-        "typescript": "^5",
+        "tsup": "^8.4.0",
+        "typescript": "^5.8.3",
+        "wait-on": "^8.0.3",
         "yarn": "^1.22.22"
+    },
+    "build": {
+        "appId": "com.llmchat.desktop",
+        "productName": "LLMChat",
+        "files": [
+            "electron/**/*",
+            ".next/**/*",
+            "node_modules/**/*",
+            "package.json"
+        ],
+        "directories": {
+            "buildResources": "resources"
+        },
+        "mac": {
+            "icon": "electron/icons/llmchat.icns",
+            "category": "public.app-category.utilities",
+            "hardenedRuntime": true,
+            "gatekeeperAssess": false,
+            "entitlements": "entitlements.plist",
+            "entitlementsInherit": "entitlements.plist"
+        }
     }
 }

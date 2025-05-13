@@ -1,9 +1,9 @@
+import { MCPToolManager } from '@repo/ai/tools';
 import { runWorkflow } from '@repo/ai/workflow';
 import { CHAT_MODE_CREDIT_COSTS } from '@repo/shared/config';
 import { logger } from '@repo/shared/logger';
 import { EVENT_TYPES, posthog } from '@repo/shared/posthog';
 import { Geo } from '@vercel/functions';
-import { MCPToolManager } from '../../../../../packages/ai/tools/MCPToolManager';
 import { CompletionRequestType, StreamController } from './types';
 import { sanitizePayloadForJSON } from './utils';
 

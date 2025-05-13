@@ -6,7 +6,6 @@ import type { Viewport } from 'next';
 import { Metadata } from 'next';
 import { Bricolage_Grotesque } from 'next/font/google';
 import localFont from 'next/font/local';
-
 const bricolage = Bricolage_Grotesque({
     subsets: ['latin'],
     variable: '--font-bricolage',
