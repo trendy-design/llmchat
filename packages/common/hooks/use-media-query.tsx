@@ -1,4 +1,3 @@
-import { platform } from '@todesktop/client-core';
 import * as React from 'react';
 
 export function useMediaQuery(query: string) {
@@ -25,8 +24,4 @@ export function useIsMobile() {
 
 export function useIsWeb() {
     return useMediaQuery('(min-width: 768px)');
-}
-
-export function useIsToDesktop() {
-    return platform.todesktop.isDesktopApp;
 }

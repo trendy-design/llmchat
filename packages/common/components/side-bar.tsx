@@ -20,8 +20,7 @@ import {
 
 import { DesktopDraggable } from '@repo/common/components';
 import { isDesktop } from '@repo/common/electron';
-import { useIsMobile, useIsToDesktop } from '@repo/common/hooks';
-// import { isDesktopApp } from '@todesktop/client-core/platform/todesktop';
+import { useIsMobile } from '@repo/common/hooks';
 import { AnimatePresence } from 'framer-motion';
 import {
     ArrowRight,
@@ -417,7 +416,7 @@ export const ResponsiveSidebar = () => {
     const isSidebarOpen = useAppStore(state => state.isSidebarOpen);
     const setIsSidebarOpen = useAppStore(state => state.setIsSidebarOpen);
     const isMobile = useIsMobile();
-    const isToDesktop = useIsToDesktop();
+    const isDesktopApp = isDesktop();
 
     if (isMobile) {
         return (
@@ -429,12 +428,12 @@ export const ResponsiveSidebar = () => {
             >
                 <Button
                     variant="ghost"
-                    className={cn('absolute top-2 z-10', isToDesktop() ? 'left-20' : 'left-2')}
+                    className={cn('absolute top-2 z-10', isDesktopApp ? 'left-20' : 'left-2')}
                     size="icon-sm"
                     onClick={() => setIsSidebarOpen(prev => !prev)}
                 >
                     <PanelLeft size={16} strokeWidth={2} className="!text-muted-foreground/50" />
-                    {isToDesktop() && <span>isToDesktop</span>}
+                    {isDesktopApp && <span>isToDesktop</span>}
                 </Button>
                 <Drawer.Portal>
                     <Drawer.Overlay className="fixed inset-0 z-30 backdrop-blur-sm" />
